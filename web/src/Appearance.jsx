@@ -1,13 +1,5 @@
 import { NAME_STYLES } from './naming.js'
-
-/** Swatch colours are literals, not CSS vars — each swatch must preview ITS OWN
- *  theme while the page is still showing the current one. */
-const THEMES = [
-  { key: 'ember', label: 'Ember', bg: '#12100e', accent: '#c9a227' },
-  { key: 'midnight', label: 'Midnight', bg: '#0a0f1e', accent: '#e8c46a' },
-  { key: 'parchment', label: 'Parchment', bg: '#f2e9d5', accent: '#8a4b1c' },
-  { key: 'slate', label: 'Slate', bg: '#11151a', accent: '#4fd1c5' },
-]
+import { THEMES } from './themes.js'
 
 export default function Appearance({ theme, setTheme, nameStyle, setNameStyle }) {
   return (
@@ -19,7 +11,7 @@ export default function Appearance({ theme, setTheme, nameStyle, setNameStyle })
             key={t.key}
             type="button"
             className={`swatch${theme === t.key ? ' on' : ''}`}
-            style={{ background: t.bg, borderColor: t.accent }}
+            style={{ background: t.swatch || t.bg, borderColor: t.accent }}
             onClick={() => setTheme(t.key)}
             title={t.label}
             aria-label={t.label}

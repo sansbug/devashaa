@@ -54,27 +54,35 @@
   --ok-line: #245040;
 }
 
-:root[data-theme='parchment'] {
+:root[data-theme='blossom'] {
   color-scheme: light;        /* so native date/time pickers match */
-  --bg: #f2e9d5;
-  --panel: #fbf6e9;
-  --sunken: #ece1c6;
-  --hover: #e6dabb;
-  --line: #d3c2a0;
-  --ink: #2b2318;
-  --dim: #6d604a;
-  --accent: #8a4b1c;
-  --on-accent: #fdf8ec;
-  --accent-soft: rgba(138, 75, 28, 0.10);
-  --rx: #a8331f;
-  --lagna: #dbe7d2;
-  --row-hi: #e8f0e2;
-  --quote-bg: #efe5cd;
-  --err-bg: #f7ddd6;
-  --err-line: #d2a294;
-  --err-ink: #7c2416;
-  --ok-ink: #2f6b3a;
-  --ok-line: #a9c9a9;
+  /* Peach → soft pink → lavender → cream. The gradient is the point, so --bg is
+     only the solid fallback; it is set to the DARKEST stop (the lavender) so
+     contrast holds against the worst part of the blend, not an average. */
+  --bg: #ece0f5;
+  --bg-image: linear-gradient(160deg,
+              #ffe3d3 0%,     /* peach   */
+              #fde0e6 30%,    /* pink    */
+              #ece0f5 64%,    /* lavender*/
+              #fdf6ec 100%);  /* cream   */
+  --panel: #fffaf7;           /* near-white so cards lift off the blend */
+  --sunken: #f8ece6;
+  --hover: #f5e6ee;
+  --line: #e2d2da;
+  --ink: #3a2b33;             /* plum-tinted near-black, warmer than pure grey */
+  --dim: #6f5c69;
+  --accent: #a8324a;          /* deep rose — dark enough to clear AA on cream */
+  --on-accent: #fff6f8;
+  --accent-soft: rgba(168, 50, 74, 0.09);
+  --rx: #a8324a;
+  --lagna: #e7dcf6;           /* lavender wash for the lagna cell */
+  --row-hi: #fbe6dc;          /* peach wash for the lagna row */
+  --quote-bg: #f9edf3;
+  --err-bg: #fbe0dd;
+  --err-line: #e0a99f;
+  --err-ink: #8a2b1d;
+  --ok-ink: #2f6b4a;
+  --ok-line: #a8cbb4;
 }
 
 :root[data-theme='slate'] {
@@ -104,7 +112,12 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  /* background-color is the solid fallback and what contrast is judged against;
+     --bg-image paints the blend over it. `fixed` keeps the gradient spanning the
+     viewport instead of stretching down a long chart page. */
+  background-color: var(--bg);
+  background-image: var(--bg-image, none);
+  background-attachment: fixed;
   color: var(--ink);
   font: 15px/1.5 'Segoe UI', system-ui, sans-serif;
   /* NO transition here. A transition on a property whose value comes from a

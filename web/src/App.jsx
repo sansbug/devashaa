@@ -4,6 +4,7 @@ import DashaTree from './DashaTree.jsx'
 import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
+import { validTheme } from './themes.js'
 import { API } from './config.js'
 import './App.css'
 
@@ -98,8 +99,9 @@ export default function App() {
   const [style, setStyle] = useState('south')
   const [health, setHealth] = useState(null)
 
-  // Appearance, remembered across visits.
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'ember')
+  // Appearance, remembered across visits. validTheme guards a stale saved key
+  // (e.g. the old "parchment") from leaving the page themeless.
+  const [theme, setTheme] = useState(() => validTheme(localStorage.getItem('theme')))
   const [nameStyle, setNameStyle] = useState(
     () => localStorage.getItem('nameStyle') || 'common',
   )

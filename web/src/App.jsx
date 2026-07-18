@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import DashaTree from './DashaTree.jsx'
 import Appearance from './Appearance.jsx'
+import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
 import { API } from './config.js'
 import './App.css'
@@ -149,7 +150,8 @@ export default function App() {
         nameStyle={nameStyle} setNameStyle={setNameStyle}
       />
       <header>
-        <h1>Jyotiṣa</h1>
+        <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>
+        <Logo />
         <p className="sub">
           Sidereal · Lahiri ayanāṁśa · whole-sign bhāvas · Swiss Ephemeris
           <br />after <em>Bṛhat Parāśara Horā Śāstra</em>

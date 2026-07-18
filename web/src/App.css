@@ -51,6 +51,12 @@
 :root,
 :root[data-theme='aarti'] {
   color-scheme: dark;
+  /* Text weight is theme-driven: light grounds need more mass than dark ones.
+     On a dark theme light-on-dark already blooms optically, so 400 is right;
+     on a light theme the same weight reads thin and washed out. */
+  --text-weight: 400;
+  --label-weight: 500;
+  --strong-weight: 600;   /* one step above body, for mahadasa rows */
   --bg: #0b0810;
   --bg-image:
     radial-gradient(150% 105% at 50% 106%, #3f2409 0%, #201510 36%, rgba(11, 8, 16, 0) 70%),
@@ -87,12 +93,18 @@
     radial-gradient(900px 620px at 10% 108%, #dff3f2 0%, rgba(223, 243, 242, 0) 60%),
     radial-gradient(820px 560px at 94% 96%, #fbe6f1 0%, rgba(251, 230, 241, 0) 58%),
     linear-gradient(180deg, #f7f0f8 0%, #f1ecf6 55%, #eef4f5 100%);
+  /* Dark navy ink, not plum: on a pale ground a low-chroma near-black reads as
+     confident, where a tinted mid-tone reads as washed out. Weight is raised
+     because light-on-dark blooms optically but dark-on-light does not. */
+  --text-weight: 600;
+  --label-weight: 700;
+  --strong-weight: 700;
   --panel: #fffdfc;
   --sunken: #f0e7f0;
   --hover: #f9e2ee;
   --line: #a88ba5;
-  --ink: #2b1f33;
-  --dim: #63496a;
+  --ink: #0e1a2b;
+  --dim: #33455f;
   --accent: #a8135a;
   --on-accent: #fff6fa;
   --accent-soft: rgba(224, 64, 138, 0.16);
@@ -147,12 +159,15 @@
               #fde0e6 30%,    /* pink    */
               #ece0f5 64%,    /* lavender*/
               #fdf6ec 100%);  /* cream   */
+  --text-weight: 600;
+  --label-weight: 700;
+  --strong-weight: 700;
   --panel: #fffaf7;           /* near-white so cards lift off the blend */
   --sunken: #f8ece6;
   --hover: #f5e6ee;
-  --line: #e2d2da;
-  --ink: #3a2b33;             /* plum-tinted near-black, warmer than pure grey */
-  --dim: #6f5c69;
+  --line: #d8c2cc;            /* darkened with the ink, or rules vanish */
+  --ink: #0e1a2b;             /* dark navy — see Lotus */
+  --dim: #33455f;
   --accent: #a8324a;          /* deep rose — dark enough to clear AA on cream */
   --on-accent: #fff6f8;
   --accent-soft: rgba(168, 50, 74, 0.09);
@@ -205,6 +220,7 @@ body {
   background-attachment: fixed;
   color: var(--ink);
   font: 15px/1.5 'Segoe UI', system-ui, sans-serif;
+  font-weight: var(--text-weight, 400);   /* inherited by chart cells and tables */
   /* NO transition here. A transition on a property whose value comes from a
      custom property latches the old computed value when the variable changes —
      the theme swap then never repaints (verified: background stayed on the old
@@ -334,7 +350,9 @@ section.meta, .chart-panel, .table-panel {
      `none` and are visually unchanged. */
   box-shadow: var(--glow, none);
 }
-.meta h2 { margin: 0 0 .8rem; font-weight: 400; color: var(--accent); }
+/* Headings track body weight — a fixed 400 would render LIGHTER than 600 body
+   text on the light themes, which reads as a mistake. */
+.meta h2 { margin: 0 0 .8rem; font-weight: var(--text-weight, 400); color: var(--accent); }
 .meta dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .6rem; margin: 0; }
 .meta dt { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--dim); }
 .meta dd { margin: .1rem 0 0; font-size: .88rem; font-variant-numeric: tabular-nums; }
@@ -389,11 +407,13 @@ section.meta, .chart-panel, .table-panel {
 .north-graha.rx { fill: var(--rx); }
 
 /* --- tables --- */
-.table-panel h3 { margin: 0 0 .8rem; font-weight: 400; font-size: 1rem; color: var(--accent); }
+.table-panel h3 { margin: 0 0 .8rem; font-weight: var(--text-weight, 400); font-size: 1rem; color: var(--accent); }
 .scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: .82rem; }
 th, td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
-th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 500; }
+/* Must track --text-weight: a fixed 500 would end up LIGHTER than 600 body text
+   on the light themes, inverting the hierarchy. */
+th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: var(--label-weight, 500); }
 .num { font-variant-numeric: tabular-nums; text-align: right; }
 .graha-name { color: var(--accent); }
 .en { color: var(--dim); font-size: .72rem; }
@@ -460,7 +480,7 @@ th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color:
   color: var(--ink); padding: .4rem .3rem; cursor: pointer; font-size: .82rem;
 }
 .d-row:hover { background: var(--hover); }
-.d-node.lvl-0 > .d-row { font-weight: 600; }
+.d-node.lvl-0 > .d-row { font-weight: var(--strong-weight, 600); }
 .d-node.lvl-1 > .d-row { font-size: .78rem; }
 .d-node.lvl-2 > .d-row { font-size: .74rem; color: var(--dim); }
 .d-toggle { color: var(--dim); }

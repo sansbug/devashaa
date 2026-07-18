@@ -1,4 +1,12 @@
 /* Minimal reset. All theming lives in App.css. */
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; min-height: 100vh; }
-button, input { font-family: inherit; }
+
+/* font-weight must be inherited too, not just the family: form controls default
+   to the UA's 400 regardless of body. That left the dasha rows (which are
+   buttons) thin at 400 while the mahadasa rows, which set a weight explicitly,
+   rendered bold — an inverted hierarchy on the light themes. */
+button, input, select, textarea {
+  font-family: inherit;
+  font-weight: inherit;
+}

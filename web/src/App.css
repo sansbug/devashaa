@@ -1,0 +1,228 @@
+:root {
+  --bg: #12100e;
+  --panel: #1b1815;
+  --line: #3a332c;
+  --ink: #efe7db;
+  --dim: #a2968a;
+  --gold: #c9a227;
+  --rx: #e0715a;
+  --lagna: #2c4a3e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 'Segoe UI', system-ui, sans-serif;
+}
+
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+header { text-align: center; margin-bottom: 2rem; }
+header h1 {
+  font-size: 2.4rem; margin: 0; letter-spacing: .1em; font-weight: 400;
+  color: var(--gold);
+}
+.sub { color: var(--dim); font-size: .85rem; margin: .5rem 0; }
+.health {
+  display: inline-block; font-size: .72rem; padding: .25rem .7rem;
+  border-radius: 999px; border: 1px solid var(--line); color: var(--dim);
+}
+.health.ok { color: #7fb069; border-color: #2f4a2a; }
+.health.degraded, .health.unreachable { color: var(--rx); border-color: #5a2f28; }
+
+/* --- form --- */
+.birth-form {
+  display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  align-items: end; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; padding: 1.25rem;
+}
+.field { display: flex; flex-direction: column; gap: .35rem; position: relative; }
+.field label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.field input {
+  background: #100e0c; border: 1px solid var(--line); border-radius: 6px;
+  padding: .6rem .7rem; color: var(--ink); font-size: .95rem;
+}
+.field input:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+.place-field { grid-column: 1 / -1; }
+.hint { font-size: .72rem; color: var(--dim); }
+.picked { font-size: .72rem; color: var(--gold); }
+.hits {
+  list-style: none; margin: .25rem 0 0; padding: 0; position: absolute; top: 100%;
+  left: 0; right: 0; z-index: 20; background: #100e0c; border: 1px solid var(--line);
+  border-radius: 6px; max-height: 280px; overflow-y: auto;
+}
+.hits button {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  border-bottom: 1px solid var(--line); padding: .5rem .7rem; color: var(--ink);
+  cursor: pointer; font-size: .82rem;
+}
+.hits button:hover { background: #1f1b17; }
+.hits strong { display: block; }
+.hits span { color: var(--dim); font-size: .74rem; }
+.hits em { display: block; color: var(--gold); font-size: .68rem; font-style: normal; }
+
+.go {
+  background: var(--gold); color: #1a1408; border: 0; border-radius: 6px;
+  padding: .7rem 1.2rem; font-weight: 600; cursor: pointer; font-size: .9rem;
+}
+.go:disabled { opacity: .35; cursor: not-allowed; }
+
+.error {
+  margin-top: 1rem; padding: .8rem 1rem; border-radius: 6px;
+  background: #2a1512; border: 1px solid #5a2f28; color: #f0a08e; font-size: .85rem;
+}
+
+/* --- result --- */
+.result { margin-top: 2rem; display: grid; gap: 1.5rem; }
+/* Grid items default to min-width:auto, so a wide table stretches its section and
+   scrolls the whole PAGE sideways instead of scrolling inside .scroll. This lets
+   them shrink so overflow-x actually engages. */
+.result > section { min-width: 0; }
+section.meta, .chart-panel, .table-panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem;
+}
+.meta h2 { margin: 0 0 .8rem; font-weight: 400; color: var(--gold); }
+.meta dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .6rem; margin: 0; }
+.meta dt { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--dim); }
+.meta dd { margin: .1rem 0 0; font-size: .88rem; font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.25rem; }
+.styles, .vargas { display: flex; flex-wrap: wrap; gap: .25rem; }
+.controls button {
+  background: #100e0c; border: 1px solid var(--line); color: var(--dim);
+  border-radius: 5px; padding: .35rem .6rem; font-size: .74rem; cursor: pointer;
+}
+.controls button:hover { color: var(--ink); }
+.controls button.on { background: var(--gold); color: #1a1408; border-color: var(--gold); font-weight: 600; }
+.varga-name { margin-left: auto; color: var(--gold); font-size: .85rem; }
+
+/* --- south indian chart --- */
+.south-chart {
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+  aspect-ratio: 1; max-width: 620px; margin: 0 auto; border: 1px solid var(--line);
+}
+.south-cell {
+  border: 1px solid var(--line); padding: .35rem; position: relative;
+  display: flex; flex-direction: column; gap: .15rem; min-height: 0; overflow: hidden;
+}
+.south-cell.is-lagna { background: var(--lagna); }
+.cell-sign {
+  font-size: .68rem; color: var(--dim); letter-spacing: .02em;
+  border-bottom: 1px solid var(--line); padding-bottom: .15rem; margin-bottom: .1rem;
+}
+.asc-mark {
+  position: absolute; top: .3rem; right: .35rem; font-size: .55rem;
+  color: var(--gold); font-weight: 700; letter-spacing: .04em;
+}
+/* One graha per line: full Sanskrit names don't tile side by side legibly. */
+.cell-grahas { display: flex; flex-direction: column; gap: .05rem; align-items: flex-start; }
+.tag { font-size: .72rem; color: var(--ink); line-height: 1.25; white-space: nowrap; }
+.tag.rx { color: var(--rx); }
+.tag sup { font-size: .5rem; }
+.south-centre {
+  grid-row: 2 / 4; grid-column: 2 / 4; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: .2rem;
+}
+.centre-varga { font-size: 1.8rem; color: var(--gold); }
+.centre-sub { font-size: .7rem; color: var(--dim); }
+
+/* --- north indian chart --- */
+.north-chart { display: block; max-width: 620px; margin: 0 auto; width: 100%; }
+.north-chart .frame { fill: none; stroke: var(--line); stroke-width: 1.5; }
+.north-sign { fill: var(--dim); font-size: 10px; text-anchor: middle; }
+.north-graha { fill: var(--ink); font-size: 10px; text-anchor: middle; }
+.north-graha.rx { fill: var(--rx); }
+
+/* --- tables --- */
+.table-panel h3 { margin: 0 0 .8rem; font-weight: 400; font-size: 1rem; color: var(--gold); }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th, td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.graha-name { color: var(--gold); }
+.en { color: var(--dim); font-size: .72rem; }
+.deity { color: var(--dim); font-size: .76rem; }
+.rx-mark { color: var(--rx); margin-left: .25rem; }
+.varga-table td, .varga-table th { padding: .35rem .55rem; font-size: .76rem; }
+.lagna-row td { background: #191f1c; color: var(--gold); }
+
+/* Full rāśi names make this table wider than the page, so it scrolls inside its
+   own container. Pin the graha column or the rows lose their labels mid-scroll. */
+.varga-table th:first-child, .varga-table td:first-child {
+  position: sticky; left: 0; z-index: 1;
+  background: var(--panel); padding-right: .8rem;
+}
+.varga-table tr.lagna-row td:first-child { background: #191f1c; }
+.varga-table th:first-child::after, .varga-table td:first-child::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0;
+  width: 1px; background: var(--line);
+}
+
+/* --- dasha tree --- */
+.dasha-controls {
+  display: flex; align-items: center; gap: .4rem; margin-bottom: 1rem;
+}
+.dasha-controls .d-label { margin-right: .3rem; }
+.dasha-controls button {
+  background: #100e0c; border: 1px solid var(--line); color: var(--dim);
+  border-radius: 5px; padding: .3rem .7rem; font-size: .74rem; cursor: pointer;
+}
+.dasha-controls button:hover { color: var(--ink); }
+.dasha-controls button.on {
+  background: var(--gold); color: #1a1408; border-color: var(--gold); font-weight: 600;
+}
+.dasha-select {
+  background: #100e0c; border: 1px solid var(--line); color: var(--ink);
+  border-radius: 5px; padding: .3rem .5rem; font-size: .8rem; cursor: pointer;
+}
+.dasha-select:focus { outline: 1px solid var(--gold); }
+.d-loading { font-size: .7rem; color: var(--dim); font-style: italic; }
+.dasha-applies {
+  margin: 0 0 1rem; font-size: .78rem; color: var(--dim);
+  background: #14120f; border-left: 2px solid var(--gold); padding: .5rem .7rem;
+  border-radius: 0 4px 4px 0;
+}
+.dasha-applies strong { color: var(--gold); font-weight: 600; }
+.dasha-head {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: .6rem 1.5rem; margin-bottom: 1rem; padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.dasha-head .d-label {
+  display: block; font-size: .66rem; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--dim); margin-bottom: .1rem;
+}
+.dasha-head .running { font-size: 1.05rem; color: var(--gold); }
+.dasha-head .running .sep { color: var(--dim); }
+
+.dasha-tree { font-variant-numeric: tabular-nums; }
+.d-row {
+  display: grid; width: 100%;
+  grid-template-columns: 1.2rem 7rem 1fr auto auto;
+  align-items: center; gap: .5rem; text-align: left;
+  background: none; border: 0; border-bottom: 1px solid var(--line);
+  color: var(--ink); padding: .4rem .3rem; cursor: pointer; font-size: .82rem;
+}
+.d-row:hover { background: #1f1b17; }
+.d-node.lvl-0 > .d-row { font-weight: 600; }
+.d-node.lvl-1 > .d-row { font-size: .78rem; }
+.d-node.lvl-2 > .d-row { font-size: .74rem; color: var(--dim); }
+.d-toggle { color: var(--dim); }
+.d-lord { color: var(--gold); }
+.d-node.lvl-2 .d-lord { color: var(--ink); }
+.d-dates { color: var(--dim); font-size: .92em; }
+.d-dur { color: var(--dim); text-align: right; }
+.d-now {
+  background: var(--gold); color: #1a1408; font-size: .6rem; font-weight: 700;
+  padding: .05rem .35rem; border-radius: 999px; text-transform: uppercase;
+}
+.d-node.current > .d-row { background: rgba(201, 162, 39, .08); }
+.d-children { margin-left: 1.1rem; border-left: 1px solid var(--line); }
+.dasha-note { margin: 1rem 0 0; font-size: .68rem; color: var(--dim); font-style: italic; }
+
+footer { margin-top: 3rem; text-align: center; color: var(--dim); font-size: .72rem; }
+footer code { color: var(--gold); }

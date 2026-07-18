@@ -1,0 +1,20 @@
+# Render blueprint for the astrodev / devashaa.com backend.
+# In the Render dashboard: New → Blueprint → point at this repo. Render builds
+# the Dockerfile in ./api and gives you a URL like https://devashaa-api.onrender.com
+# — put that URL into the Cloudflare Pages env var VITE_API_URL.
+services:
+  - type: web
+    name: devashaa-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      # Lock CORS to your domain once the Pages site is up. Comma-separated.
+      # Leave as * only while testing.
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      # Contact string for the Nominatim geocoder (OSM policy requires one).
+      - key: NOMINATIM_UA
+        value: "devashaa.com (Vedic chart calculator)"

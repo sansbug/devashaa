@@ -90,17 +90,22 @@ Redeploy. Until you set this it defaults to `*` (any site can call your API).
 
 ## Place lookup is fully offline
 
-`/api/places` queries `api/data/geonames.sqlite3` — 69,417 cities from the
-GeoNames `cities5000` dump, committed to the repo. No network call, no rate
-limit, no API key, ~0.05 ms per lookup. Historical names resolve too (Benares →
-Varanasi, Bombay → Mumbai, Madras → Chennai), which matters because birth
-records often use them.
+`/api/places` queries `api/data/geonames.sqlite3` (34 MB, committed) — **170,264
+places** from the GeoNames `cities1000` dump, i.e. everywhere with 1,000+ people.
+No network call, no rate limit, no API key. Typical lookup ~0.1 ms; a
+single-letter prefix (worst case, ~48k matching terms) ~15 ms.
+
+Historical names resolve, which matters because birth records use them:
+Benares → Varanasi, Bombay → Mumbai, Calcutta → Kolkata, Madras → Chennai.
+Ranking weighs population, so big cities beat same-named villages (there is a
+village called Dubai in Uttar Pradesh) while villages stay reachable by name.
 
 Each record carries its own IANA timezone, so a picked place needs no timezone
 lookup at all.
 
-To rebuild (e.g. to widen coverage with `cities1000`), download the dumps from
-<https://download.geonames.org/export/dump/> and run:
+To rebuild, download the dumps from
+<https://download.geonames.org/export/dump/> (`cities1000.zip`,
+`admin1CodesASCII.txt`, `countryInfo.txt`) and run:
 
 ```bash
 python api/build_geonames.py <folder-with-dumps>
@@ -111,8 +116,8 @@ it. Keep that credit if you restyle the footer.
 
 ## Known limits before real traffic
 
-- **Place coverage**: `cities5000` means towns under ~5,000 people are missing.
-  Rebuild with `cities1000` if users report their birth village is absent.
+- **Place coverage**: settlements under ~1,000 people are absent. GeoNames'
+  full `allCountries` dump has them but is ~1.5 GB — impractical to ship.
 - **Ephemeris range**: the loaded `.se1` files cover **1800–2399**. Births
   outside that are rejected with a clear error; add the adjoining files to widen.
 - **Render cold starts** on the free tier (above).

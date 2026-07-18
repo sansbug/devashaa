@@ -1,0 +1,12 @@
+{
+  // Cloudflare Worker serving the built React app as static assets — the same
+  // approach as studywyz.com. Deploy with `npm run deploy` from this folder.
+  "name": "devashaa",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    // Vite's build output, NOT the source folder.
+    "directory": "./dist",
+    // Single-page app: unknown paths serve index.html instead of a 404.
+    "not_found_handling": "single-page-application"
+  }
+}

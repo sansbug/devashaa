@@ -46,28 +46,38 @@ commercial licence only when you want the source closed.
 
 ---
 
-## 2. Frontend → Cloudflare Pages
+## 2. Frontend → Cloudflare Worker (static assets), via Wrangler
 
-1. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**
-2. Select the repo, then set **build settings**:
-   - Framework preset: **Vite**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-   - **Root directory: `web`**  ← important, the app is in a subfolder
-3. **Environment variables (Production)**:
-   | Name | Value |
-   |---|---|
-   | `VITE_API_URL` | your Render URL, no trailing slash |
-   | `VITE_SOURCE_URL` | your public repo URL (AGPL) |
-4. Save and Deploy. You'll get a `*.pages.dev` URL — check the chart works.
+Cloudflare folded Pages into Workers, so there is no "Workers & Pages → Pages"
+entry any more. We deploy from the CLI instead — the same way studywyz.com is
+deployed. `web/wrangler.jsonc` is already configured.
+
+**The API URL is baked in at build time** (Vite inlines `VITE_*`), so set the
+variables in the shell *before* building — there is no dashboard env-var screen
+on this route. That also means: **whenever the backend URL changes, rebuild and
+redeploy**, don't just edit a setting.
+
+PowerShell, from `C:\proj\astrodev\web`:
+
+```powershell
+$env:VITE_API_URL    = "https://<your-service>.onrender.com"   # no trailing slash
+$env:VITE_SOURCE_URL = "https://github.com/sansbug/devashaa"
+npm run deploy        # = vite build && wrangler deploy
+```
+
+`wrangler whoami` should show you logged in; if not, run `wrangler login`.
+
+Wrangler prints a `https://devashaa.<subdomain>.workers.dev` URL — open it and
+cast a chart to confirm the frontend is reaching Render.
 
 ---
 
 ## 3. Point devashaa.com at it
 
-Pages project → **Custom domains → Set up a custom domain** → `devashaa.com`
-(repeat for `www.devashaa.com`). Since the domain is already in your Cloudflare
-account, DNS records are created automatically; SSL is issued in a few minutes.
+Cloudflare dashboard → your **devashaa** Worker → **Settings → Domains & Routes
+→ Add → Custom domain** → `devashaa.com` (repeat for `www.devashaa.com`).
+Since the domain is already in your Cloudflare account the DNS records are
+created for you and SSL is issued within a few minutes.
 
 ---
 

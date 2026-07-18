@@ -12,6 +12,7 @@
   --glow: none;
   --accent-glow: none;
   --bg-image: none;
+  --logo-hi: #ffeeb8;
   --bg: #12100e;
   --panel: #1b1815;
   --sunken: #100e0c;          /* inputs, buttons, dropdowns */
@@ -57,6 +58,10 @@
   --text-weight: 400;
   --label-weight: 500;
   --strong-weight: 600;   /* one step above body, for mahadasa rows */
+  /* Lit limb of the logo crescent. On dark themes this is a near-white so the
+     moon looks illuminated; on LIGHT themes white would disappear into the
+     panel, so those use a lighter tint of the accent instead. */
+  --logo-hi: #fff3d6;
   --bg: #0b0810;
   --bg-image:
     radial-gradient(150% 105% at 50% 106%, #3f2409 0%, #201510 36%, rgba(11, 8, 16, 0) 70%),
@@ -99,6 +104,7 @@
   --text-weight: 600;
   --label-weight: 700;
   --strong-weight: 700;
+  --logo-hi: #e85ba0;         /* lighter magenta, not white — see note above */
   --panel: #fffdfc;
   --sunken: #f0e7f0;
   --hover: #f9e2ee;
@@ -125,6 +131,7 @@
   --glow: none;
   --accent-glow: none;
   --bg-image: none;
+  --logo-hi: #fff6da;
   --bg: #0a0f1e;
   --panel: #131a2e;
   --sunken: #070c19;
@@ -162,6 +169,7 @@
   --text-weight: 600;
   --label-weight: 700;
   --strong-weight: 700;
+  --logo-hi: #d9698a;
   --panel: #fffaf7;           /* near-white so cards lift off the blend */
   --sunken: #f8ece6;
   --hover: #f5e6ee;
@@ -187,6 +195,7 @@
   --glow: none;
   --accent-glow: none;
   --bg-image: none;
+  --logo-hi: #d8fffa;
   --bg: #11151a;
   --panel: #1a1f27;
   --sunken: #0d1116;

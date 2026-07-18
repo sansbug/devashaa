@@ -179,7 +179,11 @@
   --accent: #a8324a;          /* deep rose — dark enough to clear AA on cream */
   --on-accent: #fff6f8;
   --accent-soft: rgba(168, 50, 74, 0.09);
-  --rx: #a8324a;
+  /* MUST differ from --accent: retrograde is meaning, and this theme previously
+     set both to #a8324a, making ℞ grahas indistinguishable from accent text.
+     Deep violet keeps it in-palette and separates by hue AND blue channel, so
+     it survives red-green colour blindness. 7.2:1 on panel, 5.7:1 on lagna. */
+  --rx: #6a3fa0;
   --lagna: #e7dcf6;           /* lavender wash for the lagna cell */
   --row-hi: #fbe6dc;          /* peach wash for the lagna row */
   --quote-bg: #f9edf3;
@@ -421,15 +425,42 @@ section.meta, .chart-panel, .table-panel {
 .cell-sign {
   font-size: .68rem; color: var(--dim); letter-spacing: .02em;
   border-bottom: 1px solid var(--line); padding-bottom: .15rem; margin-bottom: .1rem;
+  display: flex; align-items: baseline; gap: .25em; min-width: 0;
 }
+.cell-sep { opacity: .55; }
+/* Bhāva typology is marked by SHAPE, not colour, so it survives all six themes
+   and colour blindness. 2, 3 and 11 are intentionally unmarked. */
+.bhava-num { font-variant-numeric: tabular-nums; flex: none; }
+.bhava-num.kendra {
+  border: 1px solid currentColor; border-radius: 2px; padding: 0 .22em; line-height: 1.15;
+}
+.bhava-num.trikona { text-decoration: underline; text-underline-offset: 2px; }
+.bhava-num.duhsthana { text-decoration: line-through; }
 .asc-mark {
   position: absolute; top: .3rem; right: .35rem; font-size: .55rem;
   color: var(--accent); font-weight: 700; letter-spacing: .04em;
 }
 /* One graha per line: full Sanskrit names don't tile side by side legibly. */
-.cell-grahas { display: flex; flex-direction: column; gap: .05rem; align-items: flex-start; }
-.tag { font-size: .72rem; color: var(--ink); line-height: 1.25; white-space: nowrap; }
+.cell-grahas {
+  display: flex; flex-direction: column; gap: .05rem;
+  align-items: stretch;   /* so each tag's grid spans the cell width */
+  min-width: 0;
+}
+/* Two tracks: name (may ellipsis) + degree (never clipped).
+   minmax(0,1fr) is load-bearing — a plain 1fr lets the nowrap name blow out
+   the track and silently clip the degree off the right edge of the cell. */
+.tag {
+  display: grid; grid-template-columns: minmax(0, 1fr) max-content;
+  gap: .3rem; align-items: baseline;
+  font-size: .72rem; color: var(--ink); line-height: 1.25; min-width: 0;
+}
+.tag-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag-deg {
+  font-size: .62rem; color: var(--dim);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
 .tag.rx { color: var(--rx); }
+.tag.rx .tag-deg { color: inherit; opacity: .8; }
 .tag sup { font-size: .5rem; }
 .south-centre {
   grid-row: 2 / 4; grid-column: 2 / 4; display: flex; flex-direction: column;
@@ -442,8 +473,22 @@ section.meta, .chart-panel, .table-panel {
 .north-chart { display: block; max-width: 620px; margin: 0 auto; width: 100%; }
 .north-chart .frame { fill: none; stroke: var(--line); stroke-width: 1.5; }
 .north-sign { fill: var(--dim); font-size: 10px; text-anchor: middle; }
+.north-bhava { font-weight: 700; }
 .north-graha { fill: var(--ink); font-size: 10px; text-anchor: middle; }
 .north-graha.rx { fill: var(--rx); }
+.north-deg { fill: var(--dim); font-size: 8.5px; }
+.north-graha.rx .north-deg { fill: var(--rx); }
+
+/* Narrow screens: .south-chart's 620px is a max-width, so cells shrink with the
+   viewport while .south-cell is overflow:hidden — without this the degree
+   column and then the graha names clip away SILENTLY. Shed the degree first,
+   since the names are the irreducible content. */
+@media (max-width: 560px) {
+  .tag { grid-template-columns: minmax(0, 1fr); font-size: .66rem; }
+  .tag-deg { display: none; }
+  .cell-sign { font-size: .6rem; }
+  .south-cell { padding: .25rem; }
+}
 
 /* --- tables --- */
 .table-panel h3 { margin: 0 0 .8rem; font-weight: var(--text-weight, 400); font-size: 1rem; color: var(--accent); }

@@ -43,12 +43,39 @@ function groupBySign(grahas, vargaKey) {
   return bySign
 }
 
+const pad2 = (n) => String(n).padStart(2, '0')
+
+/** Bhāva of a sign, counted from the lagna's sign. Whole-sign, so rāśi = bhāva. */
+const bhavaOf = (sign, lagna) => ((sign - lagna + 12) % 12) + 1
+
+/**
+ * Bhāva typology, marked on the numeral rather than by colour so it survives
+ * every theme and colour blindness.
+ *   kendra  1,4,7,10  — boxed
+ *   trikoṇa 1,5,9     — underlined  (house 1 is both)
+ *   duḥsthāna 6,8,12  — struck through
+ * Houses 2,3,11 are deliberately unmarked — "bare" does NOT mean duḥsthāna.
+ */
+function bhavaClass(b) {
+  const c = ['bhava-num']
+  if ([1, 4, 7, 10].includes(b)) c.push('kendra')
+  if ([1, 5, 9].includes(b)) c.push('trikona')
+  if ([6, 8, 12].includes(b)) c.push('duhsthana')
+  return c.join(' ')
+}
+
 function GrahaTag({ g, namer }) {
   return (
     <span className={`tag${g.retrograde ? ' rx' : ''}`}
-          title={`${g.name_en} — ${g.rasi_name_en} ${g.degree}°${g.minute}'`}>
-      {namer.graha(g)}
-      {g.retrograde && <sup>℞</sup>}
+          title={`${g.name_en} — ${g.rasi_name_en} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"` +
+                 `${g.retrograde ? ' (retrograde)' : ''}`}>
+      <span className="tag-name">
+        {namer.graha(g)}
+        {g.retrograde && <sup>℞</sup>}
+      </span>
+      {/* Degree is the datum everything else is verifiable against — dignity,
+          combustion, varga placement all follow from it. */}
+      <span className="tag-deg">{g.degree}°{pad2(g.minute)}′</span>
     </span>
   )
 }
@@ -79,7 +106,13 @@ export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
             >
-              <div className="cell-sign">{namer.rasi(sign)}</div>
+              <div className="cell-sign">
+                <span className={bhavaClass(bhavaOf(sign, lagna))}>
+                  {bhavaOf(sign, lagna)}
+                </span>
+                <span className="cell-sep">·</span>
+                {namer.rasi(sign)}
+              </div>
               {sign === lagna && <div className="asc-mark">Lagna</div>}
               <div className="cell-grahas">
                 {bySign[sign].map((g) => <GrahaTag g={g} namer={namer} key={g.key} />)}
@@ -116,11 +149,17 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
         const lines = occupants.length
         const top = r.cy - 14 - (lines > 1 ? (lines - 1) * (LEAD / 2) : 0)
 
+        // The wedges have a hard ~70-unit horizontal ceiling and text-anchor
+        // middle grows BOTH ways across the frame diagonal, so degrees only
+        // appear in an uncrowded house, and then whole degrees only.
+        const showDeg = occupants.length <= 2
+
         return (
           <g key={bhava}>
             <text x={r.cx} y={top} className="north-sign">
               <title>{`Bhāva ${bhava} — ${namer.rasi(sign)}`}</title>
-              {namer.rasi(sign)}
+              <tspan className="north-bhava">{bhava}</tspan>
+              {` · ${namer.rasi(sign)}`}
             </text>
             {occupants.map((g, k) => (
               <text
@@ -129,8 +168,9 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
                 y={top + 15 + k * LEAD}
                 className={`north-graha${g.retrograde ? ' rx' : ''}`}
               >
-                <title>{`${g.name_en} — ${g.degree}°${g.minute}'`}</title>
+                <title>{`${g.name_en} — ${g.degree}°${pad2(g.minute)}'`}</title>
                 {namer.graha(g)}{g.retrograde ? ' ℞' : ''}
+                {showDeg && <tspan className="north-deg">{` ${g.degree}°`}</tspan>}
               </text>
             ))}
           </g>

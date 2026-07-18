@@ -3,6 +3,12 @@
   // approach as studywyz.com. Deploy with `npm run deploy` from this folder.
   "name": "devashaa",
   "compatibility_date": "2026-07-01",
+  // The real domain. Wrangler provisions these on deploy because the zone is in
+  // the same Cloudflare account; DNS records and SSL are created automatically.
+  "routes": [
+    { "pattern": "devashaa.com", "custom_domain": true },
+    { "pattern": "www.devashaa.com", "custom_domain": true }
+  ],
   "assets": {
     // Vite's build output, NOT the source folder.
     "directory": "./dist",

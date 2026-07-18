@@ -301,6 +301,36 @@ header { text-align: center; margin-bottom: 2rem; }
 .health.ok { color: var(--ok-ink); border-color: var(--ok-line); }
 .health.degraded, .health.unreachable { color: var(--rx); border-color: var(--err-line); }
 
+/* --- saved profiles --- */
+.profiles { margin-bottom: .9rem; }
+.profiles-head {
+  display: flex; align-items: baseline; gap: .6rem; margin-bottom: .4rem;
+}
+.profiles-note { font-size: .62rem; color: var(--dim); font-style: italic; }
+.profile-chips {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: .4rem;
+}
+.profile-chips li {
+  display: flex; align-items: stretch;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel); overflow: hidden;
+}
+.profile-chips li.on { border-color: var(--accent); background: var(--accent-soft); }
+.chip {
+  display: flex; flex-direction: column; align-items: flex-start; gap: .05rem;
+  background: none; border: 0; cursor: pointer; color: var(--ink);
+  padding: .3rem .2rem .3rem .8rem; text-align: left; line-height: 1.2;
+}
+.chip:hover { color: var(--accent); }
+.chip-name { font-size: .8rem; }
+.chip-detail { font-size: .62rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+.chip-x {
+  background: none; border: 0; cursor: pointer; color: var(--dim);
+  padding: 0 .6rem 0 .4rem; font-size: 1rem; line-height: 1;
+}
+.chip-x:hover { color: var(--rx); }
+
 /* --- form --- */
 .birth-form {
   display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

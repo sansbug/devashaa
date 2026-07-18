@@ -5,6 +5,8 @@ import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
+import Profiles from './Profiles.jsx'
+import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
 
@@ -30,10 +32,17 @@ const fmtAyan = (v) => {
 }
 
 function PlaceField({ onPick, place }) {
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(place?.name || '')
   const [hits, setHits] = useState([])
   const [busy, setBusy] = useState(false)
   const timer = useRef(null)
+
+  // Loading a saved profile sets `place` from outside; without this the input
+  // would sit empty while a place was in fact selected. The search effect below
+  // then no-ops, because q === place.name.
+  useEffect(() => {
+    if (place?.name) setQ(place.name)
+  }, [place])
 
   useEffect(() => {
     if (!q.trim() || (place && q === place.name)) { setHits([]); return }
@@ -98,6 +107,8 @@ export default function App() {
   const [varga, setVarga] = useState('D1')
   const [style, setStyle] = useState('south')
   const [health, setHealth] = useState(null)
+  const [profiles, setProfiles] = useState(() => listProfiles())
+  const [activeProfile, setActiveProfile] = useState(null)
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
@@ -137,11 +148,46 @@ export default function App() {
       const j = await r.json()
       if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
       setChart(j)
+      // Only remember births that actually produced a chart — saving on submit
+      // would fill the list with typos and out-of-range dates.
+      const saved = saveProfile({ name, date, time, place })
+      setProfiles(saved)
+      setActiveProfile(saved[0]?.id ?? null)
     } catch (err) {
       setError(err.message)
     } finally {
       setBusy(false)
     }
+  }
+
+  /** Load a saved chart back into the form and cast it straight away. */
+  async function useProfile(p) {
+    setName(p.name || ''); setDate(p.date); setTime(p.time); setPlace(p.place)
+    setActiveProfile(p.id)
+    setError(''); setBusy(true); setChart(null)
+    try {
+      const r = await fetch(`${API}/api/chart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: p.name, date: p.date, time: p.time,
+          latitude: p.place.latitude, longitude: p.place.longitude,
+          timezone: p.place.timezone,
+        }),
+      })
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+      setChart(j)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  function removeProfile(id) {
+    setProfiles(deleteProfile(id))
+    if (activeProfile === id) setActiveProfile(null)
   }
 
   const ready = date && time && place
@@ -168,6 +214,13 @@ export default function App() {
           </div>
         )}
       </header>
+
+      <Profiles
+        profiles={profiles}
+        activeId={activeProfile}
+        onPick={useProfile}
+        onDelete={removeProfile}
+      />
 
       <form onSubmit={submit} className="birth-form">
         <div className="field">

@@ -1,36 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Same mark as Logo.jsx: glowing crescent + sparkle. Colours are literal —
-       a favicon gets no CSS variables — and use Aarti's saffron, the default
-       theme. Geometry is scaled up and the bloom widened versus the in-app
-       mark, because at 16px a thin crescent and fine stars turn to mush. -->
+  <!-- Same mark as Logo.jsx: a glowing orb ringed by grahas. Colours are literal
+       (a favicon gets no CSS variables) and use Aarti's saffron, the default.
+       The 12 rāśi ticks are DROPPED here and the orb/grahas enlarged: at 16px
+       hairline ticks collapse into a grey smear and read as dirt. -->
   <defs>
     <radialGradient id="fvHalo" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#ffb547" stop-opacity=".55"/>
-      <stop offset="45%" stop-color="#ffb547" stop-opacity=".18"/>
+      <stop offset="0%" stop-color="#ffb547" stop-opacity=".5"/>
+      <stop offset="42%" stop-color="#ffb547" stop-opacity=".16"/>
       <stop offset="100%" stop-color="#ffb547" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="fvLimb" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%" stop-color="#ffa62e"/>
-      <stop offset="100%" stop-color="#fff3d6"/>
-    </linearGradient>
+    <radialGradient id="fvOrb" cx="36%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#fff3d6"/>
+      <stop offset="58%" stop-color="#ffb547"/>
+      <stop offset="100%" stop-color="#ef9a24"/>
+    </radialGradient>
     <filter id="fvBloom" x="-70%" y="-70%" width="240%" height="240%">
-      <feGaussianBlur stdDeviation="1.8" result="b"/>
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
       <feMerge>
         <feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <mask id="fvCrescent">
-      <rect width="64" height="64" fill="#000"/>
-      <circle cx="29" cy="34" r="20" fill="#fff"/>
-      <circle cx="38.5" cy="30" r="21.2" fill="#000"/>
-    </mask>
   </defs>
   <rect width="64" height="64" rx="12" fill="#0b0810"/>
-  <circle cx="30" cy="32" r="30" fill="url(#fvHalo)"/>
+  <circle cx="32" cy="32" r="30" fill="url(#fvHalo)"/>
+  <circle cx="32" cy="32" r="20.5" fill="none" stroke="#ffb547" stroke-width="1.8" opacity=".6"/>
   <g filter="url(#fvBloom)">
-    <circle cx="29" cy="34" r="20" fill="url(#fvLimb)" mask="url(#fvCrescent)"/>
-    <path transform="translate(46 19)"
-          d="M0,-9.5 C1.1,-4 4,-1.1 9.5,0 C4,1.1 1.1,4 0,9.5 C-1.1,4 -4,1.1 -9.5,0 C-4,-1.1 -1.1,-4 0,-9.5 Z"
-          fill="url(#fvLimb)"/>
+    <circle cx="32" cy="32" r="9.5" fill="url(#fvOrb)"/>
+    <circle cx="32"    cy="11.5"  r="3.6" fill="#fff3d6"/>
+    <circle cx="51.5"  cy="25.7"  r="2.7" fill="#fff3d6"/>
+    <circle cx="44.6"  cy="48.2"  r="3.1" fill="#fff3d6"/>
+    <circle cx="17.9"  cy="46.9"  r="2.5" fill="#fff3d6"/>
+    <circle cx="13.4"  cy="23.3"  r="2.9" fill="#fff3d6"/>
   </g>
 </svg>

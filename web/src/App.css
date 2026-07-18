@@ -1,12 +1,103 @@
-:root {
+/* ============================================================================
+   Themes. Every colour in this file is a variable so a theme swap is complete —
+   a single hardcoded hex would survive into the light theme and break it.
+   Applied via data-theme on <html>; "ember" is the default.
+   ========================================================================== */
+
+:root,
+:root[data-theme='ember'] {
+  color-scheme: dark;
   --bg: #12100e;
   --panel: #1b1815;
+  --sunken: #100e0c;          /* inputs, buttons, dropdowns */
+  --hover: #1f1b17;
   --line: #3a332c;
   --ink: #efe7db;
   --dim: #a2968a;
-  --gold: #c9a227;
-  --rx: #e0715a;
-  --lagna: #2c4a3e;
+  --accent: #c9a227;
+  --on-accent: #1a1408;       /* text on an accent-filled surface */
+  --accent-soft: rgba(201, 162, 39, 0.09);
+  /* rx sits on BOTH --panel and the --lagna cell. Against the original green it
+     measured 3.10:1, and the lagna cell is exactly where retrograde grahas often
+     land. Brightened the red and deepened the green to clear AA on both. */
+  --rx: #f08a76;              /* retrograde */
+  --lagna: #22392e;           /* highlighted lagna cell */
+  --row-hi: #191f1c;
+  --quote-bg: #14120f;
+  --err-bg: #2a1512;
+  --err-line: #5a2f28;
+  --err-ink: #f0a08e;
+  --ok-ink: #7fb069;
+  --ok-line: #2f4a2a;
+}
+
+:root[data-theme='midnight'] {
+  color-scheme: dark;
+  --bg: #0a0f1e;
+  --panel: #131a2e;
+  --sunken: #070c19;
+  --hover: #1b2340;
+  --line: #2a3350;
+  --ink: #e7ecfb;
+  --dim: #93a0c4;
+  --accent: #e8c46a;
+  --on-accent: #131a2e;
+  --accent-soft: rgba(232, 196, 106, 0.10);
+  --rx: #ff8f84;
+  --lagna: #1d3a5c;
+  --row-hi: #16243c;
+  --quote-bg: #101728;
+  --err-bg: #2b1220;
+  --err-line: #5a2a3c;
+  --err-ink: #ffb3c0;
+  --ok-ink: #7fd0a0;
+  --ok-line: #245040;
+}
+
+:root[data-theme='parchment'] {
+  color-scheme: light;        /* so native date/time pickers match */
+  --bg: #f2e9d5;
+  --panel: #fbf6e9;
+  --sunken: #ece1c6;
+  --hover: #e6dabb;
+  --line: #d3c2a0;
+  --ink: #2b2318;
+  --dim: #6d604a;
+  --accent: #8a4b1c;
+  --on-accent: #fdf8ec;
+  --accent-soft: rgba(138, 75, 28, 0.10);
+  --rx: #a8331f;
+  --lagna: #dbe7d2;
+  --row-hi: #e8f0e2;
+  --quote-bg: #efe5cd;
+  --err-bg: #f7ddd6;
+  --err-line: #d2a294;
+  --err-ink: #7c2416;
+  --ok-ink: #2f6b3a;
+  --ok-line: #a9c9a9;
+}
+
+:root[data-theme='slate'] {
+  color-scheme: dark;
+  --bg: #11151a;
+  --panel: #1a1f27;
+  --sunken: #0d1116;
+  --hover: #212833;
+  --line: #2f3742;
+  --ink: #e6ebf2;
+  --dim: #94a1b2;
+  --accent: #4fd1c5;
+  --on-accent: #0a1416;
+  --accent-soft: rgba(79, 209, 197, 0.10);
+  --rx: #ff8072;
+  --lagna: #1d3a39;
+  --row-hi: #17262a;
+  --quote-bg: #141a20;
+  --err-bg: #2a1618;
+  --err-line: #5a2e30;
+  --err-ink: #ffb0a8;
+  --ok-ink: #6fd08c;
+  --ok-line: #2a5038;
 }
 
 * { box-sizing: border-box; }
@@ -16,22 +107,53 @@ body {
   background: var(--bg);
   color: var(--ink);
   font: 15px/1.5 'Segoe UI', system-ui, sans-serif;
+  /* NO transition here. A transition on a property whose value comes from a
+     custom property latches the old computed value when the variable changes —
+     the theme swap then never repaints (verified: background stayed on the old
+     theme indefinitely). Theme switching must be instant. */
 }
 
-.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+.page { max-width: 1100px; margin: 0 auto; padding: 1rem 1rem 4rem; }
+
+/* --- appearance bar --- */
+.appearance {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem;
+}
+.appearance .a-label {
+  font-size: .64rem; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--dim);
+}
+.swatches { display: flex; gap: .3rem; }
+.swatch {
+  width: 1.35rem; height: 1.35rem; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--line); padding: 0; position: relative;
+  transition: transform .12s ease;
+}
+.swatch:hover { transform: scale(1.12); }
+.swatch.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.swatch.on::after {
+  content: ''; position: absolute; inset: 0; margin: auto;
+  width: .4rem; height: .4rem; border-radius: 50%; background: var(--accent);
+}
+.name-select {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--ink);
+  border-radius: 5px; padding: .25rem .45rem; font-size: .74rem; cursor: pointer;
+}
+.name-select:focus { outline: 1px solid var(--accent); }
 
 header { text-align: center; margin-bottom: 2rem; }
 header h1 {
   font-size: 2.4rem; margin: 0; letter-spacing: .1em; font-weight: 400;
-  color: var(--gold);
+  color: var(--accent);
 }
 .sub { color: var(--dim); font-size: .85rem; margin: .5rem 0; }
 .health {
   display: inline-block; font-size: .72rem; padding: .25rem .7rem;
   border-radius: 999px; border: 1px solid var(--line); color: var(--dim);
 }
-.health.ok { color: #7fb069; border-color: #2f4a2a; }
-.health.degraded, .health.unreachable { color: var(--rx); border-color: #5a2f28; }
+.health.ok { color: var(--ok-ink); border-color: var(--ok-line); }
+.health.degraded, .health.unreachable { color: var(--rx); border-color: var(--err-line); }
 
 /* --- form --- */
 .birth-form {
@@ -42,16 +164,16 @@ header h1 {
 .field { display: flex; flex-direction: column; gap: .35rem; position: relative; }
 .field label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
 .field input {
-  background: #100e0c; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--sunken); border: 1px solid var(--line); border-radius: 6px;
   padding: .6rem .7rem; color: var(--ink); font-size: .95rem;
 }
-.field input:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+.field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .place-field { grid-column: 1 / -1; }
 .hint { font-size: .72rem; color: var(--dim); }
-.picked { font-size: .72rem; color: var(--gold); }
+.picked { font-size: .72rem; color: var(--accent); }
 .hits {
   list-style: none; margin: .25rem 0 0; padding: 0; position: absolute; top: 100%;
-  left: 0; right: 0; z-index: 20; background: #100e0c; border: 1px solid var(--line);
+  left: 0; right: 0; z-index: 20; background: var(--sunken); border: 1px solid var(--line);
   border-radius: 6px; max-height: 280px; overflow-y: auto;
 }
 .hits button {
@@ -59,20 +181,21 @@ header h1 {
   border-bottom: 1px solid var(--line); padding: .5rem .7rem; color: var(--ink);
   cursor: pointer; font-size: .82rem;
 }
-.hits button:hover { background: #1f1b17; }
+.hits button:hover { background: var(--hover); }
 .hits strong { display: block; }
 .hits span { color: var(--dim); font-size: .74rem; }
-.hits em { display: block; color: var(--gold); font-size: .68rem; font-style: normal; }
+.hits em { display: block; color: var(--accent); font-size: .68rem; font-style: normal; }
 
 .go {
-  background: var(--gold); color: #1a1408; border: 0; border-radius: 6px;
+  background: var(--accent); color: var(--on-accent); border: 0; border-radius: 6px;
   padding: .7rem 1.2rem; font-weight: 600; cursor: pointer; font-size: .9rem;
 }
 .go:disabled { opacity: .35; cursor: not-allowed; }
 
 .error {
   margin-top: 1rem; padding: .8rem 1rem; border-radius: 6px;
-  background: #2a1512; border: 1px solid #5a2f28; color: #f0a08e; font-size: .85rem;
+  background: var(--err-bg); border: 1px solid var(--err-line); color: var(--err-ink);
+  font-size: .85rem;
 }
 
 /* --- result --- */
@@ -84,7 +207,7 @@ header h1 {
 section.meta, .chart-panel, .table-panel {
   background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem;
 }
-.meta h2 { margin: 0 0 .8rem; font-weight: 400; color: var(--gold); }
+.meta h2 { margin: 0 0 .8rem; font-weight: 400; color: var(--accent); }
 .meta dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .6rem; margin: 0; }
 .meta dt { font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; color: var(--dim); }
 .meta dd { margin: .1rem 0 0; font-size: .88rem; font-variant-numeric: tabular-nums; }
@@ -92,12 +215,14 @@ section.meta, .chart-panel, .table-panel {
 .controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1.25rem; }
 .styles, .vargas { display: flex; flex-wrap: wrap; gap: .25rem; }
 .controls button {
-  background: #100e0c; border: 1px solid var(--line); color: var(--dim);
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
   border-radius: 5px; padding: .35rem .6rem; font-size: .74rem; cursor: pointer;
 }
 .controls button:hover { color: var(--ink); }
-.controls button.on { background: var(--gold); color: #1a1408; border-color: var(--gold); font-weight: 600; }
-.varga-name { margin-left: auto; color: var(--gold); font-size: .85rem; }
+.controls button.on {
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600;
+}
+.varga-name { margin-left: auto; color: var(--accent); font-size: .85rem; }
 
 /* --- south indian chart --- */
 .south-chart {
@@ -115,7 +240,7 @@ section.meta, .chart-panel, .table-panel {
 }
 .asc-mark {
   position: absolute; top: .3rem; right: .35rem; font-size: .55rem;
-  color: var(--gold); font-weight: 700; letter-spacing: .04em;
+  color: var(--accent); font-weight: 700; letter-spacing: .04em;
 }
 /* One graha per line: full Sanskrit names don't tile side by side legibly. */
 .cell-grahas { display: flex; flex-direction: column; gap: .05rem; align-items: flex-start; }
@@ -126,7 +251,7 @@ section.meta, .chart-panel, .table-panel {
   grid-row: 2 / 4; grid-column: 2 / 4; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: .2rem;
 }
-.centre-varga { font-size: 1.8rem; color: var(--gold); }
+.centre-varga { font-size: 1.8rem; color: var(--accent); }
 .centre-sub { font-size: .7rem; color: var(--dim); }
 
 /* --- north indian chart --- */
@@ -137,18 +262,18 @@ section.meta, .chart-panel, .table-panel {
 .north-graha.rx { fill: var(--rx); }
 
 /* --- tables --- */
-.table-panel h3 { margin: 0 0 .8rem; font-weight: 400; font-size: 1rem; color: var(--gold); }
+.table-panel h3 { margin: 0 0 .8rem; font-weight: 400; font-size: 1rem; color: var(--accent); }
 .scroll { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: .82rem; }
 th, td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
 th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); font-weight: 500; }
 .num { font-variant-numeric: tabular-nums; text-align: right; }
-.graha-name { color: var(--gold); }
+.graha-name { color: var(--accent); }
 .en { color: var(--dim); font-size: .72rem; }
 .deity { color: var(--dim); font-size: .76rem; }
 .rx-mark { color: var(--rx); margin-left: .25rem; }
 .varga-table td, .varga-table th { padding: .35rem .55rem; font-size: .76rem; }
-.lagna-row td { background: #191f1c; color: var(--gold); }
+.lagna-row td { background: var(--row-hi); color: var(--accent); }
 
 /* Full rāśi names make this table wider than the page, so it scrolls inside its
    own container. Pin the graha column or the rows lose their labels mid-scroll. */
@@ -156,7 +281,7 @@ th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color:
   position: sticky; left: 0; z-index: 1;
   background: var(--panel); padding-right: .8rem;
 }
-.varga-table tr.lagna-row td:first-child { background: #191f1c; }
+.varga-table tr.lagna-row td:first-child { background: var(--row-hi); }
 .varga-table th:first-child::after, .varga-table td:first-child::after {
   content: ''; position: absolute; top: 0; right: 0; bottom: 0;
   width: 1px; background: var(--line);
@@ -164,29 +289,29 @@ th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color:
 
 /* --- dasha tree --- */
 .dasha-controls {
-  display: flex; align-items: center; gap: .4rem; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: .4rem; margin-bottom: 1rem; flex-wrap: wrap;
 }
 .dasha-controls .d-label { margin-right: .3rem; }
 .dasha-controls button {
-  background: #100e0c; border: 1px solid var(--line); color: var(--dim);
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
   border-radius: 5px; padding: .3rem .7rem; font-size: .74rem; cursor: pointer;
 }
 .dasha-controls button:hover { color: var(--ink); }
 .dasha-controls button.on {
-  background: var(--gold); color: #1a1408; border-color: var(--gold); font-weight: 600;
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600;
 }
 .dasha-select {
-  background: #100e0c; border: 1px solid var(--line); color: var(--ink);
+  background: var(--sunken); border: 1px solid var(--line); color: var(--ink);
   border-radius: 5px; padding: .3rem .5rem; font-size: .8rem; cursor: pointer;
 }
-.dasha-select:focus { outline: 1px solid var(--gold); }
+.dasha-select:focus { outline: 1px solid var(--accent); }
 .d-loading { font-size: .7rem; color: var(--dim); font-style: italic; }
 .dasha-applies {
   margin: 0 0 1rem; font-size: .78rem; color: var(--dim);
-  background: #14120f; border-left: 2px solid var(--gold); padding: .5rem .7rem;
+  background: var(--quote-bg); border-left: 2px solid var(--accent); padding: .5rem .7rem;
   border-radius: 0 4px 4px 0;
 }
-.dasha-applies strong { color: var(--gold); font-weight: 600; }
+.dasha-applies strong { color: var(--accent); font-weight: 600; }
 .dasha-head {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: .6rem 1.5rem; margin-bottom: 1rem; padding-bottom: 1rem;
@@ -196,7 +321,7 @@ th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color:
   display: block; font-size: .66rem; text-transform: uppercase;
   letter-spacing: .07em; color: var(--dim); margin-bottom: .1rem;
 }
-.dasha-head .running { font-size: 1.05rem; color: var(--gold); }
+.dasha-head .running { font-size: 1.05rem; color: var(--accent); }
 .dasha-head .running .sep { color: var(--dim); }
 
 .dasha-tree { font-variant-numeric: tabular-nums; }
@@ -207,22 +332,24 @@ th { font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color:
   background: none; border: 0; border-bottom: 1px solid var(--line);
   color: var(--ink); padding: .4rem .3rem; cursor: pointer; font-size: .82rem;
 }
-.d-row:hover { background: #1f1b17; }
+.d-row:hover { background: var(--hover); }
 .d-node.lvl-0 > .d-row { font-weight: 600; }
 .d-node.lvl-1 > .d-row { font-size: .78rem; }
 .d-node.lvl-2 > .d-row { font-size: .74rem; color: var(--dim); }
 .d-toggle { color: var(--dim); }
-.d-lord { color: var(--gold); }
+.d-lord { color: var(--accent); }
 .d-node.lvl-2 .d-lord { color: var(--ink); }
 .d-dates { color: var(--dim); font-size: .92em; }
 .d-dur { color: var(--dim); text-align: right; }
 .d-now {
-  background: var(--gold); color: #1a1408; font-size: .6rem; font-weight: 700;
+  background: var(--accent); color: var(--on-accent); font-size: .6rem; font-weight: 700;
   padding: .05rem .35rem; border-radius: 999px; text-transform: uppercase;
 }
-.d-node.current > .d-row { background: rgba(201, 162, 39, .08); }
+.d-node.current > .d-row { background: var(--accent-soft); }
 .d-children { margin-left: 1.1rem; border-left: 1px solid var(--line); }
 .dasha-note { margin: 1rem 0 0; font-size: .68rem; color: var(--dim); font-style: italic; }
 
 footer { margin-top: 3rem; text-align: center; color: var(--dim); font-size: .72rem; }
-footer code { color: var(--gold); }
+footer code { color: var(--accent); }
+footer a { color: var(--dim); }
+footer a:hover { color: var(--accent); }

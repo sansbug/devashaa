@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import DashaTree from './DashaTree.jsx'
+import Appearance from './Appearance.jsx'
+import { makeNamer } from './naming.js'
 import { API } from './config.js'
 import './App.css'
 
@@ -12,13 +14,9 @@ const VARGA_LABELS = [
   ['D45', 'Akṣavedāṁśa'], ['D60', 'Ṣaṣṭiāṁśa'],
 ]
 
-// Full names everywhere, matching RasiChart.jsx. The ṣoḍaśavarga matrix is wider
-// than the page because of it and scrolls horizontally — that is the intended
-// trade: names in full, with the graha column pinned so it stays readable.
-const RASI_FULL = [
-  'Meṣa', 'Vṛṣabha', 'Mithuna', 'Karka', 'Siṁha', 'Kanyā',
-  'Tulā', 'Vṛścika', 'Dhanu', 'Makara', 'Kumbha', 'Mīna',
-]
+// Names come from the active name style (see naming.js) — full, never abbreviated.
+// The ṣoḍaśavarga matrix is wider than the page as a result and scrolls
+// horizontally, with the graha column pinned so rows keep their labels.
 
 const pad = (n) => String(n).padStart(2, '0')
 const fmtDeg = (g) => `${g.degree}°${pad(g.minute)}'${pad(g.second)}"`
@@ -99,6 +97,18 @@ export default function App() {
   const [style, setStyle] = useState('south')
   const [health, setHealth] = useState(null)
 
+  // Appearance, remembered across visits.
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'ember')
+  const [nameStyle, setNameStyle] = useState(
+    () => localStorage.getItem('nameStyle') || 'common',
+  )
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('theme', theme)
+  }, [theme])
+  useEffect(() => { localStorage.setItem('nameStyle', nameStyle) }, [nameStyle])
+  const namer = makeNamer(nameStyle)
+
   useEffect(() => {
     fetch(`${API}/api/health`)
       .then((r) => r.json())
@@ -134,6 +144,10 @@ export default function App() {
 
   return (
     <div className="page">
+      <Appearance
+        theme={theme} setTheme={setTheme}
+        nameStyle={nameStyle} setNameStyle={setNameStyle}
+      />
       <header>
         <h1>Jyotiṣa</h1>
         <p className="sub">
@@ -183,7 +197,7 @@ export default function App() {
               <div><dt>UTC</dt><dd>{chart.utc}</dd></div>
               <div><dt>Julian day</dt><dd>{chart.jd_ut.toFixed(6)}</dd></div>
               <div><dt>Ayanāṁśa</dt><dd>{fmtAyan(chart.ayanamsa_value)}</dd></div>
-              <div><dt>Lagna</dt><dd>{chart.lagna_nakshatra.name} pada {chart.lagna_nakshatra.pada}</dd></div>
+              <div><dt>Lagna</dt><dd>{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} pada {chart.lagna_nakshatra.pada}</dd></div>
             </dl>
           </section>
 
@@ -211,6 +225,7 @@ export default function App() {
               lagnaRasi={chart.lagna_rasi}
               lagnaVargaSign={chart.lagna_vargas[varga]}
               vargaKey={varga}
+              namer={namer}
             />
           </section>
 
@@ -225,7 +240,7 @@ export default function App() {
                 moon_longitude: chart.grahas.find((g) => g.key === 'moon').longitude,
                 timezone: chart.timezone,
               }}
-              nameOf={(key) => chart.grahas.find((g) => g.key === key)?.name}
+              nameOf={(key) => namer.graha(chart.grahas.find((g) => g.key === key))}
             />
           </section>
 
@@ -242,16 +257,25 @@ export default function App() {
                 <tbody>
                   {chart.grahas.map((g) => (
                     <tr key={g.key}>
-                      <td className="graha-name">{g.name} <span className="en">{g.name_en}</span></td>
-                      <td>{g.rasi_name} <span className="en">{g.rasi_name_en}</span></td>
+                      <td className="graha-name">
+                        {namer.graha(g)}
+                        {/* the English gloss is redundant once names ARE English */}
+                        {nameStyle !== 'english' &&
+                          <span className="en"> {g.name_en}</span>}
+                      </td>
+                      <td>
+                        {namer.grahaRasi(g)}
+                        {nameStyle !== 'english' &&
+                          <span className="en"> {g.rasi_name_en}</span>}
+                      </td>
                       <td className="num">
                         {fmtDeg(g)}{g.retrograde && <span className="rx-mark">℞</span>}
                       </td>
                       <td className="num">{g.bhava}</td>
-                      <td>{g.nakshatra.name}</td>
+                      <td>{namer.nakshatra(g.nakshatra)}</td>
                       <td className="num">{g.nakshatra.pada}</td>
-                      <td className="deity">{g.nakshatra.deity}</td>
-                      <td>{g.rasi_lord}</td>
+                      <td className="deity">{namer.deity(g.nakshatra)}</td>
+                      <td>{namer.rasiLord(g)}</td>
                       <td className="num">{g.speed.toFixed(4)}</td>
                     </tr>
                   ))}
@@ -274,13 +298,15 @@ export default function App() {
                   <tr className="lagna-row">
                     <td className="graha-name">Lagna</td>
                     {VARGA_LABELS.map(([k]) => (
-                      <td key={k}>{RASI_FULL[chart.lagna_vargas[k]]}</td>
+                      <td key={k}>{namer.rasi(chart.lagna_vargas[k])}</td>
                     ))}
                   </tr>
                   {chart.grahas.map((g) => (
                     <tr key={g.key}>
-                      <td className="graha-name">{g.name}</td>
-                      {VARGA_LABELS.map(([k]) => <td key={k}>{RASI_FULL[g.vargas[k]]}</td>)}
+                      <td className="graha-name">{namer.graha(g)}</td>
+                      {VARGA_LABELS.map(([k]) => (
+                        <td key={k}>{namer.rasi(g.vargas[k])}</td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>

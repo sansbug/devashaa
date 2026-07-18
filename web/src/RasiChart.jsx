@@ -8,15 +8,8 @@
  * Both render the same data — only the frame differs.
  */
 
-const GRAHA_FULL = {
-  sun: 'Sūrya', moon: 'Candra', mars: 'Maṅgala', mercury: 'Budha',
-  jupiter: 'Guru', venus: 'Śukra', saturn: 'Śani', rahu: 'Rāhu', ketu: 'Ketu',
-}
-
-const RASI_FULL = [
-  'Meṣa', 'Vṛṣabha', 'Mithuna', 'Karka', 'Siṁha', 'Kanyā',
-  'Tulā', 'Vṛścika', 'Dhanu', 'Makara', 'Kumbha', 'Mīna',
-]
+/* Names are supplied by the `namer` prop (see naming.js) so the chart follows the
+   selected name style. Nothing here is abbreviated — the cells have room. */
 
 // South Indian: signs are fixed in this layout, Aries at row0/col1, going clockwise.
 const SOUTH_CELLS = [
@@ -50,17 +43,17 @@ function groupBySign(grahas, vargaKey) {
   return bySign
 }
 
-function GrahaTag({ g }) {
+function GrahaTag({ g, namer }) {
   return (
     <span className={`tag${g.retrograde ? ' rx' : ''}`}
           title={`${g.name_en} — ${g.rasi_name_en} ${g.degree}°${g.minute}'`}>
-      {GRAHA_FULL[g.key]}
+      {namer.graha(g)}
       {g.retrograde && <sup>℞</sup>}
     </span>
   )
 }
 
-export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }) {
+export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
 
@@ -74,7 +67,7 @@ export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }
               return (
                 <div className="south-centre" key="centre">
                   <div className="centre-varga">{vargaKey}</div>
-                  <div className="centre-sub">Lagna {RASI_FULL[lagna]}</div>
+                  <div className="centre-sub">Lagna {namer.rasi(lagna)}</div>
                 </div>
               )
             }
@@ -86,10 +79,10 @@ export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
             >
-              <div className="cell-sign">{RASI_FULL[sign]}</div>
+              <div className="cell-sign">{namer.rasi(sign)}</div>
               {sign === lagna && <div className="asc-mark">Lagna</div>}
               <div className="cell-grahas">
-                {bySign[sign].map((g) => <GrahaTag g={g} key={g.key} />)}
+                {bySign[sign].map((g) => <GrahaTag g={g} namer={namer} key={g.key} />)}
               </div>
             </div>
           )
@@ -99,7 +92,7 @@ export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }
   )
 }
 
-export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }) {
+export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
 
@@ -126,8 +119,8 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }
         return (
           <g key={bhava}>
             <text x={r.cx} y={top} className="north-sign">
-              <title>{`Bhāva ${bhava} — ${RASI_FULL[sign]}`}</title>
-              {RASI_FULL[sign]}
+              <title>{`Bhāva ${bhava} — ${namer.rasi(sign)}`}</title>
+              {namer.rasi(sign)}
             </text>
             {occupants.map((g, k) => (
               <text
@@ -137,7 +130,7 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign }
                 className={`north-graha${g.retrograde ? ' rx' : ''}`}
               >
                 <title>{`${g.name_en} — ${g.degree}°${g.minute}'`}</title>
-                {GRAHA_FULL[g.key]}{g.retrograde ? ' ℞' : ''}
+                {namer.graha(g)}{g.retrograde ? ' ℞' : ''}
               </text>
             ))}
           </g>

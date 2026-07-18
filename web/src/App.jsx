@@ -38,7 +38,9 @@ function PlaceField({ onPick, place }) {
   useEffect(() => {
     if (!q.trim() || (place && q === place.name)) { setHits([]); return }
     clearTimeout(timer.current)
-    // OSM's policy caps us near 1 req/sec — debounce rather than fire per keypress.
+    // Short debounce: the lookup is a local SQLite query (~0.05 ms), so this only
+    // needs to coalesce keystrokes. (It was 600 ms to respect Nominatim's
+    // 1 req/sec policy back when place search hit the network.)
     timer.current = setTimeout(async () => {
       setBusy(true)
       try {
@@ -50,7 +52,7 @@ function PlaceField({ onPick, place }) {
       } finally {
         setBusy(false)
       }
-    }, 600)
+    }, 150)
     return () => clearTimeout(timer.current)
   }, [q, place])
 
@@ -294,6 +296,14 @@ export default function App() {
           Divisional rules follow BPHS. Powered by the AGPL Swiss Ephemeris —{' '}
           <a href={import.meta.env.VITE_SOURCE_URL || '#'} rel="noreferrer">
             source code
+          </a>.
+        </p>
+        <p>
+          Place data from{' '}
+          <a href="https://www.geonames.org" rel="noreferrer">GeoNames</a>,
+          licensed{' '}
+          <a href="https://creativecommons.org/licenses/by/4.0/" rel="noreferrer">
+            CC BY 4.0
           </a>.
         </p>
       </footer>

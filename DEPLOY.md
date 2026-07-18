@@ -88,12 +88,31 @@ Redeploy. Until you set this it defaults to `*` (any site can call your API).
 
 ---
 
+## Place lookup is fully offline
+
+`/api/places` queries `api/data/geonames.sqlite3` — 69,417 cities from the
+GeoNames `cities5000` dump, committed to the repo. No network call, no rate
+limit, no API key, ~0.05 ms per lookup. Historical names resolve too (Benares →
+Varanasi, Bombay → Mumbai, Madras → Chennai), which matters because birth
+records often use them.
+
+Each record carries its own IANA timezone, so a picked place needs no timezone
+lookup at all.
+
+To rebuild (e.g. to widen coverage with `cities1000`), download the dumps from
+<https://download.geonames.org/export/dump/> and run:
+
+```bash
+python api/build_geonames.py <folder-with-dumps>
+```
+
+**Attribution is required**: GeoNames is CC BY 4.0 and the site footer credits
+it. Keep that credit if you restyle the footer.
+
 ## Known limits before real traffic
 
-- **Geocoding**: `/api/places` uses the free public Nominatim endpoint, which
-  OSM's policy forbids for production load (~1 req/s). Before you promote the
-  site, swap in an offline GeoNames `cities15000` dump or a paid geocoder —
-  only `api/geocode.py::search()` has to change.
+- **Place coverage**: `cities5000` means towns under ~5,000 people are missing.
+  Rebuild with `cities1000` if users report their birth village is absent.
 - **Ephemeris range**: the loaded `.se1` files cover **1800–2399**. Births
   outside that are rejected with a clear error; add the adjoining files to widen.
 - **Render cold starts** on the free tier (above).

@@ -22,7 +22,7 @@ from vimshottari import DEFAULT_YEAR_DAYS, YEAR_DAYS_SAVANA, YEAR_DAYS_JULIAN
 from dashas import (
     SYSTEMS, build_dasha_system, validated_systems, ASHTOTTARI, build_ashtottari,
 )
-from geocode import search, timezone_at
+from geocode import search, timezone_at, database_status
 
 app = Flask(__name__)
 # In production set ALLOWED_ORIGINS to your site, e.g.
@@ -90,16 +90,21 @@ def health():
     except Exception as e:  # noqa: BLE001
         ok, detail = False, str(e)
 
+    # The offline place DB is equally load-bearing — without it no chart can be
+    # cast at all, so a missing file should show up here rather than as a 500.
+    places_ok, places_detail = database_status()
+
     return jsonify({
-        "status": "ok" if ok else "degraded",
+        "status": "ok" if (ok and places_ok) else "degraded",
         "ephemeris": "Swiss Ephemeris .se1 (JPL DE431)" if ok else "FALLBACK/UNAVAILABLE",
         "ephe_files": files,
         "probe": detail,
+        "places": places_detail if places_ok else f"UNAVAILABLE — {places_detail}",
         "swisseph_version": swe.version,
         "ayanamsa": "Lahiri (Chitrapakṣa)",
         "zodiac": "Sidereal",
         "bhava_system": "Whole sign",
-    }), (200 if ok else 503)
+    }), (200 if (ok and places_ok) else 503)
 
 
 @app.get("/api/reference")

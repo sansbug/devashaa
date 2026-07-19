@@ -24,6 +24,7 @@ from dashas import (
 )
 from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from analysis import analyse
+from dasha_effects import verdicts_for_chart
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -254,6 +255,13 @@ def chart():
             moon.nakshatra.fraction, moon.longitude, result.timezone, _now_jd(),
         )
         payload["dasha"]["available_systems"] = [_system_meta(k) for k in VALID_DASHAS]
+        # ch.47 vv.5-6 gives a NAMED verdict per daśā lord, driven by placements
+        # this engine already computes. Attached once, keyed by lord, rather
+        # than per node — the verse tests the lord's natal placement, which does
+        # not vary between that lord's mahā, antar and pratyantar bands.
+        payload["dasha"]["verdicts"] = verdicts_for_chart(
+            {g.key: g.rasi for g in result.grahas}, result.lagna_rasi,
+        )
     except Exception as e:  # noqa: BLE001
         payload["dasha"] = {"error": f"Daśā calculation failed: {e}"}
 

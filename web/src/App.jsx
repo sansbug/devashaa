@@ -9,6 +9,7 @@ import Profiles from './Profiles.jsx'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
+import DashaTimeline from './DashaTimeline.jsx'
 import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -424,6 +425,7 @@ export default function App() {
                 timezone: chart.timezone,
               }}
               nameOf={(key) => namer.graha(chart.grahas.find((g) => g.key === key))}
+              verdicts={chart.dasha?.verdicts}
             />
           </section>
 

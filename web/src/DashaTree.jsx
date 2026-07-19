@@ -6,6 +6,7 @@
  * running Mahā › Antar › Pratyantar on first render.
  */
 import { useState, useEffect } from 'react'
+import DashaTimeline from './DashaTimeline.jsx'
 import { API } from './config.js'
 
 function fmtYears(y, yearDays) {
@@ -48,7 +49,34 @@ function DashaNode({ node, nameOf, yearDays }) {
   )
 }
 
-export default function DashaTree({ dasha, chartMeta, nameOf = () => null }) {
+/**
+ * The four states of BPHS Vol II ch.47 vv.5-6. Not a scale — the verse names
+ * two branches and nothing in between, so `not stated` is the honest result for
+ * any placement it does not name, and it is usually the commonest outcome.
+ */
+function DashaLegend() {
+  return (
+    <p className="dt-legend">
+      <span className="dt-key"><span className="dt-swatch v-favourable" /> favourable</span>
+      <span className="dt-key"><span className="dt-swatch v-adverse" /> adverse</span>
+      <span className="dt-key"><span className="dt-swatch v-contested" /> both stated</span>
+      <span className="dt-key"><span className="dt-swatch v-not_stated" /> no stated verdict</span>
+      <br />
+      Bars apply <strong>BPHS Vol II ch.47 vv.5-6</strong>, which names a daśā
+      favourable if its lord stands in the Ascendant, in exaltation, in its own
+      sign or a friend’s, and unfavourable in the 6th, 8th or 12th, in
+      debilitation or an enemy’s sign. It is <em>not</em> a heatmap: the verse
+      gives two branches and no scale, no middle band and no rule for when both
+      fire — so “both stated” is left unarbitrated and “no stated verdict” means
+      the text is silent, which is not the same as neutral. The verdict is read
+      from the lord’s natal placement and applies to every band that lord rules.
+      Pratyantar bars repeat the mahā lord’s verdict only where that lord is the
+      period lord; ch.61’s pratyantar prose is not used.
+    </p>
+  )
+}
+
+export default function DashaTree({ dasha, chartMeta, nameOf = () => null, verdicts }) {
   const [systemKey, setSystemKey] = useState('vimshottari')
   const [data, setData] = useState(dasha)   // {default_year_days, variants}
   const [variant, setVariant] = useState('360')
@@ -158,6 +186,13 @@ export default function DashaTree({ dasha, chartMeta, nameOf = () => null }) {
           <strong>When applied:</strong> {tree.applicability}
         </p>
       )}
+      <DashaTimeline
+        dasha={tree}
+        namer={{ grahaKey: (k) => nameOf(k) || k }}
+        verdictOf={verdicts ? (lord) => verdicts[lord] : undefined}
+        legend={verdicts ? <DashaLegend /> : null}
+      />
+
       <div className="dasha-tree">
         {tree.mahadashas.map((m, i) => (
           <DashaNode key={i} node={m} nameOf={nameOf} yearDays={tree.year_days} />

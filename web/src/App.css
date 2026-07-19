@@ -18,6 +18,8 @@
   --sunken: #100e0c;          /* inputs, buttons, dropdowns */
   --hover: #1f1b17;
   --line: #3a332c;
+  --dasha-fav: #7fd8c6;
+  --dasha-adv: #8f4fa3;
   --ruler-line: #8a7d6d;   /* 4.41:1 on panel — see note at .cell-ruler */
   --ink: #efe7db;
   --dim: #a2968a;
@@ -71,6 +73,8 @@
   --sunken: #150f0b;
   --hover: #3b2c1e;
   --line: #86694a;          /* 3.18:1 on panel — grid rules ARE the data here */
+  --dasha-fav: #8ee0cf;
+  --dasha-adv: #a862b5;
   --ruler-line: #a08256;    /* 4.48:1 */
   --ink: #fbf1e4;
   --dim: #cbb598;
@@ -111,6 +115,8 @@
   --sunken: #f0e7f0;
   --hover: #f9e2ee;
   --line: #a88ba5;
+  --dasha-fav: #2a8d7c;
+  --dasha-adv: #4a1d63;
   --ruler-line: #8a6a86;    /* 4.62:1 */
   --ink: #0e1a2b;
   --dim: #33455f;
@@ -140,6 +146,8 @@
   --sunken: #070c19;
   --hover: #1b2340;
   --line: #2a3350;
+  --dasha-fav: #7fd4c4;
+  --dasha-adv: #8257b8;
   --ruler-line: #6b7ba6;    /* 4.12:1 */
   --ink: #e7ecfb;
   --dim: #93a0c4;
@@ -178,6 +186,8 @@
   --sunken: #f8ece6;
   --hover: #f5e6ee;
   --line: #d8c2cc;            /* darkened with the ink, or rules vanish */
+  --dasha-fav: #2e9182;
+  --dasha-adv: #4a1d63;
   --ruler-line: #9c7790;    /* 3.72:1 — the binding case of the six */
   --ink: #0e1a2b;             /* dark navy — see Lotus */
   --dim: #33455f;
@@ -210,6 +220,8 @@
   --sunken: #0d1116;
   --hover: #212833;
   --line: #2f3742;
+  --dasha-fav: #7fd4c4;
+  --dasha-adv: #8257b8;
   --ruler-line: #78889c;    /* 4.57:1 */
   --ink: #e6ebf2;
   --dim: #94a1b2;
@@ -912,3 +924,128 @@ footer a:hover { color: var(--accent); }
    cannot clip it and nothing shifts layout. */
 .south-cell.dr-locate { outline: 2px solid var(--accent); outline-offset: -3px; }
 .north-locate { fill: none; stroke: var(--accent); stroke-width: 2px; }
+
+/* --- daśā timeline ---
+   A zoom stack, not one axis: a Viṁśottarī cycle is 120 years and a
+   pratyantardaśā can be ten weeks, a ratio of ~600:1. Each rail is internally
+   proportional and honest; what changes between rails is which span the width
+   represents. */
+.dasha-timeline { margin-bottom: 1.4rem; }
+.dt-chain {
+  margin: 0 0 1rem; font-size: .84rem; color: var(--ink);
+  padding: .5rem .7rem; background: var(--sunken);
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+.dt-chain-end { color: var(--dim); font-size: .74rem; }
+.dt-sep { color: var(--dim); }
+.dt-rail { margin-bottom: .3rem; }
+.dt-rail-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: .62rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--dim); margin-bottom: .25rem;
+}
+.dt-rail-span { text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.dt-track {
+  position: relative; height: 42px; width: 100%;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--sunken); overflow: hidden;
+}
+.dt-band {
+  position: absolute; top: 0; bottom: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .1rem; overflow: hidden; cursor: pointer;
+  background: transparent; color: var(--ink);
+  border: 0; border-right: 1px solid var(--line);
+  font-weight: var(--text-weight, 400); padding: 0 2px;
+}
+.dt-band:last-child { border-right: 0; }
+.dt-band:hover { background: var(--hover); }
+/* Past is dimmed, not greyed out — it still carries the same information, it
+   simply is not where the reader is. */
+.dt-band.past { opacity: .55; }
+.dt-band.selected { background: var(--row-hi); }
+.dt-band.running { box-shadow: inset 0 -3px 0 var(--accent); }
+.dt-band-lord {
+  font-size: .68rem; white-space: nowrap; overflow: hidden; text-overflow: clip;
+  max-width: 100%;
+}
+.dt-band-dur { font-size: .58rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+/* A mahādaśā of 6 years next to one of 20 gives bands of very different widths,
+   and Ketu's 7 years of pratyantars inside a short antar can be a few px. Shed
+   the duration first, then the name, rather than letting either render as a
+   clipped fragment. Container queries, because the constraint is the BAND's
+   width, which no viewport media query knows. */
+.dt-band { container-type: inline-size; }
+/* NOTE: container queries resolve against the CONTENT box, not the border box.
+   A band carries 2x2px padding + a 1px right border, so a 46px band queries as
+   41. These thresholds are therefore content-box values chosen to bite at
+   roughly 46px and 26px of actual band width. */
+@container (max-width: 41px) { .dt-band-dur { display: none; } }
+@container (max-width: 21px) { .dt-band-lord { display: none; } }
+
+.dt-now { position: absolute; top: 0; bottom: 0; width: 0; z-index: 3; }
+.dt-now::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -1px;
+  width: 2px; background: var(--accent);
+}
+.dt-now-label {
+  position: absolute; top: 1px; left: 3px; font-size: .55rem;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--on-accent);
+  background: var(--accent); padding: 0 .2rem; border-radius: 2px;
+}
+.dt-axis { position: relative; height: 1.1rem; }
+.dt-tick {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font-size: .58rem; color: var(--dim); font-variant-numeric: tabular-nums;
+}
+.dt-zoom { margin: .5rem 0 .3rem; font-size: .7rem; color: var(--dim); }
+
+/* --- daśā verdicts, BPHS Vol II ch.47 vv.5-6 ---
+   NOT a heatmap. There is no gradient because the text supplies no scale: no
+   middle band ("Medium effects" occurs once in 265 pages and is scoped to a
+   single cell), no rank, and no rule for combining a favourable and an adverse
+   condition when both fire.
+
+   The verdict is a BAR under the band, not a fill, so the band's own label
+   keeps its contrast against --sunken rather than fighting a coloured ground.
+
+   Never colour alone: favourable is solid, adverse is hatched, contested is a
+   hard 50/50 split of the two, and not-stated is a thin --line rule. The pair
+   is also separated by ~3:1 in luminance in every theme, so it survives
+   greyscale and colour-blindness. */
+.dt-band { border-bottom: 4px solid transparent; }
+.dt-band.v-favourable { border-bottom-color: var(--dasha-fav); }
+.dt-band.v-adverse {
+  border-bottom-color: transparent;
+  background-image: repeating-linear-gradient(45deg,
+    var(--dasha-adv) 0 3px, transparent 3px 6px);
+  background-size: 100% 4px; background-position: bottom; background-repeat: repeat-x;
+}
+/* Both branches fire and BPHS states no rule to break the tie — so the bar is
+   split with a HARD edge and never blended. A blend would invent the average
+   the text declines to give. */
+.dt-band.v-contested {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(90deg,
+    var(--dasha-fav) 0 50%, var(--dasha-adv) 50% 100%);
+  background-size: 100% 4px; background-position: bottom; background-repeat: no-repeat;
+}
+/* Silence, not neutrality. A thin rule says "we applied the verse and it named
+   nothing", which is different from having drawn no bar at all. */
+.dt-band.v-not_stated {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(90deg, var(--line) 0 100%);
+  background-size: 100% 1px; background-position: bottom; background-repeat: no-repeat;
+}
+.dt-legend { margin: .7rem 0 0; font-size: .68rem; color: var(--dim); line-height: 1.7; }
+.dt-key { display: inline-flex; align-items: center; gap: .3rem; margin-right: .9rem; }
+.dt-swatch { width: 22px; height: 8px; border-radius: 1px; display: inline-block; }
+.dt-swatch.v-favourable { background: var(--dasha-fav); }
+.dt-swatch.v-adverse {
+  background: repeating-linear-gradient(45deg, var(--dasha-adv) 0 3px, transparent 3px 6px);
+}
+.dt-swatch.v-contested {
+  background: linear-gradient(90deg, var(--dasha-fav) 0 50%, var(--dasha-adv) 50% 100%);
+}
+.dt-swatch.v-not_stated { background: none; border-bottom: 1px solid var(--line); height: 8px; }

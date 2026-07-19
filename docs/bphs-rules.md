@@ -413,3 +413,72 @@ drop out and every chart with the same lagna degree scores identically.
 
 Also named by Santhanam himself in-text: *Horā Sāra* of Pṛthuyaśas (his own
 translation, pp.183-187) for fuller bhāva significations.
+
+---
+
+## Vol II ch.47 vv.5-6 — the daśā verdict (`api/dasha_effects.py`) — BUILT
+
+> "5-6. The effects are favourable if, at the commencernent [commencement] of the
+> Dasa, the Dasa lord be in the Ascendant, in his sign of exaltation, in his own
+> sign or in a friend's sign. The results are unfavourable if the Dasa lord be in
+> the 6th, the 8th, or the l2th [12th] house, in his sign of debilitation or in
+> an inimical .sign."
+> — PDFPAGE 87, **mūla**, numbered in the verse stream
+
+**Why a daśā may carry a verdict when a graha may not.** We refuse an uncited
+good/bad score on a GRAHA because BPHS supplies seven overlapping judgements and
+never combines them. That objection does not apply here: Parāśara states a
+*named* verdict and names the inputs that drive it, and every one of those
+inputs is something this engine already computes. Mined from ch.47-65 by ten
+agents, each adversarially audited; this verse drew no challenge from any of the
+eight verifiers who examined it.
+
+### It is NOT a heatmap, and the text is why
+
+- **No middle band.** "Medium effects" occurs **exactly once** in the 265-page
+  effects section (ch.52 vv.1-3) and is scoped to a single cell — the Sun's
+  antardaśā within the Sun's own daśā. No carrier clause generalises it, and all
+  eight remaining antardaśā chapters open with two branches and no residual.
+  A placement matching neither branch therefore has **no stated verdict**. That
+  is `not_stated`, *not* "medium" — filling it as medium is the uncited score in
+  a new costume.
+- **No rank.** "Extremely favourable" and "extremely beneficial" each occur once,
+  both describing the same kendra/trikoṇa configuration. Two hapax intensifiers
+  are not a scale.
+- **No combination rule.** Nothing states what happens when a favourable and an
+  adverse condition both fire (exalted *and* in the 8th). That case ships as
+  `contested` and is left unarbitrated. The only combination rule anywhere in
+  the volume sits under "Notes :" — Santhanam, not Parāśara.
+- **Polarity words attach to a minority of branches** across ch.52-60 (five
+  explicit valence labels in ch.54's 76 verses; four in ch.57's fourteen pages),
+  so per-antardaśā shading is NOT derived from whether the listed outcomes sound
+  pleasant.
+- **Remedy-presence is not a polarity marker.** Remedies appear in 8 of 9
+  sub-sections and sit *after both branches*. Wiring them as an "evil" flag
+  would paint śloka-labelled beneficial branches as adverse.
+
+### Deliberate limits in our implementation
+
+- **Read from the lord's NATAL placement.** The verse says "at the commencement
+  of the Dasa"; BPHS gives no transit machinery in these chapters. Flagged in
+  every payload rather than assumed silently.
+- **The nodes are evaluated partially.** Rāhu and Ketu own no rāśi and have no
+  dignity (ch.3 v.50), so only the two HOUSE conditions are evaluable for them.
+  Stated in the payload rather than silently skipped.
+- **Mūlatrikoṇa is not one of the six conditions** and is not treated as
+  own-sign. Candra is the only graha whose mūlatrikoṇa is not her own sign
+  (Vṛṣabha belongs to Śukra) — and since that sign is also her exaltation, no
+  verdict ever actually turns on the distinction.
+- **Viṁśopaka is NOT used to colour a daśā**, though it is the one numeric
+  graded quantity this project owns and would produce exactly the smooth ramp a
+  heatmap wants. ch.47 v.3 says results follow the lord's "strength" but never
+  names a bala, and the daśā chapters never cite ch.7. Mapping one onto the
+  other would be a project decision wearing a citation.
+- **ch.34 is NOT used either.** ch.34 classifies *grahas*; ch.48 classifies
+  *daśās by lordship*, and they disagree — Santhanam flags the conflict himself
+  (PDFPAGE 102, a note). Merging them fabricates an agreement the book denies.
+
+**Not yet built:** ch.48 vv.1-8 (a second, per-house-lordship verdict axis at
+mahādaśā level, all twelve lordships), the 9×9 antardaśā matrix of ch.52-60, and
+bhāva-from-the-daśā-lord — the workhorse frame of those chapters, stated ~50
+times, and the single biggest gap in the current engine.

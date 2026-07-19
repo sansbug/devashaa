@@ -91,7 +91,7 @@ export function useRulerMode(occupantCount) {
  * @param active      key of the graha being hovered/tapped in the tag list
  */
 export default function CellRuler({
-  sign, occupants, landmarks, lagnaDegree, gandanta, mode, active, onActivate,
+  sign, occupants, landmarks, lagnaDegree, gandanta, mode, active, onHover, onPin,
 }) {
   const narrow = mode === 'narrow'
   const sy = narrow ? NARROW_SY : 1
@@ -236,9 +236,9 @@ export default function CellRuler({
           exact figure is in the tag and in the table below. */}
       {occupants.map((g) => (
         <g key={g.key}
-           onPointerEnter={() => onActivate?.(g.key)}
-           onPointerLeave={() => onActivate?.(null)}
-           onClick={() => onActivate?.(active === g.key ? null : g.key)}>
+           onPointerEnter={() => onHover?.(g.key)}
+           onPointerLeave={() => onHover?.(null)}
+           onClick={() => onPin?.(g.key)}>
           <line
             x1={x(degIn(g))} y1={y(Y.pinFoot)}
             x2={x(degIn(g))} y2={y(g.retrograde ? Y.pinTopRx : Y.pinTop)}

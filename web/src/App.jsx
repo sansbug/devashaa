@@ -8,6 +8,7 @@ import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
+import DrishtiLedger from './DrishtiLedger.jsx'
 import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -165,6 +166,16 @@ export default function App() {
   // static reference, independent of any chart.
   const [rasis, setRasis] = useState(null)
   const [openRasi, setOpenRasi] = useState(null)
+  // Dṛṣṭi selection. `hovered` is transient (pointer), `pinned` is sticky
+  // (click/tap). The ledger always needs a subject, so it falls back to Sūrya;
+  // the CHART highlights only a real selection, so it stays quiet at rest and
+  // the ledger's default does not permanently mark a graha in the figure.
+  const [hovered, setHovered] = useState(null)
+  const [pinned, setPinned] = useState(null)
+  const [rowSign, setRowSign] = useState(null)
+  const subject = hovered ?? pinned ?? 'sun'
+  const marked = hovered ?? pinned
+  const pinGraha = (k) => { setPinned((p) => (p === k ? null : k)); setHovered(null) }
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
@@ -345,22 +356,39 @@ export default function App() {
                 {VARGA_LABELS.find(([k]) => k === varga)[1]}
               </div>
             </div>
-            <Chart
-              grahas={chart.grahas}
-              lagnaRasi={chart.lagna_rasi}
-              lagnaVargaSign={chart.lagna_vargas[varga]}
-              vargaKey={varga}
-              namer={namer}
-              landmarks={chart.landmarks}
-              lagnaLongitude={chart.lagna_longitude}
-              gandanta={chart.gandanta}
-            />
-            {style === 'south' && varga === 'D1' && <RulerLegend />}
-            {style === 'north' && (
-              <p className="frame-note">
-                The North Indian frame is a <em>bhāva</em> diagram — it discards sign
-                geometry by design. For degree behaviour, use the South Indian frame.
-              </p>
+            <div className="chart-figure">
+              <Chart
+                grahas={chart.grahas}
+                lagnaRasi={chart.lagna_rasi}
+                lagnaVargaSign={chart.lagna_vargas[varga]}
+                vargaKey={varga}
+                namer={namer}
+                landmarks={chart.landmarks}
+                lagnaLongitude={chart.lagna_longitude}
+                gandanta={chart.gandanta}
+                active={marked}
+                onHover={setHovered}
+                onPin={pinGraha}
+                highlightSign={rowSign}
+              />
+              {style === 'south' && varga === 'D1' && <RulerLegend />}
+              {style === 'north' && (
+                <p className="frame-note">
+                  The North Indian frame is a <em>bhāva</em> diagram — it discards sign
+                  geometry by design. For degree behaviour, use the South Indian frame.
+                </p>
+              )}
+            </div>
+            {chart.analysis && !chart.analysis.error && (
+              <DrishtiLedger
+                drishti={chart.analysis.drishti}
+                grahas={chart.grahas}
+                namer={namer}
+                varga={varga}
+                subject={subject}
+                onPickSubject={pinGraha}
+                onHoverSign={setRowSign}
+              />
             )}
           </section>
 

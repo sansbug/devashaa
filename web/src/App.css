@@ -836,3 +836,79 @@ footer a:hover { color: var(--accent); }
   margin-left: .4rem;
 }
 .rc-tr-raw:hover { color: var(--ink); }
+
+/* --- dṛṣṭi ledger ---
+   Dṛṣṭi is NOT drawn on the chart. Seven arcs leaving one cell separate by
+   about half a pixel at 620px, and a nine-graha chart holds ~60 graha-to-sign
+   relationships in twelve cells. A legible ledger beats an illegible overlay.
+
+   The two doctrines are separated by ELEMENT TYPE, not by styling of a shared
+   element — .dr-row (graded, ch.26) vs .dr-chip (ungraded, ch.8). There is no
+   component with a `graded` flag that a later edit could flip. */
+.drishti-ledger { margin-top: 1.25rem; min-width: 0; }
+.chart-figure { min-width: 0; }
+
+/* Two columns only when the chart keeps its full 620px. A flexible track would
+   silently absorb any deficit into the chart, so track 1 is fixed:
+   620 + 20 gap + 280 min + 42 panel chrome + 32 page padding = 994. */
+@media (min-width: 1000px) {
+  .chart-panel {
+    display: grid; grid-template-columns: 620px minmax(280px, 1fr);
+    gap: 1.25rem; align-items: start;
+  }
+  .chart-panel > .controls { grid-column: 1 / -1; margin-bottom: 0; }
+  .chart-figure { grid-column: 1; }
+  .drishti-ledger {
+    grid-column: 2; margin-top: 0;
+    position: sticky; top: 1rem;
+    max-height: calc(100vh - 2rem); overflow-y: auto;
+  }
+}
+
+.dr-context { margin: 0 0 .6rem; font-size: .78rem; color: var(--ink); }
+.dr-row {
+  display: grid; grid-template-columns: 3.4rem 34px minmax(0, 1fr) 2.9rem;
+  gap: .45rem; align-items: baseline;
+  border-left: 2px solid var(--line); padding: .3rem 0 .3rem .6rem;
+  cursor: default;
+}
+.dr-row:hover, .dr-row:focus-within { background: var(--row-hi); }
+.dr-count { font-size: .7rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+.dr-target { font-size: .78rem; color: var(--ink); }
+.dr-extra { color: var(--dim); font-size: .68rem; }
+/* Written out, never ¼ ½ ¾ — those glyphs draw their numerals at ~half digit
+   height, so the one part a reader must distinguish becomes a ~3.5px mark. */
+.dr-frac {
+  font-size: .74rem; text-align: right; color: var(--ink);
+  font-variant-numeric: tabular-nums; font-weight: var(--strong-weight, 600);
+}
+/* Four discrete boxes, never a continuous bar: BPHS gives four slabs and a bar
+   would assert an interpolation between them. Solid-vs-hollow is an AREA
+   distinction (~5:1 in ink), not a hue one, so it survives colour-blindness. */
+.dr-meter { display: inline-flex; gap: 2px; align-items: center; }
+.dr-box {
+  width: 7px; height: 7px; border: 1px solid var(--ruler-line);
+  border-radius: 1px; background: transparent;
+}
+.dr-box.on { background: var(--accent); border-color: var(--accent); }
+
+/* ch.8 chips: no count, no meter, no number. That is the doctrine. */
+.dr-chips-line { margin: 0; font-size: .78rem; color: var(--ink); line-height: 2; }
+.dr-chip {
+  display: inline-block; font-size: .72rem; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: .1rem .5rem; margin: 0 .2rem;
+}
+.dr-chip:hover { border-color: var(--accent); }
+.dr-mutual {
+  font-size: .64rem; color: var(--dim); font-style: italic; margin-left: .4rem;
+}
+.dr-note { margin: .45rem 0 .8rem; font-size: .68rem; color: var(--dim); line-height: 1.6; }
+.dr-legend { border-top: 1px solid var(--line); padding-top: .6rem; }
+
+/* The locator: ONE cell, for ONE hovered row. No fill, no glyph, no scale —
+   it answers "where is Kumbha", it does not encode a strength. A negative
+   outline-offset draws inside the border box, so .south-cell's overflow:hidden
+   cannot clip it and nothing shifts layout. */
+.south-cell.dr-locate { outline: 2px solid var(--accent); outline-offset: -3px; }
+.north-locate { fill: none; stroke: var(--accent); stroke-width: 2px; }

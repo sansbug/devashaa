@@ -767,4 +767,8 @@ def rasi_drishti_chart(positions: dict, units: str = "auto") -> dict:
                      "grahas": {g: sorted(v) for g, v in recv_grahas.items()}},
         "all_verified": True,
         "unverified": [],
+        # ch.8's own worked example does not reproduce under the rule its own
+        # verses state. Surfaced so the UI can flag it rather than presenting
+        # this doctrine as cleaner than it is.
+        "notes": [CH8_EXAMPLE_INCONSISTENT],
     }

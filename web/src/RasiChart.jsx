@@ -11,7 +11,6 @@
 /* Names are supplied by the `namer` prop (see naming.js) so the chart follows the
    selected name style. Nothing here is abbreviated — the cells have room. */
 
-import { useState } from 'react'
 import CellRuler, { useRulerMode } from './CellRuler'
 
 /** Wrapper so the viewport hook lives in its own component and can therefore
@@ -93,12 +92,12 @@ function dignityPhrase(d) {
   return ` — ${word}; ${arc}° ${side} its exaltation point (uccha bala ${d.uccha_bala})`
 }
 
-function GrahaTag({ g, namer, active, onActivate }) {
+function GrahaTag({ g, namer, active, onHover, onPin }) {
   return (
     <span className={`tag${g.retrograde ? ' rx' : ''}${active ? ' active' : ''}`}
-          onPointerEnter={() => onActivate?.(g.key)}
-          onPointerLeave={() => onActivate?.(null)}
-          onClick={() => onActivate?.(active ? null : g.key)}
+          onPointerEnter={() => onHover?.(g.key)}
+          onPointerLeave={() => onHover?.(null)}
+          onClick={() => onPin?.(g.key)}
           title={`${g.name_en} — ${g.rasi_name_en} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"` +
                  `${g.retrograde ? ' (retrograde)' : ''}${dignityPhrase(g.dignity)}`}>
       <span className="tag-name">
@@ -114,11 +113,10 @@ function GrahaTag({ g, namer, active, onActivate }) {
 
 export function SouthIndianChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude,
-  gandanta,
+  gandanta, active, onHover, onPin, highlightSign,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
-  const [active, setActive] = useState(null)
 
   // The ruler measures longitude WITHIN a sign, so it is meaningful only where
   // the cell's sign is the sign the graha is actually standing in — i.e. D1.
@@ -143,7 +141,8 @@ export function SouthIndianChart({
           }
           return (
             <div
-              className={`south-cell${sign === lagna ? ' is-lagna' : ''}`}
+              className={`south-cell${sign === lagna ? ' is-lagna' : ''}`
+                         + (highlightSign === sign ? ' dr-locate' : '')}
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
             >
@@ -158,7 +157,8 @@ export function SouthIndianChart({
               <div className="cell-grahas">
                 {bySign[sign].map((g) => (
                   <GrahaTag g={g} namer={namer} key={g.key}
-                            active={active === g.key} onActivate={setActive} />
+                            active={active === g.key}
+                            onHover={onHover} onPin={onPin} />
                 ))}
               </div>
               {ruled && (
@@ -169,7 +169,8 @@ export function SouthIndianChart({
                   lagnaDegree={sign === lagna ? lagnaLongitude % 30 : null}
                   gandanta={gandanta}
                   active={active}
-                  onActivate={setActive}
+                  onHover={onHover}
+                  onPin={onPin}
                 />
               )}
             </div>
@@ -180,7 +181,9 @@ export function SouthIndianChart({
   )
 }
 
-export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer }) {
+export function NorthIndianChart({
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign,
+}) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
 
@@ -213,6 +216,14 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
 
         return (
           <g key={bhava}>
+            {/* Drawn AFTER the frame and BEFORE the text, so the locator can
+                never overprint a graha name. No chords here, deliberately: the
+                interior is already a rect plus both diagonals plus an inner
+                diamond, and NORTH_REGIONS' cx/cy ARE the text anchors — a chord
+                between centres would terminate on a label. */}
+            {highlightSign === sign && (
+              <polygon points={r.pts} className="north-locate" />
+            )}
             <text x={r.cx} y={top} className="north-sign">
               <title>{`Bhāva ${bhava} — ${namer.rasi(sign)}`}</title>
               <tspan className="north-bhava">{bhava}</tspan>

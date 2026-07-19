@@ -18,3 +18,8 @@ Thumbs.db
 
 # NOTE: api/ephe/*.se1 ARE committed on purpose — the backend Docker image needs
 # them, and they are redistributable with Swiss Ephemeris. ~1.9 MB total.
+
+# Wrangler local dev state — miniflare's simulated KV/cache and bundle temp
+# files. Machine-local build artifacts; a local KV database in a public repo is
+# noise at best.
+web/.wrangler/

@@ -24,6 +24,23 @@ const RASIS = {
             'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
 }
 
+/** Graha display names by KEY. The chart endpoint returns whole graha objects
+ *  carrying all three spellings, but the analysis and rāśi endpoints return
+ *  bare keys ("sun", "saturn") because they are citing BPHS rules rather than
+ *  describing a placement — so those need this table. Order is the canonical
+ *  Sūrya→Ketu, not alphabetical. */
+const GRAHAS = {
+  common: { sun: 'Surya', moon: 'Chandra', mars: 'Mangala', mercury: 'Budha',
+            jupiter: 'Guru', venus: 'Shukra', saturn: 'Shani',
+            rahu: 'Rahu', ketu: 'Ketu' },
+  iast: { sun: 'Sūrya', moon: 'Candra', mars: 'Maṅgala', mercury: 'Budha',
+          jupiter: 'Guru', venus: 'Śukra', saturn: 'Śani',
+          rahu: 'Rāhu', ketu: 'Ketu' },
+  english: { sun: 'Sun', moon: 'Moon', mars: 'Mars', mercury: 'Mercury',
+             jupiter: 'Jupiter', venus: 'Venus', saturn: 'Saturn',
+             rahu: 'Rāhu', ketu: 'Ketu' },   // the nodes have no English names
+}
+
 /** Field suffix on the API objects for a given style. */
 const SUFFIX = { common: '', iast: '_iast', english: '_en' }
 
@@ -41,6 +58,9 @@ export function makeNamer(style = 'common') {
     rasiLord: (g) => pick(g, 'rasi_lord'),
     /** Rāśi by zodiac index 0-11 (charts index by sign, not by graha). */
     rasi: (i) => (RASIS[style] || RASIS.common)[i],
+    /** Graha by KEY — for the analysis and rāśi endpoints, which cite rules
+     *  rather than describe placements and so return keys, not objects. */
+    grahaKey: (k) => (GRAHAS[style] || GRAHAS.common)[k] ?? k,
     /** Nakṣatra — no English form exists, so english falls back to common. */
     nakshatra: (n) => (style === 'iast' ? n?.name_iast : n?.name),
     deity: (n) => (style === 'iast' ? n?.deity_iast : n?.deity),

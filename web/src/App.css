@@ -696,3 +696,99 @@ footer a:hover { color: var(--accent); }
 }
 .graha-picker button:hover { color: var(--ink); }
 .graha-picker button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+/* --- rāśi reference cards ---
+   No date range, no animal: BPHS has no sun-sign doctrine and gives seven of
+   the twelve signs no emblem at all. The card is built from geometry the text
+   supports — the degree band, the dignities, the nakṣatra spans, the aspects. */
+.rasi-picker { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: 1rem; }
+.rasi-picker button {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
+  border-radius: 6px; padding: .35rem .6rem; cursor: pointer; font-size: .78rem;
+  font-weight: var(--text-weight, 400);
+}
+.rasi-picker button:hover { color: var(--ink); }
+.rasi-picker button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+.rasi-card section { margin-top: 1.4rem; }
+.rasi-card h4 {
+  margin: 0 0 .6rem; font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--dim); font-weight: var(--label-weight, 500);
+}
+.rc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.rc-head h3 { margin: 0; font-size: 1.6rem; color: var(--accent); font-weight: var(--text-weight, 400); }
+.rc-sub { margin: .2rem 0 0; font-size: .82rem; color: var(--dim); }
+.rc-limb { text-align: right; font-size: .76rem; color: var(--ink); }
+.rc-limb-label { display: block; font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--dim); }
+
+.rc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .5rem; }
+.rc-cell {
+  display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap;
+  background: var(--sunken); border: 1px solid var(--line);
+  border-radius: 6px; padding: .45rem .6rem;
+}
+/* An absent value is CONTENT, not an error — dashed, not red, and it keeps
+   readable type. "BPHS is silent" is the most interesting cell on the card. */
+.rc-cell.is-absent { border-style: dashed; }
+.rc-cell.is-absent .rc-val { color: var(--dim); font-style: italic; }
+.rc-key { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+.rc-val { font-size: .82rem; color: var(--ink); }
+.rc-conflict { color: var(--rx); cursor: help; }
+
+/* Source badges. `note` MUST look different from `sloka` — the difference
+   between Parāśara and his translator is the whole claim of this site. */
+.src {
+  font-size: .58rem; text-transform: uppercase; letter-spacing: .05em;
+  border: 1px solid var(--line); border-radius: 999px; padding: .05rem .35rem;
+  color: var(--dim); cursor: help; white-space: nowrap;
+}
+.src-sloka { border-color: var(--accent); color: var(--accent); }
+.src-note, .src-table { border-style: dashed; }
+.src-absent, .src-ocr_lost { opacity: .75; }
+
+.rc-band-svg { width: 100%; height: auto; overflow: visible; }
+.rc-band-svg line, .rc-band-svg path, .rc-band-svg rect { vector-effect: non-scaling-stroke; }
+.rc-mt-arc { fill: var(--accent-soft); stroke: var(--dim); stroke-width: 1px; }
+.rc-band-label { font-size: 7px; fill: var(--dim); text-anchor: middle; }
+/* the nakṣatra band sets its own anchor per segment (edge segments
+   can be a single pāda wide), so it must not inherit the blanket rule */
+.rc-nak-seg ~ text[text-anchor] { text-anchor: inherit; }
+.rc-nak-label { font-size: 8px; fill: var(--ink); }
+.rc-nak-seg { fill: var(--sunken); stroke: var(--line); stroke-width: 1px; }
+.rc-nak-seg.seg-1 { fill: var(--row-hi); }
+.rc-note { margin: .5rem 0 0; font-size: .7rem; color: var(--dim); line-height: 1.6; }
+
+.rc-ring { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; }
+.rc-ring svg { width: 130px; height: 130px; flex: none; }
+.rc-ring-circle { fill: none; stroke: var(--line); stroke-width: 1px; }
+.rc-chord { stroke: var(--accent); stroke-width: 1.25px; }
+.rc-node { fill: var(--line); }
+.rc-node.on { fill: var(--accent); }
+.rc-node.self { fill: var(--ink); }
+.rc-ring-text { margin: 0; font-size: .84rem; color: var(--ink); }
+
+.rc-lagna { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .5rem; }
+.rc-lagna > div { background: var(--sunken); border: 1px solid var(--line); border-radius: 6px; padding: .5rem .6rem; }
+.rc-lagna strong { display: block; margin-top: .15rem; font-size: .84rem; color: var(--ink); font-weight: var(--strong-weight, 600); }
+
+/* The differentiator panel. Deliberately as well-dressed as anything above it. */
+.rc-absent-panel {
+  border: 1px solid var(--accent); border-radius: 10px; padding: 1rem;
+  background: var(--accent-soft);
+}
+.rc-absent-panel h4 { color: var(--accent); }
+.rc-chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+.rc-chip {
+  font-size: .7rem; color: var(--dim); border: 1px solid var(--line);
+  border-radius: 999px; padding: .15rem .55rem; text-decoration: line-through;
+}
+.rc-toggle {
+  margin-top: .6rem; background: none; border: 1px solid var(--accent);
+  color: var(--accent); border-radius: 6px; padding: .25rem .6rem;
+  cursor: pointer; font-size: .72rem;
+}
+.rc-why { color: var(--ink); }
+.rc-conflict-strip {
+  margin: .8rem 0 0; padding: .5rem .7rem; font-size: .74rem; line-height: 1.6;
+  border: 1px solid var(--rx); border-left-width: 3px; border-radius: 6px; color: var(--ink);
+}

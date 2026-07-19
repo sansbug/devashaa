@@ -7,6 +7,7 @@ import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import SignalStack from './SignalStack.jsx'
+import RasiCard from './RasiCard.jsx'
 import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -160,6 +161,10 @@ export default function App() {
   // Which graha the analysis panel is showing. Sūrya is the conventional
   // first entry, so it is the least surprising default.
   const [picked, setPicked] = useState('sun')
+  // The twelve rasi reference cards. Fetched once, lazily — they are
+  // static reference, independent of any chart.
+  const [rasis, setRasis] = useState(null)
+  const [openRasi, setOpenRasi] = useState(null)
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
@@ -182,6 +187,16 @@ export default function App() {
       .then(setHealth)
       .catch(() => setHealth({ status: 'unreachable' }))
   }, [])
+
+  // Rāśi cards are static reference and do not depend on a chart, so they load
+  // once on demand rather than with every cast.
+  useEffect(() => {
+    if (openRasi === null || rasis) return
+    fetch(`${API}/api/rasis`)
+      .then((r) => r.json())
+      .then((j) => setRasis(j.rasis))
+      .catch(() => setRasis([]))
+  }, [openRasi, rasis])
 
   async function submit(e) {
     e.preventDefault()
@@ -455,6 +470,38 @@ export default function App() {
           </section>
         </main>
       )}
+
+      {/* Rāśi reference. Deliberately outside the chart block: these are
+          reference pages about the twelve signs, not a reading, and they work
+          with no birth data at all. */}
+      <section className="table-panel rasi-section">
+        <h3>The twelve rāśis</h3>
+        <p className="rc-note rasi-intro">
+          Reference pages, not sun-signs — and with no date ranges, because BPHS
+          has none. There is not one statement in either volume of the form
+          “one born with the Sun in …”; ch.34, the closest thing to “what your
+          sign means”, is keyed to the <strong>lagna</strong> throughout. Cast a
+          chart above and it will tell you your lagna, your janma rāśi (Moon)
+          and your Sūrya rāśi — all three, computed.
+        </p>
+        <div className="rasi-picker">
+          {Array.from({ length: 12 }, (_, i) => (
+            <button type="button" key={i}
+                    className={openRasi === i ? 'on' : ''}
+                    onClick={() => setOpenRasi(openRasi === i ? null : i)}>
+              {namer.rasi(i)}
+            </button>
+          ))}
+        </div>
+        {openRasi !== null && !rasis && <p className="hint">loading…</p>}
+        {openRasi !== null && rasis && rasis[openRasi] && (
+          <RasiCard
+            r={rasis[openRasi]}
+            namer={namer}
+            names={Array.from({ length: 12 }, (_, i) => namer.rasi(i))}
+          />
+        )}
+      </section>
 
       <footer>
         <p>

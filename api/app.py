@@ -24,6 +24,7 @@ from dashas import (
 )
 from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from analysis import analyse
+from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
 app = Flask(__name__)
@@ -107,6 +108,26 @@ def health():
         "zodiac": "Sidereal",
         "bhava_system": "Whole sign",
     }), (200 if (ok and places_ok) else 503)
+
+
+@app.get("/api/rasis")
+def rasis_all():
+    """The twelve rāśi reference cards.
+
+    No date ranges, deliberately. BPHS has no sun-sign doctrine — there is not
+    one statement of the form "one born with the Sun in X" in either volume,
+    and ch.34, the closest thing to "what your sign means", is keyed to the
+    LAGNA throughout. Printing tropical ranges would also contradict this
+    site's own sidereal engine. Users reach their signs by casting a chart.
+    """
+    return jsonify({"rasis": all_rasis()})
+
+
+@app.get("/api/rasis/<int:sign>")
+def rasis_one(sign):
+    if not 0 <= sign <= 11:
+        return jsonify({"error": "sign must be 0-11 (Meṣa..Mīna)"}), 400
+    return jsonify(rasi(sign))
 
 
 @app.get("/api/reference")

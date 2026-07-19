@@ -22,6 +22,7 @@ from vimshottari import DEFAULT_YEAR_DAYS, YEAR_DAYS_SAVANA, YEAR_DAYS_JULIAN
 from dashas import (
     SYSTEMS, build_dasha_system, validated_systems, ASHTOTTARI, build_ashtottari,
 )
+from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from geocode import search, timezone_at, database_status
 
 app = Flask(__name__)
@@ -187,6 +188,26 @@ def chart():
         return jsonify({"error": f"Chart calculation failed: {e}"}), 500
 
     payload = result.to_dict()
+
+    # Dignity (BPHS ch.3 vv.49-55) rides along with each graha, and the twelve
+    # signs' doctrinal landmarks ride along once. Keeping the landmarks on the
+    # payload — rather than letting the client hardcode exaltation degrees — is
+    # what stops BPHS numbers leaking into JavaScript, where they would have no
+    # citation and no test.
+    for g in payload["grahas"]:
+        g["dignity"] = dignity_of(g["key"], g["longitude"])   # None for the nodes
+    payload["landmarks"] = [sign_landmarks(s) for s in range(12)]
+
+    # Gaṇḍānta (Vol II ch.92 v.3) is about the birth MOMENT, not about dignity,
+    # and its width comes from Candra's own rate — so it is computed here, per
+    # chart, rather than baked into a per-sign table. Usually None.
+    _moon = next((g for g in result.grahas if g.key == "moon"), None)
+    payload["gandanta"] = (
+        nakshatra_gandanta(_moon.longitude, _moon.speed) if _moon else None
+    )
+    # Lagna-gaṇḍānta (v.4, half a ghaṭikā of ASCENDANT motion) is not computed:
+    # it needs the ascendant's rate of change, which varies with latitude and
+    # rising sign and is not on this payload. See docs/bphs-rules.md.
 
     # Daśā is driven by the Moon's nakṣatra; attach the default (Viṁśottarī) here.
     # Other validated systems are fetched on demand via /api/dasha. Both year-

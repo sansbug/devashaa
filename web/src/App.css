@@ -18,6 +18,7 @@
   --sunken: #100e0c;          /* inputs, buttons, dropdowns */
   --hover: #1f1b17;
   --line: #3a332c;
+  --ruler-line: #8a7d6d;   /* 4.41:1 on panel — see note at .cell-ruler */
   --ink: #efe7db;
   --dim: #a2968a;
   --accent: #c9a227;
@@ -70,6 +71,7 @@
   --sunken: #150f0b;
   --hover: #3b2c1e;
   --line: #86694a;          /* 3.18:1 on panel — grid rules ARE the data here */
+  --ruler-line: #a08256;    /* 4.48:1 */
   --ink: #fbf1e4;
   --dim: #cbb598;
   --accent: #ffb547;
@@ -109,6 +111,7 @@
   --sunken: #f0e7f0;
   --hover: #f9e2ee;
   --line: #a88ba5;
+  --ruler-line: #8a6a86;    /* 4.62:1 */
   --ink: #0e1a2b;
   --dim: #33455f;
   --accent: #a8135a;
@@ -137,6 +140,7 @@
   --sunken: #070c19;
   --hover: #1b2340;
   --line: #2a3350;
+  --ruler-line: #6b7ba6;    /* 4.12:1 */
   --ink: #e7ecfb;
   --dim: #93a0c4;
   --accent: #e8c46a;
@@ -174,6 +178,7 @@
   --sunken: #f8ece6;
   --hover: #f5e6ee;
   --line: #d8c2cc;            /* darkened with the ink, or rules vanish */
+  --ruler-line: #9c7790;    /* 3.72:1 — the binding case of the six */
   --ink: #0e1a2b;             /* dark navy — see Lotus */
   --dim: #33455f;
   --accent: #a8324a;          /* deep rose — dark enough to clear AA on cream */
@@ -205,6 +210,7 @@
   --sunken: #0d1116;
   --hover: #212833;
   --line: #2f3742;
+  --ruler-line: #78889c;    /* 4.57:1 */
   --ink: #e6ebf2;
   --dim: #94a1b2;
   --accent: #4fd1c5;
@@ -440,12 +446,66 @@ section.meta, .chart-panel, .table-panel {
   position: absolute; top: .3rem; right: .35rem; font-size: .55rem;
   color: var(--accent); font-weight: 700; letter-spacing: .04em;
 }
-/* One graha per line: full Sanskrit names don't tile side by side legibly. */
+/* One graha per line: full Sanskrit names don't tile side by side legibly.
+   flex:1 with min-height:0 makes the LIST the thing that clips when a cell is
+   overfull — the ruler is pinned to the floor and must never be the casualty. */
 .cell-grahas {
   display: flex; flex-direction: column; gap: .05rem;
   align-items: stretch;   /* so each tag's grid spans the cell width */
-  min-width: 0;
+  min-width: 0; flex: 1 1 auto; min-height: 0; overflow: hidden;
 }
+
+/* --- cell ruler (D1 only) ---
+   A 0°→30° axis for the cell's rāśi. Every stroke is declared in CSS px with
+   vector-effect:non-scaling-stroke, so the marks keep their weight while the
+   SVG is stretched non-uniformly to fill the cell — without it, the narrow
+   viewBox would squash a 1px axis into a sub-pixel hairline that some themes
+   render and some drop.
+
+   --ruler-line is its own token and NOT --line: the grid rules only have to be
+   noticeable, but the ruler is "a graphical object required to understand the
+   content" under WCAG 1.4.11 and owes ≥3:1 against --panel. In the default
+   theme --line is 3.18:1 and several others sit below 3:1. Audited: all six
+   are ≥3.7:1. */
+.cell-ruler {
+  width: 100%; height: auto; flex: 0 0 auto; margin-top: auto; overflow: visible;
+}
+.cell-ruler line, .cell-ruler path, .cell-ruler rect { vector-effect: non-scaling-stroke; }
+.rl-axis { stroke: var(--ruler-line); stroke-width: 1px; }
+.rl-pada { stroke: var(--ruler-line); stroke-width: .75px; opacity: .6; }
+.rl-nak  { stroke: var(--ruler-line); stroke-width: 1px; }
+/* Retrograde is carried by THREE channels — colour, dash and a barb — because
+   one theme's --accent and --rx were once the same hue, and colour alone is
+   also the channel colour-blind users lose. */
+.rl-pin  { stroke: var(--ink); stroke-width: 1.75px; }
+.rl-pin.rx { stroke: var(--rx); }
+.rl-pin.active { stroke-width: 3px; }
+.rl-barb { stroke: var(--rx); stroke-width: 1.75px; }
+.rl-hit  { fill: transparent; cursor: pointer; }
+.rl-lagna { stroke: var(--accent); stroke-width: 1.25px; }
+/* Apex up = exaltation, apex down + dashed = debilitation. Shape first. */
+.rl-uccha { stroke: var(--ink); stroke-width: 1.25px; fill: none; }
+.rl-nica  { stroke: var(--ink); stroke-width: 1.25px; fill: none; stroke-dasharray: 2 2; }
+.rl-connector { stroke: var(--dim); stroke-width: .75px; stroke-dasharray: 3 2; }
+.rl-mt { stroke: var(--dim); stroke-width: 1.25px; fill: none; opacity: .55; }
+/* Candra's mūlatrikoṇa arc comes from an OCR-damaged śloka — it is drawn, but
+   dashed, so the chart never claims a confidence the source doesn't support. */
+.rl-mt.unverified { stroke-dasharray: 5 4; }
+.rl-gandanta { stroke: none; }
+.rl-hatch-line { stroke: var(--dim); stroke-width: 1px; opacity: .55; }
+.rl-gandanta-solid { fill: var(--dim); opacity: .3; stroke: none; }
+/* Hovering a pin lifts its name in the list, and vice versa. Pointer events
+   work on touch here because the pin handler is click, not hover. */
+.tag.active .tag-name { text-decoration: underline; text-underline-offset: 2px; }
+
+/* --- ruler legend --- */
+.ruler-legend { margin: .8rem auto 0; max-width: 620px; font-size: .68rem; color: var(--dim); }
+.lg-row { display: flex; flex-wrap: wrap; gap: .35rem .9rem; align-items: center; margin-bottom: .25rem; }
+.lg-row span { display: inline-flex; align-items: center; gap: .3em; white-space: nowrap; }
+.lg-swatch { width: 20px; height: 14px; flex: none; overflow: visible; }
+.lg-swatch line, .lg-swatch path { vector-effect: non-scaling-stroke; }
+.lg-note { margin: .5rem 0 0; line-height: 1.5; font-size: .66rem; }
+.frame-note { max-width: 620px; margin: .8rem auto 0; font-size: .68rem; color: var(--dim); line-height: 1.5; }
 /* Two tracks: name (may ellipsis) + degree (never clipped).
    minmax(0,1fr) is load-bearing — a plain 1fr lets the nowrap name blow out
    the track and silently clip the degree off the right edge of the cell. */

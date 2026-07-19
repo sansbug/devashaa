@@ -96,6 +96,53 @@ function PlaceField({ onPick, place }) {
   )
 }
 
+/** A swatch drawn with the ruler's own classes, so the key cannot drift from
+    the marks it explains. */
+function Swatch({ children }) {
+  return <svg className="lg-swatch" viewBox="0 0 20 14" aria-hidden="true">{children}</svg>
+}
+
+/**
+ * Without this the ruler is decoration. Two clauses are load-bearing:
+ *
+ *  - the whole-sign caveat. A pin hard against an end cap under a cell headed
+ *    "3 · Mithuna" reads as "nearly in the 4th" to any chart-literate eye. That
+ *    is Placidus thinking, and it is the likeliest way this graphic misleads.
+ *  - the nodes. Rāhu and Ketu having no dignity marks is a FINDING (BPHS gives
+ *    them none), not a rendering gap.
+ */
+function RulerLegend() {
+  return (
+    <div className="ruler-legend">
+      <div className="lg-row">
+        <span><Swatch><line x1="1" y1="9" x2="19" y2="9" className="rl-axis" />
+          <line x1="1.5" y1="5" x2="1.5" y2="13" className="rl-axis" />
+          <line x1="18.5" y1="5" x2="18.5" y2="13" className="rl-axis" />
+        </Swatch> 0°→30° of the rāśi; caps are the sandhi</span>
+        <span><Swatch><line x1="10" y1="9" x2="10" y2="2" className="rl-pin" /></Swatch> graha</span>
+        <span><Swatch><line x1="9" y1="12" x2="9" y2="1" className="rl-lagna" />
+          <line x1="11" y1="12" x2="11" y2="1" className="rl-lagna" /></Swatch> lagna</span>
+        <span><Swatch><line x1="10" y1="9" x2="10" y2="2" className="rl-pin rx" />
+          <line x1="10" y1="2" x2="6" y2="2" className="rl-barb" /></Swatch> retrograde</span>
+      </div>
+      <div className="lg-row">
+        <span><Swatch><line x1="10" y1="4" x2="10" y2="13" className="rl-nak" /></Swatch> nakṣatra start</span>
+        <span><Swatch><line x1="10" y1="6" x2="10" y2="12" className="rl-pada" /></Swatch> pada</span>
+        <span><Swatch><path d="M 6,13 L 10,5 L 14,13" className="rl-uccha" /></Swatch> exact exaltation</span>
+        <span><Swatch><path d="M 6,5 L 10,13 L 14,5" className="rl-nica" /></Swatch> exact debilitation</span>
+        <span><Swatch><path d="M 3,13 L 3,7 L 17,7 L 17,13" className="rl-mt" /></Swatch> mūlatrikoṇa arc</span>
+      </div>
+      <p className="lg-note">
+        Whole-sign bhāvas: a graha at 29° is <em>wholly</em> in its own house — the
+        ruler measures position in the <strong>sign</strong>, not distance to the next
+        house. Rāhu and Ketu carry no dignity marks; BPHS assigns them none.
+        Two pins close together mean nothing beyond the sign they share —
+        yuti here is rāśi membership, not orb.
+      </p>
+    </div>
+  )
+}
+
 export default function App() {
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -285,7 +332,17 @@ export default function App() {
               lagnaVargaSign={chart.lagna_vargas[varga]}
               vargaKey={varga}
               namer={namer}
+              landmarks={chart.landmarks}
+              lagnaLongitude={chart.lagna_longitude}
+              gandanta={chart.gandanta}
             />
+            {style === 'south' && varga === 'D1' && <RulerLegend />}
+            {style === 'north' && (
+              <p className="frame-note">
+                The North Indian frame is a <em>bhāva</em> diagram — it discards sign
+                geometry by design. For degree behaviour, use the South Indian frame.
+              </p>
+            )}
           </section>
 
           <section className="table-panel">

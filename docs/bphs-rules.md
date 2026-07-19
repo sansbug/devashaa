@@ -212,3 +212,109 @@ of the ghaṭi/pala fraction). Abhijit → Saturn's 3rd slot.
   Sthira, Chakra (10y/sign), Kāla (Sandhyā-based) — structurally different, need
   a rāśi-daśā engine.
 - **Daśā effects / interpretation** (ch.47-65).
+
+---
+
+## Chapter 3 — Dignity (`api/dignity.py`) — BUILT & example-validated
+
+### vv.49–50 Exaltation and debilitation
+
+> "For the seven planets from the Sun on, the signs of exaltation are respectively
+> Aries, Taurus, Capricorn, Virgo, Cancer, Pisces and Libra. The deepest exaltation
+> degrees are respectively 10, 3, 28, 15, 5, 27 and 20 in those signs. And in the
+> seventh sign from the said exaltation sign each planet has its own debilitation.
+> The same degrees of deep exaltation apply to deep fall."
+
+Debilitation is **derived** in code (`exaltation sign + 6`, same degree), never
+typed out, so the two tables cannot drift apart.
+
+**Rāhu and Ketu carry no dignity.** v.50's note says only that "there are
+different views" on the nodes' exaltation. `dignity_of()` returns `None` for
+them, and the UI states that absence is a finding rather than a gap.
+
+### vv.51–54 Mūlatrikoṇa arcs
+
+Sun Leo 0–20° · Mars Aries 0–12° · Mercury Virgo 15–20° · Jupiter Sagittarius
+0–10° · Venus Libra 0–15° · Saturn Aquarius 0–20°.
+
+Virgo is the one sign the text **partitions**: "the first 15 degrees are
+exaltation zone, the next 5 degrees Moolatrikona and the last 10 degrees are own
+house." So Mercury is *not* exalted throughout Virgo, and `EXALTATION_ARC`
+encodes that as the only exception.
+
+**⚠ Candra's arc is UNVERIFIED.** The śloka is OCR-damaged in our scan on the
+line after the Sun's. The classical reading (Vṛṣabha 4°–30°) is used, flagged in
+`MOOLATRIKONA_UNVERIFIED`, and the chart draws that bracket **dashed** so the
+rendering never claims a confidence the source does not support.
+
+### v.55 Natural relationships
+
+Friends = lords of the 2nd, 4th, 5th, 8th, 9th and 12th from the graha's
+mūlatrikoṇa, plus the lord of its exaltation sign; the rest are enemies;
+friend-and-enemy at once resolves to neutral. Computed, not tabulated.
+Validated against Santhanam's own worked examples in the ch.3 Notes: Saturn and
+Venus both come out **neutral** to Mars.
+
+### uccha bala
+
+1.0 at the exact deep-exaltation point, 0.0 at the exact debilitation point,
+linear across the 180° between. This is what the cell ruler's chevron encodes —
+BPHS locates peak strength at a **point**, not across a whole sign.
+
+---
+
+## Chapter 92 (Vol II) — Gaṇḍānta — PARTIALLY BUILT
+
+Parāśara names **three kinds** (v.1): Tithi, Nakṣatra and Lagna. All three are
+measured in **ghaṭikās of TIME, never in degrees of arc**.
+
+> v.3 "the last two ghatikas of Revti and first two [ghatikas] of Aswini, the last
+> two ghatikas of Ashlesha and [fir]st two ghatikas of Makha and the last two
+> g[h]atikas of [Jy]estha and first two ghatikas of Moola (total 4 ghatikas) are
+> known as Nakshatra Gandanta."
+
+> v.4 "The last half ghatika of Pisces and first half ghatika of Aries, the last
+> half gha[tik]a of Cancer and first half ghatika of Leo, the last half ghatika of
+> Scorpio and first half ghatika of Sagittarius, are known as Lagna Gandanta."
+
+Both verses name the **same three junctions**, because those nakṣatras end
+exactly on sign boundaries: Āśleṣā at 120°, Jyeṣṭhā at 240°, Revatī at 360°.
+Three junctions only — **not** every sign boundary.
+
+### The 3°20′ figure is NOT Parāśara's
+
+It comes from Santhanam's *note* to Vol I ch.9 v.13 — "The last Navamsas of
+Cancer, of Scorpio and of Pisces are called as Gandanta" — which he expressly
+attributes to "**a host of authors**", i.e. later tradition. It also gives only
+the water-sign half.
+
+Two ghaṭikās is 48 minutes, in which Candra moves ≈ **0°26′**. The navāṁśa
+reading is therefore roughly **eight times too wide**. We follow the śloka:
+`nakshatra_gandanta()` derives the half-width from the Moon's *actual* speed on
+the day, so it varies with her rate as the text's time-based definition
+requires.
+
+**Scope.** The three kinds are the three components of the birth *moment* —
+tithi, birth nakṣatra (Candra), lagna. Parāśara never places an arbitrary graha
+"in gaṇḍānta", so neither do we. Note also that Vol I ch.9 v.13 attaches a
+condition Parāśara's own words require — "while the Moon and malefics occupy
+angles from the ascendant" — so gaṇḍānta alone is not the ariṣṭa; only the
+commentary makes it sufficient.
+
+**Not built:**
+- **Lagna-gaṇḍānta (v.4)** — needs the *ascendant's* rate of change (half a
+  ghaṭikā of it), which varies sharply with latitude and rising sign. Not
+  computed rather than approximated at 3°20′.
+- **Tithi-gaṇḍānta (v.2)** — purely calendrical (last 2 ghaṭikās of a Pūrṇā
+  tithi + first 2 of a Nandā); no zodiacal longitude, needs a pañcāṅga.
+- **Abhukta Mūla (v.5)**, and the śānti chapters 93–94.
+
+---
+
+## Bhāva cusps — a standing decision, recorded before it is asked for
+
+This engine is **whole-sign only**. No Śrīpati, no Placidus, no bhāva-chalita.
+The cell ruler measures longitude *within a rāśi*; the moment unequal houses
+ship, its legend ("a graha at 29° is wholly in its own house") becomes false.
+If cusps are ever added they need their own frame, not a reinterpretation of
+this one.

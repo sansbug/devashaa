@@ -11,6 +11,17 @@
 /* Names are supplied by the `namer` prop (see naming.js) so the chart follows the
    selected name style. Nothing here is abbreviated — the cells have room. */
 
+import { useState } from 'react'
+import CellRuler, { useRulerMode } from './CellRuler'
+
+/** Wrapper so the viewport hook lives in its own component and can therefore
+    return "no ruler at all" without breaking the rules of hooks. */
+function SignRuler({ occupants, ...rest }) {
+  const mode = useRulerMode(occupants.length)
+  if (!mode) return null
+  return <CellRuler occupants={occupants} mode={mode} {...rest} />
+}
+
 // South Indian: signs are fixed in this layout, Aries at row0/col1, going clockwise.
 const SOUTH_CELLS = [
   [11, 0, 1, 2],
@@ -64,11 +75,32 @@ function bhavaClass(b) {
   return c.join(' ')
 }
 
-function GrahaTag({ g, namer }) {
+/** Dignity as one clause of prose, for the tag's tooltip. `null` for the nodes:
+    BPHS assigns Rāhu and Ketu no exaltation, so absence here is a finding, not
+    a gap. */
+const DIGNITY_WORD = {
+  exalted: 'exalted', debilitated: 'debilitated', moolatrikona: 'in mūlatrikoṇa',
+  own: 'in its own sign', friend: "in a friend's sign",
+  neutral: "in a neutral's sign", enemy: "in an enemy's sign",
+}
+function dignityPhrase(d) {
+  if (!d) return ''
+  const word = DIGNITY_WORD[d.state] ?? d.state
+  // uccha_distance is signed: negative means the graha has not yet reached its
+  // deep-exaltation point.
+  const arc = Math.abs(d.uccha_distance).toFixed(2)
+  const side = d.uccha_distance < 0 ? 'short of' : 'past'
+  return ` — ${word}; ${arc}° ${side} its exaltation point (uccha bala ${d.uccha_bala})`
+}
+
+function GrahaTag({ g, namer, active, onActivate }) {
   return (
-    <span className={`tag${g.retrograde ? ' rx' : ''}`}
+    <span className={`tag${g.retrograde ? ' rx' : ''}${active ? ' active' : ''}`}
+          onPointerEnter={() => onActivate?.(g.key)}
+          onPointerLeave={() => onActivate?.(null)}
+          onClick={() => onActivate?.(active ? null : g.key)}
           title={`${g.name_en} — ${g.rasi_name_en} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"` +
-                 `${g.retrograde ? ' (retrograde)' : ''}`}>
+                 `${g.retrograde ? ' (retrograde)' : ''}${dignityPhrase(g.dignity)}`}>
       <span className="tag-name">
         {namer.graha(g)}
         {g.retrograde && <sup>℞</sup>}
@@ -80,9 +112,18 @@ function GrahaTag({ g, namer }) {
   )
 }
 
-export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer }) {
+export function SouthIndianChart({
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude,
+  gandanta,
+}) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
+  const [active, setActive] = useState(null)
+
+  // The ruler measures longitude WITHIN a sign, so it is meaningful only where
+  // the cell's sign is the sign the graha is actually standing in — i.e. D1.
+  // A varga sign is derived; there is no "degree into D9 Kanyā".
+  const ruled = vargaKey === 'D1' && !!landmarks
 
   return (
     <div className="south-chart" role="img" aria-label="South Indian rāśi chart">
@@ -115,8 +156,22 @@ export function SouthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
               </div>
               {sign === lagna && <div className="asc-mark">Lagna</div>}
               <div className="cell-grahas">
-                {bySign[sign].map((g) => <GrahaTag g={g} namer={namer} key={g.key} />)}
+                {bySign[sign].map((g) => (
+                  <GrahaTag g={g} namer={namer} key={g.key}
+                            active={active === g.key} onActivate={setActive} />
+                ))}
               </div>
+              {ruled && (
+                <SignRuler
+                  sign={sign}
+                  occupants={bySign[sign]}
+                  landmarks={landmarks[sign]}
+                  lagnaDegree={sign === lagna ? lagnaLongitude % 30 : null}
+                  gandanta={gandanta}
+                  active={active}
+                  onActivate={setActive}
+                />
+              )}
             </div>
           )
         }),
@@ -147,7 +202,9 @@ export function NorthIndianChart({ grahas, lagnaRasi, vargaKey, lagnaVargaSign, 
         // LEAD must exceed the 10px font's ~13.7 line box or stacked names crowd.
         const LEAD = 13
         const lines = occupants.length
-        const top = r.cy - 14 - (lines > 1 ? (lines - 1) * (LEAD / 2) : 0)
+        // Clamp: region 2 has cy=35, so five occupants would centre the stack
+        // at y=-5 and print the sign label off the top of the viewBox.
+        const top = Math.max(10, r.cy - 14 - (lines > 1 ? (lines - 1) * (LEAD / 2) : 0))
 
         // The wedges have a hard ~70-unit horizontal ceiling and text-anchor
         // middle grows BOTH ways across the frame diagonal, so degrees only

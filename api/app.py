@@ -23,6 +23,7 @@ from dashas import (
     SYSTEMS, build_dasha_system, validated_systems, ASHTOTTARI, build_ashtottari,
 )
 from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
+from analysis import analyse
 from geocode import search, timezone_at, database_status
 
 app = Flask(__name__)
@@ -208,6 +209,19 @@ def chart():
     # Lagna-gaṇḍānta (v.4, half a ghaṭikā of ASCENDANT motion) is not computed:
     # it needs the ascendant's rate of change, which varies with latitude and
     # rising sign and is not on this payload. See docs/bphs-rules.md.
+
+    # D1 analysis — the Tier 0 engines assembled as a per-graha SIGNAL STACK.
+    # Deliberately NOT a single score: BPHS states these judgements separately
+    # and never combines them (see analysis.py). A failure here must not cost
+    # the user their chart, so it degrades to an error row rather than a 500.
+    try:
+        analysis_positions = {
+            g.key: {"longitude": g.longitude, "rasi": g.rasi, "vargas": g.vargas}
+            for g in result.grahas
+        }
+        payload["analysis"] = analyse(analysis_positions, result.lagna_rasi)
+    except Exception as e:  # noqa: BLE001
+        payload["analysis"] = {"error": f"Analysis failed: {e}"}
 
     # Daśā is driven by the Moon's nakṣatra; attach the default (Viṁśottarī) here.
     # Other validated systems are fetched on demand via /api/dasha. Both year-

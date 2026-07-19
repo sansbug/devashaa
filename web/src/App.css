@@ -645,3 +645,54 @@ footer { margin-top: 3rem; text-align: center; color: var(--dim); font-size: .72
 footer code { color: var(--accent); }
 footer a { color: var(--dim); }
 footer a:hover { color: var(--accent); }
+
+/* --- signal stack ---
+   Each row is one BPHS judgement on its own scale. The visual weight rule:
+   an UNAVAILABLE row must read as informative, not as an error — it is telling
+   the reader what the text does not supply, which is real content. So it keeps
+   full-strength type for its reason and only dims its own value slot. */
+.signal-stack { display: flex; flex-direction: column; gap: .5rem; }
+.sig-title { margin: 0 0 .2rem; font-size: .95rem; color: var(--accent); font-weight: var(--label-weight, 500); }
+.sig-row { border-left: 2px solid var(--line); padding: .3rem 0 .3rem .6rem; }
+.sig-row.flagged { border-left-color: var(--rx); }
+.sig-row.unavailable { border-left-style: dashed; }
+.sig-head { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.sig-mark { color: var(--dim); font-size: .8rem; width: 3.2rem; flex: none; text-align: center; }
+.sig-row.unavailable .sig-mark { color: var(--dim); opacity: .8; }
+/* Fixed-width so the bars line up down the column and can be compared. */
+.sig-bar {
+  width: 3.2rem; flex: none; height: .5rem; border-radius: 2px;
+  background: var(--sunken); border: 1px solid var(--line); overflow: hidden;
+  display: inline-block;
+}
+.sig-bar-fill { display: block; height: 100%; background: var(--accent); }
+.sig-value { font-variant-numeric: tabular-nums; font-weight: var(--strong-weight, 600); color: var(--ink); min-width: 3ch; }
+.sig-name { color: var(--ink); font-size: .82rem; }
+.sig-cite { color: var(--dim); font-size: .66rem; margin-left: auto; white-space: nowrap; }
+.sig-label { margin: .15rem 0 0 3.7rem; font-size: .74rem; color: var(--dim); font-style: italic; }
+.sig-reason { margin: .2rem 0 0 3.7rem; font-size: .72rem; color: var(--ink); line-height: 1.5; opacity: .85; }
+.sig-more, .sig-flag {
+  background: none; border: 1px solid var(--line); border-radius: 4px;
+  color: var(--dim); cursor: pointer; font-size: .7rem; line-height: 1;
+  padding: .1rem .3rem;
+}
+.sig-flag { color: var(--rx); border-color: var(--rx); margin: .25rem 0 0 3.7rem; }
+.sig-more:hover, .sig-flag:hover { color: var(--ink); }
+.sig-flag-body {
+  margin: .3rem 0 0 3.7rem; font-size: .7rem; line-height: 1.55;
+  color: var(--ink); border-left: 2px solid var(--rx); padding-left: .5rem; opacity: .9;
+}
+.sig-working { width: 100%; margin: .4rem 0 0; font-size: .7rem; }
+.sig-working th, .sig-working td { padding: .2rem .4rem; }
+.sig-foot {
+  margin: .4rem 0 0; font-size: .68rem; color: var(--dim); line-height: 1.55;
+  border-top: 1px solid var(--line); padding-top: .5rem;
+}
+.graha-picker { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .8rem; }
+.graha-picker button {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
+  border-radius: 6px; padding: .3rem .6rem; cursor: pointer; font-size: .76rem;
+  font-weight: var(--text-weight, 400);
+}
+.graha-picker button:hover { color: var(--ink); }
+.graha-picker button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }

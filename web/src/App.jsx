@@ -6,6 +6,7 @@ import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
+import SignalStack from './SignalStack.jsx'
 import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -156,6 +157,9 @@ export default function App() {
   const [health, setHealth] = useState(null)
   const [profiles, setProfiles] = useState(() => listProfiles())
   const [activeProfile, setActiveProfile] = useState(null)
+  // Which graha the analysis panel is showing. Sūrya is the conventional
+  // first entry, so it is the least surprising default.
+  const [picked, setPicked] = useState('sun')
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
@@ -344,6 +348,26 @@ export default function App() {
               </p>
             )}
           </section>
+
+          {chart.analysis && !chart.analysis.error && (
+            <section className="table-panel">
+              <h3>What BPHS says about each graha</h3>
+              <div className="graha-picker">
+                {chart.grahas.map((g) => (
+                  <button type="button" key={g.key}
+                          className={picked === g.key ? 'on' : ''}
+                          onClick={() => setPicked(g.key)}>
+                    {namer.graha(g)}
+                  </button>
+                ))}
+              </div>
+              <SignalStack
+                signals={chart.analysis.grahas[picked]}
+                graha={chart.grahas.find((g) => g.key === picked)}
+                namer={namer}
+              />
+            </section>
+          )}
 
           <section className="table-panel">
             <h3>Daśā</h3>

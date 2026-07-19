@@ -318,3 +318,98 @@ The cell ruler measures longitude *within a rāśi*; the moment unequal houses
 ship, its legend ("a graha at 29° is wholly in its own house") becomes false.
 If cusps are ever added they need their own frame, not a reinterpretation of
 this one.
+
+---
+
+# What BPHS does and does not contain
+
+A systematic audit of both Santhanam volumes (1,034 pages), twelve doctrines,
+each claim independently re-checked against the text by a second reader. This
+section exists so that a deliberate omission is never mistaken for an oversight
+and "fixed" by someone importing popular astrology.
+
+## Absent from BPHS entirely — do NOT implement without an outside citation
+
+- **Per-nakṣatra character.** No gaṇa (deva/manuṣya/rākṣasa), no yoni, no nāḍī,
+  no varṇa, no dhruva/chara/ugra classification, no per-nakṣatra symbol, śakti
+  or result. Zero hits across both volumes under every spelling. Vol I **ch.3
+  v.7** is Parāśara declining the topic outright: *"Details (of astronomical
+  nature) of stars be understood by general rules while I narrate to you about
+  the effects of planets and signs."* Nakṣatras in BPHS are for daśā, for D9,
+  and for identification — not for character. Our UI says so.
+  → Would need Varāhamihira's *Bṛhat Saṁhitā*; gaṇa/yoni/nāḍī are Muhūrta
+  literature (*Muhūrta Chintāmaṇi*), not Horā.
+- **Vargottama.** The word occurs four times, never with a defining śloka. The
+  "same rāśi in D1 and D9" definition exists only in a Santhanam note (Vol I pdf
+  383) which is itself self-contradictory. Ch.36 vv.38-39 uses "Vargothama" as a
+  *dignity name* for a different concept entirely (ch.6's Uttama, 3 good vargas).
+  → If shown, must be labelled as the translator's note, not doctrine.
+- **Viparīta Rāja Yoga** (Santhanam imports it openly from *Phaladīpikā*),
+  **Nīcha Bhaṅga** (word appears once, no rules), the popular 2nd/11th-lord
+  Dhana yoga, **Kāla Sarpa**, **Sade Sati**, and the entire sphuṭa family
+  (Trisphuṭa, Bīja/Kṣetra, Yogi/Avayogi, Sahams — zero occurrences).
+
+**Reverse correction:** *Kuja/Maṅgala doṣa* **is** BPHS — Vol II **ch.80 v.47**
+as śloka (Mars in 12/4/7/8 from lagna, unaspected by a benefic), with explicit
+cancellation in vv.48-49. Only the name "Mangalik" is Santhanam's.
+
+## Present but blocked — the constants this printing does not supply
+
+- **Seeghrocha (śīghrocca).** Ch.27 vv.24-25 instructs deducting a longitude
+  "from the Seeghrocha of the planet" and **no value, table or formula is ever
+  given** — the word appears three times in 1,034 pages. Santhanam's gloss
+  "(or apogee)" is wrong; śīghrocca is the fast apex.
+  **This blocks Cheṣṭā bala, hence Ṣaḍbala, hence Iṣṭa/Kaṣṭa phala for five of
+  the seven grahas.** Sūrya and Chandra are computable (ch.28 vv.3-4).
+- **No worked Ṣaḍbala example** exists in either volume — so unlike the vargas
+  (ch.6) and daśās (Vol II ch.46), there is nothing to validate against.
+- **Iṣṭa/Kaṣṭa Saptavargaja Śubhāṅka** (ch.28 vv.7-9, pdf 289) reads
+  `60, 45, 30, 22, 15, t, 4, 2, 0` — the sixth value is a bare letter.
+- **Dṛk bala assembly** (ch.27 v.19) is one sentence; "Dṛṣṭi Piṇḍa" appears
+  exactly once in 1,034 pages and is never defined. **Yuddha bala** is listed as
+  a sub-component of Kāla bala yet requires the finished Ṣaḍbala (v.20) —
+  circular.
+- **Combustion orbs** exist only in a Santhanam note (Vol I pdf 99), which he
+  himself scopes to āyurdāya, and whose retrograde column is OCR-damaged.
+  BPHS's own doctrine is the ch.7 vv.28-29 **rule-of-three proportion** across
+  0-180° from Sūrya — that is what we implement; any orb table is out-of-BPHS.
+- **Badhaka** (Vol II ch.50 vv.20-21) is defined only for the four movable
+  rāśis, and only as a rāśi-daśā modifier — never as a natal classification,
+  despite the contents page promising all three modalities.
+
+## Why the strength number is Viṁśopaka, not Ṣaḍbala
+
+Ṣaḍbala is the famous answer and, from this text, the wrong one: blocked on
+Seeghrocha, resting on an undefined term for Dṛk bala, circular for Yuddha, and
+with no worked example to check. **Viṁśopaka bala (ch.7 vv.17-27)** is the only
+graha-level scalar here that is complete, self-interpreting (the verdict bands
+are *in the śloka*), validatable (Venus = 16.8 at Vol I pdf 98) and buildable
+from the 16 vargas already implemented.
+
+## Bhāva madhya — a tension inside BPHS, not an OCR problem
+
+There is **no cusp formula anywhere in either volume**, yet ch.27 vv.26-29
+instructs deducting the descendant/nadir from *the bhāva* — meaningful only if a
+bhāva is a longitude — and ch.28 vv.15-20 says outright *"If a bhava extends to
+two Rasis, the rectification will be done as per both the lords."* Santhanam
+asserts Śrīpati in his preface and silently uses cusps in worked examples.
+
+**Our position stands: whole-sign for all rāśi-level judgement.** If bhāva bala
+is ever built, compute a true MC and trisect the Asc-MC quadrants for *bala
+purposes only*, keeping whole-sign everywhere else. Equal-houses-from-lagna is
+not an acceptable substitute: it collapses the nadir/meridian distinction and
+makes bhāva digbala a pure function of house number, so latitude and obliquity
+drop out and every chart with the same lagna degree scores identically.
+
+## Books that would close these gaps
+
+1. **B. V. Raman, *Graha and Bhava Balas*** — closes Seeghrocha, the missing
+   worked example, the Śubhāṅka table and the Dṛk bala assembly at once.
+2. **Girish Chand Sharma's BPHS (Sagar, Devanāgarī + translation)** — repairs
+   *this printing's* OCR damage against the Sanskrit rather than importing
+   foreign doctrine.
+3. **Varāhamihira, *Bṛhat Saṁhitā*** — the only honest route to nakṣatra
+   character.
+
+Also named by Santhanam himself in-text: *Horā Sāra* of Pṛthuyaśas (his own
+translation, pp.183-187) for fuller bhāva significations.

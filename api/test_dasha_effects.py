@@ -165,5 +165,35 @@ check("not_stated actually occurs (the gradient would have hidden it)",
 check("contested actually occurs (the gradient would have averaged it away)",
       c[de.CONTESTED] > 0, str(c[de.CONTESTED]))
 
+
+print("\nTHE FRAME — houses counted from the daśā lord (ch.52-60's workhorse):")
+check("a graha in the lord's own sign is in the 1st (inclusive count)",
+      de.bhava_from(LEO, LEO) == 1)
+check("the next sign is the 2nd", de.bhava_from(LEO, VIRGO) == 2)
+check("it wraps: Meṣa from Mīna is the 2nd", de.bhava_from(PISCES, ARIES) == 2)
+check("the 7th is opposite", de.bhava_from(ARIES, LIBRA) == 7)
+check("every offset is 1..12 and each occurs exactly once",
+      sorted(de.bhava_from(CANCER, s) for s in range(12)) == list(range(1, 13)))
+# The frame is NOT symmetric — that is the whole reason it must be carried as
+# data rather than assumed. Saturn's 3rd from Jupiter is not Jupiter's 3rd
+# from Saturn.
+check("the frame is directional: 3rd-from-X is not 3rd-from-Y",
+      de.bhava_from(ARIES, GEMINI) == 3 and de.bhava_from(GEMINI, ARIES) == 11)
+check("...and 14 minus h is the inverse, so only the 7th is self-inverse",
+      all(de.bhava_from(a, b) + de.bhava_from(b, a) == 14
+          for a in range(12) for b in range(12) if a != b))
+
+pos = {"sun": LEO, "moon": TAURUS, "saturn": LIBRA, "jupiter": CAPRICORN}
+fr = de.frames_for_chart(pos, ARIES)
+check("frames_for_chart gives both origins", set(fr) >= {"from_lagna", "from_lord"})
+check("from_lagna matches the verdict engine's own bhāva",
+      fr["from_lagna"]["saturn"] == de.verdict("saturn", LIBRA, ARIES)["bhava"])
+check("from_lord is keyed by lord then graha",
+      fr["from_lord"]["jupiter"]["saturn"] == de.bhava_from(CAPRICORN, LIBRA))
+check("every lord sees itself in its own 1st",
+      all(fr["from_lord"][g][g] == 1 for g in pos))
+check("the note warns that some conditions state no frame",
+      "no frame at all" in fr["note"])
+
 print("\n" + ("ALL PASS" if not fails else f"FAILURES: {fails}"))
 sys.exit(1 if fails else 0)

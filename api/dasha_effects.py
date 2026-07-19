@@ -193,3 +193,59 @@ def verdict(graha: str, sign: int, lagna: int) -> dict:
 def verdicts_for_chart(positions: dict[str, int], lagna: int) -> dict[str, dict]:
     """ch.47 vv.5-6 for every graha. `positions` maps graha key -> rāśi index."""
     return {g: verdict(g, s, lagna) for g, s in positions.items()}
+
+
+# ---------------------------------------------------------------------------
+# THE FRAME — houses counted FROM THE DAŚĀ LORD
+#
+# ch.52-60 state most of their antardaśā conditions in this frame rather than
+# from the lagna: "in the 5th from the lord of the Dasa", and so on. It is the
+# workhorse of those chapters and the single frame the engine did not have.
+#
+# The arithmetic is the same whole-sign count used everywhere else — inclusive
+# of both ends, so a graha in the daśā lord's own sign is in the 1st. What was
+# missing was not the arithmetic but the ORIGIN: everything this project
+# computed previously counted from the lagna.
+#
+# A CAUTION THAT BELONGS NEXT TO THE CODE. Some conditions in those chapters
+# state no frame at all — "if he be in a kendra", with no "from" clause. Those
+# are genuinely ambiguous between the lagna and the daśā lord, and BPHS does
+# not resolve them. Any evaluator built on this function must carry the frame
+# as data and refuse to guess when the text leaves it unstated; a frame quietly
+# assumed produces a confident, wrong verdict on a real person's chart.
+# ---------------------------------------------------------------------------
+
+def bhava_from(origin_sign: int, target_sign: int) -> int:
+    """Whole-sign house of `target_sign` counted from `origin_sign`. 1-12.
+
+    Inclusive of both ends: bhava_from(s, s) == 1.
+    """
+    return (target_sign - origin_sign) % 12 + 1
+
+
+def frame_from_lord(lord_sign: int, positions: dict[str, int]) -> dict[str, int]:
+    """Where every graha sits counted FROM a daśā lord's sign."""
+    return {g: bhava_from(lord_sign, s) for g, s in positions.items()}
+
+
+def frames_for_chart(positions: dict[str, int], lagna: int) -> dict:
+    """Both frames, for every graha, so a caller never has to pick one silently.
+
+    `from_lagna` is what the rest of this engine already uses. `from_lord` is
+    keyed by the daśā lord: `from_lord["jupiter"]["saturn"] == 3` reads as
+    "Śani stands in the 3rd from Guru", which is exactly the shape ch.52-60's
+    conditions are written in.
+    """
+    return {
+        "from_lagna": {g: bhava_from(lagna, s) for g, s in positions.items()},
+        "from_lord": {
+            lord: frame_from_lord(lord_sign, positions)
+            for lord, lord_sign in positions.items()
+        },
+        "note": (
+            "ch.52-60 state most antardaśā conditions as houses counted from "
+            "the LORD OF THE DAŚĀ, not from the lagna. Both frames are supplied "
+            "because the text uses both — and because some of its conditions "
+            "name no frame at all, which no evaluator may silently resolve."
+        ),
+    }

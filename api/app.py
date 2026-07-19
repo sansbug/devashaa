@@ -24,7 +24,7 @@ from dashas import (
 )
 from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from analysis import analyse
-from dasha_effects import verdicts_for_chart
+from dasha_effects import verdicts_for_chart, frames_for_chart
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -259,9 +259,13 @@ def chart():
         # this engine already computes. Attached once, keyed by lord, rather
         # than per node — the verse tests the lord's natal placement, which does
         # not vary between that lord's mahā, antar and pratyantar bands.
-        payload["dasha"]["verdicts"] = verdicts_for_chart(
-            {g.key: g.rasi for g in result.grahas}, result.lagna_rasi,
-        )
+        _pos = {g.key: g.rasi for g in result.grahas}
+        payload["dasha"]["verdicts"] = verdicts_for_chart(_pos, result.lagna_rasi)
+        # Both reference frames. ch.52-60 state most antardaśā conditions as
+        # houses counted from the LORD OF THE DAŚĀ rather than from the lagna,
+        # and some state no frame at all — so both are supplied and neither is
+        # silently chosen. See dasha_effects.frames_for_chart.
+        payload["dasha"]["frames"] = frames_for_chart(_pos, result.lagna_rasi)
     except Exception as e:  # noqa: BLE001
         payload["dasha"] = {"error": f"Daśā calculation failed: {e}"}
 

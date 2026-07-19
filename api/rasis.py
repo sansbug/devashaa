@@ -39,6 +39,7 @@ from __future__ import annotations
 
 from enum import Enum
 
+import ch78_notes
 import dignity
 import drishti
 import functional
@@ -417,6 +418,16 @@ def rasi(sign):
             "rasimana": cited(RASIMANA[sign], Src.SLOKA, "Vol II ch.69 vv.1-4"),
             "sthira_dasha_years": cited(
                 STHIRA_DASHA_YEARS[sign], Src.SLOKA, "Vol II ch.46 vv.168-169"),
+        },
+        # Santhanam's ascendant sketch. Deliberately the LAST key, tagged NOTE,
+        # and carrying its own disclaimer — it is the one block on the card that
+        # is not Parāśara, and the UI keeps it collapsed and visually apart. See
+        # ch78_notes.py for why it is excerpted rather than reproduced whole.
+        "translator_sketch": {
+            **(ch78_notes.sketch(sign) or {}),
+            "src": Src.NOTE.value,
+            "ref": ch78_notes.CITATION,
+            "disclaimer": ch78_notes.DISCLAIMER,
         },
         "not_in_bphs": {
             "attributes": list(ABSENT_FROM_ALL_RASIS),

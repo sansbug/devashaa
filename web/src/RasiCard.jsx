@@ -187,6 +187,65 @@ function DrishtiRing({ sign, aspects, names }) {
   )
 }
 
+/**
+ * Santhanam's ascendant sketch — Vol II ch.78.
+ *
+ * The only block on this card that is not Parāśara, and the rules around it are
+ * the reason it can exist at all:
+ *
+ *  - COLLAPSED by default, and last on the card. A reader must choose to open
+ *    it; it can never be mistaken for the śloka panels above.
+ *  - Styled deliberately unlike them — dashed, no accent, a byline instead of a
+ *    citation badge.
+ *  - The disclaimer sits ABOVE the text, not under it as a footnote.
+ *  - The raw scan is available, so a reader can see exactly what was repaired.
+ *
+ * The argument for including it at all: a reader who wants personality traits
+ * will otherwise go and get them from a site that presents the same 20th-century
+ * material as ancient doctrine. Here they get it with the provenance attached.
+ */
+function TranslatorSketch({ s, sign }) {
+  const [open, setOpen] = useState(false)
+  const [raw, setRaw] = useState(false)
+  if (!s?.excerpt) return null
+  return (
+    <section className="rc-translator">
+      <button type="button" className="rc-tr-toggle" aria-expanded={open}
+              onClick={() => setOpen(!open)}>
+        {open ? '−' : '+'} Santhanam's sketch of the {sign} ascendant
+        <span className="rc-tr-byline">translator's commentary, not Parāśara</span>
+      </button>
+      {open && (
+        <div className="rc-tr-body">
+          <p className="rc-tr-warn">{s.disclaimer}</p>
+          {s.confidence === 'low' && (
+            <p className="rc-tr-warn low">
+              This passage sits in a collapsed two-column region of the scan and
+              is badly damaged — its section header survives only as a single
+              run-together token. The bracketed readings below are contextual
+              reconstructions, not transcriptions.
+            </p>
+          )}
+          <blockquote className="rc-tr-quote">{s.excerpt}</blockquote>
+          <p className="rc-note">
+            {s.ref} · PDF p.{s.pdf_page}. Square brackets are OCR repairs.
+            An excerpt — the full sketch is in the book.
+            <button type="button" className="rc-tr-raw" onClick={() => setRaw(!raw)}>
+              {raw ? 'hide' : 'show'} the unrepaired scan
+            </button>
+          </p>
+          {raw && <blockquote className="rc-tr-quote scan">{s.scan}</blockquote>}
+          {raw && s.uncertain?.length > 0 && (
+            <p className="rc-note">
+              Tokens we are not confident of: {s.uncertain.map((u) => `“${u}”`).join(', ')}
+            </p>
+          )}
+        </div>
+      )}
+    </section>
+  )
+}
+
 export default function RasiCard({ r, namer, names }) {
   const [showAll, setShowAll] = useState(false)
   if (!r) return null
@@ -332,6 +391,9 @@ export default function RasiCard({ r, namer, names }) {
           </p>
         )}
       </section>
+
+      {/* Last on the card, always. Never above the fold. */}
+      <TranslatorSketch s={r.translator_sketch} sign={r.name} />
     </article>
   )
 }

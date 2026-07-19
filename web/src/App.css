@@ -792,3 +792,47 @@ footer a:hover { color: var(--accent); }
   margin: .8rem 0 0; padding: .5rem .7rem; font-size: .74rem; line-height: 1.6;
   border: 1px solid var(--rx); border-left-width: 3px; border-radius: 6px; color: var(--ink);
 }
+
+/* --- Santhanam's ascendant sketch (Vol II ch.78) ---
+   The ONE block on a rāśi card that is not Parāśara. Its styling is
+   load-bearing: it must be impossible to mistake for a śloka panel, so it gets
+   no --accent anywhere, a dashed border, a muted ground and a byline where the
+   other panels carry a citation badge. Collapsed by default and always last. */
+.rc-translator {
+  margin-top: 1.6rem; border: 1px dashed var(--line); border-radius: 8px;
+  background: var(--sunken);
+}
+.rc-tr-toggle {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  color: var(--dim); font-size: .78rem; padding: .7rem .9rem;
+  font-weight: var(--text-weight, 400); display: flex; gap: .6rem;
+  align-items: baseline; flex-wrap: wrap;
+}
+.rc-tr-toggle:hover { color: var(--ink); }
+.rc-tr-byline {
+  font-size: .62rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--dim); border: 1px dashed var(--line); border-radius: 999px;
+  padding: .05rem .45rem; margin-left: auto;
+}
+.rc-tr-body { padding: 0 .9rem .9rem; }
+.rc-tr-warn {
+  margin: 0 0 .7rem; font-size: .7rem; line-height: 1.6; color: var(--ink);
+  border-left: 2px solid var(--dim); padding-left: .6rem;
+}
+.rc-tr-warn.low { border-left-color: var(--rx); }
+/* Serif + italic marks it as reproduced text rather than site copy. */
+.rc-tr-quote {
+  margin: 0; padding: .6rem .8rem; font-size: .8rem; line-height: 1.7;
+  color: var(--ink); font-style: italic; border-left: 2px solid var(--line);
+  background: var(--panel); border-radius: 0 6px 6px 0;
+}
+.rc-tr-quote.scan {
+  font-style: normal; font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: .68rem; color: var(--dim); margin-top: .5rem;
+}
+.rc-tr-raw {
+  background: none; border: 1px solid var(--line); border-radius: 4px;
+  color: var(--dim); cursor: pointer; font-size: .64rem; padding: .1rem .4rem;
+  margin-left: .4rem;
+}
+.rc-tr-raw:hover { color: var(--ink); }

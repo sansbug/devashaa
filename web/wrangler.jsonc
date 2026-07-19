@@ -3,6 +3,9 @@
   // approach as studywyz.com. Deploy with `npm run deploy` from this folder.
   "name": "devashaa",
   "compatibility_date": "2026-07-01",
+  // The Worker now has a script as well as assets: it answers /api/sync/* and
+  // hands everything else to ASSETS. See worker.js.
+  "main": "./worker.js",
   // The real domain. Wrangler provisions these on deploy because the zone is in
   // the same Cloudflare account; DNS records and SSL are created automatically.
   "routes": [
@@ -13,6 +16,17 @@
     // Vite's build output, NOT the source folder.
     "directory": "./dist",
     // Single-page app: unknown paths serve index.html instead of a 404.
-    "not_found_handling": "single-page-application"
-  }
+    "not_found_handling": "single-page-application",
+    // Required so worker.js can fall through to the static site.
+    "binding": "ASSETS"
+  },
+  // Encrypted profile blobs for passphrase sync. The Worker stores ciphertext
+  // under a key derived from the user's passphrase and CANNOT decrypt it — see
+  // web/src/sync.js. No user table, no email, nothing that identifies a person.
+  "kv_namespaces": [
+    {
+      "binding": "SYNC",
+      "id": "3604dd0531be4d569d78ae45b27fd525"
+    }
+  ]
 }

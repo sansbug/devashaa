@@ -6,11 +6,12 @@ import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
+import Sync from './Sync.jsx'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
 import DashaTimeline from './DashaTimeline.jsx'
-import { listProfiles, saveProfile, deleteProfile } from './profiles.js'
+import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
 
@@ -298,6 +299,10 @@ export default function App() {
         activeId={activeProfile}
         onPick={useProfile}
         onDelete={removeProfile}
+      />
+      <Sync
+        profiles={profiles}
+        onMerged={(merged) => setProfiles(replaceAll(merged))}
       />
 
       <form onSubmit={submit} className="birth-form">

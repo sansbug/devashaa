@@ -73,3 +73,16 @@ export function profileDetail(p) {
   const city = (p.place?.name || '').split(',')[0]
   return `${p.date} ${p.time}${city ? ` · ${city}` : ''}`
 }
+
+/**
+ * Replace the whole list — used only by passphrase sync after a merge.
+ *
+ * Deliberately separate from saveProfile(): that one is for a chart someone
+ * just cast, and enforces the newest-first ordering and the LIMIT. This takes
+ * an already-merged list and writes it wholesale, so a restore cannot be
+ * reordered or silently truncated mid-merge.
+ */
+export const replaceAll = (list) => {
+  write(Array.isArray(list) ? list : [])
+  return read()
+}

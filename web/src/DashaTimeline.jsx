@@ -29,7 +29,7 @@
  * a fallback.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const DAY = 86400000
 
@@ -53,7 +53,7 @@ function fmtDate(t) {
  * One rail. Bands are proportional within [t0, t1] — the rail's own span, not
  * the whole life — which is what makes a ten-week pratyantar readable.
  */
-function Rail({ nodes, level, namer, verdictOf, now, selected, onSelect, label }) {
+function Rail({ nodes, level, namer, verdictOf, conditionsOf, now, selected, onSelect, label }) {
   if (!nodes?.length) return null
   const t0 = parse(nodes[0].start)
   const t1 = parse(nodes[nodes.length - 1].end)
@@ -70,6 +70,7 @@ function Rail({ nodes, level, namer, verdictOf, now, selected, onSelect, label }
         {nodes.map((n, i) => {
           const a = parse(n.start), b = parse(n.end)
           const v = verdictOf?.(n.lord)
+          const cond = conditionsOf?.(n.lord)
           const past = b < now
           const running = a <= now && now < b
           return (
@@ -98,10 +99,31 @@ function Rail({ nodes, level, namer, verdictOf, now, selected, onSelect, label }
                           + (v.silent
                               ? '\nNeither branch of the verse names this placement.'
                               : '')
+                        : '')
+                     + (cond
+                        ? `\n\n${cond.chapter} — ${cond.counts.fired} of ${cond.counts.total}`
+                          + ' conditions fire'
+                          + (cond.counts.unavailable
+                              ? `, ${cond.counts.unavailable} cannot be evaluated`
+                              : '')
+                          + (cond.fired?.length
+                              ? '\n' + cond.fired
+                                  .map((f) => '· ' + (f.reading || f.predicate))
+                                  .join('\n')
+                              : '')
                         : '')}
             >
               <span className="dt-band-lord">{namer.grahaKey(n.lord)}</span>
               <span className="dt-band-dur">{span(b - a)}</span>
+              {/* Presence, not verdict. ch.52-60 name conditions that fire in
+                  this cell; the count says how many, and how many could not be
+                  evaluated at all. It is never a colour. */}
+              {cond && (cond.counts.fired > 0 || cond.counts.unavailable > 0) && (
+                <span className="dt-cond" aria-hidden="true">
+                  {cond.counts.fired > 0 && <span className="dt-cond-n">{cond.counts.fired}</span>}
+                  {cond.counts.unavailable > 0 && <span className="dt-cond-u">⊘</span>}
+                </span>
+              )}
             </button>
           )
         })}
@@ -138,7 +160,9 @@ function decades(t0, t1) {
   return out
 }
 
-export default function DashaTimeline({ dasha, namer, verdictOf, legend, showChain = false }) {
+export default function DashaTimeline({
+  dasha, namer, verdictOf, conditionsOf, onMahaChange, legend, showChain = false,
+}) {
   const now = Date.now()
   const maha = dasha?.mahadashas
   // Open on the running chain: a timeline whose first view is someone's
@@ -158,7 +182,14 @@ export default function DashaTimeline({ dasha, namer, verdictOf, legend, showCha
   const pickMaha = (i) => {
     setMi(i)
     setAi(currentIdx(maha[i].sub))
+    onMahaChange?.(maha[i].lord)
   }
+
+  // Tell the parent which mahādaśā's conditions to fetch, including the one we
+  // open on, so rail 2 is annotated before the user touches anything.
+  useEffect(() => {
+    if (maha?.[mi]) onMahaChange?.(maha[mi].lord)
+  }, [maha, mi, onMahaChange])
 
   const chain = useMemo(() => {
     const m = maha?.find((n) => n.is_current)
@@ -191,8 +222,11 @@ export default function DashaTimeline({ dasha, namer, verdictOf, legend, showCha
       <p className="dt-zoom">
         ↳ inside <strong>{namer.grahaKey(maha[mi].lord)}</strong>’s mahādaśā
       </p>
+      {/* Rail 2 takes conditionsOf but NOT verdictOf: ch.47's mahādaśā verse
+          does not reach down here, and ch.52-60 label too few branches to
+          colour one. */}
       <Rail nodes={antars} level={1} label="Antardaśā"
-            namer={namer} verdictOf={verdictOf} now={now}
+            namer={namer} conditionsOf={conditionsOf} now={now}
             selected={ai} onSelect={setAi} />
 
       {pratys?.length > 0 && (

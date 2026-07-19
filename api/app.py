@@ -25,6 +25,7 @@ from dashas import (
 from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from analysis import analyse
 from dasha_effects import verdicts_for_chart, frames_for_chart
+import antardasa
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -129,6 +130,58 @@ def rasis_one(sign):
     if not 0 <= sign <= 11:
         return jsonify({"error": "sign must be 0-11 (Meṣa..Mīna)"}), 400
     return jsonify(rasi(sign))
+
+
+@app.post("/api/antardasa")
+def antardasa_cells():
+    """ch.52-60's conditions for the nine antardaśās of one mahādaśā.
+
+    Served on demand rather than with every chart: the whole 81-cell matrix
+    with its quoted ślokas is ~650 KB, and one mahādaśā's slice is ~12 KB.
+
+    This returns which clauses FIRE, not whether a period is good. Of the
+    corpus's house conditions about one in three states no reference frame, and
+    only about one branch in five carries any valence word — so there is no
+    verdict here and the UI colours nothing at this level.
+    """
+    body = request.get_json(silent=True) or {}
+    maha = body.get("maha_lord")
+    positions = body.get("positions")
+    lagna = body.get("lagna")
+    if maha not in antardasa.rules.CHAPTER_OF:
+        return jsonify({"error": f"unknown mahādaśā lord {maha!r}"}), 400
+    if not isinstance(positions, dict) or not isinstance(lagna, int):
+        return jsonify({"error": "need positions {graha: rasi} and lagna (0-11)"}), 400
+
+    try:
+        cells = {
+            antar: antardasa.evaluate_cell(maha, antar, positions=positions, lagna=lagna)
+            for antar in antardasa.rules.CHAPTER_OF
+        }
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Antardaśā evaluation failed: {e}"}), 500
+
+    # Only the FIRED conditions travel, plus the counts. The full evaluated
+    # list is most of the weight and the UI never shows a clause that did not
+    # fire — but the counts must travel, because "3 of 8 conditions here could
+    # not be evaluated" is the one thing a reader must not be left to infer
+    # from an empty list.
+    slim = {}
+    for k, v in cells.items():
+        if not v:
+            continue
+        slim[k] = {
+            "chapter": v["chapter"], "verses": v["verses"],
+            "counts": v["counts"], "fired": v["fired"],
+            "maraka": v["maraka"], "remedy": v["remedy"],
+            "no_verdict": v["no_verdict"],
+        }
+    return jsonify({
+        "maha_lord": maha,
+        "chapter": f"BPHS Vol II ch.{antardasa.rules.CHAPTER_OF[maha]}",
+        "cells": slim,
+        "citation": antardasa.rules.CITATION,
+    })
 
 
 @app.get("/api/reference")

@@ -1049,3 +1049,13 @@ footer a:hover { color: var(--accent); }
   background: linear-gradient(90deg, var(--dasha-fav) 0 50%, var(--dasha-adv) 50% 100%);
 }
 .dt-swatch.v-not_stated { background: none; border-bottom: 1px solid var(--line); height: 8px; }
+
+/* Antardaśā condition markers — PRESENCE, never verdict.
+   ch.52-60 label only about one branch in five, so rail 2 carries a count of
+   what fires and a ⊘ for what cannot be evaluated, and no colour at all. */
+.dt-cond { display: flex; gap: 2px; align-items: center; margin-top: 1px; }
+.dt-cond-n {
+  font-size: .52rem; line-height: 1; padding: .05rem .2rem; border-radius: 2px;
+  background: var(--line); color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.dt-cond-u { font-size: .52rem; color: var(--dim); }

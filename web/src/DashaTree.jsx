@@ -76,11 +76,32 @@ function DashaLegend() {
   )
 }
 
-export default function DashaTree({ dasha, chartMeta, nameOf = () => null, verdicts }) {
+export default function DashaTree({
+  dasha, chartMeta, nameOf = () => null, verdicts, positions, lagna,
+}) {
   const [systemKey, setSystemKey] = useState('vimshottari')
+  // ch.52-60's conditions for whichever mahādaśā the timeline is showing.
+  // Fetched per mahādaśā rather than with the chart: the whole 81-cell matrix
+  // with its quoted ślokas is ~650 KB, one mahādaśā's slice is a fraction.
+  const [antarMaha, setAntarMaha] = useState(null)
+  const [antarCells, setAntarCells] = useState(null)
   const [data, setData] = useState(dasha)   // {default_year_days, variants}
   const [variant, setVariant] = useState('360')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!antarMaha || !positions || lagna === undefined || lagna === null) return
+    let cancelled = false
+    fetch(`${API}/api/antardasa`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ maha_lord: antarMaha, positions, lagna }),
+    })
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) setAntarCells(j.error ? null : j.cells) })
+      .catch(() => { if (!cancelled) setAntarCells(null) })
+    return () => { cancelled = true }
+  }, [antarMaha, positions, lagna])
 
   // A fresh chart resets to the (precomputed) Viṁśottarī that came with it.
   useEffect(() => {
@@ -190,6 +211,8 @@ export default function DashaTree({ dasha, chartMeta, nameOf = () => null, verdi
         dasha={tree}
         namer={{ grahaKey: (k) => nameOf(k) || k }}
         verdictOf={verdicts ? (lord) => verdicts[lord] : undefined}
+        conditionsOf={antarCells ? (lord) => antarCells[lord] : undefined}
+        onMahaChange={setAntarMaha}
         legend={verdicts ? <DashaLegend /> : null}
       />
 

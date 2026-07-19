@@ -426,6 +426,8 @@ export default function App() {
               }}
               nameOf={(key) => namer.graha(chart.grahas.find((g) => g.key === key))}
               verdicts={chart.dasha?.verdicts}
+              positions={Object.fromEntries(chart.grahas.map((g) => [g.key, g.rasi]))}
+              lagna={chart.lagna_rasi}
             />
           </section>
 

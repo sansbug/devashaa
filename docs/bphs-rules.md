@@ -482,3 +482,75 @@ eight verifiers who examined it.
 mahādaśā level, all twelve lordships), the 9×9 antardaśā matrix of ch.52-60, and
 bhāva-from-the-daśā-lord — the workhorse frame of those chapters, stated ~50
 times, and the single biggest gap in the current engine.
+
+---
+
+## Vol II ch.52-60 — the 81-cell antardaśā matrix (`api/antardasa.py`) — BUILT
+
+Nine chapters, one per mahādaśā lord, each with nine sub-sections: 81 cells and
+**559 conditions**, mined by nine agents and adversarially verified.
+`api/antardasa_rules.py` is GENERATED from that extraction, never retyped.
+
+### It is a CONDITION-FIRING engine, not a verdict engine
+
+Two censuses over the corpus forced this, and neither was a judgement call.
+
+**FRAMES.** 326 conditions reference a house:
+
+| frame | count | share |
+|---|---:|---:|
+| from the lagna | 111 | 34% |
+| **from the daśā lord** | 107 | 33% |
+| from the Moon | 1 | 0.3% |
+| **UNSTATED** | **107** | **33%** |
+
+Two thirds are computable, so refusing to compute would discard most of the
+corpus. But **one house condition in three names no reference frame at all**,
+and that third is adversarially placed: it clusters on the *opening
+kendra/trikoṇa branch* of a cell — the branch a real chart most often lands on.
+Roughly 25-30 of the 81 cells have their headline favourable branch
+unevaluable, and ch.54's entire Mars-in-Mars cell is frameless, which is the
+first cell any engine reaches.
+
+So unframed conditions are returned **unavailable and counted**, never omitted.
+An engine that quietly skips them reports "nothing fires" on charts where BPHS
+does state something — it simply does not say from where. **No default frame.**
+Adjacency supplies none either: ch.55's Mercury vv.36-38 sits immediately after
+a verse glossed "from the lord of the Dasa" and its Moon vv.68-70 immediately
+before one.
+
+**POLARITY.** Only about **one branch in five** carries a valence word, and the
+labels are skewed adverse and clustered — ch.55 has two in 83 verses, ch.57 has
+four in 82. More decisively, the extraction does not record whether a valence
+word governs the whole branch ("will be the **evil** effects") or merely names
+one item in an outcome list ("...**loss** of position, quarrels ... will be
+realised"). The verifiers found most are the latter — one counted 19 of 24 in
+its chapter. Treating a result-list noun as a verdict is keyword-driven
+inference, the same uncited judgement refused for grahas.
+
+**Therefore no antardaśā band is coloured.** Rail 2 of the timeline carries a
+count of what fires and a ⊘ for what cannot be evaluated. The mahādaśā verdict
+of ch.47 vv.5-6 still colours rail 1, because that verse genuinely states one.
+
+### Deliberate refusals
+
+- **No OCR salvage.** ch.56's "the 6th or the6rh" is *probably* 6/8/12 and
+  ch.60's "8th, llth, 12th" *probably* 6/8/12, but a damaged numeral list
+  poisons the whole condition rather than yielding its legible parts — parsing
+  "8th, llth, 12th" as (8, 12) would silently drop the 11th and give a
+  confident, partial, wrong answer.
+- **No mahā × antar composite.** BPHS states no combination rule at any join.
+- **No pratyantar layer.** ch.52-60 cover the antardaśā only; the tree has three
+  levels because Viṁśottarī *arithmetic* does, not because the effects chapters
+  follow it down. Rail 3 gets nothing.
+- **No remedy engine.** Remedies sit *after* both branches, are not polarity
+  markers, and at least two are the translator's own conjecture ("Though
+  remedial measure is not mentioned, **we believe**…"). Stored and displayed,
+  never recommended.
+- **No death prediction.** Māraka clauses are stored and cited as text. The
+  corpus is not even uniform on what the 2nd/7th clause yields — death in some
+  cells, "physical distress" in many, "fear of fever" in others. Normalising
+  those to death would be the most harmful thing this module could do.
+- **No matrix filling by inheritance.** Every cell is independent.
+  `maraka=None` means the cell *has* no death clause — ch.52's Jupiter cell is
+  the only one in its chapter without one. Absent is not empty.

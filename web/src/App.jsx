@@ -188,6 +188,10 @@ export default function App() {
   // local copy and the encrypted one silently returned on the next sign-in,
   // which reverses the user's delete rather than merely half-doing it.
   const [acct, setAcct] = useState(null)
+  // The account controls are collapsed by default. Most visitors never make an
+  // account, and the charts already in this browser are what they came back
+  // for — so those stay visible and the rest folds away.
+  const [savedOpen, setSavedOpen] = useState(false)
   // Dṛṣṭi selection. `hovered` is transient (pointer), `pinned` is sticky
   // (click/tap). The ledger always needs a subject, so it falls back to Sūrya;
   // the CHART highlights only a real selection, so it stays quiet at rest and
@@ -326,17 +330,35 @@ export default function App() {
         )}
       </header>
 
-      <Profiles
-        profiles={profiles}
-        activeId={activeProfile}
-        onPick={useProfile}
-        onDelete={removeProfile}
-      />
-      <Account
-        profiles={profiles}
-        onAccount={setAcct}
-        onMerged={(merged) => setProfiles(replaceAll(merged))}
-      />
+      <section className="saved">
+        <div className="saved-bar">
+          <button type="button" className="saved-toggle" aria-expanded={savedOpen}
+                  onClick={() => setSavedOpen((o) => !o)}>
+            <span className="saved-caret" aria-hidden="true">{savedOpen ? '−' : '+'}</span>
+            Save your charts
+            <span className="saved-hint">
+              {acct
+                ? `signed in as ${acct.userid}`
+                : profiles.length
+                  ? `${profiles.length} in this browser`
+                  : 'in this browser, or to an account'}
+            </span>
+          </button>
+          <Profiles
+            profiles={profiles}
+            activeId={activeProfile}
+            onPick={useProfile}
+            onDelete={removeProfile}
+          />
+        </div>
+        {savedOpen && (
+          <Account
+            profiles={profiles}
+            onAccount={setAcct}
+            onMerged={(merged) => setProfiles(replaceAll(merged))}
+          />
+        )}
+      </section>
 
       <form onSubmit={submit} className="birth-form">
         <div className="field">

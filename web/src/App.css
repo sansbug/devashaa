@@ -1060,61 +1060,62 @@ footer a:hover { color: var(--accent); }
 }
 .dt-cond-u { font-size: .52rem; color: var(--dim); }
 
-/* --- passphrase sync ---
-   The server stores ciphertext it has no key for. The UI's job is to make the
-   one irreversible fact — lose the phrase, lose the data — impossible to miss,
-   because there is no reset link and no email to send one to. */
-.sync {
+/* --- account ---
+   Replaces the passphrase panel. Same guarantee (the server stores ciphertext
+   it has no key for), friendlier front door. The two load-bearing bits of UI
+   are the no-recovery warning ABOVE the create button, and per-row save/remove
+   so nothing is all-or-nothing. */
+.acct {
   background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: 1.25rem; margin-bottom: 1.5rem;
 }
-.sync h3 { margin: 0 0 .5rem; font-size: 1rem; color: var(--accent); font-weight: var(--text-weight, 400); }
-.sync-lead { margin: 0 0 .9rem; font-size: .82rem; color: var(--ink); line-height: 1.6; }
-.sync-note { margin: .6rem 0 0; font-size: .7rem; color: var(--dim); line-height: 1.6; }
-.sync-how { border-top: 1px solid var(--line); padding-top: .7rem; margin-top: 1rem; }
-.sync-phrase-row { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
-.sync-phrase {
-  flex: 1 1 22rem; min-width: 0; background: var(--sunken);
-  border: 1px solid var(--line); border-radius: 6px; padding: .5rem .7rem;
-  font-size: .84rem; color: var(--ink); letter-spacing: .02em; line-height: 1.6;
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-  word-spacing: .3em;
-}
-.sync-phrase.hidden { color: var(--dim); letter-spacing: .18em; }
-.sync-phrase-row button, .sync-actions button, .sync-restore button {
+.acct h3 { margin: 0; font-size: 1rem; color: var(--accent); font-weight: var(--text-weight, 400); }
+.acct h3 code { color: var(--ink); font-size: .9rem; }
+.acct-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.acct-lead { margin: .6rem 0 .9rem; font-size: .8rem; color: var(--ink); line-height: 1.6; }
+.acct-tabs { display: flex; gap: .3rem; margin-bottom: .9rem; }
+.acct-tabs button, .acct-head button, .acct-actions button, .acct-row button {
   background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
-  border-radius: 6px; padding: .4rem .7rem; cursor: pointer; font-size: .74rem;
+  border-radius: 6px; padding: .35rem .7rem; cursor: pointer; font-size: .74rem;
   font-weight: var(--text-weight, 400);
 }
-.sync-phrase-row button:hover, .sync-actions button:hover { color: var(--ink); }
-.sync-actions button.go, .sync-restore button.go, .sync > button.go {
-  background: var(--accent); color: var(--on-accent); border-color: var(--accent);
-  font-weight: var(--label-weight, 500);
+.acct-tabs button.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.acct-tabs button:hover, .acct-row button:hover { color: var(--ink); }
+.acct-form { display: flex; flex-direction: column; gap: .1rem; max-width: 26rem; }
+.acct-form label {
+  font-size: .66rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--dim); margin-top: .6rem;
 }
-.sync-actions { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .8rem; }
-.sync-danger { color: var(--err-ink) !important; border-color: var(--err-line) !important; }
-/* The one thing a user must read before they can lose data. */
-.sync-warn {
-  margin: .7rem 0 0; padding: .55rem .75rem; font-size: .74rem; line-height: 1.6;
+.acct-form input {
+  background: var(--sunken); border: 1px solid var(--line); border-radius: 6px;
+  padding: .55rem .7rem; color: var(--ink); font-size: .9rem;
+}
+.acct-form button.go, .acct-row button.go {
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent);
+  border-radius: 6px; padding: .5rem .9rem; cursor: pointer;
+  font-weight: var(--label-weight, 500); font-size: .8rem; margin-top: .9rem;
+}
+.acct-form button.go:disabled { opacity: .5; cursor: not-allowed; }
+.acct-row button.go { margin-top: 0; padding: .3rem .7rem; font-size: .74rem; }
+/* The one sentence a user must read before they can lose data. */
+.acct-warn {
+  margin: .9rem 0 0; padding: .6rem .75rem; font-size: .74rem; line-height: 1.6;
   color: var(--ink); background: var(--err-bg); border: 1px solid var(--err-line);
   border-radius: 6px;
 }
-.sync-restore { margin-top: 1rem; }
-.sync-restore summary { cursor: pointer; font-size: .78rem; color: var(--dim); }
-.sync-restore summary:hover { color: var(--ink); }
-.sync-restore label {
-  display: block; margin: .7rem 0 .3rem; font-size: .68rem;
-  text-transform: uppercase; letter-spacing: .07em; color: var(--dim);
+.acct-rows { list-style: none; margin: .5rem 0 0; padding: 0; }
+.acct-row {
+  display: grid; grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.6fr) auto auto;
+  gap: .6rem; align-items: center; padding: .5rem 0;
+  border-top: 1px solid var(--line); font-size: .8rem;
 }
-.sync-restore textarea {
-  width: 100%; background: var(--sunken); border: 1px solid var(--line);
-  border-radius: 6px; padding: .55rem .7rem; color: var(--ink);
-  font-size: .82rem; font-family: ui-monospace, Consolas, monospace;
-  resize: vertical; margin-bottom: .5rem;
-}
-.sync-ok { margin: .8rem 0 0; font-size: .76rem; color: var(--ok-ink); }
-.sync-err { margin: .8rem 0 0; font-size: .76rem; color: var(--err-ink); line-height: 1.6; }
-.sync-err code {
-  background: var(--err-bg); border: 1px solid var(--err-line);
-  border-radius: 3px; padding: 0 .25em; margin: 0 .15em;
-}
+.acct-name { color: var(--ink); }
+.acct-meta { color: var(--dim); font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acct-state { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+.acct-state.on { color: var(--ok-ink); }
+.acct-empty { padding: .6rem 0; font-size: .78rem; color: var(--dim); }
+.acct-actions { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+.acct-confirm { font-size: .74rem; color: var(--ink); }
+.acct-danger { color: var(--err-ink) !important; border-color: var(--err-line) !important; }
+.acct-ok { margin: .7rem 0 0; font-size: .76rem; color: var(--ok-ink); }
+.acct-err { margin: .4rem 0 0; font-size: .74rem; color: var(--err-ink); line-height: 1.5; }

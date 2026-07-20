@@ -24,15 +24,17 @@
     // the Worker never runs and every sync call returns the HTML page with a
     // 200. It behaves correctly under `wrangler dev` and fails only once
     // deployed, so it has to be caught against the real thing.
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/account/*", "/api/account"]
   },
-  // Encrypted profile blobs for passphrase sync. The Worker stores ciphertext
-  // under a key derived from the user's passphrase and CANNOT decrypt it — see
-  // web/src/sync.js. No user table, no email, nothing that identifies a person.
-  "kv_namespaces": [
+  // Accounts and encrypted profile blobs. D1 rather than KV because a unique
+  // userid needs a real PRIMARY KEY: KV has no atomic check-and-set, so two
+  // simultaneous registrations could both observe "free" and both write.
+  // The Worker stores ciphertext it has no key for — see web/src/account.js.
+  "d1_databases": [
     {
-      "binding": "SYNC",
-      "id": "3604dd0531be4d569d78ae45b27fd525"
+      "binding": "DB",
+      "database_name": "devashaa-accounts",
+      "database_id": "79419998-8d92-4b28-9bc0-cddd7bd0d193"
     }
   ]
 }

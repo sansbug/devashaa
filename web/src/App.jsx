@@ -6,7 +6,7 @@ import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
-import Sync from './Sync.jsx'
+import Account from './Account.jsx'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
@@ -300,8 +300,9 @@ export default function App() {
         onPick={useProfile}
         onDelete={removeProfile}
       />
-      <Sync
+      <Account
         profiles={profiles}
+        namer={namer}
         onMerged={(merged) => setProfiles(replaceAll(merged))}
       />
 

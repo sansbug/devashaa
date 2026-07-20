@@ -28,10 +28,10 @@ const SRC_LABEL = {
 
 /** Source badge. `note` is visually distinct from `sloka` on purpose: the
     difference between Parāśara and his translator is the site's whole claim. */
-function Src({ src, ref: reference, title }) {
+function Src({ src, cite, title }) {
   if (!src) return null
   return (
-    <span className={`src src-${src}`} title={title || reference || ''}>
+    <span className={`src src-${src}`} title={title || cite || ''}>
       {SRC_LABEL[src] ?? src}
     </span>
   )
@@ -48,7 +48,7 @@ function Cell({ label, c }) {
           ? (c.src === 'absent' ? 'BPHS is silent' : 'lost in this scan')
           : String(c.value)}
       </span>
-      <Src src={c.src} ref={c.ref} title={c.ocr || c.note || c.ref} />
+      <Src src={c.src} cite={c.ref} title={c.ocr || c.note || c.ref} />
       {c.conflict && <span className="rc-conflict" title={c.conflict}>⚠</span>}
     </div>
   )
@@ -100,7 +100,7 @@ function DignityBand({ d, namer }) {
         // A real, citable fact rather than an empty panel — and it is true of
         // exactly four signs, which makes it informative rather than filler.
         <p className="rc-note">No graha reaches its exaltation or its fall in
-          this rāśi. <Src src="sloka" ref="ch.3 vv.49-50" /></p>
+          this rāśi. <Src src="sloka" cite="ch.3 vv.49-50" /></p>
       )}
       {d.debilitation.length > 0 && (
         <p className="rc-note">Fall points are <em>derived</em>: ch.3 vv.49-50
@@ -111,7 +111,7 @@ function DignityBand({ d, namer }) {
   )
 }
 
-function NakshatraBand({ n, onPick }) {
+function NakshatraBand({ n }) {
   const x = (deg) => deg * 10
   return (
     <div className="rc-band">
@@ -141,7 +141,7 @@ function NakshatraBand({ n, onPick }) {
       <p className="rc-note">
         Every rāśi holds exactly nine pādas — 2¼ nakṣatras. Computed here from
         the 27-fold and 12-fold divisions of the same circle.
-        <Src src="table" ref="Vol II ch.46" title={n.note} />
+        <Src src="table" cite="Vol II ch.46" title={n.note} />
         <br /><em>{n.note}</em>
       </p>
     </div>
@@ -180,7 +180,7 @@ function DrishtiRing({ sign, aspects, names }) {
           Sign aspect — <strong>not compatibility.</strong> BPHS contains no
           marriage matching by sign: no kūṭa, no guṇa-milan, no gaṇa, yoni or
           nāḍī. It judges marriage from the 7th bhāva, its lord, Venus and the
-          Upapada. <Src src="sloka" ref="Vol I ch.8 vv.1-5" />
+          Upapada. <Src src="sloka" cite="Vol I ch.8 vv.1-5" />
         </p>
       </div>
     </div>
@@ -267,7 +267,7 @@ export default function RasiCard({ r, namer, names }) {
         <div className="rc-limb">
           <span className="rc-limb-label">Limb of the Kālapuruṣa</span>
           <strong>{r.kalapurusha_limb.value}</strong>
-          <Src src="sloka" ref="ch.4 vv.1-2" title={r.kalapurusha_limb.note} />
+          <Src src="sloka" cite="ch.4 vv.1-2" title={r.kalapurusha_limb.note} />
         </div>
       </header>
 
@@ -342,7 +342,7 @@ export default function RasiCard({ r, namer, names }) {
                 ? 'no rule in BPHS'
                 : names[r.technical.badhaka_of.value]}
             </span>
-            <Src src={r.technical.badhaka_of.src} ref={r.technical.badhaka_of.ref}
+            <Src src={r.technical.badhaka_of.src} cite={r.technical.badhaka_of.ref}
                  title={r.technical.badhaka_of.note} />
           </div>
           {r.technical.is_badhaka_for.value !== null && (
@@ -350,7 +350,7 @@ export default function RasiCard({ r, namer, names }) {
               <span className="rc-key">Is bādhaka for</span>
               <span className="rc-val">{names[r.technical.is_badhaka_for.value]}</span>
               <Src src={r.technical.is_badhaka_for.src}
-                   ref={r.technical.is_badhaka_for.ref}
+                   cite={r.technical.is_badhaka_for.ref}
                    title={r.technical.is_badhaka_for.note} />
             </div>
           )}

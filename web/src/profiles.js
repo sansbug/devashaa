@@ -1,10 +1,17 @@
 /**
  * Saved birth profiles.
  *
- * PRIVACY: these live in localStorage and nowhere else. Birth data is personal,
- * and this app has no accounts and no user database — nothing here is ever sent
- * to the backend. The backend only ever receives a chart request; it stores
- * nothing. Clearing site data removes every profile.
+ * PRIVACY: these live in localStorage. Birth data is personal — a date, an
+ * exact time and a place is roughly one person per minute per town.
+ *
+ * NOTE, and keep this accurate: profiles ARE transmitted in two cases. Casting
+ * or re-opening one sends its birth details to the chart API (which stores
+ * nothing). Saving one to an account sends it ENCRYPTED to the accounts server,
+ * which has no key for it. Neither is automatic; both follow a user action.
+ *
+ * This comment was wrong for a while after accounts shipped, and the error
+ * propagated onto the public privacy page. If you change what leaves this file,
+ * /privacy is part of the change — see web/src/Privacy.jsx.
  */
 
 const KEY = 'devashaa.profiles'

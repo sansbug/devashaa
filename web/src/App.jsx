@@ -7,10 +7,11 @@ import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
+import Privacy from './Privacy.jsx'
+import { profileIdFor, removeProfile as removeFromAccount } from './account.js'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
-import DashaTimeline from './DashaTimeline.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -149,6 +150,20 @@ function RulerLegend() {
 }
 
 export default function App() {
+  const [route, setRoute] = useState(
+    () => (typeof location !== 'undefined' ? location.pathname : '/'),
+  )
+  useEffect(() => {
+    const on = () => setRoute(location.pathname)
+    window.addEventListener('popstate', on)
+    return () => window.removeEventListener('popstate', on)
+  }, [])
+  const go = (path) => {
+    history.pushState({}, '', path)
+    setRoute(path)
+    window.scrollTo(0, 0)
+  }
+
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
@@ -168,6 +183,11 @@ export default function App() {
   // static reference, independent of any chart.
   const [rasis, setRasis] = useState(null)
   const [openRasi, setOpenRasi] = useState(null)
+  // The signed-in account, lifted out of <Account> so that deleting a chart
+  // here can also delete the server copy. Without this the × removed the
+  // local copy and the encrypted one silently returned on the next sign-in,
+  // which reverses the user's delete rather than merely half-doing it.
+  const [acct, setAcct] = useState(null)
   // Dṛṣṭi selection. `hovered` is transient (pointer), `pinned` is sticky
   // (click/tap). The ledger always needs a subject, so it falls back to Sūrya;
   // the CHART highlights only a real selection, so it stays quiet at rest and
@@ -264,13 +284,25 @@ export default function App() {
     }
   }
 
-  function removeProfile(id) {
+  async function removeProfile(id) {
+    const gone = profiles.find((p) => p.id === id)
     setProfiles(deleteProfile(id))
     if (activeProfile === id) setActiveProfile(null)
+    // Delete the account copy too, or signing in would restore what was just
+    // removed. Failure here is not surfaced as an error — the local delete has
+    // already succeeded and is what the user asked for — but it is not silent
+    // either: the Account panel still lists the server copy.
+    if (acct && gone) {
+      try {
+        await removeFromAccount(acct, await profileIdFor(acct.idKey, gone))
+      } catch { /* the account panel remains the source of truth for the server */ }
+    }
   }
 
   const ready = date && time && place
   const Chart = style === 'south' ? SouthIndianChart : NorthIndianChart
+
+  if (route === '/privacy') return <Privacy onBack={() => go('/')} />
 
   return (
     <div className="page">
@@ -302,7 +334,7 @@ export default function App() {
       />
       <Account
         profiles={profiles}
-        namer={namer}
+        onAccount={setAcct}
         onMerged={(merged) => setProfiles(replaceAll(merged))}
       />
 
@@ -548,6 +580,12 @@ export default function App() {
           <a href={import.meta.env.VITE_SOURCE_URL || '#'} rel="noreferrer">
             source code
           </a>.
+        </p>
+        <p>
+          <a href="/privacy"
+             onClick={(e) => { e.preventDefault(); go('/privacy') }}>Privacy</a>
+          {' '}— no cookies, no trackers, and your charts are encrypted before
+          they leave your device.
         </p>
         <p>
           Place data from{' '}

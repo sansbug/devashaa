@@ -22,7 +22,7 @@ import {
 
 const REMEMBER = 'devashaa.acct'
 
-export default function Account({ profiles, onMerged, namer }) {
+export default function Account({ profiles, onMerged, onAccount }) {
   // Only the userid is remembered between visits. The password is not stored
   // anywhere — the derived key lives in memory for this tab and nowhere else.
   const [saved] = useState(() => localStorage.getItem(REMEMBER) || '')
@@ -69,7 +69,6 @@ export default function Account({ profiles, onMerged, namer }) {
     setPids(await indexLocal(a, profiles))
     // Merge remote into local so the charts are usable immediately. Never the
     // other way: restoring must not delete anything already on this device.
-    const bySig = new Set(got.map((p) => `${p.date}|${p.time}`))
     const extra = got.filter((p) => !profiles.some(
       (q) => q.date === p.date && q.time === p.time
              && q.place?.latitude === p.place?.latitude))
@@ -88,6 +87,7 @@ export default function Account({ profiles, onMerged, namer }) {
       }
       localStorage.setItem(REMEMBER, a.userid)
       setAcct(a)
+      onAccount?.(a)          // so a local delete can also reach the server
       setPassword('')
       const { extra } = await pull(a)
       setMsg(kind === 'signup'
@@ -126,7 +126,7 @@ export default function Account({ profiles, onMerged, namer }) {
     try {
       await deleteAccount(acct.userid, acct.authId)
       localStorage.removeItem(REMEMBER)
-      setAcct(null); setRemote([]); setConfirmDelete(false)
+      setAcct(null); setRemote([]); setConfirmDelete(false); onAccount?.(null)
       setMsg('Account and all stored charts deleted. This device is untouched.')
     } catch (e) { setErr(e.message) } finally { setBusy('') }
   }
@@ -201,7 +201,10 @@ export default function Account({ profiles, onMerged, namer }) {
     <section className="acct">
       <div className="acct-head">
         <h3>Signed in as <code>{acct.userid}</code></h3>
-        <button type="button" onClick={() => { setAcct(null); setRemote([]) }}>sign out</button>
+        <button type="button"
+                onClick={() => { setAcct(null); setRemote([]); onAccount?.(null) }}>
+          sign out
+        </button>
       </div>
 
       <p className="acct-lead">

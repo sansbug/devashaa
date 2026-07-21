@@ -26,6 +26,8 @@ from dignity import dignity_of, sign_landmarks, nakshatra_gandanta
 from analysis import analyse
 from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
+import charadasha
+import nakshatra_attrs
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -110,6 +112,21 @@ def health():
         "zodiac": "Sidereal",
         "bhava_system": "Whole sign",
     }), (200 if (ok and places_ok) else 503)
+
+
+@app.get("/api/nakshatra-symbols")
+def nakshatra_symbols():
+    """Classical nakṣatra symbols — tier `traditional`, NOT BPHS.
+
+    Sourced for Aśvinī → Āśleṣā only (the source volume is Part I); the rest are
+    returned as explicit gaps, never guessed. See api/nakshatra_attrs.py.
+    """
+    return jsonify({
+        "symbols": nakshatra_attrs.all_symbols(),
+        "tier": nakshatra_attrs.TIER,
+        "citation": nakshatra_attrs.CITATION,
+        "note": nakshatra_attrs.SOURCE_NOTE,
+    })
 
 
 @app.get("/api/rasis")
@@ -313,6 +330,17 @@ def chart():
         # than per node — the verse tests the lord's natal placement, which does
         # not vary between that lord's mahā, antar and pratyantar bands.
         _pos = {g.key: g.rasi for g in result.grahas}
+        # Jaimini Chara Daśā — a SIGN-based daśā, a different school from the
+        # Viṁśottarī family above. Only the per-sign LENGTHS are attached: the
+        # sequence-direction rule is not in the available source (see
+        # charadasha.py), so the engine does not order the signs here.
+        try:
+            _pos = {g.key: g.rasi for g in result.grahas}
+            _deg = {g.key: g.longitude % 30 for g in result.grahas}
+            payload["dasha"]["chara"] = charadasha.chara_dasha(
+                _pos, _deg, lagna=result.lagna_rasi)
+        except Exception as e:  # noqa: BLE001
+            payload["dasha"]["chara"] = {"error": f"Chara Daśā failed: {e}"}
         payload["dasha"]["verdicts"] = verdicts_for_chart(_pos, result.lagna_rasi)
         # Both reference frames. ch.52-60 state most antardaśā conditions as
         # houses counted from the LORD OF THE DAŚĀ rather than from the lagna,

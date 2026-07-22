@@ -393,13 +393,61 @@ BPHS — the rāśi cards correctly mark this whole layer "BPHS is silent (ch.3
 v.7)"; this fills it on a `traditional` footing, beside the BPHS ch.6 deity the
 app already carries, never as Parāśara.
 
-**Sourced for 9 of 27 only.** The source volume is *Part I* (Aśvinī → Āśleṣā).
-All nine were cross-checked against the canonical standard: zero corrections.
-Rows 10–27 are returned as explicit not-yet-sourced gaps — **not guessed.**
-Inventing the other eighteen from memory is exactly the fabrication this project
-refuses, and completing the table needs a primary source (Bṛhat Saṁhitā ch.98,
-or Parts II–III of the series). The book states no gaṇa/yoni/nāḍī for any
-nakṣatra, so none is carried. Served at `/api/nakshatra-symbols`.
+**As first built (2026-07-19): sourced for 9 of 27 only** — *Part I* covers only
+Aśvinī → Āśleṣā. See the expansion below.
+
+---
+
+## BUILT 2026-07-21 — the full 27-nakṣatra attribute table + UI
+
+Two further source books closed the gaps *Part I* left, and the module grew from
+9 symbols to a full 27-row attribute grid with per-cell provenance.
+
+**Two new sources** (both scanned; read redundantly, reconciled, cross-checked):
+
+- **S2** — Sunil John & V. Pandya, *Predicting Through Nakṣatras, **Part 2***
+  (Saptarishis). The direct continuation of Part I: chapter header tables for
+  **nakṣatras 10–18** (Maghā → Jyeṣṭhā), giving symbol / lord / deity / range /
+  padas. Only the header tables were taken — the ~400 pages of the authors'
+  predictive "techniques" are their own copyrighted material and were not mined.
+- **S3** — Ram Babu Sao, *Perfect Astrology (Nakṣatra)*, §3.2–3.3 classification
+  tables: **gaṇa, yoni/animal, kālapuruṣa body-part, puruṣārtha, quality, śakti**
+  for all 27, plus asterism star-shapes for symbols 19–27. A tertiary compilation
+  whose tables were badly OCR-scrambled, so every field was read twice and
+  reconciled.
+
+**What is now sourced (all 27):** symbol, gaṇa, yoni, body-part, puruṣārtha,
+quality, śakti. Each cell carries a **confidence** — `corroborated` (two
+independent sources agree), `single_source` (one book — the honest ceiling for
+the whole S3 layer, since it is one OCR'd book), `uncertain` (the stored value
+may itself be wrong), or `absent`.
+
+**Data-integrity results, surfaced not silently fixed:**
+
+- Gaṇa (all 27) matches the canonical 9-9-9 Deva/Manuṣya/Rākṣasa split exactly;
+  puruṣārtha matches the canonical Dharma-Artha-Kāma-Mokṣa cycle exactly.
+- **One flagged OCR swap:** S3 prints Puṣya yoni = *rat* and Pūrva-Phalgunī yoni
+  = *goat*, the reverse of the canonical pairing. Both independent reads suspect
+  a column-drift. Kept as the book printed them, marked `uncertain`, with the
+  canonical alternative in the note — **not silently corrected.**
+- **Two deity variances flagged, not applied:** S2 gives Hasta = *Savitṛ* and
+  Svātī = *Vāyu*, where the app's BPHS-cited `vedic.py` gives *Sūrya* / *Marut*.
+  A `traditional` source does not overwrite a BPHS-tier value — `vedic.py` is
+  left standing and the variance is recorded in `DEITY_TRADITION_VARIANTS` for a
+  human to reconcile against the BPHS text.
+
+**Still absent — NĀḌĪ (0/27).** Neither book carries an Ādi/Madhya/Antya table
+(the whole nakṣatra section of *Perfect Astrology*, pp.47–85, was scanned to
+confirm). Left an explicit gap for all 27; closing it needs a muhūrta / Aṣṭakūṭa
+source (Muhūrta Cintāmaṇi, Kālaprakāśikā). Not filled from memory, though the
+cycle is trivial — that would be exactly the fabrication this project refuses.
+
+**Served at** `/api/nakshatra-attributes` (each row joined with the BPHS deity +
+Viṁśottarī lord under a `bphs`/`sloka` key, never blended). **UI:** a
+"twenty-seven nakṣatras" reference section (`web/src/NakshatraCard.jsx`),
+mirroring the rāśi cards, where every cell shows its confidence badge, `uncertain`
+cells wear a ⚠ opening the note, and nāḍī reads "not sourced on this tier".
+`/api/nakshatra-symbols` stays for back-compat (now all 27).
 
 ### Jaimini Chara Daśā length engine (`api/charadasha.py`) — tier `jaimini`
 
@@ -436,5 +484,6 @@ Chara kārakas are already built (`api/karakas.py`, the 7-kāraka scheme Rao use
 The per-sign lengths ride on the chart payload at `dasha.chara`.
 
 **Not yet built:** a rāśi-daśā TIMELINE (the existing timeline is graha-lord
-shaped; Chara Daśā bands are signs), antardaśās (ch.4, not in the scan), the
-direction rule (ch.3), and rows 10–27 of the symbol table.
+shaped; Chara Daśā bands are signs), antardaśās (ch.4, not in the scan), and the
+direction rule (ch.3). (The symbol table rows 10–27 — pending when this was
+first written — were completed on 2026-07-21, see the section above.)

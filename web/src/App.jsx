@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import DashaTree from './DashaTree.jsx'
+import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
@@ -11,6 +12,7 @@ import Privacy from './Privacy.jsx'
 import { profileIdFor, removeProfile as removeFromAccount } from './account.js'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
+import NakshatraCard from './NakshatraCard.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
@@ -149,6 +151,28 @@ function RulerLegend() {
   )
 }
 
+// Static nakṣatra names, for the picker buttons — they must render before the
+// (lazy) attribute payload arrives. Order is canonical, Aśvinī = 1.
+const NAK_NAMES = [
+  { name: 'Ashwini', name_iast: 'Aśvinī' }, { name: 'Bharani', name_iast: 'Bharaṇī' },
+  { name: 'Krittika', name_iast: 'Kṛttikā' }, { name: 'Rohini', name_iast: 'Rohiṇī' },
+  { name: 'Mrigashira', name_iast: 'Mṛgaśira' }, { name: 'Ardra', name_iast: 'Ārdrā' },
+  { name: 'Punarvasu', name_iast: 'Punarvasu' }, { name: 'Pushya', name_iast: 'Puṣya' },
+  { name: 'Ashlesha', name_iast: 'Āśleṣā' }, { name: 'Magha', name_iast: 'Maghā' },
+  { name: 'Purva Phalguni', name_iast: 'Pūrva Phalgunī' },
+  { name: 'Uttara Phalguni', name_iast: 'Uttara Phalgunī' },
+  { name: 'Hasta', name_iast: 'Hasta' }, { name: 'Chitra', name_iast: 'Citrā' },
+  { name: 'Swati', name_iast: 'Svātī' }, { name: 'Vishakha', name_iast: 'Viśākhā' },
+  { name: 'Anuradha', name_iast: 'Anurādhā' }, { name: 'Jyeshtha', name_iast: 'Jyeṣṭhā' },
+  { name: 'Mula', name_iast: 'Mūla' }, { name: 'Purva Ashadha', name_iast: 'Pūrva Āṣāḍhā' },
+  { name: 'Uttara Ashadha', name_iast: 'Uttara Āṣāḍhā' },
+  { name: 'Shravana', name_iast: 'Śravaṇa' }, { name: 'Dhanishta', name_iast: 'Dhaniṣṭhā' },
+  { name: 'Shatabhisha', name_iast: 'Śatabhiṣā' },
+  { name: 'Purva Bhadrapada', name_iast: 'Pūrva Bhādrapadā' },
+  { name: 'Uttara Bhadrapada', name_iast: 'Uttara Bhādrapadā' },
+  { name: 'Revati', name_iast: 'Revatī' },
+]
+
 export default function App() {
   const [route, setRoute] = useState(
     () => (typeof location !== 'undefined' ? location.pathname : '/'),
@@ -183,6 +207,12 @@ export default function App() {
   // static reference, independent of any chart.
   const [rasis, setRasis] = useState(null)
   const [openRasi, setOpenRasi] = useState(null)
+  // The 27 nakṣatra reference cards — traditional-tier attributes (gaṇa, yoni,
+  // …) BPHS itself does not carry. Fetched once, lazily, like the rāśis. The
+  // picker labels come from a static name list so it can render before the
+  // (larger) attribute payload has loaded.
+  const [nakAttrs, setNakAttrs] = useState(null)
+  const [openNak, setOpenNak] = useState(null)
   // The signed-in account, lifted out of <Account> so that deleting a chart
   // here can also delete the server copy. Without this the × removed the
   // local copy and the encrypted one silently returned on the next sign-in,
@@ -234,6 +264,15 @@ export default function App() {
       .then((j) => setRasis(j.rasis))
       .catch(() => setRasis([]))
   }, [openRasi, rasis])
+
+  // Nakṣatra attribute table — same lazy-once pattern as the rāśis.
+  useEffect(() => {
+    if (openNak === null || nakAttrs) return
+    fetch(`${API}/api/nakshatra-attributes`)
+      .then((r) => r.json())
+      .then((j) => setNakAttrs(j))
+      .catch(() => setNakAttrs({ nakshatras: [] }))
+  }, [openNak, nakAttrs])
 
   async function submit(e) {
     e.preventDefault()
@@ -489,6 +528,24 @@ export default function App() {
               positions={Object.fromEntries(chart.grahas.map((g) => [g.key, g.rasi]))}
               lagna={chart.lagna_rasi}
             />
+
+            {/* Jaimini Chara Daśā — a sign-based daśā, a different school from
+                the nakṣatra daśās above. Its own quieter timeline (no ch.47
+                verdict colour) with the sequence-direction toggle, since that
+                rule is not in the available source. */}
+            {chart.dasha?.chara?.lengths?.length > 0 && (
+              <div className="chara-block">
+                <h4 className="chara-h">
+                  Chara Daśā <span className="chara-tag">Jaimini · sign-based</span>
+                </h4>
+                <CharaDashaTimeline
+                  chara={chart.dasha.chara}
+                  lagna={chart.lagna_rasi}
+                  jdUt={chart.jd_ut}
+                  namer={namer}
+                />
+              </div>
+            )}
           </section>
 
           <section className="table-panel">
@@ -591,6 +648,38 @@ export default function App() {
             r={rasis[openRasi]}
             namer={namer}
             names={Array.from({ length: 12 }, (_, i) => namer.rasi(i))}
+          />
+        )}
+      </section>
+
+      {/* The twenty-seven nakṣatras. The complement to the rāśi cards: this is
+          exactly the gaṇa/yoni/nāḍī material BPHS lacks, filled from named
+          sources on its own tier rather than left for a reader to invent. */}
+      <section className="table-panel rasi-section">
+        <h3>The twenty-seven nakṣatras</h3>
+        <p className="rc-note rasi-intro">
+          The muhūrta-tradition attributes of each nakṣatra — gaṇa, yoni, śakti
+          and the rest — that <strong>BPHS itself does not carry.</strong> Shown
+          on a <strong>traditional</strong> tier beside the BPHS deity and
+          Viṁśottarī lord, never blended into them, with every cell citing its
+          source and how sure we are of it. Nāḍī is left an explicit gap: it is
+          in neither source book.
+        </p>
+        <div className="rasi-picker">
+          {NAK_NAMES.map((nm, i) => (
+            <button type="button" key={i}
+                    className={openNak === i ? 'on' : ''}
+                    onClick={() => setOpenNak(openNak === i ? null : i)}>
+              {namer.nakshatra(nm)}
+            </button>
+          ))}
+        </div>
+        {openNak !== null && !nakAttrs && <p className="hint">loading…</p>}
+        {openNak !== null && nakAttrs?.nakshatras?.[openNak] && (
+          <NakshatraCard
+            n={nakAttrs.nakshatras[openNak]}
+            fieldMeta={nakAttrs.field_meta}
+            namer={namer}
           />
         )}
       </section>

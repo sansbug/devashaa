@@ -16,6 +16,7 @@ import swisseph as swe
 from vedic import (
     compute_chart, ephemeris_status,
     RASIS, RASIS_IAST, RASIS_EN, RASI_LORDS, RASI_LORDS_IAST, RASI_LORDS_EN,
+    NAKSHATRAS,
 )
 from vargas import VARGAS
 from vimshottari import DEFAULT_YEAR_DAYS, YEAR_DAYS_SAVANA, YEAR_DAYS_JULIAN
@@ -118,14 +119,51 @@ def health():
 def nakshatra_symbols():
     """Classical nakṣatra symbols — tier `traditional`, NOT BPHS.
 
-    Sourced for Aśvinī → Āśleṣā only (the source volume is Part I); the rest are
-    returned as explicit gaps, never guessed. See api/nakshatra_attrs.py.
+    Now sourced for all 27 (1-18 iconographic; 19-27 asterism star-shapes), each
+    with its own confidence and citation. See api/nakshatra_attrs.py.
     """
     return jsonify({
         "symbols": nakshatra_attrs.all_symbols(),
         "tier": nakshatra_attrs.TIER,
         "citation": nakshatra_attrs.CITATION,
         "note": nakshatra_attrs.SOURCE_NOTE,
+    })
+
+
+@app.get("/api/nakshatra-attributes")
+def nakshatra_attributes():
+    """Full `traditional`-tier nakṣatra attribute table — NOT BPHS.
+
+    All 27 nakṣatras × {symbol, gaṇa, yoni/animal, kālapuruṣa body-part,
+    puruṣārtha, quality, śakti, nāḍī}, every cell carrying its own confidence
+    (corroborated / single_source / uncertain / absent) and source citation.
+    Nāḍī is `absent` for all 27 — genuinely not in the source books, never
+    guessed. Each row is joined with the BPHS-tier deity (ch.6) and Viṁśottarī
+    lord (ch.46) the app already carries, so the card can show the śloka layer
+    beside the traditional one — and the two are never conflated: the join lives
+    under `bphs`, tagged tier `sloka`. See api/nakshatra_attrs.py.
+    """
+    from vimshottari import _ORDER, _NAME
+    rows = nakshatra_attrs.all_attributes()
+    for r in rows:
+        i = r["index"]
+        lord_key = _ORDER[(i - 1) % 9]          # Viṁśottarī cycle, BPHS ch.46
+        r["bphs"] = {
+            "tier": "sloka",
+            "deity": NAKSHATRAS[i - 1][2],
+            "deity_iast": NAKSHATRAS[i - 1][3],
+            "lord": lord_key,
+            "lord_name": _NAME[lord_key],
+            "cite": "deity ch.6; Viṁśottarī lord ch.46",
+        }
+    return jsonify({
+        "nakshatras": rows,
+        "tier": nakshatra_attrs.TIER,
+        "fields": list(nakshatra_attrs.FIELDS),
+        "field_meta": nakshatra_attrs.FIELD_META,
+        "sources": nakshatra_attrs.SOURCES,
+        "note": nakshatra_attrs.SOURCE_NOTE,
+        "deity_variants": nakshatra_attrs.DEITY_TRADITION_VARIANTS,
     })
 
 

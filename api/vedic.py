@@ -91,8 +91,24 @@ GRAHAS = [
     ("ketu",    "Ketu",    "Ketu",    "Ketu",    "☋", None),  # = Rahu + 180°
 ]
 
-# 27 nakṣatras. Deities per BPHS ch.6 vv.24-26 (the Bhāṁśa lords are the
-# presiding deities of the nakṣatras, listed there in order).
+# 27 nakṣatras. Deities per BPHS ch.6 vv.24-26 (the Bhāṁśa / Nakṣatrāṁśa /
+# Saptaviṁśāṁśa lords are the presiding deities of the nakṣatras, listed there
+# in order). Transcribed word-for-word from Santhanam's Vol I text (ch.6,
+# "24-26. BHAMSA (NAKSHATRAMSA OR SAPTAVIMSAMSA)", pp.78-79): Dastra, Yama,
+# Agni, Brahma, Chandra, Isa, Aditi, Jiva, Ahi, Pitara, Bhaga, Aryama, Sūrya,
+# Tvashta, Marut, Sakragni, Mitra, Vasava, Rakshasa, Varuna, Visvadeva, Govinda,
+# Vasu, Varuna, Ajapa, Ahirbudhanya, Pusha. All 27 rows below reproduce it exactly.
+#
+# TWO ENTRIES DIVERGE FROM THE COMMON VEDIC LIST — kept as BPHS doctrine, NOT
+# "corrected" to it (checked 2026-07-21 against the Santhanam PDF itself). Hasta
+# (13) and Svātī (15): the primary Vedic authority — the Taittirīya Brāhmaṇa
+# III.1.1-5 nakṣatra-devatā hymn, and with it the ordinary devatā list and Sunil
+# John's Predicting Through Nakṣatras — give Savitṛ and Vāyu. Parāśara's text
+# here prints Sūrya (Hasta) and Marut (Svātī). Each is the same deity-FAMILY as
+# the TB reading (Sūrya/Savitṛ are both solar; Marut/Vāyu are both wind-gods),
+# so these are genuine textual variants of Parāśara's, not transcription slips.
+# This is a BPHS-tier value; the traditional-tier alternative is recorded,
+# unapplied, in nakshatra_attrs.DEITY_TRADITION_VARIANTS.
 # (common, iast, deity_common, deity_iast)
 NAKSHATRAS = [
     ("Ashwini",            "Aśvinī",            "Dastra (Ashwini Kumara)", "Dastra (Aśvinī Kumāra)"),
@@ -107,9 +123,9 @@ NAKSHATRAS = [
     ("Magha",              "Maghā",             "Pitara",                  "Pitara"),
     ("Purva Phalguni",     "Pūrva Phalgunī",    "Bhaga",                   "Bhaga"),
     ("Uttara Phalguni",    "Uttara Phalgunī",   "Aryama",                  "Aryamā"),
-    ("Hasta",              "Hasta",             "Surya",                   "Sūrya"),
+    ("Hasta",              "Hasta",             "Surya",                   "Sūrya"),      # BPHS ch.6 v.25; TB III.1 & common list have Savitṛ — see DEITY_TRADITION_VARIANTS
     ("Chitra",             "Citrā",             "Tvashta",                 "Tvaṣṭā"),
-    ("Swati",              "Svātī",             "Marut",                   "Marut"),
+    ("Swati",              "Svātī",             "Marut",                   "Marut"),      # BPHS ch.6 v.25; TB III.1 & common list have Vāyu — see DEITY_TRADITION_VARIANTS
     ("Vishakha",           "Viśākhā",           "Shakragni",               "Śakrāgni"),
     ("Anuradha",           "Anurādhā",          "Mitra",                   "Mitra"),
     ("Jyeshtha",           "Jyeṣṭhā",           "Vasava (Indra)",          "Vāsava (Indra)"),

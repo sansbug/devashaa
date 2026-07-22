@@ -29,6 +29,7 @@ from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
 import nakshatra_attrs
+import nakshatra_techniques
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -156,6 +157,9 @@ def nakshatra_attributes():
             "lord_name": _NAME[lord_key],
             "cite": "deity ch.6; Viṁśottarī lord ch.46",
         }
+        # `modern`-tier interaction techniques — fenced on their own key so they
+        # are never confused with the `traditional` cells or the BPHS join.
+        r["techniques"] = nakshatra_techniques.techniques_of(i)
     return jsonify({
         "nakshatras": rows,
         "tier": nakshatra_attrs.TIER,
@@ -164,6 +168,9 @@ def nakshatra_attributes():
         "sources": nakshatra_attrs.SOURCES,
         "note": nakshatra_attrs.SOURCE_NOTE,
         "deity_variants": nakshatra_attrs.DEITY_TRADITION_VARIANTS,
+        "techniques_source": nakshatra_techniques.SOURCE,
+        "techniques_note": nakshatra_techniques.SOURCE_NOTE,
+        "computable_meaning": nakshatra_techniques.COMPUTABLE_MEANING,
     })
 
 

@@ -769,6 +769,45 @@ footer a:hover { color: var(--accent); }
 .nk-card .rc-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 .nk-cell .rc-val { font-weight: var(--text-weight, 400); }
 
+/* --- modern-tier interaction techniques ---
+   Deliberately unlike the tiered cells above: dashed, no accent, a byline instead
+   of a source badge, and collapsed by default — it can never be mistaken for the
+   traditional attributes or BPHS. Mirrors the rāśi card's translator sketch. */
+.nk-modern { margin-top: 1.4rem; }
+.nk-mod-toggle {
+  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; width: 100%;
+  background: none; border: 0; border-top: 1px dashed var(--line);
+  padding: .8rem 0 0; cursor: pointer; color: var(--dim);
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; text-align: left;
+}
+.nk-mod-toggle:hover { color: var(--ink); }
+.nk-mod-count {
+  font-size: .62rem; border: 1px solid var(--line); border-radius: 999px;
+  padding: .02rem .4rem; color: var(--dim);
+}
+.nk-mod-byline { text-transform: none; letter-spacing: 0; font-style: italic; color: var(--dim); }
+.nk-mod-body { margin-top: .6rem; }
+.nk-mod-warn {
+  margin: 0 0 .7rem; padding: .5rem .7rem; font-size: .72rem; line-height: 1.6;
+  color: var(--ink); background: var(--sunken);
+  border: 1px dashed var(--line); border-radius: 8px;
+}
+.nk-mod-theme { margin: 0 0 .5rem; font-size: .78rem; color: var(--dim); }
+.nk-mod-list { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: .5rem; }
+.nk-mod-list li { font-size: .82rem; line-height: 1.5; color: var(--ink); }
+.nk-mod-list li.is-np {
+  border-left: 2px dashed var(--rx, var(--line)); padding-left: .5rem; margin-left: -.5rem;
+  list-style: none;
+}
+.nk-mod-gist { display: block; }
+.nk-mod-meta { display: inline-flex; align-items: center; gap: .4rem; margin-top: .2rem; flex-wrap: wrap; }
+.nk-mod-page { font-size: .62rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+.compute { border-style: dotted; }
+.compute-yes { color: var(--accent); border-color: var(--accent); border-style: solid; }
+.compute-partly { color: var(--dim); }
+.compute-no { color: var(--dim); opacity: .8; }
+.np-tag { border-style: dashed; border-color: var(--rx, var(--dim)); color: var(--rx, var(--dim)); }
+
 .rc-band-svg { width: 100%; height: auto; overflow: visible; }
 .rc-band-svg line, .rc-band-svg path, .rc-band-svg rect { vector-effect: non-scaling-stroke; }
 .rc-mt-arc { fill: var(--accent-soft); stroke: var(--dim); stroke-width: 1px; }

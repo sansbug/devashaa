@@ -30,6 +30,7 @@ import antardasa
 import charadasha
 import nakshatra_attrs
 import nakshatra_techniques
+import rao_pointers
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -172,6 +173,17 @@ def nakshatra_attributes():
         "techniques_note": nakshatra_techniques.SOURCE_NOTE,
         "computable_meaning": nakshatra_techniques.COMPUTABLE_MEANING,
     })
+
+
+@app.get("/api/modern-pointers")
+def modern_pointers():
+    """Adjacent modern method notes — K.N. Rao — tier `modern`, NOT BPHS.
+
+    §3b: the Gajakesari-yoga assessment (ten pointers) and the Astrology Lessons
+    tiering note. Not nakṣatra-based; kept in its own bucket, pointer-only, never
+    a chart verdict. See api/rao_pointers.py.
+    """
+    return jsonify(rao_pointers.bucket())
 
 
 @app.get("/api/rasis")

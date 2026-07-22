@@ -13,6 +13,7 @@ import { profileIdFor, removeProfile as removeFromAccount } from './account.js'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import NakshatraCard from './NakshatraCard.jsx'
+import ModernNotes from './ModernNotes.jsx'
 import DrishtiLedger from './DrishtiLedger.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
@@ -213,6 +214,10 @@ export default function App() {
   // (larger) attribute payload has loaded.
   const [nakAttrs, setNakAttrs] = useState(null)
   const [openNak, setOpenNak] = useState(null)
+  // The adjacent "K.N. Rao (modern)" pointer bucket (§3b) — not nakṣatra-based,
+  // its own reference block, lazy-loaded on first open.
+  const [raoData, setRaoData] = useState(null)
+  const [raoOpen, setRaoOpen] = useState(false)
   // The signed-in account, lifted out of <Account> so that deleting a chart
   // here can also delete the server copy. Without this the × removed the
   // local copy and the encrypted one silently returned on the next sign-in,
@@ -273,6 +278,15 @@ export default function App() {
       .then((j) => setNakAttrs(j))
       .catch(() => setNakAttrs({ nakshatras: [] }))
   }, [openNak, nakAttrs])
+
+  // K.N. Rao (modern) pointers — lazy-loaded on first open.
+  useEffect(() => {
+    if (!raoOpen || raoData) return
+    fetch(`${API}/api/modern-pointers`)
+      .then((r) => r.json())
+      .then((j) => setRaoData(j))
+      .catch(() => setRaoData({ error: true }))
+  }, [raoOpen, raoData])
 
   async function submit(e) {
     e.preventDefault()
@@ -682,6 +696,28 @@ export default function App() {
             namer={namer}
           />
         )}
+      </section>
+
+      {/* The adjacent "K.N. Rao (modern)" bucket (§3b) — not nakṣatra-based, so
+          its own reference block rather than a card. Collapsed by default. */}
+      <section className="table-panel rasi-section">
+        <h3>Modern method notes — K.N. Rao</h3>
+        <p className="rc-note rasi-intro">
+          Not nakṣatra-based and <strong>not BPHS</strong> — one modern author's
+          method pointers (how he assesses the Gajakesari yoga; notes on his
+          <em> Astrology Lessons</em>), kept in their own bucket, attributed and
+          never presented as a verdict on any chart.
+        </p>
+        <button type="button" className="rc-toggle"
+                aria-expanded={raoOpen}
+                onClick={() => setRaoOpen((o) => !o)}>
+          {raoOpen ? 'Hide' : 'Show'} the K.N. Rao (modern) pointers
+        </button>
+        {raoOpen && !raoData && <p className="hint">loading…</p>}
+        {raoOpen && raoData?.error && (
+          <p className="hint">Could not load — the backend may be waking.</p>
+        )}
+        {raoOpen && raoData && !raoData.error && <ModernNotes data={raoData} />}
       </section>
 
       <footer>

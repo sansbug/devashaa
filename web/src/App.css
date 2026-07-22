@@ -808,6 +808,25 @@ footer a:hover { color: var(--accent); }
 .compute-no { color: var(--dim); opacity: .8; }
 .np-tag { border-style: dashed; border-color: var(--rx, var(--dim)); color: var(--rx, var(--dim)); }
 
+/* --- K.N. Rao (modern) bucket, §3b --- */
+.mod-notes { margin-top: 1rem; }
+.mod-topic { margin-top: 1.4rem; }
+.mod-topic h4 {
+  margin: 0 0 .6rem; font-size: .8rem; color: var(--ink);
+  font-weight: var(--strong-weight, 600); display: flex; align-items: baseline;
+  gap: .5rem; flex-wrap: wrap;
+}
+.mod-src { font-size: .66rem; font-weight: 400; font-style: italic; color: var(--dim); }
+.mod-topic .nk-mod-list li { font-size: .84rem; }
+.mod-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin: .3rem 0 .6rem; }
+.mod-chip.trad {
+  font-size: .68rem; color: var(--dim); border: 1px solid var(--line);
+  border-radius: 999px; padding: .12rem .5rem; text-decoration: line-through;
+  cursor: help;
+}
+.mod-named { list-style: none; padding-left: 0; }
+.mod-named li { font-size: .82rem; }
+
 .rc-band-svg { width: 100%; height: auto; overflow: visible; }
 .rc-band-svg line, .rc-band-svg path, .rc-band-svg rect { vector-effect: non-scaling-stroke; }
 .rc-mt-arc { fill: var(--accent-soft); stroke: var(--dim); stroke-width: 1px; }

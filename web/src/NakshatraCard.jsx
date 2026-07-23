@@ -95,9 +95,11 @@ function ModernTechniques({ t }) {
             <p className="rc-note">{t.reason}</p>
           ) : (
             <>
-              <p className="nk-mod-theme">
-                Theme (author's framing): <strong>{t.theme}</strong>
-              </p>
+              {t.theme && (
+                <p className="nk-mod-theme">
+                  Theme (author's framing): <strong>{t.theme}</strong>
+                </p>
+              )}
               <ol className="nk-mod-list">
                 {t.techniques.map((tech) => {
                   const [label, hint] = COMPUTABLE_BADGE[tech.computable] ?? [tech.computable, '']

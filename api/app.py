@@ -169,7 +169,10 @@ def nakshatra_attributes():
         "sources": nakshatra_attrs.SOURCES,
         "note": nakshatra_attrs.SOURCE_NOTE,
         "deity_variants": nakshatra_attrs.DEITY_TRADITION_VARIANTS,
-        "techniques_source": nakshatra_techniques.SOURCE,
+        "techniques_sources": {
+            "1-9": nakshatra_techniques.SOURCE,
+            "10-18": nakshatra_techniques.SOURCE_PART2,
+        },
         "techniques_note": nakshatra_techniques.SOURCE_NOTE,
         "computable_meaning": nakshatra_techniques.COMPUTABLE_MEANING,
     })

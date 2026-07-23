@@ -42,17 +42,28 @@ from __future__ import annotations
 
 TIER = "modern"
 
+# TWO books, TWO attributions — they must never be conflated. Part I (nakṣatras
+# 1-9) is the Saptarishis/Pandya compilation with no Sunil John credit; Part 2
+# (nakṣatras 10-18) IS credited to Sunil John. Each row cites its own book.
 SOURCE = ("Predicting Through Nakṣatras, Part I (Saptarishis Publications; "
           "compiled & edited by Vidhan Pandya)")
+SOURCE_PART2 = ("Predicting Through Nakṣatras, Part 2 (Saptarishis Publications; "
+                "Sunil John & Vidhan Pandya)")
+
+
+def _source_for(index: int) -> str:
+    return SOURCE if index <= 9 else SOURCE_PART2
+
 
 SOURCE_NOTE = (
     "One modern author-group's interpretive techniques — not BPHS, not the "
     "traditional canon, and never a chart verdict. Captured as attributed "
     "pointers only (gist + page + a structural-trigger flag), no worked examples "
-    "reproduced. Sourced for nakṣatras 1-9 only (the book is Part I)."
+    "or native chart data reproduced. Sourced for nakṣatras 1-18: Part I covers "
+    "1-9, Part 2 covers 10-18 (Maghā → Jyeṣṭhā). 19-27 await Part 3."
 )
 
-SOURCED = range(1, 10)            # 1..9; Part I stops at Āśleṣā
+SOURCED = range(1, 19)            # 1..18; Parts I-II reach Jyeṣṭhā
 
 COMPUTABLE_MEANING = {
     "yes": "The structural trigger (a graha or house-lord in the nakṣatra) is "
@@ -74,13 +85,32 @@ _THEME = {
     7: "return, renewal",
     8: "nourishment, priesthood",
     9: "the serpent's coil",
+    # Part 2 (10-18) — neutral summaries of each nakṣatra's technique cluster.
+    10: "power, downfall, lineage",
+    11: "relationships, contracts, home, eyes",
+    12: "sexuality, occult pull, addiction, wealth-marriage",
+    13: "manipulation, 24th-year events, the father",
+    14: "health, intricate craft, order",
+    15: "illusion, breath, remedies",
+    16: "grudges, dual careers, ambition",
+    17: "26th-year events, humbled pride, desertion",
+    18: "loss, scandal, injury, ritual timing",
 }
 
-# Non-Parāśara quarantine reasons, keyed (nakṣatra, technique-number).
+# Non-Parāśara quarantine reasons, keyed (nakṣatra, technique-number). The flag
+# marks a technique whose core is a non-canonical system (outer planets, Vāstu,
+# KP, Western, numerology) OR a prescribed remedy / ritual rather than a
+# chart-reading rule (mantra, homa, prāṇāyāma, herbal, ritual timing). Every
+# flagged technique is also `computable: no`.
 _NP = {
     (4, 2): "outer planets (Pluto/Neptune) — outside both BPHS and the traditional canon",
     (5, 7): "Vāstu — outside both BPHS and the traditional canon",
-    (8, 2): "a remedial mantra (Nārāyaṇa Kavaca) — outside both BPHS and the traditional canon",
+    (8, 2): "a remedial mantra (Nārāyaṇa Kavaca) — a prescribed remedy, not a chart-reading rule",
+    (11, 5): "a prescribed household fire-ritual (homa) remedy — not a chart-reading rule",
+    (11, 11): "an Astro-Vāstu directional method plus a decluttering remedy — outside the chart-reading canon",
+    (15, 4): "a prescribed breath-control (prāṇāyāma) remedy — outside the classical jyotiṣa remedy set",
+    (15, 6): "a prescribed herbal / Āyurvedic remedy — outside the classical jyotiṣa remedy set",
+    (18, 5): "uses a ritual holy-dip as an event-timing device — outside classical daśā / transit timing",
 }
 
 # 46 techniques, transcribed as neutral one-line gists from docs/traditional-rules.md
@@ -151,6 +181,78 @@ _TECHNIQUES = {
         ("A 'plastic surgery of Āśleṣā' — wherever it sits, a major transformation in that area, for better or worse.", "yes", 274),
         ("Sexual planets (Venus, Mars) in Āśleṣā, if afflicted, can mean sexual imbalance.", "partly", 283),
     ],
+    # ── Part 2 (Sunil John & V. Pandya), nakṣatras 10-18 — 51 techniques. Same
+    #    pointer-only discipline: original one-line gists, no prose or worked
+    #    examples reproduced. Distilled from the workflow extract→verify pass.
+    10: [  # Maghā
+        ("After roughly age 21 the Maghā span is said to grow active and influential in the chart, whether or not any planet occupies it.", "no", 11),
+        ("Planets in Maghā give a hunger for power prone to a downfall when it or its lord is afflicted; a 6th- or 8th-lord aspect, or Ketu with the Sun, endangers one's standing.", "partly", 19),
+        ("A planet in Maghā, or Maghā rising — especially a malefic — can bring a major fall from power or public disgrace, the planet's house-role hinting at the cause.", "yes", 27),
+        ("When Maghā or its lord Ketu is afflicted, the native is prone to at least one severe investment or market loss, at times a dramatic collapse of wealth.", "partly", 35),
+        ("Affliction of Maghā, particularly by Jupiter or Rāhu, inclines the native to a false spirituality they mistake for genuine depth.", "partly", 43),
+        ("When Maghā is afflicted, or tied to an afflicted lunar node, the native is said to carry an ancestral or family curse in the lineage.", "partly", 44),
+        ("Where the chart supports it, an unusual story or circumstance is said to surround the Maghā native's birth.", "no", 49),
+    ],
+    11: [  # Pūrva Phalgunī
+        ("A key graha here (or being of this star) tends to bring a major relationship, or a strong activation of the star's themes, around age 24 give or take a year or two.", "yes", 58),
+        ("A key graha here, or a document-signifying planet, inclines the native to at least one lifetime episode of trouble, entrapment or loss involving paperwork and contracts, worse under affliction.", "partly", 67),
+        ("Mars occupying or aspecting this star can trigger property disputes, particularly when Mars is a functional malefic for the chart.", "yes", 78),
+        ("Venus in the second quarter of this star can make an illicit relationship turn out badly, at times with serious consequences.", "yes", 84),
+        ("Natives with key grahas here are drawn to fire and fire-offerings; a regular household fire-ritual is offered as their chief remedy.", "no", 87),
+        ("With this star unafflicted, a native with key grahas here obtains and deeply wants a fine, well-placed home; Mars-affliction in the birth or property divisional chart instead gives a poorly-built one.", "partly", 90),
+        ("For natives with key grahas here, the state of the bed and the state of the marriage are said to track each other.", "no", 97),
+        ("Key grahas here incline the native to eye trouble and, figuratively, to being deceived or trusting blindly, more so under affliction.", "partly", 99),
+        ("A subtle trait: natives with key grahas here keep expecting their fortune to swing between good and bad, the intensity tracking the star's strength.", "no", 118),
+        ("Key grahas here incline the native to ostentation and lavish spending on celebrations, framed as a trait to outgrow.", "no", 124),
+        ("Key grahas here accompany an accumulation of clutter to prune; the technique adds an Astro-Vāstu step mapping chart directions to household defects, with decluttering as remedy.", "no", 132),
+        ("Key grahas here can give a carefree disposition that brings several notable setbacks or major life changes, presented as an area for growth.", "no", 139),
+        ("Mars-based affliction or aspect on this star, including via the dispositor of Mars or Rāhu, is said to leave an injury-scar from a sharp object near the eye or eyebrow.", "partly", 142),
+    ],
+    12: [  # Uttara Phalgunī
+        ("Malefic grahas tenanting or even aspecting this star can strain marriage or friendship and, at times, bring afflictions of the sexual organs or scandal.", "yes", 156),
+        ("Natives tied to this star may be drawn toward occult or dark-tantra practice, pushed by an over-ambitious streak in their spiritual striving.", "partly", 169),
+        ("Such natives may lean on alcohol or drugs to ease suffering; a benefic influence instead redirects them toward healing-oriented disciplines.", "partly", 179),
+        ("A wealth-giving planet associating with or aspecting the star can make one materialistic in love or marry for money; heavy separative affliction risks a money-driven separation.", "partly", 180),
+    ],
+    13: [  # Hasta
+        ("A significant planet in this star inclines the native to contriving or manipulative behaviour, sharpened when a malefic afflicts it, the sphere involved following that planet's significations.", "partly", 185),
+        ("When any planet tenants this star and activates it, notable life events tend to fall around the native's twenty-fourth year.", "yes", 200),
+        ("Affliction of this star — or the 9th lord (from lagna or Moon), or the Sun, placed here while afflicted — brings serious trouble to the father across the child's first four years.", "partly", 211),
+    ],
+    14: [  # Citrā
+        ("Key planets in this star can incline the native to stomach ailments or complaints of the head.", "yes", 221),
+        ("Natives of this star, or key planets here (which also stand for the relatives they signify), should take care during pregnancy, when complications may arise.", "yes", 240),
+        ("Placement here inclines toward intricate design and craft — engineering, architecture, artistry — the particular field hinted by which house-lord tenants the star.", "yes", 243),
+        ("An afflicted position here brings disorder to life, the remedy being to cultivate orderliness; unafflicted, the native is naturally methodical.", "partly", 251),
+        ("When this star is afflicted it tends to produce separation, a split, or a lasting unfulfilled gap in the affected area; a Mars–Ketu pairing here is linked to electricity.", "partly", 260),
+        ("High creativity is native here; using it for show or gain spoils the star, while detachment and selfless use uplift the whole chart.", "no", 265),
+    ],
+    15: [  # Svātī
+        ("A graha in the 12th house that also sits in this star, or one influencing the 12th and tied to it, gives a quirky, asymmetric way of leaving one's footwear.", "partly", 267),
+        ("When a prominent planet falls in this star, the native carries an unresolved bond or karmic debt tied to the mother or to inheritance.", "yes", 271),
+        ("This Rāhu-ruled star gives one lasting area of self-delusion, its intensity scaled to Rāhu's strength, that the native keeps returning to despite setbacks.", "no", 282),
+        ("Prescribes a breath-control practice as a corrective for natives with key planets in this star.", "no", 294),
+        ("Affliction of this star, or an afflicted link to the 3rd house or its lord, is read as a marker of respiratory or breathing trouble.", "partly", 298),
+        ("Recommends a specific herbal treatment for illness in natives with key planets here, conditional on an unafflicted Moon.", "no", 310),
+        ("If this star is afflicted or linked to the 9th house or lord (from Moon or lagna), the native may change religion or turn religiously rigid.", "partly", 313),
+    ],
+    16: [  # Viśākhā
+        ("Natives tend to hold a lifelong grudge or enmity, framed as carried over from a past life; the stated lesson is to release it for spiritual growth.", "yes", 317),
+        ("Natives tend toward two parallel occupations — a second career, or a serious avocation that becomes one, an early specialization later branching in two.", "yes", 324),
+        ("When the star or its lord is afflicted, natives put success first and pursue it at any cost, ending in at least one scandal of dishonest self-promotion.", "partly", 329),
+    ],
+    17: [  # Anurādhā
+        ("When any planet tenants and activates this star, a notable life event of a distinct character tends to fall in the native's twenty-sixth year.", "yes", 333),
+        ("When this star is afflicted, or holds any planet (a malefic most of all), a major event humbles the native by puncturing an inflated pride.", "partly", 348),
+        ("The Moon, or another key planet linked to deception, in this star points to a mother-figure who abandons or betrays the native at a pivotal moment.", "yes", 351),
+    ],
+    18: [  # Jyeṣṭhā
+        ("When an emphasized planet here is afflicted — more so where wealth houses are involved — the native tends to suffer monetary loss or to part with money.", "partly", 355),
+        ("A malefic in this star, especially tied to sexual houses or planets and with the rest of the chart concurring, can involve the native in scandal, often of a sexual kind.", "partly", 365),
+        ("When this star is afflicted, the relative signified by the house it occupies may have an ornament or amulet break or go missing.", "partly", 372),
+        ("An afflicted Jyeṣṭhā, a malefic in it, or an afflicted 3rd lord (from lagna or Moon) here can injure or mark the middle finger; an afflicted 12th lord or afflicted Jupiter here is a further indicator.", "partly", 382),
+        ("For a native with an important planet here, a holy dip in the Ganges is said to be followed within about a year by a significant event tied to that planet's house.", "no", 388),
+    ],
 }
 
 
@@ -161,7 +263,7 @@ def _technique(index: int, n: int, gist: str, computable: str, page: int) -> dic
         "computable": computable,
         "page": page,
         "tier": TIER,
-        "cite": f"modern technique — {SOURCE}, p.{page}",
+        "cite": f"modern technique — {_source_for(index)}, p.{page}",
     }
     reason = _NP.get((index, n))
     if reason:
@@ -172,8 +274,9 @@ def _technique(index: int, n: int, gist: str, computable: str, page: int) -> dic
 def techniques_of(index: int) -> dict:
     """The `modern`-tier interaction techniques for one nakṣatra (1-27).
 
-    For 1-9 returns the sourced technique list with the author's theme; for 10-27
-    an explicit gap (the book is Part I) — never invented.
+    For 1-18 returns the sourced technique list with the author's theme, each row
+    citing its own book (Part I for 1-9, Part 2 for 10-18); for 19-27 an explicit
+    gap (Part 3 not yet in hand) — never invented.
     """
     if not 1 <= index <= 27:
         raise ValueError(f"nakṣatra index out of range: {index}")
@@ -182,9 +285,9 @@ def techniques_of(index: int) -> dict:
             "index": index,
             "available": False,
             "tier": TIER,
-            "reason": "No techniques sourced. The source book is Part I "
-                      "(Aśvinī → Āśleṣā); nakṣatras 10-27 need Parts II/III and "
-                      "are not guessed.",
+            "reason": "No techniques sourced. Parts I-II cover nakṣatras 1-18 "
+                      "(Aśvinī → Jyeṣṭhā); nakṣatras 19-27 need Part 3 and are "
+                      "not guessed.",
             "techniques": [],
         }
     techs = [_technique(index, n, g, c, p)
@@ -194,7 +297,7 @@ def techniques_of(index: int) -> dict:
         "available": True,
         "tier": TIER,
         "theme": _THEME[index],
-        "source": SOURCE,
+        "source": _source_for(index),
         "techniques": techs,
     }
 

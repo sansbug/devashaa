@@ -408,8 +408,12 @@ Two further source books closed the gaps *Part I* left, and the module grew from
 - **S2** — Sunil John & V. Pandya, *Predicting Through Nakṣatras, **Part 2***
   (Saptarishis). The direct continuation of Part I: chapter header tables for
   **nakṣatras 10–18** (Maghā → Jyeṣṭhā), giving symbol / lord / deity / range /
-  padas. Only the header tables were taken — the ~400 pages of the authors'
-  predictive "techniques" are their own copyrighted material and were not mined.
+  padas. *(When first built on 2026-07-19 only these header tables were taken;
+  the ~400 pages of predictive techniques were left untouched. On 2026-07-22, at
+  the user's explicit direction, those techniques were extracted too — as
+  `modern`-tier POINTERS only (original one-line gists + page + trigger flag, no
+  prose or worked-example charts reproduced), exactly as Part I's §3 techniques
+  were. See §3 and `api/nakshatra_techniques.py`.)*
 - **S3** — Ram Babu Sao, *Perfect Astrology (Nakṣatra)*, §3.2–3.3 classification
   tables: **gaṇa, yoni/animal, kālapuruṣa body-part, puruṣārtha, quality, śakti**
   for all 27, plus asterism star-shapes for symbols 19–27. A tertiary compilation

@@ -1,0 +1,6 @@
+# devashaa.com — free educational Vedic astrology (Jyotiṣa) reference & calculator.
+# All well-behaved crawlers and categorization bots are welcome.
+User-agent: *
+Allow: /
+
+Sitemap: https://devashaa.com/sitemap.xml

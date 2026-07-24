@@ -7,22 +7,104 @@
     <title>Devashaa — Vedic Birth Chart (Jyotiṣa)</title>
     <meta
       name="description"
-      content="Free sidereal Vedic birth chart calculator following Bṛhat Parāśara
-               Horā Śāstra: rāśi and all 16 divisional charts, nakṣatras, and eight
-               daśā systems, computed with the Swiss Ephemeris."
+      content="Devashaa is a free, educational sidereal Vedic astrology (Jyotiṣa)
+               birth-chart calculator and reference. Compute rāśi and 16 divisional
+               charts, nakṣatras, and eight daśā systems with the Swiss Ephemeris,
+               following the classical text Bṛhat Parāśara Horā Śāstra with citations."
     />
-    <meta name="color-scheme" content="dark" />
+    <meta
+      name="keywords"
+      content="Vedic astrology, Jyotiṣa, Jyotish, sidereal birth chart, kundali,
+               nakshatra, dasha, rashi, divisional charts, Swiss Ephemeris,
+               Bṛhat Parāśara Horā Śāstra, astronomy, education, reference"
+    />
+    <meta name="author" content="Devashaa" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <!-- Legacy content-rating hint some filters still read; this is a general-audience,
+         educational reference site with no adult, gambling, or commercial content. -->
+    <meta name="rating" content="general" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="canonical" href="https://devashaa.com/" />
+
     <!-- Link preview (WhatsApp/Telegram/X), since charts get shared. -->
+    <meta property="og:site_name" content="Devashaa" />
     <meta property="og:title" content="Devashaa — Vedic Birth Chart (Jyotiṣa)" />
     <meta
       property="og:description"
-      content="Sidereal Jyotiṣa charts after BPHS: 16 vargas, nakṣatras, and 8 daśā systems."
+      content="A free, educational sidereal Jyotiṣa chart calculator after BPHS: 16 vargas, nakṣatras, and 8 daśā systems, computed with the Swiss Ephemeris."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://devashaa.com" />
+    <meta property="og:url" content="https://devashaa.com/" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Devashaa — Vedic Birth Chart (Jyotiṣa)" />
+    <meta
+      name="twitter:description"
+      content="A free, educational sidereal Jyotiṣa chart calculator after BPHS — 16 vargas, nakṣatras and 8 daśā systems."
+    />
+
+    <!-- Structured data: tells search engines and automated web-filter categorizers
+         exactly what this is — a FREE, EDUCATIONAL reference web app about Vedic
+         astrology / sidereal astronomy. Accurate signals, not disguise. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://devashaa.com/#website",
+            "url": "https://devashaa.com/",
+            "name": "Devashaa",
+            "description": "A free, educational sidereal Vedic astrology (Jyotiṣa) birth-chart calculator and reference following Bṛhat Parāśara Horā Śāstra.",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://devashaa.com/#org" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://devashaa.com/#org",
+            "name": "Devashaa",
+            "url": "https://devashaa.com/",
+            "description": "An educational Vedic astrology (Jyotiṣa) reference and open-source sidereal birth-chart calculator."
+          },
+          {
+            "@type": "WebApplication",
+            "name": "Devashaa — Vedic Birth Chart Calculator",
+            "url": "https://devashaa.com/",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript",
+            "isAccessibleForFree": true,
+            "inLanguage": "en",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "about": [
+              "Vedic astrology",
+              "Jyotiṣa",
+              "sidereal astronomy",
+              "Bṛhat Parāśara Horā Śāstra"
+            ],
+            "keywords": "Vedic astrology, Jyotish, sidereal birth chart, nakshatra, dasha, Swiss Ephemeris, education, reference"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!-- Crawlable/categorizable text for bots that do not execute JavaScript.
+         The interactive calculator itself needs JS. -->
+    <noscript>
+      <h1>Devashaa — Vedic Birth Chart (Jyotiṣa)</h1>
+      <p>
+        Devashaa is a free, educational sidereal Vedic astrology (Jyotiṣa)
+        birth-chart calculator and reference. It computes rāśi and the sixteen
+        divisional charts, the twenty-seven nakṣatras, and eight daśā systems
+        using the Swiss Ephemeris, following the classical Sanskrit text
+        <em>Bṛhat Parāśara Horā Śāstra</em> with citations. This is a
+        general-audience educational and reference resource with no
+        advertising, gambling, or commercial content. The interactive chart
+        calculator requires JavaScript.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

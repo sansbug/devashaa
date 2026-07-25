@@ -35,11 +35,11 @@ const R_SIGN_OUT = 232
 const R_SIGN_LABEL = 210
 const R_BHAVA = 196
 const R_NAK_IN = 232
-const R_NAK_OUT = 284
-const R_NAK_LABEL = 250
-const R_PADA_NUM = 273
-const R_MAX = 284
-const HALF = 398           // viewBox half-extent — leaves room for radial nakṣatra names
+const R_NAK_OUT = 298
+const R_NAK_LABEL = 270     // curved nakṣatra names run along this radius
+const R_PADA_NUM = 244
+const R_MAX = 298
+const HALF = 332           // viewBox half-extent
 const STEP = 30            // radial stagger for a crowded cluster
 const NAK_ARC = 40 / 3     // 13°20′
 const PADA_ARC = 10 / 3    // 3°20′
@@ -101,6 +101,16 @@ export default function SkyWheelChart({
     return d + 'Z'
   }
   const bhavaOf = (sign) => ((sign - lagnaRasi + 12) % 12) + 1
+
+  // A concentric arc (sampled) for curved text to follow along the ring.
+  const arcPath = (lonA, lonB, r) => {
+    const n = 12
+    let d = ''
+    for (let i = 0; i <= n; i++) { const [x, y] = pt(lonA + (lonB - lonA) * i / n, r); d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) }
+    return d
+  }
+  // Purva → P, Uttara → U (both common and IAST spellings).
+  const abbr = (s) => s.replace(/^(Pūrva|Purva)\s+/, 'P ').replace(/^Uttara\s+/, 'U ')
 
   const placed = grahas
     .map((g) => { const lon = lonOf(g); return { g, lon, a: ((180 - (lon - ascLon)) % 360 + 360) % 360 } })
@@ -180,21 +190,27 @@ export default function SkyWheelChart({
               return <line key={`nb${n}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-nakbound" />
             })}
             {Array.from({ length: 27 }, (_, n) => {
-              // Radial: each name on its own spoke, pointing outward from the ring,
-              // flipped on the left half so it never reads upside-down. Radial
-              // avoids the tangential collisions that upright names hit near the
-              // top and bottom, so even long names fit.
-              const midLon = n * NAK_ARC + NAK_ARC / 2
+              // Curved: the name runs ALONG the ring at a constant radius, so it
+              // never sticks out over the pādas. Reversed on the bottom half so it
+              // reads right-side-up. Purva/Uttara abbreviate to P/U to keep the
+              // long names within their sector.
+              const lon1 = n * NAK_ARC, lon2 = (n + 1) * NAK_ARC
+              const midLon = (lon1 + lon2) / 2
               const td = ((180 - (midLon - ascLon)) % 360 + 360) % 360
-              const flip = td > 90 && td < 270
-              const [x, y] = pt(midLon, R_NAK_OUT + 6)
+              // Reverse the guide arc on the TOP half so the text travels
+              // left-to-right (upright) there; the bottom half already does.
+              const flip = td > 180 && td < 360
+              const d = flip ? arcPath(lon2, lon1, R_NAK_LABEL) : arcPath(lon1, lon2, R_NAK_LABEL)
               const full = nakNames ? namer.nakshatra(nakNames[n]) : NAK_ABBR[n]
+              const id = `nkp${n}`
               return (
-                <text key={`nn${n}`} x={x} y={y} className="sw-nak"
-                      transform={`rotate(${flip ? td + 180 : td} ${x.toFixed(1)} ${y.toFixed(1)})`}
-                      textAnchor={flip ? 'end' : 'start'} dominantBaseline="middle">
-                  <title>{`${n + 1}. ${full}`}</title>{full}
-                </text>
+                <g key={`nn${n}`}>
+                  <path id={id} d={d} className="sw-nakpath" />
+                  <text className="sw-nak" dominantBaseline="central">
+                    <title>{`${n + 1}. ${full}`}</title>
+                    <textPath href={`#${id}`} startOffset="50%" textAnchor="middle">{abbr(full)}</textPath>
+                  </text>
+                </g>
               )
             })}
           </>
@@ -204,8 +220,8 @@ export default function SkyWheelChart({
         {naks && padas && Array.from({ length: 108 }, (_, p) => {
           const lon = p * PADA_ARC
           const isNakBound = p % 4 === 0
-          const [x1, y1] = pt(lon, R_NAK_OUT)
-          const [x2, y2] = pt(lon, R_NAK_OUT - (isNakBound ? 0 : 7))
+          const [x1, y1] = pt(lon, R_NAK_IN)
+          const [x2, y2] = pt(lon, R_NAK_IN + (isNakBound ? 0 : 7))
           const [nx, ny] = pt(lon + PADA_ARC / 2, R_PADA_NUM)
           return (
             <g key={`p${p}`}>

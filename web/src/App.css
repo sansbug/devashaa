@@ -552,7 +552,7 @@ section.meta, .chart-panel, .table-panel {
 .north-graha.rx .north-deg { fill: var(--rx); }
 
 /* --- sky wheel: the sky as it stood around the native --- */
-.sky-wheel { display: block; max-width: 660px; width: 100%; margin: 0 auto; overflow: visible; }
+.sky-wheel { display: block; max-width: 580px; width: 100%; margin: 0 auto; overflow: visible; }
 .sw-sky { fill: var(--accent); opacity: .05; }             /* above-horizon, faint */
 .sw-ring { fill: none; stroke: var(--line); stroke-width: 1; }
 .sw-band { fill: var(--sunken); opacity: .6; }
@@ -588,6 +588,7 @@ section.meta, .chart-panel, .table-panel {
 .sw-earth { fill: #000; opacity: .16; }
 /* nakṣatra & pāda subdivisions */
 .sw-nakbound { stroke: var(--line); stroke-width: 1; opacity: .7; }
+.sw-nakpath { fill: none; stroke: none; }
 .sw-nak { fill: var(--dim); font-size: 9px; }
 .sw-padatick { stroke: var(--dim); stroke-width: 1; opacity: .35; }
 .sw-pada { fill: var(--dim); font-size: 6.5px; opacity: .8; font-variant-numeric: tabular-nums; }

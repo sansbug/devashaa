@@ -551,6 +551,40 @@ section.meta, .chart-panel, .table-panel {
 .north-deg { fill: var(--dim); font-size: 8.5px; }
 .north-graha.rx .north-deg { fill: var(--rx); }
 
+/* --- sky wheel: the sky as it stood around the native --- */
+.sky-wheel { display: block; max-width: 560px; width: 100%; margin: 0 auto; overflow: visible; }
+.sw-sky { fill: var(--accent); opacity: .05; }             /* above-horizon, faint */
+.sw-ring { fill: none; stroke: var(--line); stroke-width: 1; }
+.sw-band { fill: var(--sunken); opacity: .6; }
+.sw-band.alt { fill: none; }
+.sw-band.lagna { fill: var(--accent-soft); opacity: 1; }
+.sw-band.locate { fill: var(--row-hi); opacity: 1; }
+.sw-bound { stroke: var(--line); stroke-width: 1; }
+.sw-tick { stroke: var(--dim); stroke-width: 1; opacity: .45; }
+.sw-sign { fill: var(--ink); font-size: 12px; font-weight: var(--text-weight, 400); }
+.sw-bhava { fill: var(--dim); font-size: 10px; }
+.sw-horizon { stroke: var(--dim); stroke-width: 1.2; stroke-dasharray: 5 4; opacity: .75; }
+.sw-horizon-label { fill: var(--dim); font-size: 10px; letter-spacing: .03em; }
+.sw-asc polygon { fill: var(--accent); }
+.sw-asc text { fill: var(--accent); font-size: 11px; font-weight: var(--strong-weight, 600); }
+.sw-note { fill: var(--dim); font-size: 10px; }
+.sw-center { fill: var(--ink); }
+.sw-center-label { fill: var(--dim); font-size: 10px; }
+/* grahas */
+.sw-graha { cursor: pointer; }
+.sw-ray { stroke: var(--accent); stroke-width: .75; opacity: .16; }
+.sw-gtick { stroke: var(--ink); stroke-width: 1.5; }
+.sw-glink { stroke: var(--line); stroke-width: 1; opacity: .6; }
+.sw-gdot { fill: var(--sunken); stroke: var(--accent); stroke-width: 1.25; }
+.sw-graha:hover .sw-gdot { fill: var(--hover); }
+.sw-graha.active .sw-gdot { fill: var(--accent); }
+.sw-graha.rx .sw-gdot { stroke: var(--rx); }
+.sw-gglyph { fill: var(--ink); font-size: 11px; font-weight: var(--strong-weight, 600); pointer-events: none; }
+.sw-graha.active .sw-gglyph { fill: var(--on-accent); }
+.sw-graha.rx .sw-gglyph { fill: var(--rx); }
+.sw-gdeg { fill: var(--dim); font-size: 9px; font-variant-numeric: tabular-nums; pointer-events: none; }
+.sw-graha.active .sw-gdeg { fill: var(--accent); }
+
 /* Narrow screens: .south-chart's 620px is a max-width, so cells shrink with the
    viewport while .south-cell is overflow:hidden — without this the degree
    column and then the graha names clip away SILENTLY. Shed the degree first,

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
+import SkyWheelChart from './SkyWheel.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
@@ -357,7 +358,9 @@ export default function App() {
   }
 
   const ready = date && time && place
-  const Chart = style === 'south' ? SouthIndianChart : NorthIndianChart
+  const Chart = style === 'south' ? SouthIndianChart
+    : style === 'north' ? NorthIndianChart
+    : SkyWheelChart
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
 
@@ -458,6 +461,8 @@ export default function App() {
                         onClick={() => setStyle('south')}>South Indian</button>
                 <button type="button" className={style === 'north' ? 'on' : ''}
                         onClick={() => setStyle('north')}>North Indian</button>
+                <button type="button" className={style === 'wheel' ? 'on' : ''}
+                        onClick={() => setStyle('wheel')}>Sky wheel</button>
               </div>
               <div className="vargas">
                 {VARGA_LABELS.map(([k, label]) => (
@@ -490,6 +495,15 @@ export default function App() {
                 <p className="frame-note">
                   The North Indian frame is a <em>bhāva</em> diagram — it discards sign
                   geometry by design. For degree behaviour, use the South Indian frame.
+                </p>
+              )}
+              {style === 'wheel' && (
+                <p className="frame-note">
+                  The sky as it stood around the native: the lagna rises on the
+                  eastern horizon (left), each rāśi casts its 30°, and every graha
+                  sits at its exact degree. A real-sky view, so it plots the D1
+                  ecliptic — the horizon is exact, but no meridian is drawn (the
+                  true MC is not 90° from the lagna along the ecliptic).
                 </p>
               )}
             </div>

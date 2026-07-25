@@ -5,43 +5,61 @@
  * rising on the EASTERN horizon at birth — is pinned to the LEFT, and the
  * horizon is the horizontal diameter (east rising on the left, west setting on
  * the right). The twelve rāśis each cast their 30° counter-clockwise from there,
- * and every graha sits at its exact ecliptic degree, its ray reaching in to the
- * centre.
+ * subdivided into their nakṣatras and pādas, and every graha sits at its exact
+ * ecliptic degree, its ray reaching in to the centre.
  *
  * WHY THIS IS ASTRONOMICALLY HONEST, AND WHERE IT STOPS
  * ----------------------------------------------------
  * With the ascendant degree on the horizon and points placed by true ecliptic
  * longitude, higher-longitude points fall BELOW the eastern horizon (not yet
- * risen) and lower-longitude points ABOVE it (already climbing) — which is the
- * real sky. The horizon (Ascendant→Descendant) is therefore an exact diameter.
- * The vertical is NOT drawn as a meridian: the true MC is not 90° from the
- * ascendant along the ecliptic except at the equator, so drawing a vertical
- * "meridian" would be a quiet lie. Houses are whole-sign (the site's frame), so
- * a bhāva is a whole rāśi; the ascendant degree marks the true rising point
- * within the lagna sign, which is why the lagna sign straddles the horizon.
+ * risen) and lower-longitude points ABOVE it (already climbing) — the real sky.
+ * The horizon (Ascendant→Descendant) is therefore an exact diameter, and the sky
+ * above / earth below are shaded accordingly. The vertical is NOT drawn as a
+ * meridian: the true MC is not 90° from the ascendant along the ecliptic except
+ * at the equator, so drawing one would be a quiet lie. Houses are whole-sign, so
+ * a bhāva is a whole rāśi; the ascendant degree marks the true rising point, so
+ * the lagna sign straddles the horizon.
  *
- * This is a REAL-SKY view, so it plots D1 ecliptic longitudes only — a varga is
- * a re-mapping of signs with no "degree within", so the wheel shows the rāśi.
+ * The nakṣatra (13°20′) and pāda (3°20′) grids share the same degree axis: a
+ * pāda boundary lands on every sign boundary (9 pādas/sign) and every nakṣatra
+ * boundary (4 pādas/nakṣatra). Real-sky, so it plots D1 ecliptic longitudes.
  */
+
+import { useState } from 'react'
 
 const SIZE = 520
 const C = SIZE / 2
-const R_OUT = 250          // outer edge of the sign ring
-const R_IN = 202           // inner edge of the sign ring
-const R_LABEL = 226        // rāśi name sits mid-band
-const R_BHAVA = 190        // bhāva number just inside the ring
-const R_TICK = R_IN        // a graha's exact-degree tick sits on the inner edge
-const R_PLANET = 168       // base radius for graha glyphs
+const R_PLANET = 156       // base radius for graha glyphs
+const R_SIGN_IN = 186
+const R_SIGN_OUT = 232
+const R_SIGN_LABEL = 210
+const R_BHAVA = 196
+const R_NAK_IN = 232
+const R_NAK_OUT = 284
+const R_NAK_LABEL = 250
+const R_PADA_NUM = 273
+const R_MAX = 284
+const HALF = R_MAX + 46    // viewBox half-extent around the centre
 const STEP = 30            // radial stagger for a crowded cluster
-const PAD_X = 50           // viewBox padding so edge labels (Lagna, signs) have room
-const PAD_Y = 28
+const NAK_ARC = 40 / 3     // 13°20′
+const PADA_ARC = 10 / 3    // 3°20′
 const DEG = Math.PI / 180
 
-// Unambiguous 2-letter graha marks (common-name initials collide: Shukra/Shani).
-const GLYPH = {
-  sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
-  venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke',
+// Distinct graha colours — medium saffron-to-indigo hues that read on both the
+// light and dark themes (traditional-flavoured: Sun warm, Saturn cold, …).
+const GRAHA_COLOR = {
+  sun: '#e8663a', moon: '#6f8fb0', mars: '#e04343', mercury: '#2fa06a',
+  jupiter: '#d3a028', venus: '#d268a8', saturn: '#5566b8', rahu: '#8f8a97',
+  ketu: '#a1785f',
 }
+// Rāśi element, for a faint sector tint: fire, earth, air, water repeating.
+const ELEMENT = ['fire', 'earth', 'air', 'water']
+const ELEMENT_COLOR = { fire: '#d9663a', earth: '#3f9f5f', air: '#c9a83e', water: '#4f86c6' }
+// Compact nakṣatra marks (full name is in the tooltip). Fixed to avoid the
+// Pūrva-/Uttara- collisions a naive slice would make.
+const NAK_ABBR = ['Aśv', 'Bha', 'Kṛt', 'Roh', 'Mṛg', 'Ārd', 'Pun', 'Puṣ', 'Āśl',
+  'Mag', 'PPh', 'UPh', 'Has', 'Cit', 'Svā', 'Viś', 'Anu', 'Jye', 'Mūl', 'PĀṣ',
+  'UĀṣ', 'Śra', 'Dha', 'Śat', 'PBh', 'UBh', 'Rev']
 
 const pad2 = (n) => String(n).padStart(2, '0')
 const lonOf = (g) => (g.longitude != null
@@ -53,49 +71,39 @@ const DIGNITY_WORD = {
   own: 'in its own sign', friend: "in a friend's sign",
   neutral: "in a neutral's sign", enemy: "in an enemy's sign",
 }
-function dignityPhrase(d) {
-  if (!d) return ''
-  const word = DIGNITY_WORD[d.state] ?? d.state
-  return ` — ${word}`
+const dignityPhrase = (d) => (d ? ` — ${DIGNITY_WORD[d.state] ?? d.state}` : '')
+
+function Toggle({ on, set, children }) {
+  return (
+    <button type="button" className={`sw-toggle${on ? ' on' : ''}`}
+            aria-pressed={on} onClick={() => set((v) => !v)}>{children}</button>
+  )
 }
 
 export default function SkyWheelChart({
-  grahas, lagnaRasi, lagnaLongitude, vargaKey, namer,
+  grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
   active, onHover, onPin, highlightSign,
 }) {
-  const ascLon = lagnaLongitude ?? lagnaRasi * 30
+  const [shade, setShade] = useState(true)
+  const [colors, setColors] = useState(true)
+  const [naks, setNaks] = useState(true)
+  const [padas, setPadas] = useState(true)
 
-  // Screen angle for an ecliptic longitude: ascendant → left (180°), and higher
-  // longitude runs clockwise-down from there, so the horizon is horizontal and
-  // the sky above the horizon is genuinely above.
+  const ascLon = lagnaLongitude ?? lagnaRasi * 30
   const ang = (lon) => (180 - (lon - ascLon)) * DEG
   const pt = (lon, r) => [C + r * Math.cos(ang(lon)), C + r * Math.sin(ang(lon))]
 
-  // Annular sector for one 30° rāśi, sampled so we never fight SVG arc flags.
-  const band = (lon1, ri, ro) => {
+  const band = (lon1, span, ri, ro) => {
     const n = 12
     let d = ''
-    for (let i = 0; i <= n; i++) {
-      const [x, y] = pt(lon1 + (30 * i) / n, ro)
-      d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1)
-    }
-    for (let i = n; i >= 0; i--) {
-      const [x, y] = pt(lon1 + (30 * i) / n, ri)
-      d += 'L' + x.toFixed(1) + ',' + y.toFixed(1)
-    }
+    for (let i = 0; i <= n; i++) { const [x, y] = pt(lon1 + (span * i) / n, ro); d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) }
+    for (let i = n; i >= 0; i--) { const [x, y] = pt(lon1 + (span * i) / n, ri); d += 'L' + x.toFixed(1) + ',' + y.toFixed(1) }
     return d + 'Z'
   }
-
   const bhavaOf = (sign) => ((sign - lagnaRasi + 12) % 12) + 1
 
-  // Place grahas at their true angle; stagger radius for tight clusters so glyphs
-  // don't collide, with a connector back to the exact-degree tick.
   const placed = grahas
-    .map((g) => {
-      const lon = lonOf(g)
-      let a = ((180 - (lon - ascLon)) % 360 + 360) % 360
-      return { g, lon, a }
-    })
+    .map((g) => { const lon = lonOf(g); return { g, lon, a: ((180 - (lon - ascLon)) % 360 + 360) % 360 } })
     .sort((p, q) => p.a - q.a)
   let lastA = -99, level = 0
   for (const p of placed) {
@@ -106,110 +114,149 @@ export default function SkyWheelChart({
   }
 
   const isD1 = vargaKey === 'D1'
-  const [ascX, ascY] = pt(ascLon, R_IN)
+  const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
   return (
-    <svg viewBox={`${-PAD_X} ${-PAD_Y} ${SIZE + 2 * PAD_X} ${SIZE + 2 * PAD_Y}`}
-         className="sky-wheel" role="img"
-         aria-label="Sky wheel — the sky around the native at birth">
-      {/* above / below the horizon, faintly distinguished */}
-      <path className="sw-sky" d={`M ${C - R_OUT},${C} A ${R_OUT},${R_OUT} 0 0 1 ${C + R_OUT},${C} Z`} />
+    <div className="sw-wrap">
+      <div className="sw-toggles">
+        <Toggle on={shade} set={setShade}>Horizon</Toggle>
+        <Toggle on={colors} set={setColors}>Graha colours</Toggle>
+        <Toggle on={naks} set={setNaks}>Nakṣatras</Toggle>
+        <Toggle on={padas} set={setPadas}>Pādas</Toggle>
+      </div>
+      <svg viewBox={`${C - HALF} ${C - HALF} ${2 * HALF} ${2 * HALF}`}
+           className="sky-wheel" role="img"
+           aria-label="Sky wheel — the sky around the native at birth">
+        {/* above / below the horizon */}
+        {shade && (
+          <>
+            <path className="sw-sky" d={`M ${C - R_MAX},${C} A ${R_MAX},${R_MAX} 0 0 1 ${C + R_MAX},${C} Z`} />
+            <path className="sw-earth" d={`M ${C - R_MAX},${C} A ${R_MAX},${R_MAX} 0 0 0 ${C + R_MAX},${C} Z`} />
+          </>
+        )}
 
-      {/* rāśi bands + boundaries */}
-      {Array.from({ length: 12 }, (_, s) => {
-        const lagnaBand = s === lagnaRasi
-        const hi = s === highlightSign
-        return (
-          <path key={`b${s}`} d={band(s * 30, R_IN, R_OUT)}
-                className={`sw-band${s % 2 ? ' alt' : ''}${lagnaBand ? ' lagna' : ''}${hi ? ' locate' : ''}`} />
-        )
-      })}
-      {Array.from({ length: 12 }, (_, s) => {
-        const [x1, y1] = pt(s * 30, R_IN)
-        const [x2, y2] = pt(s * 30, R_OUT)
-        return <line key={`bd${s}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-bound" />
-      })}
-      <circle cx={C} cy={C} r={R_OUT} className="sw-ring" />
-      <circle cx={C} cy={C} r={R_IN} className="sw-ring" />
+        {/* rāśi bands (faint element tint) + boundaries */}
+        {Array.from({ length: 12 }, (_, s) => {
+          const lagnaBand = s === lagnaRasi
+          const hi = s === highlightSign
+          const el = ELEMENT[s % 4]
+          return (
+            <path key={`b${s}`} d={band(s * 30, 30, R_SIGN_IN, R_SIGN_OUT)}
+                  className={`sw-band${lagnaBand ? ' lagna' : ''}${hi ? ' locate' : ''}`}
+                  style={colors && !lagnaBand && !hi ? { fill: ELEMENT_COLOR[el], fillOpacity: 0.14 } : undefined}>
+              <title>{`${namer.rasi(s)} — ${el}`}</title>
+            </path>
+          )
+        })}
+        {Array.from({ length: 12 }, (_, s) => {
+          const [x1, y1] = pt(s * 30, R_SIGN_IN)
+          const [x2, y2] = pt(s * 30, R_SIGN_OUT)
+          return <line key={`bd${s}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-bound" />
+        })}
+        <circle cx={C} cy={C} r={R_SIGN_OUT} className="sw-ring" />
+        <circle cx={C} cy={C} r={R_SIGN_IN} className="sw-ring" />
 
-      {/* 10° / 20° ticks inside each sign, to show the 30° cast */}
-      {Array.from({ length: 36 }, (_, k) => {
-        const lon = k * 10
-        const major = k % 3 === 0
-        const [x1, y1] = pt(lon, R_IN)
-        const [x2, y2] = pt(lon, R_IN + (major ? 0 : 5))
-        return major ? null
-          : <line key={`t${k}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-tick" />
-      })}
+        {/* rāśi names + bhāva numbers */}
+        {Array.from({ length: 12 }, (_, s) => {
+          const [lx, ly] = pt(s * 30 + 15, R_SIGN_LABEL)
+          const [bx, by] = pt(s * 30 + 15, R_BHAVA)
+          return (
+            <g key={`l${s}`}>
+              <text x={lx} y={ly} className="sw-sign" textAnchor="middle" dominantBaseline="middle">{namer.rasi(s)}</text>
+              <text x={bx} y={by} className="sw-bhava" textAnchor="middle" dominantBaseline="middle">
+                <title>{`Bhāva ${bhavaOf(s)} — ${namer.rasi(s)}`}</title>{bhavaOf(s)}
+              </text>
+            </g>
+          )
+        })}
 
-      {/* rāśi names + bhāva numbers */}
-      {Array.from({ length: 12 }, (_, s) => {
-        const [lx, ly] = pt(s * 30 + 15, R_LABEL)
-        const [bx, by] = pt(s * 30 + 15, R_BHAVA)
-        return (
-          <g key={`l${s}`}>
-            <text x={lx} y={ly} className="sw-sign" dominantBaseline="middle">{namer.rasi(s)}</text>
-            <text x={bx} y={by} className="sw-bhava" dominantBaseline="middle">
-              <title>{`Bhāva ${bhavaOf(s)} — ${namer.rasi(s)}`}</title>
-              {bhavaOf(s)}
-            </text>
-          </g>
-        )
-      })}
+        {/* nakṣatra ring: 27 sectors, boundaries + compact marks */}
+        {naks && (
+          <>
+            <circle cx={C} cy={C} r={R_NAK_OUT} className="sw-ring" />
+            {Array.from({ length: 27 }, (_, n) => {
+              const [x1, y1] = pt(n * NAK_ARC, R_NAK_IN)
+              const [x2, y2] = pt(n * NAK_ARC, R_NAK_OUT)
+              return <line key={`nb${n}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-nakbound" />
+            })}
+            {Array.from({ length: 27 }, (_, n) => {
+              const [x, y] = pt(n * NAK_ARC + NAK_ARC / 2, R_NAK_LABEL)
+              const full = nakNames ? namer.nakshatra(nakNames[n]) : NAK_ABBR[n]
+              return (
+                <text key={`nn${n}`} x={x} y={y} className="sw-nak" textAnchor="middle" dominantBaseline="middle">
+                  <title>{`${n + 1}. ${full}`}</title>{NAK_ABBR[n]}
+                </text>
+              )
+            })}
+          </>
+        )}
 
-      {/* horizon: the Ascendant→Descendant diameter (exactly horizontal) */}
-      <line x1={C - R_OUT} y1={C} x2={C + R_OUT} y2={C} className="sw-horizon" />
-      <text x={C - R_OUT + 4} y={C - 8} className="sw-horizon-label">East · rising</text>
-      <text x={C + R_OUT - 4} y={C - 8} className="sw-horizon-label" textAnchor="end">West · setting</text>
+        {/* pāda grid: 108 ticks + the pāda number 1-4 inside each nakṣatra */}
+        {naks && padas && Array.from({ length: 108 }, (_, p) => {
+          const lon = p * PADA_ARC
+          const isNakBound = p % 4 === 0
+          const [x1, y1] = pt(lon, R_NAK_OUT)
+          const [x2, y2] = pt(lon, R_NAK_OUT - (isNakBound ? 0 : 7))
+          const [nx, ny] = pt(lon + PADA_ARC / 2, R_PADA_NUM)
+          return (
+            <g key={`p${p}`}>
+              {!isNakBound && <line x1={x1} y1={y1} x2={x2} y2={y2} className="sw-padatick" />}
+              <text x={nx} y={ny} className="sw-pada" textAnchor="middle" dominantBaseline="middle">{(p % 4) + 1}</text>
+            </g>
+          )
+        })}
 
-      {/* the lagna, pinned to the eastern horizon */}
-      <g className="sw-asc">
-        <polygon points={`${ascX - 12},${ascY - 6} ${ascX - 12},${ascY + 6} ${ascX - 2},${ascY}`} />
-        <text x={ascX - 16} y={ascY - 8} textAnchor="end">
-          <title>{`Lagna — ${namer.rasi(lagnaRasi)} ${(ascLon % 30).toFixed(2)}°`}</title>
-          Lagna {Math.floor(ascLon % 30)}°
-        </text>
-      </g>
+        {/* horizon: the Ascendant→Descendant diameter (exactly horizontal) */}
+        <line x1={C - R_MAX} y1={C} x2={C + R_MAX} y2={C} className="sw-horizon" />
+        <text x={C - R_MAX + 4} y={C - 8} className="sw-horizon-label">East · rising</text>
+        <text x={C + R_MAX - 4} y={C - 8} className="sw-horizon-label" textAnchor="end">West · setting</text>
 
-      {/* grahas: ray to centre, exact-degree tick, staggered glyph */}
-      {isD1 && placed.map(({ g, lon, r }) => {
-        const [tx, ty] = pt(lon, R_TICK)
-        const [tx2, ty2] = pt(lon, R_TICK - 7)
-        const [px, py] = pt(lon, r)
-        const on = active === g.key
-        return (
-          <g key={g.key}
-             className={`sw-graha${g.retrograde ? ' rx' : ''}${on ? ' active' : ''}`}
-             onPointerEnter={() => onHover?.(g.key)}
-             onPointerLeave={() => onHover?.(null)}
-             onClick={() => onPin?.(g.key)}>
-            <title>
-              {`${g.name_en} — ${namer.rasi(g.rasi)} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"`}
-              {g.retrograde ? ' (retrograde)' : ''}{dignityPhrase(g.dignity)}
-            </title>
-            <line x1={px} y1={py} x2={C} y2={C} className="sw-ray" />
-            <line x1={tx} y1={ty} x2={tx2} y2={ty2} className="sw-gtick" />
-            <line x1={tx2} y1={ty2} x2={px} y2={py} className="sw-glink" />
-            <circle cx={px} cy={py} r="13" className="sw-gdot" />
-            <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central">
-              {GLYPH[g.key] || g.name_en.slice(0, 2)}{g.retrograde ? '℞' : ''}
-            </text>
-            <text x={px} y={py + 22} className="sw-gdeg" textAnchor="middle">
-              {g.degree}°{pad2(g.minute)}′
-            </text>
-          </g>
-        )
-      })}
+        {/* the lagna, pinned to the eastern horizon */}
+        <g className="sw-asc">
+          <polygon points={`${ascX - 12},${ascY - 6} ${ascX - 12},${ascY + 6} ${ascX - 2},${ascY}`} />
+          <text x={ascX - 16} y={ascY - 8} textAnchor="end">
+            <title>{`Lagna — ${namer.rasi(lagnaRasi)} ${(ascLon % 30).toFixed(2)}°`}</title>
+            Lagna {Math.floor(ascLon % 30)}°
+          </text>
+        </g>
 
-      {/* the native, at the centre */}
-      <circle cx={C} cy={C} r="4" className="sw-center" />
-      <text x={C} y={C + 20} className="sw-center-label" textAnchor="middle">the native</text>
+        {/* grahas: ray to centre, exact-degree tick, staggered glyph */}
+        {isD1 && placed.map(({ g, lon, r }) => {
+          const [tx, ty] = pt(lon, R_SIGN_IN)
+          const [tx2, ty2] = pt(lon, R_SIGN_IN - 7)
+          const [px, py] = pt(lon, r)
+          const on = active === g.key
+          const col = colors ? GRAHA_COLOR[g.key] : null
+          return (
+            <g key={g.key}
+               className={`sw-graha${g.retrograde ? ' rx' : ''}${on ? ' active' : ''}`}
+               onPointerEnter={() => onHover?.(g.key)}
+               onPointerLeave={() => onHover?.(null)}
+               onClick={() => onPin?.(g.key)}>
+              <title>
+                {`${g.name_en} — ${namer.rasi(g.rasi)} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"`}
+                {g.retrograde ? ' (retrograde)' : ''}{dignityPhrase(g.dignity)}
+              </title>
+              <line x1={px} y1={py} x2={C} y2={C} className="sw-ray" style={col ? { stroke: col } : undefined} />
+              <line x1={tx} y1={ty} x2={tx2} y2={ty2} className="sw-gtick" style={col ? { stroke: col } : undefined} />
+              <line x1={tx2} y1={ty2} x2={px} y2={py} className="sw-glink" />
+              <circle cx={px} cy={py} r="13" className="sw-gdot" style={col ? { stroke: col } : undefined} />
+              <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central" style={col ? { fill: col } : undefined}>
+                {(GRAHA_COLOR[g.key] ? { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju', venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }[g.key] : g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
+              </text>
+              <text x={px} y={py + 22} className="sw-gdeg" textAnchor="middle">{g.degree}°{pad2(g.minute)}′</text>
+            </g>
+          )
+        })}
 
-      {!isD1 && (
-        <text x={C} y={C - 20} className="sw-note" textAnchor="middle">
-          real-sky view — shows the D1 rāśi
-        </text>
-      )}
-    </svg>
+        {/* the native, at the centre */}
+        <circle cx={C} cy={C} r="4" className="sw-center" />
+        <text x={C} y={C + 20} className="sw-center-label" textAnchor="middle">the native</text>
+
+        {!isD1 && (
+          <text x={C} y={C - 20} className="sw-note" textAnchor="middle">real-sky view — shows the D1 rāśi</text>
+        )}
+      </svg>
+    </div>
   )
 }

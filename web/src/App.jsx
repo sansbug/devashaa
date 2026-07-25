@@ -482,6 +482,7 @@ export default function App() {
                 lagnaVargaSign={chart.lagna_vargas[varga]}
                 vargaKey={varga}
                 namer={namer}
+                nakNames={NAK_NAMES}
                 landmarks={chart.landmarks}
                 lagnaLongitude={chart.lagna_longitude}
                 gandanta={chart.gandanta}

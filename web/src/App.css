@@ -584,6 +584,22 @@ section.meta, .chart-panel, .table-panel {
 .sw-graha.rx .sw-gglyph { fill: var(--rx); }
 .sw-gdeg { fill: var(--dim); font-size: 9px; font-variant-numeric: tabular-nums; pointer-events: none; }
 .sw-graha.active .sw-gdeg { fill: var(--accent); }
+/* above / below the horizon */
+.sw-earth { fill: #000; opacity: .16; }
+/* nakṣatra & pāda subdivisions */
+.sw-nakbound { stroke: var(--line); stroke-width: 1; opacity: .7; }
+.sw-nak { fill: var(--dim); font-size: 9px; }
+.sw-padatick { stroke: var(--dim); stroke-width: 1; opacity: .35; }
+.sw-pada { fill: var(--dim); font-size: 6.5px; opacity: .8; font-variant-numeric: tabular-nums; }
+/* per-layer toggles */
+.sw-wrap { display: flex; flex-direction: column; align-items: center; }
+.sw-toggles { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .6rem; }
+.sw-toggle {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
+  border-radius: 999px; padding: .18rem .6rem; cursor: pointer; font-size: .68rem;
+}
+.sw-toggle:hover { color: var(--ink); }
+.sw-toggle.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 
 /* Narrow screens: .south-chart's 620px is a max-width, so cells shrink with the
    viewport while .south-cell is overflow:hidden — without this the degree

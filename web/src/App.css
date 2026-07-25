@@ -552,7 +552,7 @@ section.meta, .chart-panel, .table-panel {
 .north-graha.rx .north-deg { fill: var(--rx); }
 
 /* --- sky wheel: the sky as it stood around the native --- */
-.sky-wheel { display: block; max-width: 560px; width: 100%; margin: 0 auto; overflow: visible; }
+.sky-wheel { display: block; max-width: 660px; width: 100%; margin: 0 auto; overflow: visible; }
 .sw-sky { fill: var(--accent); opacity: .05; }             /* above-horizon, faint */
 .sw-ring { fill: none; stroke: var(--line); stroke-width: 1; }
 .sw-band { fill: var(--sunken); opacity: .6; }

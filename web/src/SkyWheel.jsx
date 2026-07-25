@@ -39,7 +39,7 @@ const R_NAK_OUT = 284
 const R_NAK_LABEL = 250
 const R_PADA_NUM = 273
 const R_MAX = 284
-const HALF = R_MAX + 46    // viewBox half-extent around the centre
+const HALF = 398           // viewBox half-extent — leaves room for radial nakṣatra names
 const STEP = 30            // radial stagger for a crowded cluster
 const NAK_ARC = 40 / 3     // 13°20′
 const PADA_ARC = 10 / 3    // 3°20′
@@ -180,11 +180,20 @@ export default function SkyWheelChart({
               return <line key={`nb${n}`} x1={x1} y1={y1} x2={x2} y2={y2} className="sw-nakbound" />
             })}
             {Array.from({ length: 27 }, (_, n) => {
-              const [x, y] = pt(n * NAK_ARC + NAK_ARC / 2, R_NAK_LABEL)
+              // Radial: each name on its own spoke, pointing outward from the ring,
+              // flipped on the left half so it never reads upside-down. Radial
+              // avoids the tangential collisions that upright names hit near the
+              // top and bottom, so even long names fit.
+              const midLon = n * NAK_ARC + NAK_ARC / 2
+              const td = ((180 - (midLon - ascLon)) % 360 + 360) % 360
+              const flip = td > 90 && td < 270
+              const [x, y] = pt(midLon, R_NAK_OUT + 6)
               const full = nakNames ? namer.nakshatra(nakNames[n]) : NAK_ABBR[n]
               return (
-                <text key={`nn${n}`} x={x} y={y} className="sw-nak" textAnchor="middle" dominantBaseline="middle">
-                  <title>{`${n + 1}. ${full}`}</title>{NAK_ABBR[n]}
+                <text key={`nn${n}`} x={x} y={y} className="sw-nak"
+                      transform={`rotate(${flip ? td + 180 : td} ${x.toFixed(1)} ${y.toFixed(1)})`}
+                      textAnchor={flip ? 'end' : 'start'} dominantBaseline="middle">
+                  <title>{`${n + 1}. ${full}`}</title>{full}
                 </text>
               )
             })}

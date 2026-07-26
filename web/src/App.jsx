@@ -242,6 +242,15 @@ export default function App() {
 
   // "How to read this chart" interactive walkthrough.
   const [guideOpen, setGuideOpen] = useState(false)
+  // First-time nudge toward the walkthrough — shown once, then remembered.
+  const [nudgeSeen, setNudgeSeen] = useState(
+    () => localStorage.getItem('rg-nudge-seen') === '1',
+  )
+  const dismissNudge = () => {
+    setNudgeSeen(true)
+    try { localStorage.setItem('rg-nudge-seen', '1') } catch { /* private mode */ }
+  }
+  const openGuide = () => { setGuideOpen(true); dismissNudge() }
   // Guide steps drive the real panels: select a graha (signal-stack + chart +
   // dṛṣṭi subject), switch style/varga, highlight a sign, and scroll into view.
   const selectGraha = (k) => { setPicked(k); setPinned(k); setHovered(null) }
@@ -460,9 +469,22 @@ export default function App() {
           <section className="meta" id="rg-positions">
             <div className="meta-head">
               <h2>{chart.name || 'Chart'}</h2>
-              <button type="button" className="rg-open" onClick={() => setGuideOpen(true)}>
-                How to read this chart →
-              </button>
+              <div className="rg-open-wrap">
+                <button type="button" className="rg-open" onClick={openGuide}>
+                  How to read this chart →
+                </button>
+                {!nudgeSeen && !guideOpen && (
+                  <div className="rg-nudge" role="note">
+                    <button type="button" className="rg-nudge-x" onClick={dismissNudge}
+                            aria-label="Dismiss">×</button>
+                    <p>New here? A quick walkthrough reads your chart <em>with</em> you —
+                      cited to BPHS at every step.</p>
+                    <button type="button" className="rg-nudge-go" onClick={openGuide}>
+                      Start the walkthrough →
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             <dl>
               <div><dt>Local</dt><dd>{chart.local_time}</dd></div>

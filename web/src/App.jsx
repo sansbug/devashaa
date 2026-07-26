@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
+import ReadingGuide from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
@@ -239,6 +240,16 @@ export default function App() {
   const marked = hovered ?? pinned
   const pinGraha = (k) => { setPinned((p) => (p === k ? null : k)); setHovered(null) }
 
+  // "How to read this chart" interactive walkthrough.
+  const [guideOpen, setGuideOpen] = useState(false)
+  // Guide steps drive the real panels: select a graha (signal-stack + chart +
+  // dṛṣṭi subject), switch style/varga, highlight a sign, and scroll into view.
+  const selectGraha = (k) => { setPicked(k); setPinned(k); setHovered(null) }
+  const guideActions = {
+    setStyle, setVarga, selectGraha, highlightSign: setRowSign,
+    scrollTo: (sel) => document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+  }
+
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
   const [theme, setTheme] = useState(
@@ -442,8 +453,17 @@ export default function App() {
 
       {chart && (
         <main className="result">
-          <section className="meta">
-            <h2>{chart.name || 'Chart'}</h2>
+          {guideOpen && (
+            <ReadingGuide chart={chart} namer={namer} actions={guideActions}
+                          onClose={() => setGuideOpen(false)} />
+          )}
+          <section className="meta" id="rg-positions">
+            <div className="meta-head">
+              <h2>{chart.name || 'Chart'}</h2>
+              <button type="button" className="rg-open" onClick={() => setGuideOpen(true)}>
+                How to read this chart →
+              </button>
+            </div>
             <dl>
               <div><dt>Local</dt><dd>{chart.local_time}</dd></div>
               <div><dt>Zone</dt><dd>{chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</dd></div>
@@ -522,7 +542,7 @@ export default function App() {
           </section>
 
           {chart.analysis && !chart.analysis.error && (
-            <section className="table-panel">
+            <section className="table-panel" id="rg-signals">
               <h3>What BPHS says about each graha</h3>
               <div className="graha-picker">
                 {chart.grahas.map((g) => (
@@ -541,7 +561,7 @@ export default function App() {
             </section>
           )}
 
-          <section className="table-panel">
+          <section className="table-panel" id="rg-dasha">
             <h3>Daśā</h3>
             <DashaTree
               dasha={chart.dasha}

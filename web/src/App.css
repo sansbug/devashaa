@@ -602,6 +602,50 @@ section.meta, .chart-panel, .table-panel {
 .sw-toggle:hover { color: var(--ink); }
 .sw-toggle.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 
+/* --- "How to read this chart" interactive walkthrough --- */
+.meta-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.rg-open {
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent);
+  border-radius: 8px; padding: .42rem .85rem; cursor: pointer;
+  font-size: .8rem; font-weight: var(--strong-weight, 600); white-space: nowrap;
+}
+.rg-open:hover { filter: brightness(1.06); }
+
+.reading-guide {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 1rem; z-index: 60;
+  width: min(560px, calc(100vw - 1.5rem));
+  background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+  padding: .85rem 1.1rem 1rem; box-shadow: 0 10px 34px rgba(0, 0, 0, .38);
+}
+.rg-head { display: flex; align-items: center; justify-content: space-between; }
+.rg-count { font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.rg-close {
+  background: none; border: 0; color: var(--dim); font-size: 1.3rem; line-height: 1;
+  cursor: pointer; padding: 0 .2rem;
+}
+.rg-close:hover { color: var(--ink); }
+.rg-title {
+  margin: .3rem 0 .5rem; font-size: 1rem; color: var(--accent);
+  font-weight: var(--strong-weight, 600); display: flex; align-items: baseline;
+  gap: .5rem; flex-wrap: wrap;
+}
+.rg-cite {
+  font-size: .58rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 400;
+  border: 1px solid var(--accent); color: var(--accent); border-radius: 999px;
+  padding: .05rem .4rem; cursor: help;
+}
+.rg-body { margin: 0; font-size: .86rem; line-height: 1.62; color: var(--ink); }
+.rg-dots { display: flex; gap: .3rem; margin: .8rem 0; }
+.rg-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); cursor: pointer; }
+.rg-dot.on { background: var(--accent); }
+.rg-nav { display: flex; justify-content: space-between; gap: .5rem; }
+.rg-nav button {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--ink);
+  border-radius: 7px; padding: .35rem .8rem; cursor: pointer; font-size: .78rem;
+}
+.rg-nav button:disabled { opacity: .4; cursor: default; }
+.rg-nav .rg-next { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
 /* Narrow screens: .south-chart's 620px is a max-width, so cells shrink with the
    viewport while .south-cell is overflow:hidden — without this the degree
    column and then the graha names clip away SILENTLY. Shed the degree first,

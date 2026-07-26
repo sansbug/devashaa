@@ -584,6 +584,12 @@ section.meta, .chart-panel, .table-panel {
 .sw-graha.rx .sw-gglyph { fill: var(--rx); }
 .sw-gdeg { fill: var(--dim); font-size: 9px; font-variant-numeric: tabular-nums; pointer-events: none; }
 .sw-graha.active .sw-gdeg { fill: var(--accent); }
+/* dṛṣṭi lines (graded by strength via inline opacity/width) */
+.sw-drishti { stroke: var(--accent); fill: none; pointer-events: none; }
+/* daśā: ring the running mahā / antar lord */
+.sw-dasha-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+.sw-dasha-mark.ad .sw-dasha-ring { stroke-dasharray: 3 2.5; }
+.sw-dasha-lbl { fill: var(--accent); font-size: 8px; font-weight: var(--strong-weight, 600); letter-spacing: .03em; }
 /* above / below the horizon */
 .sw-earth { fill: #000; opacity: .16; }
 /* nakṣatra & pāda subdivisions */

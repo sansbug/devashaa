@@ -382,6 +382,16 @@ export default function App() {
     : style === 'north' ? NorthIndianChart
     : SkyWheelChart
 
+  // The grahas ruling the running mahā and antar daśā — for the wheel's daśā
+  // overlay. Time isn't spatial, but WHERE the ruling graha sits is.
+  const dashaLords = (() => {
+    const dv = chart && chart.dasha && chart.dasha.variants
+    const tree = dv ? (dv['360'] || Object.values(dv)[0]) : null
+    const maha = tree && tree.mahadashas && tree.mahadashas.find((m) => m.is_current)
+    const antar = maha && maha.sub && maha.sub.find((a) => a.is_current)
+    return { maha: maha && maha.lord, antar: antar && antar.lord }
+  })()
+
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
 
   return (
@@ -532,6 +542,8 @@ export default function App() {
                 onHover={setHovered}
                 onPin={pinGraha}
                 highlightSign={rowSign}
+                drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
+                dashaLords={dashaLords}
               />
               {style === 'south' && varga === 'D1' && <RulerLegend />}
               {style === 'north' && (

@@ -82,12 +82,14 @@ function Toggle({ on, set, children }) {
 
 export default function SkyWheelChart({
   grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
-  active, onHover, onPin, highlightSign,
+  active, onHover, onPin, highlightSign, drishti, dashaLords,
 }) {
   const [shade, setShade] = useState(true)
   const [colors, setColors] = useState(true)
   const [naks, setNaks] = useState(true)
   const [padas, setPadas] = useState(true)
+  const [drishtiOn, setDrishtiOn] = useState(true)
+  const [dashaOn, setDashaOn] = useState(true)
 
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
   const ang = (lon) => (180 - (lon - ascLon)) * DEG
@@ -126,6 +128,14 @@ export default function SkyWheelChart({
   const isD1 = vargaKey === 'D1'
   const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
+  // Dṛṣṭi lines for the selected graha (its graded ch.26 casts to each sign).
+  // Nodes are excluded as aspectors, matching the ledger's refusal.
+  const isNode = active === 'rahu' || active === 'ketu'
+  const activePlaced = active && placed.find((p) => p.g.key === active)
+  const drishtiCasts = (drishtiOn && isD1 && active && !isNode && activePlaced
+    && drishti && drishti.graha && drishti.graha.casts[active])
+    ? drishti.graha.casts[active].signs : null
+
   return (
     <div className="sw-wrap">
       <div className="sw-toggles">
@@ -133,6 +143,8 @@ export default function SkyWheelChart({
         <Toggle on={colors} set={setColors}>Graha colours</Toggle>
         <Toggle on={naks} set={setNaks}>Nakṣatras</Toggle>
         <Toggle on={padas} set={setPadas}>Pādas</Toggle>
+        <Toggle on={drishtiOn} set={setDrishtiOn}>Dṛṣṭi</Toggle>
+        <Toggle on={dashaOn} set={setDashaOn}>Daśā</Toggle>
       </div>
       <svg viewBox={`${C - HALF} ${C - HALF} ${2 * HALF} ${2 * HALF}`}
            className="sky-wheel" role="img"
@@ -245,6 +257,20 @@ export default function SkyWheelChart({
           </text>
         </g>
 
+        {/* dṛṣṭi: the selected graha's graded aspects to each sign (ch.26).
+            Drawn under the dots; opacity & width track the ¼/½/¾/full strength. */}
+        {drishtiCasts && Object.entries(drishtiCasts).map(([s, v]) => {
+          const [ax, ay] = pt(activePlaced.lon, activePlaced.r)
+          const [bx, by] = pt(Number(s) * 30 + 15, R_SIGN_IN - 4)
+          const col = colors ? GRAHA_COLOR[active] : null
+          return (
+            <line key={`dr${s}`} x1={ax} y1={ay} x2={bx} y2={by} className="sw-drishti"
+                  style={{ strokeOpacity: 0.22 + v * 0.6, strokeWidth: 0.8 + v * 1.7, ...(col ? { stroke: col } : {}) }}>
+              <title>{`${namer.grahaKey(active)} aspects ${namer.rasi(Number(s))} — ${{ 0.25: '¼', 0.5: '½', 0.75: '¾', 1: 'full' }[v] ?? v}`}</title>
+            </line>
+          )
+        })}
+
         {/* grahas: ray to centre, exact-degree tick, staggered glyph */}
         {isD1 && placed.map(({ g, lon, r }) => {
           const [tx, ty] = pt(lon, R_SIGN_IN)
@@ -270,6 +296,23 @@ export default function SkyWheelChart({
                 {(GRAHA_COLOR[g.key] ? { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju', venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }[g.key] : g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
               </text>
               <text x={px} y={py + 22} className="sw-gdeg" textAnchor="middle">{g.degree}°{pad2(g.minute)}′</text>
+            </g>
+          )
+        })}
+
+        {/* daśā: ring the graha ruling the running mahā (and antar) — the time
+            sequence isn't spatial, but WHERE the ruling graha sits is. */}
+        {dashaOn && isD1 && dashaLords && placed.map(({ g, lon, r }) => {
+          const md = g.key === dashaLords.maha
+          const ad = g.key === dashaLords.antar
+          if (!md && !ad) return null
+          const [px, py] = pt(lon, r)
+          const lbl = md && ad ? 'MD·AD' : md ? 'MD' : 'AD'
+          return (
+            <g key={`dl${g.key}`} className={`sw-dasha-mark${md ? ' md' : ' ad'}`} style={{ pointerEvents: 'none' }}>
+              <title>{md ? 'running mahādaśā lord' : 'running antardaśā lord'}</title>
+              <circle cx={px} cy={py} r="18" className="sw-dasha-ring" />
+              <text x={px} y={py - 21} className="sw-dasha-lbl" textAnchor="middle">{lbl}</text>
             </g>
           )
         })}

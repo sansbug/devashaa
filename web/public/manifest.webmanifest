@@ -1,0 +1,20 @@
+{
+  "name": "Devashaa — Vedic Birth Chart",
+  "short_name": "Devashaa",
+  "description": "Free, educational sidereal Vedic astrology (Jyotiṣa) birth-chart calculator following Bṛhat Parāśara Horā Śāstra — 16 vargas, nakṣatras, and 8 daśā systems.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0810",
+  "theme_color": "#0b0810",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "reference", "lifestyle"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

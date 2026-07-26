@@ -29,6 +29,32 @@ const VARGA_LABELS = [
   ['D45', 'Akṣavedāṁśa'], ['D60', 'Ṣaṣṭiāṁśa'],
 ]
 
+// The life-area each varga is read for. IMPORTANT PROVENANCE: BPHS ch.6 gives the
+// divisions' calculation and names only (see docs/bphs-rules.md) — the life-area
+// each governs is CLASSICAL / TRADITIONAL usage, not a BPHS śloka. Shown labelled
+// "traditional" so it is never mistaken for Parāśara's own words.
+const VARGA_SIG = {
+  D1: 'the body & the whole life',
+  D2: 'wealth & resources',
+  D3: 'siblings & courage',
+  D4: 'fortune, property & the home',
+  D7: 'children & progeny',
+  D9: 'spouse, marriage & dharma — and a graha’s inner strength',
+  D10: 'career, karma & status',
+  D12: 'parents & lineage',
+  D16: 'vehicles, comforts & pleasures',
+  D20: 'spiritual practice & worship',
+  D24: 'education & learning',
+  D27: 'overall strengths & weaknesses',
+  D30: 'misfortunes, ariṣṭa & character',
+  D40: 'auspicious & inauspicious effects (matrilineal)',
+  D45: 'conduct & all indications (patrilineal)',
+  D60: 'all matters & past-life karma — the finest, heavily weighted',
+}
+const VARGA_SIG_NOTE = 'BPHS ch.6 gives the sixteen divisions’ calculation and '
+  + 'names; the life-area each is read for is classical / traditional usage, not '
+  + 'a BPHS śloka.'
+
 // Names come from the active name style (see naming.js) — full, never abbreviated.
 // The ṣoḍaśavarga matrix is wider than the page as a result and scrolls
 // horizontally, with the graha column pinned so rows keep their labels.
@@ -518,13 +544,15 @@ export default function App() {
               </div>
               <div className="vargas">
                 {VARGA_LABELS.map(([k, label]) => (
-                  <button type="button" key={k} title={label}
+                  <button type="button" key={k} title={`${label} — ${VARGA_SIG[k]}`}
                           className={varga === k ? 'on' : ''}
                           onClick={() => setVarga(k)}>{k}</button>
                 ))}
               </div>
               <div className="varga-name">
-                {VARGA_LABELS.find(([k]) => k === varga)[1]}
+                <strong>{VARGA_LABELS.find(([k]) => k === varga)[1]}</strong>
+                <span className="varga-sig"> — read for {VARGA_SIG[varga]}</span>
+                <span className="varga-tier" title={VARGA_SIG_NOTE}>traditional</span>
               </div>
             </div>
             <div className="chart-figure">
@@ -673,12 +701,17 @@ export default function App() {
 
           <section className="table-panel">
             <h3>Ṣoḍaśavarga — all sixteen divisions</h3>
+            <p className="rc-note varga-caption">
+              Hover a column heading for what each division is read for. {VARGA_SIG_NOTE}
+            </p>
             <div className="scroll">
               <table className="varga-table">
                 <thead>
                   <tr>
                     <th>Graha</th>
-                    {VARGA_LABELS.map(([k]) => <th key={k}>{k}</th>)}
+                    {VARGA_LABELS.map(([k, label]) => (
+                      <th key={k} title={`${label} — read for ${VARGA_SIG[k]} (traditional)`}>{k}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>

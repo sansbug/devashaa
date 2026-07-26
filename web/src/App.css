@@ -428,7 +428,14 @@ section.meta, .chart-panel, .table-panel {
 .controls button.on {
   background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600;
 }
-.varga-name { margin-left: auto; color: var(--accent); font-size: .85rem; }
+.varga-name { margin-left: auto; color: var(--accent); font-size: .85rem; display: inline-flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+.varga-sig { color: var(--dim); }
+.varga-tier {
+  font-size: .58rem; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--dim); border: 1px dashed var(--line); border-radius: 999px;
+  padding: .04rem .38rem; cursor: help; align-self: center;
+}
+.varga-caption { max-width: 640px; }
 
 /* --- south indian chart --- */
 .south-chart {

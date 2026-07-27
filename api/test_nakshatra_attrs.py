@@ -3,13 +3,18 @@
 Run: python api/test_nakshatra_attrs.py
 
 The point of this module is that it does NOT fabricate. These tests guarantee:
-the values match what was transcribed from the two source books, every cell
-carries a confidence and citation, the flagged OCR issues (the Puṣya↔Pūrva-
-Phalgunī yoni swap; the garbled S3 symbol reads) are surfaced not silently fixed,
-nāḍī stays an explicit gap for all 27, and no cell claims BPHS provenance.
+the values match what was transcribed from the source books, every cell carries a
+confidence and citation, the resolved OCR swap and the deity variances are
+surfaced not silently invented, and no cell claims BPHS provenance.
+
+Updated 2026-07-26 for the Komilla Sutton (S4) reconciliation: nāḍī is now filled
+(from S4's dosha column, matching the canonical Aṣṭakūṭa 9-9-9), dosha and guṇa
+are new fields, yoni + puruṣārtha are corroborated, and the Puṣya↔Pūrva-Phalgunī
+yoni swap is resolved to the canonical pairing.
 """
 import os
 import sys
+from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,89 +35,96 @@ CONF = {"corroborated", "single_source", "uncertain", "absent"}
 print("Every nakṣatra 1-27 has a full, well-formed attribute row:")
 rows = na.all_attributes()
 check("exactly 27 rows", len(rows) == 27, str(len(rows)))
+check("FIELDS now include dosha and guna",
+      "dosha" in na.FIELDS and "guna" in na.FIELDS and "nadi" in na.FIELDS)
 for r in rows:
     cells = r["cells"]
     ok = set(cells) == set(na.FIELDS)
     for f, c in cells.items():
         ok = ok and c["tier"] == "traditional" and c["confidence"] in CONF
-        # a value is present iff available, and every non-absent cell cites a source
         ok = ok and (c["available"] == (c["value"] is not None))
         if c["confidence"] != "absent":
             ok = ok and len(c["sources"]) >= 1
     check(f"nak {r['index']:>2} {r['name']:<16} well-formed", ok)
 
-print("\nThe seven attested fields have a value for all 27; nāḍī for none:")
-for f in ("symbol", "gana", "yoni", "body_part", "purushartha", "quality", "shakti"):
+print("\nAll ten fields now have a value for every one of the 27 (nāḍī closed):")
+for f in ("symbol", "gana", "guna", "yoni", "body_part", "purushartha",
+          "quality", "shakti", "dosha", "nadi"):
     n = sum(1 for r in rows if r["cells"][f]["available"])
     check(f"{f}: 27/27 present", n == 27, f"{n}/27")
-n_nadi = sum(1 for r in rows if r["cells"]["nadi"]["available"])
-check("nāḍī: 0/27 — an explicit gap, never guessed", n_nadi == 0, f"{n_nadi}/27")
-for r in rows:
-    nd = r["cells"]["nadi"]
-    check_once = nd["confidence"] == "absent" and "not sourced" in nd.get("note", "").lower() \
-        or nd["confidence"] == "absent" and "absent" in nd.get("note", "").lower()
-    if not check_once:
-        fails.append(f"nadi note nak {r['index']}")
-check("every nāḍī cell is confidence 'absent' with a reason",
-      all(r["cells"]["nadi"]["confidence"] == "absent"
-          and r["cells"]["nadi"].get("note") for r in rows))
 
-print("\nProvenance tiers land where the sources actually reach:")
-# symbols: 1-9 established, 10-18 Sunil John, 19-27 Perfect Astrology asterisms
-check("symbol 1-9 cite the established set (S1)",
-      all("S1" in rows[i - 1]["cells"]["symbol"]["source_ids"] for i in range(1, 10)))
-check("symbol 10-18 cite Sunil John Part 2 (S2)",
-      all("S2" in rows[i - 1]["cells"]["symbol"]["source_ids"] for i in range(10, 19)))
-check("symbol 19-27 cite Perfect Astrology (S3) and are tagged asterism_figure",
-      all(rows[i - 1]["cells"]["symbol"]["source_ids"] == ["S3"]
-          and rows[i - 1]["cells"]["symbol"].get("kind") == "asterism_figure"
-          for i in range(19, 28)))
-check("symbol 1-18 are iconographic",
-      all(rows[i - 1]["cells"]["symbol"].get("kind") == "icon" for i in range(1, 19)))
-check("the S3 classification fields cite only Perfect Astrology",
-      all(rows[i]["cells"][f]["source_ids"] == ["S3"]
-          for i in range(27)
-          for f in ("gana", "yoni", "body_part", "purushartha", "quality", "shakti")))
+print("\nNāḍī is FILLED from S4's dosha and matches the canonical Aṣṭakūṭa 9-9-9:")
+CANON_NADI = {
+    "Ādi": {1, 6, 7, 12, 13, 18, 19, 24, 25},
+    "Madhya": {2, 5, 8, 11, 14, 17, 20, 23, 26},
+    "Antya": {3, 4, 9, 10, 15, 16, 21, 22, 27},
+}
+for name, idxs in CANON_NADI.items():
+    got = {r["index"] for r in rows if r["cells"]["nadi"]["value"] == name}
+    check(f"nāḍī {name}: exactly the canonical nine", got == idxs, str(sorted(got)))
+check("every nāḍī cell is corroborated and cites Komilla (S4)",
+      all(r["cells"]["nadi"]["confidence"] == "corroborated"
+          and "S4" in r["cells"]["nadi"]["source_ids"] for r in rows))
+# dosha ↔ nāḍī identity is internally consistent for all 27
+D2N = {"Vāta": "Ādi", "Pitta": "Madhya", "Kapha": "Antya"}
+check("dosha maps to nāḍī by Vāta=Ādi / Pitta=Madhya / Kapha=Antya, all 27",
+      all(D2N[r["cells"]["dosha"]["value"]] == r["cells"]["nadi"]["value"] for r in rows))
 
-print("\nThe eight corroborated symbols carry two independent sources:")
-corro = [r["index"] for r in rows if r["cells"]["symbol"]["confidence"] == "corroborated"]
-check("exactly the expected eight are corroborated",
-      corro == [1, 2, 5, 9, 10, 13, 14, 16], str(corro))
-check("each corroborated symbol lists 2 sources",
-      all(len(rows[i - 1]["cells"]["symbol"]["sources"]) == 2 for i in corro))
+print("\nDosha and guṇa are the new S4 fields with clean 9-9-9 structure:")
+dc = Counter(r["cells"]["dosha"]["value"] for r in rows)
+check("dosha: nine each of Vāta / Pitta / Kapha",
+      dc.get("Vāta") == 9 and dc.get("Pitta") == 9 and dc.get("Kapha") == 9, str(dict(dc)))
+check("dosha cells are single_source S4",
+      all(r["cells"]["dosha"]["source_ids"] == ["S4"] for r in rows))
+check("guṇa follows the three-cycles-of-nine: 1-9 Rajas, 10-18 Tamas, 19-27 Sattva",
+      all(rows[i - 1]["cells"]["guna"]["value"] == "Rajas" for i in range(1, 10))
+      and all(rows[i - 1]["cells"]["guna"]["value"] == "Tamas" for i in range(10, 19))
+      and all(rows[i - 1]["cells"]["guna"]["value"] == "Sattva" for i in range(19, 28)))
+check("guṇa cells are single_source S4",
+      all(r["cells"]["guna"]["source_ids"] == ["S4"] for r in rows))
 
-print("\nThe flagged OCR issues are SURFACED, not silently fixed:")
+print("\nYoni and puruṣārtha are now corroborated (S3 + S4):")
+check("every yoni cell is corroborated and cites both S3 and S4",
+      all(r["cells"]["yoni"]["confidence"] == "corroborated"
+          and set(r["cells"]["yoni"]["source_ids"]) == {"S3", "S4"} for r in rows))
+check("every puruṣārtha cell is corroborated and cites both S3 and S4",
+      all(r["cells"]["purushartha"]["confidence"] == "corroborated"
+          and set(r["cells"]["purushartha"]["source_ids"]) == {"S3", "S4"} for r in rows))
+
+print("\nThe Puṣya↔Pūrva-Phalgunī yoni swap is RESOLVED to the canonical pairing:")
 pushya = rows[8 - 1]["cells"]["yoni"]
 pphal = rows[11 - 1]["cells"]["yoni"]
-check("Puṣya yoni is the value the book PRINTS (rat/mouse), not the canonical fix",
-      pushya["value"] == "Rat/mouse", pushya["value"])
-check("Puṣya yoni is 'uncertain' and its note names the suspected swap + canonical",
-      pushya["confidence"] == "uncertain" and "goat/sheep" in pushya["note"].lower())
-check("Pūrva Phalgunī yoni is the printed 'goat/sheep', flagged uncertain",
-      pphal["value"] == "Goat/sheep" and pphal["confidence"] == "uncertain"
-      and "rat/mouse" in pphal["note"].lower())
-check("the two garbled S3 symbol reads (4,7,8) keep the established icon + a note",
-      all(rows[i - 1]["cells"]["symbol"]["value"] == na._SYMBOL[i]
-          and rows[i - 1]["cells"]["symbol"].get("note") for i in (4, 7, 8)))
-anu = rows[17 - 1]["cells"]["symbol"]
-check("Anurādhā symbol is the securely-attested 'lotus' with the row-bleed caveat",
-      "lotus" in anu["value"].lower() and "row-bleed" in anu.get("note", "").lower())
+check("Puṣya yoni is now the canonical goat/sheep (was the printed 'rat')",
+      pushya["value"] == "Goat/sheep", pushya["value"])
+check("Puṣya yoni note records the resolution via Komilla",
+      "column-swap" in pushya.get("note", "").lower() and "komilla" in pushya.get("note", "").lower())
+check("Pūrva Phalgunī yoni is now the canonical rat/mouse (was the printed 'goat')",
+      pphal["value"] == "Rat/mouse", pphal["value"])
 
-print("\nGaṇa matches the canonical 9-9-9 split (a check, not a source):")
-from collections import Counter
+print("\nGaṇa / body-part / activity / śakti still rest on the single S3 book:")
+check("gaṇa, body-part, quality, śakti cite only Perfect Astrology (S3)",
+      all(rows[i]["cells"][f]["source_ids"] == ["S3"]
+          for i in range(27)
+          for f in ("gana", "body_part", "quality", "shakti")))
 gc = Counter(r["cells"]["gana"]["value"] for r in rows)
-check("nine each of Deva / Manuṣya / Rākṣasa",
-      gc.get("Deva") == 9 and gc.get("Manuṣya") == 9 and gc.get("Rākṣasa") == 9,
-      str(dict(gc)))
+check("gaṇa still the canonical 9-9-9 Deva/Manuṣya/Rākṣasa",
+      gc.get("Deva") == 9 and gc.get("Manuṣya") == 9 and gc.get("Rākṣasa") == 9, str(dict(gc)))
 
-print("\nPuruṣārtha follows the canonical Dh-Ar-Kā-Mo cycle exactly:")
-DAKM = ["Dharma", "Artha", "Kāma", "Mokṣa"]
-# The classical assignment walks the four aims in a boustrophedon over groups of
-# four; here we just assert the set is complete and every value is one of them.
-check("every puruṣārtha is one of the four aims",
-      all(r["cells"]["purushartha"]["value"] in DAKM for r in rows))
+print("\nSymbols: 1-18 iconographic & corroborated; 19-27 now iconic from S4:")
+check("all 27 symbols are iconographic (19-27 gained an icon from S4)",
+      all(r["cells"]["symbol"].get("kind") == "icon" for r in rows))
+check("symbols 1-18 are corroborated (established icon + S4, some + S3)",
+      all(rows[i - 1]["cells"]["symbol"]["confidence"] == "corroborated"
+          and "S4" in rows[i - 1]["cells"]["symbol"]["source_ids"] for i in range(1, 19)))
+check("symbols 19-27 cite Komilla (S4) and note the S3 star-shape",
+      all(rows[i - 1]["cells"]["symbol"]["source_ids"] == ["S4"]
+          and "star-pattern" in rows[i - 1]["cells"]["symbol"].get("note", "")
+          for i in range(19, 28)))
+check("symbol 1-9 still cite the established set (S1); 10-18 cite Sunil John (S2)",
+      all("S1" in rows[i - 1]["cells"]["symbol"]["source_ids"] for i in range(1, 10))
+      and all("S2" in rows[i - 1]["cells"]["symbol"]["source_ids"] for i in range(10, 19)))
 
-print("\nNo cell claims BPHS/Parāśara; deity variances are flagged, not applied:")
+print("\nNo cell claims BPHS/Parāśara; deity variances flagged, not applied:")
 for r in rows:
     for f, c in r["cells"].items():
         for s in c["sources"]:
@@ -124,6 +136,9 @@ check("Hasta & Svātī deity variances are recorded (Savitṛ/Sūrya, Vāyu/Maru
       and na.DEITY_TRADITION_VARIANTS[13]["bphs_app"] == "Sūrya"
       and na.DEITY_TRADITION_VARIANTS[15]["traditional"] == "Vāyu"
       and na.DEITY_TRADITION_VARIANTS[15]["bphs_app"] == "Marut")
+check("both variances now name a second witness (S4 / Komilla)",
+      na.DEITY_TRADITION_VARIANTS[13].get("also") == "S4"
+      and na.DEITY_TRADITION_VARIANTS[15].get("also") == "S4")
 check("those variances match the BPHS-tier values still standing in vedic.py",
       "Surya" in vedic.NAKSHATRAS[13 - 1][2] and "Marut" in vedic.NAKSHATRAS[15 - 1][2])
 

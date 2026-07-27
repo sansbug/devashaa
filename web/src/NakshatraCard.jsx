@@ -9,11 +9,17 @@
  * doctrine, this card fills it from named sources, with the provenance attached.
  *
  * So every cell carries a CONFIDENCE, not just a value:
- *   corroborated  — two independent sources agree
- *   single_source — one book states it (the honest ceiling for the whole
- *                   gaṇa/yoni/… layer: it is one OCR'd book)
+ *   corroborated  — two independent sources agree (yoni, puruṣārtha, symbols
+ *                   1-18, and — since Komilla Sutton — nāḍī)
+ *   single_source — one book states it (gaṇa, body-part, activity, śakti rest on
+ *                   the one S3 book; dosha and guṇa on Komilla)
  *   uncertain     — the stored value may itself be wrong; the note says why
- *   absent        — no source states it (nāḍī, for all 27) — a first-class gap
+ *   absent        — no source states it — a first-class gap, never guessed
+ *
+ * Nāḍī used to read "not sourced on this tier" for all 27 — the honest gap the
+ * first three books left. Komilla Sutton's Ayurvedic-dosha column closed it:
+ * it reproduces the canonical Aṣṭakūṭa Ādi/Madhya/Antya assignment exactly, so
+ * nāḍī and dosha now both ship, corroborated.
  *
  * The BPHS deity and Viṁśottarī lord ARE shown, up top, but under their own
  * śloka badge — the two tiers sit side by side and are never blended.
@@ -125,17 +131,19 @@ function ModernTechniques({ t }) {
   )
 }
 
-const FIELD_ORDER = ['symbol', 'gana', 'yoni', 'body_part', 'purushartha',
-  'quality', 'shakti', 'nadi']
+const FIELD_ORDER = ['symbol', 'gana', 'guna', 'yoni', 'body_part', 'purushartha',
+  'quality', 'shakti', 'dosha', 'nadi']
 const FALLBACK_META = {
   symbol: ['Symbol', 'The classical emblem / asterism figure'],
   gana: ['Gaṇa', 'Temperament — Deva / Manuṣya / Rākṣasa'],
+  guna: ['Guṇa', 'Dominant strand — Sattva / Rajas / Tamas'],
   yoni: ['Yoni (animal)', 'Sexual-compatibility animal (Aṣṭakūṭa)'],
   body_part: ['Kālapuruṣa aṅga', 'Body part in the cosmic-person scheme'],
   purushartha: ['Puruṣārtha', 'Life-aim — Dharma / Artha / Kāma / Mokṣa'],
-  quality: ['Guṇa / activity', 'Muhūrta activity-type'],
+  quality: ['Activity (muhūrta)', 'Muhūrta activity-class — Light/Fierce/Fixed/…'],
   shakti: ['Śakti', "The nakṣatra's animating power"],
-  nadi: ['Nāḍī', 'Ādi / Madhya / Antya (compatibility)'],
+  dosha: ['Dosha', 'Āyurvedic humour — Vāta / Pitta / Kapha'],
+  nadi: ['Nāḍī', 'Ādi / Madhya / Antya (Aṣṭakūṭa compatibility)'],
 }
 
 export default function NakshatraCard({ n, fieldMeta, namer }) {
@@ -176,7 +184,9 @@ export default function NakshatraCard({ n, fieldMeta, namer }) {
       <section>
         <h4>Attributes on the traditional tier</h4>
         <div className="rc-grid">
-          {FIELD_ORDER.map((f) => (
+          {/* Guard on n.cells[f]: tolerate an older API payload that predates a
+              field (dosha/guṇa) so the card never crashes mid-deploy. */}
+          {FIELD_ORDER.filter((f) => n.cells[f]).map((f) => (
             <AttrCell key={f} label={label(f)} gloss={gloss(f)} c={n.cells[f]} />
           ))}
         </div>

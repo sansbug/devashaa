@@ -440,11 +440,12 @@ may itself be wrong), or `absent`.
   left standing and the variance is recorded in `DEITY_TRADITION_VARIANTS` for a
   human to reconcile against the BPHS text.
 
-**Still absent — NĀḌĪ (0/27).** Neither book carries an Ādi/Madhya/Antya table
+**~~Still absent — NĀḌĪ (0/27).~~ CLOSED 2026-07-26 (S4, below).** For 2026-07-21
+this was left an explicit gap: neither S2 nor S3 carried an Ādi/Madhya/Antya table
 (the whole nakṣatra section of *Perfect Astrology*, pp.47–85, was scanned to
-confirm). Left an explicit gap for all 27; closing it needs a muhūrta / Aṣṭakūṭa
-source (Muhūrta Cintāmaṇi, Kālaprakāśikā). Not filled from memory, though the
-cycle is trivial — that would be exactly the fabrication this project refuses.
+confirm), and it was **not** filled from memory though the cycle is trivial —
+that would have been exactly the fabrication this project refuses. Komilla Sutton
+(S4) is what closed it honestly — see the next section.
 
 **Served at** `/api/nakshatra-attributes` (each row joined with the BPHS deity +
 Viṁśottarī lord under a `bphs`/`sloka` key, never blended). **UI:** a
@@ -491,3 +492,60 @@ The per-sign lengths ride on the chart payload at `dasha.chara`.
 shaped; Chara Daśā bands are signs), antardaśās (ch.4, not in the scan), and the
 direction rule (ch.3). (The symbol table rows 10–27 — pending when this was
 first written — were completed on 2026-07-21, see the section above.)
+
+## BUILT 2026-07-26 — S4 (Komilla Sutton) reconciliation: nāḍī closed
+
+A fourth book reconciled the 27-row grid and closed its biggest gap.
+
+- **S4** — Komilla Sutton, *Vedic Astrology* (Jyotish 2000). A modern compiler of
+  the traditional attributes, with a clean per-nakṣatra **data-box**: symbol,
+  animal (yoni), deity, motivation (puruṣārtha), guṇa triplicity, **Ayurvedic
+  dosha**. **Only the tabular facts were taken** — her personality profiles,
+  "famous <nakṣatra>" lists, mythology prose and self-devised compatibility grids
+  are her own modern interpretation and are **not reproduced** (same copyright
+  discipline as the S2/S3 technique pointers). Extracted by a 7-agent parallel
+  read of the PDF, then reconciled here against the canonical patterns.
+
+**NĀḌĪ — was `absent` 0/27, now filled and corroborated.** S4's *Ayurvedic dosha*
+column (Vāta/Pitta/Kapha) maps by the standard identity **Ādi=Vāta, Madhya=Pitta,
+Antya=Kapha**, and — the decisive check — it reproduces the **canonical Aṣṭakūṭa
+nāḍī assignment EXACTLY for all 27** (a perfect 9-9-9 in the canonical positions:
+Ādi = 1,6,7,12,13,18,19,24,25; Madhya = 2,5,8,11,14,17,20,23,26; Antya =
+3,4,9,10,15,16,21,22,27). That independent agreement — a centuries-old muhūrta
+standard **and** Komilla's printed dosha column — is what closed the gap honestly,
+where "fill it from memory" was refused. `dosha` ships as its own field beside
+`nadi`. (Because it is dosha *reinterpreted*, nāḍī is `corroborated` and its note
+states the derivation in full — it is not asserted as if a book printed the word
+"nāḍī".)
+
+**Yoni swap RESOLVED.** S3 printed Puṣya = *rat* and Pūrva-Phalgunī = *goat* (a
+column-swap, held `uncertain` since 2026-07-21). S4 independently gives Puṣya =
+sheep, Pūrva-Phalgunī = rat — the canonical pairing — so both cells now carry the
+**canonical value, `corroborated`**, with the resolution recorded in the note.
+
+**Corroboration upgrades.** S4's animal(yoni) matches S3 for every other nakṣatra
+and her motivation(puruṣārtha) matches S3 for **all 27** → yoni and puruṣārtha
+move `single_source → corroborated`. Her symbol corroborates the icon for 1–18,
+and **provides the iconographic symbol for 19–27** (Mūla = tail of a lion /
+elephant goad; Revatī = a fish; …) — the grid previously had only Perfect
+Astrology's star-shapes there, which are kept in each cell's note.
+
+**New field — GUṆA** (dominant Sattva/Rajas/Tamas), from S4's triplicity: a clean
+three-cycles-of-nine (1–9 Rajas, 10–18 Tamas, 19–27 Sattva). Distinct from the
+existing muhūrta `quality`/activity field, which was relabelled "Activity
+(muhūrta)" to remove the clash.
+
+**Deity variances reinforced, still not applied.** S4 independently gives
+Hasta = *Savitṛ* and Svātī = *Vāyu* — a **third witness** for the two variances
+already flagged against BPHS's *Sūrya* / *Marut*. `vedic.py` is still untouched;
+`DEITY_TRADITION_VARIANTS` now records the second traditional witness.
+
+**Left `single_source` (S3 only):** gaṇa, kālapuruṣa body-part, activity(quality),
+śakti — none appear in Komilla's boxes, so they keep the honest one-book ceiling.
+
+**Not taken from S4:** her "Colour" and "Best direction" box rows (idiosyncratic
+to her, and blank for a few early nakṣatras whose boxes are reduced) and the
+naming-syllables — held back to keep the grid to the standard Aṣṭakūṭa / muhūrta
+classification. Her Ashwini box also mis-prints the principal stars as Gemini's
+(Castor & Pollux) — a reminder that even the corroborating book has slips, caught
+here because the reconciliation cross-checks every patterned field.

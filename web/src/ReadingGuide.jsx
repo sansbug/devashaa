@@ -37,7 +37,8 @@ function buildCtx(chart, namer) {
   const tree = dv ? (dv['360'] || Object.values(dv)[0]) : null
   const curMaha = tree && tree.mahadashas && tree.mahadashas.find((m) => m.is_current)
   const curAntar = curMaha && curMaha.sub && curMaha.sub.find((a) => a.is_current)
-  return { chart, namer, g, lagna, moon: g('moon'), sun: g('sun'), seventh, dign, curMaha, curAntar }
+  const navamsa = chart.navamsa && !chart.navamsa.error ? chart.navamsa : null
+  return { chart, namer, g, lagna, moon: g('moon'), sun: g('sun'), seventh, dign, curMaha, curAntar, navamsa }
 }
 
 const STEPS = [
@@ -128,6 +129,33 @@ const STEPS = [
         and a graha strong in D1 but weak across the vargas is a different story
         from one strong in both.</>
     ),
+  },
+  {
+    title: 'The navāṁśa has its own reading',
+    cite: 'C. S. Patel · modern',
+    enter: (a) => {
+      a.setVarga('D9'); a.setStyle('south')
+      // The D9 panel mounts on the varga switch; scroll once it exists.
+      setTimeout(() => a.scrollTo('.nv-panel'), 260)
+    },
+    body: (c) => {
+      const nm = (k) => (k === 'lagna' ? 'Lagna' : c.namer.grahaKey(k))
+      const vg = c.navamsa ? c.navamsa.vargottama.items : []
+      const tally = c.navamsa ? c.navamsa.bhava_suchaka.tally : null
+      return (
+        <>The <strong>D9 panel</strong> below reads the navāṁśa itself — on a{' '}
+          <strong>modern</strong> tier (C. S. Patel), kept apart from BPHS, which is
+          silent here. A graha in the <em>same sign in D1 and D9</em> is{' '}
+          <strong>vargottama</strong> — strong, its results amplified.{' '}
+          {vg.length
+            ? <>Yours: <strong>{vg.map((v) => nm(v.key)).join(', ')}</strong>.</>
+            : <>Your chart has none — common, and the panel says so plainly.</>}{' '}
+          It also marks the <strong>64th navāṁśa</strong>, a classical sensitive
+          point{tally ? <>, and tallies each navāṁśa-sign by house
+            ({tally.prosperous} favourable, {tally.difficult} difficult)</> : ''}.
+          Every line names its source and stays a pointer — never a verdict.</>
+      )
+    },
   },
   {
     title: 'Reading, not guessing',

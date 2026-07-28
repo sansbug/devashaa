@@ -327,7 +327,7 @@ export default function SkyWheelChart({
       </svg>
       {dashaOn && isD1 && runningDasha && (
         <div className="sw-dasha-now" role="note">
-          <span className="sw-dn-head">Running daśā · time remaining</span>
+          <span className="sw-dn-head">Running daśā · ends</span>
           <div className="sw-dn-rows">
             {runningDasha.levels.map((l) => (
               <span key={l.code} className="sw-dn-row">
@@ -335,13 +335,13 @@ export default function SkyWheelChart({
                   l.code === 'MD' ? 'mahādaśā' : l.code === 'AD' ? 'antardaśā' : 'pratyantardaśā'
                 }>{l.code}</span>
                 <strong className="sw-dn-lord">{namer.grahaKey(l.lord)}</strong>
-                <span className="sw-dn-rem">{l.remaining} left</span>
+                <span className="sw-dn-rem" title={`${l.remaining} left`}>ends {l.ends}</span>
               </span>
             ))}
           </div>
           <span className="sw-dn-note">
             A daśā is a span of time, not a place — the rings mark where its lords
-            sit; this is how much of each is left.
+            sit; this is when each period ends (hover for the time left).
           </span>
         </div>
       )}

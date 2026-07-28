@@ -455,8 +455,12 @@ export default function App() {
       if (d > 0) return `${d}d`
       return `${Math.max(1, Math.floor(ms / 3600000))}h`
     }
+    const fmtEnd = (endISO) => {
+      const d = new Date(String(endISO).replace(' ', 'T'))
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    }
     const level = (node, code) => (node && node.end
-      ? { code, lord: node.lord, remaining: remain(node.end) } : null)
+      ? { code, lord: node.lord, ends: fmtEnd(node.end), remaining: remain(node.end) } : null)
     const levels = [level(maha, 'MD'), level(antar, 'AD'), level(praty, 'PD')].filter(Boolean)
     return levels.length ? { levels } : null
   })()

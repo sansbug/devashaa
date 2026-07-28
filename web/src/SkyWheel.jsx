@@ -82,7 +82,7 @@ function Toggle({ on, set, children }) {
 
 export default function SkyWheelChart({
   grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
-  active, onHover, onPin, highlightSign, drishti, dashaLords,
+  active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha,
 }) {
   const [shade, setShade] = useState(true)
   const [colors, setColors] = useState(true)
@@ -325,6 +325,26 @@ export default function SkyWheelChart({
           <text x={C} y={C - 20} className="sw-note" textAnchor="middle">real-sky view — shows the D1 rāśi</text>
         )}
       </svg>
+      {dashaOn && isD1 && runningDasha && (
+        <div className="sw-dasha-now" role="note">
+          <span className="sw-dn-head">Running daśā · time remaining</span>
+          <div className="sw-dn-rows">
+            {runningDasha.levels.map((l) => (
+              <span key={l.code} className="sw-dn-row">
+                <span className="sw-dn-code" title={
+                  l.code === 'MD' ? 'mahādaśā' : l.code === 'AD' ? 'antardaśā' : 'pratyantardaśā'
+                }>{l.code}</span>
+                <strong className="sw-dn-lord">{namer.grahaKey(l.lord)}</strong>
+                <span className="sw-dn-rem">{l.remaining} left</span>
+              </span>
+            ))}
+          </div>
+          <span className="sw-dn-note">
+            A daśā is a span of time, not a place — the rings mark where its lords
+            sit; this is how much of each is left.
+          </span>
+        </div>
+      )}
     </div>
   )
 }

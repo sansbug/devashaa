@@ -433,6 +433,33 @@ export default function App() {
     const antar = maha && maha.sub && maha.sub.find((a) => a.is_current)
     return { maha: maha && maha.lord, antar: antar && antar.lord }
   })()
+  // The running daśā chain (mahā → antar → pratyantar) with the time remaining
+  // in each level, for the wheel's daśā readout. is_current is marked as-of now
+  // on the backend, and each node's `end` is the boundary we count down to.
+  const runningDasha = (() => {
+    const dv = chart && chart.dasha && chart.dasha.variants
+    const tree = dv ? (dv['360'] || Object.values(dv)[0]) : null
+    const maha = tree && tree.mahadashas && tree.mahadashas.find((m) => m.is_current)
+    if (!maha) return null
+    const antar = maha.sub && maha.sub.find((a) => a.is_current)
+    const praty = antar && antar.sub && antar.sub.find((p) => p.is_current)
+    const remain = (endISO) => {
+      const ms = new Date(String(endISO).replace(' ', 'T')).getTime() - Date.now()
+      if (!(ms > 0)) return 'ending now'
+      const days = ms / 86400000
+      const y = Math.floor(days / 365.25)
+      const m = Math.floor((days - y * 365.25) / 30.4375)
+      const d = Math.floor(days - y * 365.25 - m * 30.4375)
+      if (y > 0) return `${y}y ${m}m`
+      if (m > 0) return `${m}m ${d}d`
+      if (d > 0) return `${d}d`
+      return `${Math.max(1, Math.floor(ms / 3600000))}h`
+    }
+    const level = (node, code) => (node && node.end
+      ? { code, lord: node.lord, remaining: remain(node.end) } : null)
+    const levels = [level(maha, 'MD'), level(antar, 'AD'), level(praty, 'PD')].filter(Boolean)
+    return levels.length ? { levels } : null
+  })()
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
 
@@ -589,6 +616,7 @@ export default function App() {
                 highlightSign={rowSign}
                 drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 dashaLords={dashaLords}
+                runningDasha={runningDasha}
               />
               {style === 'south' && varga === 'D1' && <RulerLegend />}
               {style === 'north' && (

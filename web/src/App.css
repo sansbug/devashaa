@@ -630,6 +630,25 @@ section.meta, .chart-panel, .table-panel {
 .sw-dasha-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
 .sw-dasha-mark.ad .sw-dasha-ring { stroke-dasharray: 3 2.5; }
 .sw-dasha-lbl { fill: var(--accent); font-size: 8px; font-weight: var(--strong-weight, 600); letter-spacing: .03em; }
+/* running-daśā "time remaining" readout, below the wheel */
+.sw-dasha-now {
+  max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;
+  background: var(--sunken); border: 1px solid var(--line); border-radius: var(--rx);
+  display: flex; flex-direction: column; gap: .4rem; text-align: center;
+}
+.sw-dn-head {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--dim); font-weight: var(--strong-weight, 600);
+}
+.sw-dn-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem .9rem; }
+.sw-dn-row { display: inline-flex; align-items: baseline; gap: .32rem; font-size: .84rem; }
+.sw-dn-code {
+  font-size: .62rem; font-weight: 700; letter-spacing: .02em; color: var(--accent);
+  background: var(--accent-soft); border-radius: 5px; padding: .06rem .32rem; cursor: help;
+}
+.sw-dn-lord { color: var(--ink); font-weight: var(--strong-weight, 600); }
+.sw-dn-rem { color: var(--dim); }
+.sw-dn-note { font-size: .68rem; line-height: 1.45; color: var(--dim); }
 /* above / below the horizon */
 .sw-earth { fill: #000; opacity: .16; }
 /* nakṣatra & pāda subdivisions */

@@ -684,6 +684,10 @@ section.meta, .chart-panel, .table-panel {
 }
 @keyframes rg-nudge-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
+/* the navāṁśa first-time nudge sits inline above the D9 panel, not as a popover */
+.nv-nudge { position: static; width: auto; max-width: 560px; margin: 1.1rem auto 0; }
+.nv-nudge::before { display: none; }
+
 .reading-guide {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: 1rem; z-index: 60;
   width: min(560px, calc(100vw - 1.5rem));

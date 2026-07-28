@@ -171,8 +171,12 @@ const STEPS = [
   },
 ]
 
-export default function ReadingGuide({ chart, namer, actions, onClose }) {
-  const [step, setStep] = useState(0)
+// The index of the navāṁśa step, so callers can open the guide straight to it
+// without hardcoding a position that reordering the steps would break.
+export const NAVAMSA_STEP = STEPS.findIndex((s) => s.title.startsWith('The navāṁśa'))
+
+export default function ReadingGuide({ chart, namer, actions, onClose, initialStep = 0 }) {
+  const [step, setStep] = useState(initialStep)
   const ctx = useMemo(() => buildCtx(chart, namer), [chart, namer])
   const aRef = useRef(actions)
   aRef.current = actions

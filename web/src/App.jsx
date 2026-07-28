@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
-import ReadingGuide from './ReadingGuide.jsx'
+import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
@@ -277,7 +277,22 @@ export default function App() {
     setNudgeSeen(true)
     try { localStorage.setItem('rg-nudge-seen', '1') } catch { /* private mode */ }
   }
-  const openGuide = () => { setGuideOpen(true); dismissNudge() }
+  // Which step the guide opens on (0 for the header button; the navāṁśa step
+  // when reached from the D9 nudge). The guide reads it once, on mount.
+  const [guideStep, setGuideStep] = useState(0)
+  const openGuide = () => { setGuideStep(0); setGuideOpen(true); dismissNudge() }
+  // A second first-time nudge, toward the navāṁśa (D9) reading — shown once, when
+  // the reader first opens the D9, then remembered separately from the main one.
+  const [nvNudgeSeen, setNvNudgeSeen] = useState(
+    () => localStorage.getItem('nv-nudge-seen') === '1',
+  )
+  const dismissNvNudge = () => {
+    setNvNudgeSeen(true)
+    try { localStorage.setItem('nv-nudge-seen', '1') } catch { /* private mode */ }
+  }
+  const openGuideAtNavamsa = () => {
+    setGuideStep(NAVAMSA_STEP); setGuideOpen(true); dismissNvNudge()
+  }
   // Guide steps drive the real panels: select a graha (signal-stack + chart +
   // dṛṣṭi subject), switch style/varga, highlight a sign, and scroll into view.
   const selectGraha = (k) => { setPicked(k); setPinned(k); setHovered(null) }
@@ -501,6 +516,7 @@ export default function App() {
         <main className="result">
           {guideOpen && (
             <ReadingGuide chart={chart} namer={namer} actions={guideActions}
+                          initialStep={guideStep}
                           onClose={() => setGuideOpen(false)} />
           )}
           <section className="meta" id="rg-positions">
@@ -592,7 +608,22 @@ export default function App() {
               )}
             </div>
             {varga === 'D9' && chart.navamsa && !chart.navamsa.error && (
-              <NavamsaPanel data={chart.navamsa} namer={namer} />
+              <>
+                {!nvNudgeSeen && !guideOpen && (
+                  <div className="rg-nudge nv-nudge" role="note">
+                    <button type="button" className="rg-nudge-x" onClick={dismissNvNudge}
+                            aria-label="Dismiss">×</button>
+                    <p>The navāṁśa reads differently — vargottama, the 64th navāṁśa
+                      and the bhāva-sūchaka tally, on a <em>modern</em> tier kept
+                      apart from BPHS. The guide has a step that walks it on your
+                      chart.</p>
+                    <button type="button" className="rg-nudge-go" onClick={openGuideAtNavamsa}>
+                      Show me the navāṁśa step →
+                    </button>
+                  </div>
+                )}
+                <NavamsaPanel data={chart.navamsa} namer={namer} />
+              </>
             )}
             {chart.analysis && !chart.analysis.error && (
               <DrishtiLedger

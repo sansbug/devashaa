@@ -467,6 +467,8 @@ section.meta, .chart-panel, .table-panel {
 .nv-t-neutral { color: var(--dim); }
 .nv-bhava li.is-good { border-left: 3px solid var(--dasha-fav); }
 .nv-bhava li.is-bad { border-left: 3px solid var(--dasha-adv); }
+.nv-part2 { margin-top: 1.15rem; }
+.nv-src { font-size: .72rem; font-style: italic; color: var(--dim); cursor: help; }
 
 /* --- south indian chart --- */
 .south-chart {

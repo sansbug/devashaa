@@ -8,6 +8,8 @@
  * fact ("Jupiter is vargottama") is certain; the meaning beside it is attributed.
  */
 
+import { useState } from 'react'
+
 const KIND_LABEL = {
   uccha: 'exalted · uccha',
   neecha: 'debilitated · nīca',
@@ -28,6 +30,58 @@ function Group({ title, citation, gloss, empty, children, count }) {
       {count === 0
         ? <p className="nv-empty">{empty}</p>
         : <ul className="nv-list">{children}</ul>}
+    </section>
+  )
+}
+
+const COMPUTABLE = {
+  yes: ['trigger detectable', 'The structural trigger — a D9 sign, a navāṁśa index, a dispositor — is cleanly detectable from the chart.'],
+  partly: ['partly detectable', 'The trigger is partly detectable but leans on something not computed (D9-internal aspects, an ariṣṭa/timing or death judgment).'],
+  no: ['not computed', 'Not a structural flag the app computes (e.g. a navāṁśa Aṣṭakavarga).'],
+}
+
+/** Patel's Part-II interpretive techniques — a MODERN pointer index. Collapsed,
+    styled unlike the computed signals above, disclaimer first: each entry names
+    the method + its classical source + page, and reproduces none of his result
+    tables. Never a verdict. */
+function Part2Techniques({ data }) {
+  const [open, setOpen] = useState(false)
+  if (!data || !data.techniques?.length) return null
+  return (
+    <section className="nk-modern nv-part2">
+      <button type="button" className="nk-mod-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
+        {open ? '−' : '+'} Part II techniques
+        <span className="nk-mod-count">{data.count}</span>
+        <span className="nk-mod-byline">Patel's interpretive index — named, not reproduced</span>
+      </button>
+      {open && (
+        <div className="nk-mod-body">
+          <p className="nk-mod-warn">
+            An attributed <strong>pointer index</strong> of C. S. Patel's Part II
+            (Ch.XVI–XX): each technique is <em>named</em> with its classical source
+            and page — <strong>none of his result tables are reproduced.</strong>{' '}
+            Modern tier, not BPHS, and <strong>not a verdict on any chart.</strong>{' '}
+            The badge says only whether the app could detect the structural trigger.
+          </p>
+          <ol className="nk-mod-list">
+            {data.techniques.map((t) => {
+              const [label, hint] = COMPUTABLE[t.computable] ?? [t.computable, '']
+              return (
+                <li key={t.n}>
+                  <span className="nk-mod-gist">
+                    <strong>{t.technique}.</strong> {t.gist}
+                  </span>
+                  <span className="nk-mod-meta">
+                    <span className={`src compute compute-${t.computable}`} title={hint}>{label}</span>
+                    <span className="nv-src" title={`Ch.${t.chapter} — ${t.source}`}>{t.source}</span>
+                    <span className="nk-mod-page" title={`Patel Ch.${t.chapter}, p.${t.page}`}>p.{t.page}</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+      )}
     </section>
   )
 }
@@ -106,6 +160,8 @@ export default function NavamsaPanel({ data, namer }) {
           ))}
         </ul>
       </section>
+
+      <Part2Techniques data={data.patel_part2} />
     </section>
   )
 }

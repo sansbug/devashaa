@@ -31,6 +31,7 @@ import charadasha
 import nakshatra_attrs
 import nakshatra_techniques
 import navamsa
+import navamsa_patel
 import rao_pointers
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
@@ -384,6 +385,9 @@ def chart():
                     for g in result.grahas}
         payload["navamsa"] = navamsa.navamsa_analysis(
             _nav_pos, result.lagna_longitude, result.lagna_rasi)
+        # Patel's Part-II interpretive techniques — a `modern`-tier pointer index
+        # (static; names each method + source + page, reproduces no result table).
+        payload["navamsa"]["patel_part2"] = navamsa_patel.part2_techniques()
     except Exception as e:  # noqa: BLE001
         payload["navamsa"] = {"error": f"Navāṁśa analysis failed: {e}"}
 

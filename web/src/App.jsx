@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
+import NavamsaPanel from './NavamsaPanel.jsx'
 import ReadingGuide from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -590,6 +591,9 @@ export default function App() {
                 </p>
               )}
             </div>
+            {varga === 'D9' && chart.navamsa && !chart.navamsa.error && (
+              <NavamsaPanel data={chart.navamsa} namer={namer} />
+            )}
             {chart.analysis && !chart.analysis.error && (
               <DrishtiLedger
                 drishti={chart.analysis.drishti}

@@ -437,6 +437,37 @@ section.meta, .chart-panel, .table-panel {
 }
 .varga-caption { max-width: 640px; }
 
+/* --- navāṁśa (D9) analysis panel — tier modern (C.S. Patel) --- */
+.nv-panel { margin-top: 1rem; }
+.nv-group { margin-top: 1.05rem; }
+.nv-group h4 {
+  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+  margin: 0 0 .3rem; font-size: 1rem;
+}
+.nv-cite { font-size: .7rem; font-weight: 500; color: var(--dim); cursor: help; }
+.nv-gloss { font-size: .82rem; line-height: 1.5; color: var(--dim); margin: .1rem 0 .5rem; }
+.nv-empty { font-size: .85rem; font-style: italic; color: var(--dim); margin: 0; }
+.nv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .3rem; }
+.nv-list li {
+  font-size: .88rem; line-height: 1.45; padding: .32rem .55rem;
+  background: var(--sunken); border-radius: var(--rx);
+}
+.nv-note { color: var(--dim); }
+.nv-dim { color: var(--dim); font-size: .85em; }
+.nv-karaka { color: var(--dim); font-style: italic; font-size: .85em; }
+.nv-label { font-weight: var(--strong-weight, 600); }
+.nv-kind { margin-left: .5rem; font-size: .72rem; font-weight: 600; letter-spacing: .01em; }
+.nv-k-uccha, .nv-k-swakshetra, .nv-k-subha { color: var(--dasha-fav); }
+.nv-k-neecha, .nv-k-papa { color: var(--dasha-adv); }
+.nv-k-ordinary { color: var(--accent); }
+.nv-warn { margin-left: .45rem; font-size: .78rem; font-weight: 600; color: var(--dasha-adv); }
+.nv-tally { display: flex; gap: .9rem; margin: .1rem 0 .55rem; font-size: .78rem; }
+.nv-t-good { color: var(--dasha-fav); font-weight: 600; }
+.nv-t-bad { color: var(--dasha-adv); font-weight: 600; }
+.nv-t-neutral { color: var(--dim); }
+.nv-bhava li.is-good { border-left: 3px solid var(--dasha-fav); }
+.nv-bhava li.is-bad { border-left: 3px solid var(--dasha-adv); }
+
 /* --- south indian chart --- */
 .south-chart {
   display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);

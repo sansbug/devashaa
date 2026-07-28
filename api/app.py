@@ -30,6 +30,7 @@ import antardasa
 import charadasha
 import nakshatra_attrs
 import nakshatra_techniques
+import navamsa
 import rao_pointers
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
@@ -374,6 +375,17 @@ def chart():
         payload["analysis"] = analyse(analysis_positions, result.lagna_rasi)
     except Exception as e:  # noqa: BLE001
         payload["analysis"] = {"error": f"Analysis failed: {e}"}
+
+    # Navāṁśa (D9) analysis — tier `modern` (C. S. Patel). Computed from the same
+    # longitudes; vargottama / pushkara / the 64th navāṁśa / bhāva-sūchaka. Kept
+    # off the BPHS tier and degrades to an error row rather than costing the chart.
+    try:
+        _nav_pos = {g.key: {"longitude": g.longitude, "rasi": g.rasi}
+                    for g in result.grahas}
+        payload["navamsa"] = navamsa.navamsa_analysis(
+            _nav_pos, result.lagna_longitude, result.lagna_rasi)
+    except Exception as e:  # noqa: BLE001
+        payload["navamsa"] = {"error": f"Navāṁśa analysis failed: {e}"}
 
     # Daśā is driven by the Moon's nakṣatra; attach the default (Viṁśottarī) here.
     # Other validated systems are fetched on demand via /api/dasha. Both year-

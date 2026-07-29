@@ -470,6 +470,27 @@ section.meta, .chart-panel, .table-panel {
 .nv-part2 { margin-top: 1.15rem; }
 .nv-src { font-size: .72rem; font-style: italic; color: var(--dim); cursor: help; }
 
+/* --- motion (gati) & combustion panel --- */
+.mp-cheshta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .6rem; margin: .2rem 0 .7rem; }
+.mp-cheshta-why { flex: 1 1 260px; font-size: .8rem; line-height: 1.5; color: var(--dim); }
+.mp-scroll { overflow-x: auto; }
+.mp-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+.mp-table th, .mp-table td { padding: .34rem .5rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.mp-table th { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); font-weight: var(--strong-weight, 600); }
+.mp-table th.num, .mp-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.mp-graha { font-weight: var(--strong-weight, 600); }
+.mp-dir { font-weight: var(--strong-weight, 600); }
+.mp-retro { color: var(--rx); }
+.mp-stat { color: var(--dasha-adv); }
+.mp-gati { margin-left: .4rem; font-size: .78rem; font-style: italic; color: var(--dim); cursor: help; }
+.mp-speed { color: var(--dim); cursor: help; }
+.mp-na { color: var(--dim); }
+.mp-comb { display: inline-flex; align-items: baseline; gap: .35rem; cursor: help; }
+.mp-comb.is-combust { color: var(--rx); font-weight: var(--strong-weight, 600); }
+.mp-tier { font-size: .6rem; text-transform: uppercase; letter-spacing: .03em; }
+.mp-trad { color: var(--dim); }
+.mp-uncertain { color: var(--dasha-adv); font-weight: var(--strong-weight, 600); }
+
 /* --- south indian chart --- */
 .south-chart {
   display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);

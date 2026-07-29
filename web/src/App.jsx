@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
+import MotionPanel from './MotionPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -688,6 +689,10 @@ export default function App() {
                 namer={namer}
               />
             </section>
+          )}
+
+          {chart.motion && !chart.motion.error && (
+            <MotionPanel data={chart.motion} namer={namer} />
           )}
 
           <section className="table-panel" id="rg-dasha">

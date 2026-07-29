@@ -28,6 +28,7 @@ from analysis import analyse
 from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
+import motion as motion_mod
 import nakshatra_attrs
 import nakshatra_techniques
 import navamsa
@@ -390,6 +391,15 @@ def chart():
         payload["navamsa"]["patel_part2"] = navamsa_patel.part2_techniques()
     except Exception as e:  # noqa: BLE001
         payload["navamsa"] = {"error": f"Navāṁśa analysis failed: {e}"}
+
+    # Planetary motion (gati) + combustion — ephemeris facts + traditional labels;
+    # Cheṣṭā bala is refused (no Seeghrocha). Degrades to an error row.
+    try:
+        payload["motion"] = motion_mod.motion_analysis(
+            [{"key": g.key, "longitude": g.longitude, "speed": g.speed}
+             for g in result.grahas])
+    except Exception as e:  # noqa: BLE001
+        payload["motion"] = {"error": f"Motion analysis failed: {e}"}
 
     # Daśā is driven by the Moon's nakṣatra; attach the default (Viṁśottarī) here.
     # Other validated systems are fetched on demand via /api/dasha. Both year-

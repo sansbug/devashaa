@@ -486,10 +486,29 @@ section.meta, .chart-panel, .table-panel {
 .mp-speed { color: var(--dim); cursor: help; }
 .mp-na { color: var(--dim); }
 .mp-comb { display: inline-flex; align-items: baseline; gap: .35rem; cursor: help; }
-.mp-comb.is-combust { color: var(--rx); font-weight: var(--strong-weight, 600); }
+.mp-comb.is-combust { color: var(--dasha-adv); font-weight: var(--strong-weight, 600); }
 .mp-tier { font-size: .6rem; text-transform: uppercase; letter-spacing: .03em; }
 .mp-trad { color: var(--dim); }
 .mp-uncertain { color: var(--dasha-adv); font-weight: var(--strong-weight, 600); }
+/* the gati spectrum */
+.ms-wrap { margin: .3rem 0 .9rem; }
+.ms-svg { display: block; width: 100%; height: auto; max-width: 700px; margin: 0 auto; overflow: visible; }
+.ms-band { stroke: none; }
+.ms-b-vakra { fill: var(--rx); opacity: .10; }
+.ms-b-vikala { fill: var(--dasha-adv); opacity: .12; }
+.ms-b-manda { fill: var(--line); opacity: .35; }
+.ms-b-sama { fill: var(--dasha-fav); opacity: .14; }
+.ms-b-atichara { fill: var(--accent); opacity: .10; }
+.ms-axis { stroke: var(--dim); stroke-width: 1; stroke-dasharray: 3 3; opacity: .6; }
+.ms-axis-lbl { fill: var(--dim); font-size: 9px; letter-spacing: .02em; }
+.ms-band-iast { fill: var(--ink); font-size: 10px; font-weight: var(--strong-weight, 600); }
+.ms-band-en { fill: var(--dim); font-size: 8.5px; }
+.ms-dot { fill: var(--panel); stroke: var(--accent); stroke-width: 1.3; }
+.ms-code { fill: var(--accent); font-size: 8.5px; font-weight: 700; }
+.ms-mk.retro .ms-dot { stroke: var(--rx); }
+.ms-mk.retro .ms-code { fill: var(--rx); }
+.ms-burn { fill: none; stroke: var(--dasha-adv); stroke-width: 1.3; stroke-dasharray: 2 2; opacity: .9; }
+.ms-cap { font-size: .74rem; line-height: 1.5; color: var(--dim); margin: .25rem 0 0; }
 
 /* --- south indian chart --- */
 .south-chart {

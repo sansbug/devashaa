@@ -52,6 +52,8 @@ const GRAHA_COLOR = {
   jupiter: '#d3a028', venus: '#d268a8', saturn: '#5566b8', rahu: '#8f8a97',
   ketu: '#a1785f',
 }
+const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
+  venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }
 // Rāśi element, for a faint sector tint: fire, earth, air, water repeating.
 const ELEMENT = ['fire', 'earth', 'air', 'water']
 const ELEMENT_COLOR = { fire: '#d9663a', earth: '#3f9f5f', air: '#c9a83e', water: '#4f86c6' }
@@ -109,6 +111,7 @@ export default function SkyWheelChart({
   const [drishtiOn, setDrishtiOn] = useState(true)
   const [dashaOn, setDashaOn] = useState(true)
   const [dignityOn, setDignityOn] = useState(true)
+  const [ucchaOn, setUcchaOn] = useState(true)
 
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
   const ang = (lon) => (180 - (lon - ascLon)) * DEG
@@ -122,6 +125,19 @@ export default function SkyWheelChart({
     return d + 'Z'
   }
   const bhavaOf = (sign) => ((sign - lagnaRasi + 12) % 12) + 1
+
+  // A small triangle at a longitude on the sign rim, apex pointing radially
+  // (outward for an exaltation tick, inward for a fall tick).
+  const radialTri = (lon, rBase, len, half, outward) => {
+    const a = ang(lon)
+    const ux = Math.cos(a), uy = Math.sin(a)      // radial unit
+    const tx = -Math.sin(a), ty = Math.cos(a)     // tangent unit
+    const rA = rBase + (outward ? len : -len)
+    const apex = `${(C + rA * ux).toFixed(1)},${(C + rA * uy).toFixed(1)}`
+    const b1 = `${(C + rBase * ux + half * tx).toFixed(1)},${(C + rBase * uy + half * ty).toFixed(1)}`
+    const b2 = `${(C + rBase * ux - half * tx).toFixed(1)},${(C + rBase * uy - half * ty).toFixed(1)}`
+    return `${apex} ${b1} ${b2}`
+  }
 
   // A concentric arc (sampled) for curved text to follow along the ring.
   const arcPath = (lonA, lonB, r) => {
@@ -147,6 +163,21 @@ export default function SkyWheelChart({
   const isD1 = vargaKey === 'D1'
   const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
+  // Exaltation (uccha) and fall (nīca) landmarks: the exact BPHS ch.3 vv.49–50
+  // degree points, one pair per non-node graha. A graha near its own tick is
+  // near deep exaltation/fall — the point the whole-sign dignity ring can't show.
+  const dignityPoints = (ucchaOn && isD1)
+    ? grahas.flatMap((g) => {
+        const d = g.dignity
+        if (!d) return []   // nodes carry no dignity → no tick
+        const ex = d.exaltation, de = d.debilitation
+        return [
+          { key: g.key, kind: 'uccha', lon: ex.sign * 30 + ex.degree, sign: ex.sign, deg: ex.degree, dist: d.uccha_distance },
+          { key: g.key, kind: 'nica', lon: de.sign * 30 + de.degree, sign: de.sign, deg: de.degree, dist: d.nica_distance },
+        ]
+      })
+    : []
+
   // Dṛṣṭi lines for the selected graha (its graded ch.26 casts to each sign).
   // Nodes are excluded as aspectors, matching the ledger's refusal.
   const isNode = active === 'rahu' || active === 'ketu'
@@ -165,6 +196,7 @@ export default function SkyWheelChart({
         <Toggle on={drishtiOn} set={setDrishtiOn}>Dṛṣṭi</Toggle>
         <Toggle on={dashaOn} set={setDashaOn}>Daśā</Toggle>
         <Toggle on={dignityOn} set={setDignityOn}>Dignity</Toggle>
+        <Toggle on={ucchaOn} set={setUcchaOn}>Uccha ▲ / nīca ▽</Toggle>
       </div>
       {dignityOn && isD1 && (
         <div className="sw-dig-legend" aria-label="Dignity state colour key">
@@ -303,6 +335,27 @@ export default function SkyWheelChart({
           )
         })}
 
+        {/* uccha / nīca landmarks: each graha's exact deep-exaltation and fall
+            degrees (ch.3 vv.49–50), as rim ticks — uccha ▲ outward, nīca ▽ inward */}
+        {dignityPoints.map((p, i) => {
+          const isU = p.kind === 'uccha'
+          const col = colors ? GRAHA_COLOR[p.key] : null
+          const [cx, cy] = pt(p.lon, R_SIGN_IN - 11)
+          const near = Math.abs(p.dist) < 1
+          return (
+            <g key={`uc${i}`} className={`sw-uccha ${isU ? 'up' : 'dn'}${near ? ' near' : ''}`}>
+              <title>
+                {`${namer.grahaKey(p.key)} — ${isU ? 'exaltation (uccha)' : 'debilitation (nīca)'} · ${namer.rasi(p.sign)} ${p.deg}°`}
+                {near ? ' — sits on it' : ''}
+              </title>
+              <polygon points={radialTri(p.lon, R_SIGN_IN, 6, 3.1, isU)}
+                       style={col ? (isU ? { fill: col } : { stroke: col }) : undefined} />
+              <text x={cx} y={cy} className="sw-uccha-code" textAnchor="middle" dominantBaseline="central"
+                    style={col ? { fill: col } : undefined}>{CODE[p.key]}</text>
+            </g>
+          )
+        })}
+
         {/* grahas: ray to centre, exact-degree tick, staggered glyph */}
         {isD1 && placed.map(({ g, lon, r }) => {
           const [tx, ty] = pt(lon, R_SIGN_IN)
@@ -333,7 +386,7 @@ export default function SkyWheelChart({
               {isCombust && <circle cx={px} cy={py} r="16.5" className="sw-combust" />}
               <circle cx={px} cy={py} r="13" className="sw-gdot" style={col ? { stroke: col } : undefined} />
               <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central" style={col ? { fill: col } : undefined}>
-                {(GRAHA_COLOR[g.key] ? { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju', venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }[g.key] : g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
+                {(CODE[g.key] || g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
               </text>
               <text x={px} y={py + 22} className="sw-gdeg" textAnchor="middle">{g.degree}°{pad2(g.minute)}′</text>
             </g>

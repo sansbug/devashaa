@@ -695,6 +695,12 @@ section.meta, .chart-panel, .table-panel {
 .sw-dig-key { display: inline-flex; align-items: center; gap: .32rem; }
 .sw-dig-sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
 .sw-dig-note { color: var(--dim); opacity: .82; font-style: italic; }
+/* uccha / nīca degree ticks on the sign rim (BPHS ch.3 vv.49–50). Exaltation is
+   a filled triangle pointing out; fall is a hollow one pointing in. */
+.sw-uccha.up polygon { fill: var(--accent); stroke: none; }
+.sw-uccha.dn polygon { fill: none; stroke: var(--accent); stroke-width: 1.1; }
+.sw-uccha.near polygon { filter: drop-shadow(0 0 2px currentColor); }
+.sw-uccha-code { font-size: 6px; fill: var(--dim); opacity: .85; font-weight: var(--strong-weight, 600); }
 /* running-daśā "time remaining" readout, below the wheel */
 .sw-dasha-now {
   max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;

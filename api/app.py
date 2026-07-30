@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -28,6 +29,7 @@ from analysis import analyse
 from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
+import gochara
 import motion as motion_mod
 import nakshatra_attrs
 import nakshatra_techniques
@@ -437,6 +439,79 @@ def chart():
         payload["dasha"] = {"error": f"Daśā calculation failed: {e}"}
 
     return jsonify(payload)
+
+
+@app.post("/api/gochara")
+def gochara_route():
+    """Transit GEOMETRY of a moment against a natal chart (facts only).
+
+    Takes the same birth fields as /api/chart, plus an optional transit moment
+    (`transit_date` YYYY-MM-DD, `transit_time` HH:MM). With no transit moment it
+    uses now (UTC). Graha longitudes are geocentric, so the transit location does
+    not matter — the natal place is reused only to keep one code path.
+    """
+    body = request.get_json(silent=True) or {}
+
+    missing = [f for f in ("date", "time", "latitude", "longitude")
+               if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+
+    try:
+        lat = float(body["latitude"])
+        lon = float(body["longitude"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude and longitude must be numbers"}), 400
+    if not -90 <= lat <= 90 or not -180 <= lon <= 180:
+        return jsonify({"error": "latitude/longitude out of range"}), 400
+
+    try:
+        natal_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD and time HH:MM (24h)"}), 400
+
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+
+    # The transit moment: a given date (in the natal timezone) or now (UTC).
+    transit_date = body.get("transit_date")
+    if transit_date:
+        try:
+            transit_dt = datetime.strptime(
+                f"{transit_date} {body.get('transit_time') or '12:00'}", "%Y-%m-%d %H:%M")
+        except ValueError:
+            return jsonify({"error": "transit_date must be YYYY-MM-DD and transit_time HH:MM"}), 400
+        transit_tz = tz_name
+    else:
+        # Explicit UTC (not the deprecated utcnow()): an aware UTC instant, then
+        # stripped to a naive UTC wall-clock, which is what compute_chart expects
+        # together with tz_name="UTC".
+        transit_dt = datetime.now(ZoneInfo("UTC")).replace(second=0, microsecond=0, tzinfo=None)
+        transit_tz = "UTC"
+
+    for label, dt in (("birth", natal_dt), ("transit", transit_dt)):
+        if not EPHE_YEAR_MIN <= dt.year <= EPHE_YEAR_MAX:
+            return jsonify({"error": f"{label} year {dt.year} is outside the loaded "
+                                     f"ephemeris range ({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+
+    try:
+        natal = compute_chart(local_dt=natal_dt, latitude=lat, longitude=lon,
+                              tz_name=tz_name, name=(body.get("name") or "").strip())
+        transit = compute_chart(local_dt=transit_dt, latitude=lat, longitude=lon,
+                                tz_name=transit_tz)
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Transit calculation failed: {e}"}), 500
+
+    try:
+        result = gochara.transit_geometry(
+            natal_grahas=natal.to_dict()["grahas"],
+            natal_lagna_rasi=natal.lagna_rasi,
+            transit_grahas=transit.to_dict()["grahas"],
+            transit_utc=transit.utc,
+        )
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Transit geometry failed: {e}"}), 500
+
+    return jsonify(result)
 
 
 @app.post("/api/dasha")

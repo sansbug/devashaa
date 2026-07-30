@@ -509,6 +509,20 @@ section.meta, .chart-panel, .table-panel {
 .ms-mk.retro .ms-code { fill: var(--rx); }
 .ms-burn { fill: none; stroke: var(--dasha-adv); stroke-width: 1.3; stroke-dasharray: 2 2; opacity: .9; }
 .ms-cap { font-size: .74rem; line-height: 1.5; color: var(--dim); margin: .25rem 0 0; }
+.mp-sub { margin: .8rem 0 .1rem; font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--dim); font-weight: var(--strong-weight, 600); }
+/* the combustion strip */
+.cs-wrap { margin: .2rem 0 .9rem; }
+.cs-svg { display: block; width: 100%; height: auto; max-width: 700px; margin: 0 auto; overflow: visible; }
+.cs-grid { stroke: var(--line); stroke-width: 1; opacity: .5; }
+.cs-tick { fill: var(--dim); font-size: 9px; }
+.cs-sun { fill: var(--accent); font-size: 13px; }
+.cs-orb { fill: var(--dasha-adv); opacity: .15; }
+.cs-dot { fill: var(--panel); stroke: var(--accent); stroke-width: 1.3; }
+.cs-code { fill: var(--accent); font-size: 8.5px; font-weight: 700; }
+.cs-row.combust .cs-dot { stroke: var(--dasha-adv); }
+.cs-row.combust .cs-code { fill: var(--dasha-adv); }
+.cs-over { fill: var(--dim); font-size: 8px; }
+.cs-cap { font-size: .74rem; line-height: 1.5; color: var(--dim); margin: .25rem 0 0; }
 
 /* --- south indian chart --- */
 .south-chart {

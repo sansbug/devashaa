@@ -94,6 +94,59 @@ function MotionSpectrum({ grahas, namer }) {
   )
 }
 
+// The grahas that can be combust (the Sun is the source; the nodes are shadow
+// points), in a fixed display order.
+const COMBUST_ORDER = ['moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
+
+/** The combustion strip: one row per combust-eligible graha, its OWN orb drawn
+    as a faint "burn reach" bar from the Sun, and a dot at its actual separation.
+    A dot inside its bar is combust. Separation is a fact; the orbs are traditional. */
+function CombustionStrip({ grahas, namer }) {
+  const rows = COMBUST_ORDER.map((k) => grahas.find((g) => g.key === k))
+    .filter((g) => g && g.combustion.applies)
+  if (!rows.length) return null
+  const W = 700, X0 = 16, X1 = 680, plotW = X1 - X0, DMAX = 60
+  const x = (d) => X0 + Math.min(Math.max(d, 0), DMAX) / DMAX * plotW
+  const rowH = 20, y0 = 30
+  const H = y0 + rows.length * rowH + 4
+  const TICKS = [0, 15, 30, 45, 60]
+  return (
+    <div className="cs-wrap">
+      <svg viewBox={`0 0 ${W} ${H}`} className="cs-svg" role="img"
+           aria-label="Each graha's distance from the Sun against its own combustion orb">
+        {TICKS.map((t) => (
+          <g key={t}>
+            <line className="cs-grid" x1={x(t)} y1="20" x2={x(t)} y2={H - 2} />
+            <text className="cs-tick" x={x(t)} y="13" textAnchor="middle">{t}°</text>
+          </g>
+        ))}
+        <text className="cs-sun" x={x(0)} y="13" textAnchor="middle">☉</text>
+        {rows.map((g, i) => {
+          const c = g.combustion, y = y0 + i * rowH, over = c.separation > DMAX
+          return (
+            <g key={g.key} className={`cs-row${c.combust ? ' combust' : ''}`}>
+              <title>
+                {`${namer.grahaKey(g.key)} — ${c.separation}° from the Sun · own orb ${c.orb}° → ${c.combust ? 'combust' : 'free'}`}
+                {c.confidence === 'uncertain' ? '\n(uncertain — the retrograde orb is OCR-damaged)' : ''}
+              </title>
+              <rect className="cs-orb" x={x(0)} y={y - 7} width={x(c.orb) - x(0)} height="14" />
+              {over && <text className="cs-over" x={X1 - 1} y={y - 10} textAnchor="end">›{Math.round(c.separation)}°</text>}
+              <circle className="cs-dot" cx={x(c.separation)} cy={y} r="9" />
+              <text className="cs-code" x={x(c.separation)} y={y} textAnchor="middle" dominantBaseline="central">{CODE[g.key]}</text>
+            </g>
+          )
+        })}
+      </svg>
+      <p className="cs-cap">
+        Distance from the Sun (a fact). The faint bar is each graha's <em>own</em>{' '}
+        combustion orb; a graha whose dot sits inside its bar is <strong>combust</strong>.
+        Orbs are traditional (not BPHS); a retrograde Mercury/Venus orb is uncertain.
+        The Sun (source) and the nodes are not shown.
+      </p>
+    </div>
+  )
+}
+
 export default function MotionPanel({ data, namer }) {
   if (!data || data.error) return null
   const cb = data.cheshta_bala
@@ -121,7 +174,11 @@ export default function MotionPanel({ data, namer }) {
         </p>
       )}
 
+      <h4 className="mp-sub">Speed — relative to each graha's mean</h4>
       <MotionSpectrum grahas={data.grahas} namer={namer} />
+
+      <h4 className="mp-sub">Combustion — distance from the Sun</h4>
+      <CombustionStrip grahas={data.grahas} namer={namer} />
 
       <div className="mp-scroll">
         <table className="mp-table">

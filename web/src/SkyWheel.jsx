@@ -73,6 +73,24 @@ const DIGNITY_WORD = {
 }
 const dignityPhrase = (d) => (d ? ` — ${DIGNITY_WORD[d.state] ?? d.state}` : '')
 
+// Dignity as a categorical STATE (BPHS ch.3 vv.49–55): seven distinct hues,
+// deliberately NOT a green→red strength ramp — BPHS never numbers dignity, so
+// the states jump across the wheel (teal / green / periwinkle / olive / grey /
+// amber / crimson) rather than shading smoothly. Chosen to sit clear of the
+// GRAHA_COLOR identity hues so a state ring is never mistaken for a planet's own
+// colour (e.g. exalted is teal, NOT Mercury's green). Tooltip carries the word.
+const DIGNITY_COLOR = {
+  exalted: '#1ec7cf', moolatrikona: '#3fb06e', own: '#7d92e8',
+  friend: '#93a544', neutral: '#9aa0ab', enemy: '#d68a34', debilitated: '#cf3f5e',
+}
+// Legend follows BPHS's own listing (uccha → nīcha). friend/neutral/enemy are the
+// ch.3 v.55 NATURAL (permanent) relationship — friend-and-enemy resolves to neutral.
+const DIGNITY_LEGEND = [
+  ['exalted', 'exalted'], ['moolatrikona', 'mūlatrikoṇa'], ['own', 'own sign'],
+  ['friend', 'friend'], ['neutral', 'neutral'], ['enemy', 'enemy'],
+  ['debilitated', 'debilitated'],
+]
+
 function Toggle({ on, set, children }) {
   return (
     <button type="button" className={`sw-toggle${on ? ' on' : ''}`}
@@ -90,6 +108,7 @@ export default function SkyWheelChart({
   const [padas, setPadas] = useState(true)
   const [drishtiOn, setDrishtiOn] = useState(true)
   const [dashaOn, setDashaOn] = useState(true)
+  const [dignityOn, setDignityOn] = useState(true)
 
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
   const ang = (lon) => (180 - (lon - ascLon)) * DEG
@@ -145,7 +164,20 @@ export default function SkyWheelChart({
         <Toggle on={padas} set={setPadas}>Pādas</Toggle>
         <Toggle on={drishtiOn} set={setDrishtiOn}>Dṛṣṭi</Toggle>
         <Toggle on={dashaOn} set={setDashaOn}>Daśā</Toggle>
+        <Toggle on={dignityOn} set={setDignityOn}>Dignity</Toggle>
       </div>
+      {dignityOn && isD1 && (
+        <div className="sw-dig-legend" aria-label="Dignity state colour key">
+          {DIGNITY_LEGEND.map(([k, label]) => (
+            <span key={k} className="sw-dig-key">
+              <span className="sw-dig-sw" style={{ background: DIGNITY_COLOR[k] }} />{label}
+            </span>
+          ))}
+          <span className="sw-dig-note">
+            friend / neutral / enemy — natural (permanent) relations · nodes carry no dignity
+          </span>
+        </div>
+      )}
       <svg viewBox={`${C - HALF} ${C - HALF} ${2 * HALF} ${2 * HALF}`}
            className="sky-wheel" role="img"
            aria-label="Sky wheel — the sky around the native at birth">
@@ -294,6 +326,10 @@ export default function SkyWheelChart({
               <line x1={px} y1={py} x2={C} y2={C} className="sw-ray" style={col ? { stroke: col } : undefined} />
               <line x1={tx} y1={ty} x2={tx2} y2={ty2} className="sw-gtick" style={col ? { stroke: col } : undefined} />
               <line x1={tx2} y1={ty2} x2={px} y2={py} className="sw-glink" />
+              {dignityOn && g.dignity && DIGNITY_COLOR[g.dignity.state] && (
+                <circle cx={px} cy={py} r="15.5" className="sw-dignity"
+                        style={{ fill: DIGNITY_COLOR[g.dignity.state] }} />
+              )}
               {isCombust && <circle cx={px} cy={py} r="16.5" className="sw-combust" />}
               <circle cx={px} cy={py} r="13" className="sw-gdot" style={col ? { stroke: col } : undefined} />
               <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central" style={col ? { fill: col } : undefined}>

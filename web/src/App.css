@@ -686,6 +686,15 @@ section.meta, .chart-panel, .table-panel {
 .sw-dasha-lbl { fill: var(--accent); font-size: 8px; font-weight: var(--strong-weight, 600); letter-spacing: .03em; }
 /* combust marker: a dashed ring in the combustion colour (matches the motion strip) */
 .sw-combust { fill: none; stroke: var(--dasha-adv); stroke-width: 1.4; stroke-dasharray: 2.5 2; opacity: .9; }
+/* dignity-state halo: a categorical ring behind the glyph disc (BPHS ch.3). Fill
+   set inline per state; the opaque glyph disc leaves only a rim showing. A faint
+   dark outer edge keeps the band reading as its own ring over any glyph colour. */
+.sw-dignity { stroke: rgba(0, 0, 0, .45); stroke-width: .9; fill-opacity: .9; }
+/* dignity colour key, under the wheel toggles */
+.sw-dig-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; margin: -.2rem 0 .6rem; font-size: .72rem; color: var(--dim); }
+.sw-dig-key { display: inline-flex; align-items: center; gap: .32rem; }
+.sw-dig-sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.sw-dig-note { color: var(--dim); opacity: .82; font-style: italic; }
 /* running-daśā "time remaining" readout, below the wheel */
 .sw-dasha-now {
   max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;

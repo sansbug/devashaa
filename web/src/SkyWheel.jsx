@@ -82,7 +82,7 @@ function Toggle({ on, set, children }) {
 
 export default function SkyWheelChart({
   grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
-  active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha,
+  active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha, combust,
 }) {
   const [shade, setShade] = useState(true)
   const [colors, setColors] = useState(true)
@@ -278,6 +278,8 @@ export default function SkyWheelChart({
           const [px, py] = pt(lon, r)
           const on = active === g.key
           const col = colors ? GRAHA_COLOR[g.key] : null
+          const combustSep = combust ? combust[g.key] : undefined
+          const isCombust = combustSep != null
           return (
             <g key={g.key}
                className={`sw-graha${g.retrograde ? ' rx' : ''}${on ? ' active' : ''}`}
@@ -287,10 +289,12 @@ export default function SkyWheelChart({
               <title>
                 {`${g.name_en} — ${namer.rasi(g.rasi)} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"`}
                 {g.retrograde ? ' (retrograde)' : ''}{dignityPhrase(g.dignity)}
+                {isCombust ? ` · combust (${combustSep}° from the Sun)` : ''}
               </title>
               <line x1={px} y1={py} x2={C} y2={C} className="sw-ray" style={col ? { stroke: col } : undefined} />
               <line x1={tx} y1={ty} x2={tx2} y2={ty2} className="sw-gtick" style={col ? { stroke: col } : undefined} />
               <line x1={tx2} y1={ty2} x2={px} y2={py} className="sw-glink" />
+              {isCombust && <circle cx={px} cy={py} r="16.5" className="sw-combust" />}
               <circle cx={px} cy={py} r="13" className="sw-gdot" style={col ? { stroke: col } : undefined} />
               <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central" style={col ? { fill: col } : undefined}>
                 {(GRAHA_COLOR[g.key] ? { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju', venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }[g.key] : g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}

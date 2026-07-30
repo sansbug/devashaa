@@ -465,6 +465,17 @@ export default function App() {
     const levels = [level(maha, 'MD'), level(antar, 'AD'), level(praty, 'PD')].filter(Boolean)
     return levels.length ? { levels } : null
   })()
+  // Combust grahas (within their own orb of the Sun) → their separation, for the
+  // wheel's combust marker. From the motion module; degrades to null.
+  const combust = (() => {
+    const m = chart && chart.motion
+    if (!m || m.error) return null
+    const out = {}
+    for (const r of m.grahas) {
+      if (r.combustion.applies && r.combustion.combust) out[r.key] = r.combustion.separation
+    }
+    return Object.keys(out).length ? out : null
+  })()
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
 
@@ -622,6 +633,7 @@ export default function App() {
                 drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 dashaLords={dashaLords}
                 runningDasha={runningDasha}
+                combust={combust}
               />
               {style === 'south' && varga === 'D1' && <RulerLegend />}
               {style === 'north' && (

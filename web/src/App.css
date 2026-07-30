@@ -684,6 +684,8 @@ section.meta, .chart-panel, .table-panel {
 .sw-dasha-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
 .sw-dasha-mark.ad .sw-dasha-ring { stroke-dasharray: 3 2.5; }
 .sw-dasha-lbl { fill: var(--accent); font-size: 8px; font-weight: var(--strong-weight, 600); letter-spacing: .03em; }
+/* combust marker: a dashed ring in the combustion colour (matches the motion strip) */
+.sw-combust { fill: none; stroke: var(--dasha-adv); stroke-width: 1.4; stroke-dasharray: 2.5 2; opacity: .9; }
 /* running-daśā "time remaining" readout, below the wheel */
 .sw-dasha-now {
   max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;

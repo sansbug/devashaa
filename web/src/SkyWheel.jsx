@@ -118,6 +118,10 @@ export default function SkyWheelChart({
   const [dashaOn, setDashaOn] = useState(true)
   const [dignityOn, setDignityOn] = useState(true)
   const [ucchaOn, setUcchaOn] = useState(true)
+  // Which transit graha's aspect lines to show — hover (mouse) or pin (tap).
+  const [hoverT, setHoverT] = useState(null)
+  const [pinT, setPinT] = useState(null)
+  const markedT = pinT ?? hoverT
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
@@ -185,6 +189,13 @@ export default function SkyWheelChart({
       tLastA = p.a
     }
   }
+
+  // Where each natal point sits, so a hovered transit's aspect line can land on
+  // the actual natal graha (or the lagna) it aspects, not just the sign.
+  const natalPos = {}
+  for (const p of placed) natalPos[p.g.key] = [p.lon, p.r]
+  natalPos.lagna = [ascLon, R_SIGN_IN]
+  const hoverTransit = markedT ? placedTransit.find((p) => p.t.key === markedT) : null
   const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
   // Exaltation (uccha) and fall (nīca) landmarks: the exact BPHS ch.3 vv.49–50
@@ -405,14 +416,40 @@ export default function SkyWheelChart({
         {transitOn && isD1 && placedTransit.length > 0 && (
           <>
             <circle cx={C} cy={C} r={R_TRANSIT} className="sw-transit-ring" />
+
+            {/* aspect lines for the hovered/pinned transit graha: from its inner-
+                ring glyph to each natal point it aspects, weighted by ch.26 strength */}
+            {hoverTransit && hoverTransit.t.aspects_natal.map((a) => {
+              const dst = natalPos[a.target]
+              if (!dst) return null
+              const [ax, ay] = pt(hoverTransit.lon, hoverTransit.r)
+              const [bx, by] = pt(dst[0], dst[1])
+              const col = colors ? GRAHA_COLOR[hoverTransit.t.key] : null
+              return (
+                <line key={`ta${a.target}`} x1={ax} y1={ay} x2={bx} y2={by}
+                      className={`sw-taspect${a.special ? ' special' : ''}`}
+                      style={{ strokeOpacity: 0.25 + a.strength * 0.6, strokeWidth: 0.7 + a.strength * 1.9, ...(col ? { stroke: col } : {}) }}>
+                  <title>
+                    {`Transit ${namer.grahaKey(hoverTransit.t.key)}'s ${ordinal(a.house)} aspect`}
+                    {a.special ? ' (special, full)' : ''}
+                    {` on ${a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target)}`}
+                  </title>
+                </line>
+              )
+            })}
+
             {placedTransit.map(({ t, lon, r }) => {
               const [px, py] = pt(lon, r)
               const col = colors ? GRAHA_COLOR[t.key] : null
               const combustT = t.combustion && t.combustion.combust
+              const on = markedT === t.key
               const conj = (t.conjunct_natal || []).map((c) => c.key === 'lagna' ? 'the lagna' : namer.grahaKey(c.key))
               const asp = (t.aspects_natal || []).map((a) => a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target))
               return (
-                <g key={`t${t.key}`} className={`sw-tgraha${t.retrograde ? ' rx' : ''}`}>
+                <g key={`t${t.key}`} className={`sw-tgraha${t.retrograde ? ' rx' : ''}${on ? ' on' : ''}`}
+                   onPointerEnter={(e) => { if (e.pointerType !== 'touch') setHoverT(t.key) }}
+                   onPointerLeave={(e) => { if (e.pointerType !== 'touch') setHoverT(null) }}
+                   onClick={() => setPinT((cur) => cur === t.key ? null : t.key)}>
                   <title>
                     {`Transit ${namer.grahaKey(t.key)} — ${namer.rasi(t.rasi)} ${t.degree}°${pad2(t.minute)}'`}
                     {t.retrograde ? ' ℞' : ''}

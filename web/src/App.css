@@ -716,6 +716,13 @@ section.meta, .chart-panel, .table-panel {
 .sw-tb-now { background: var(--sunken); color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: .12rem .5rem; cursor: pointer; font: inherit; }
 .sw-tb-now:hover { color: var(--ink); border-color: var(--accent); }
 .sw-transit-status { color: var(--dim); opacity: .85; font-variant-numeric: tabular-nums; }
+/* hover a transit graha → its ch.26 aspect lines to the natal points; the special
+   (full) aspects draw solid, the graded ones dashed. Colour/opacity set inline. */
+.sw-tgraha { cursor: pointer; }
+.sw-tgraha.on .sw-tdot { fill-opacity: .9; stroke-dasharray: none; stroke-width: 1.4; }
+.sw-tgraha.on .sw-tglyph { fill: var(--ink); }
+.sw-taspect { fill: none; stroke: var(--dim); stroke-dasharray: 3 2.5; stroke-linecap: round; pointer-events: none; }
+.sw-taspect.special { stroke-dasharray: none; }
 /* running-daśā "time remaining" readout, below the wheel */
 .sw-dasha-now {
   max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;

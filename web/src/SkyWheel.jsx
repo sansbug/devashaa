@@ -59,6 +59,10 @@ const ordinal = (n) => {
   const s = ['th', 'st', 'nd', 'rd'], v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
+// The "return" (a graha back on its own natal degree) is a Western frame with no
+// BPHS transit doctrine behind it, so the natal-degree offset is shown only for
+// the slow grahas whose long cycle makes it worth noticing — never the fast ones.
+const SLOW_RETURN = new Set(['saturn', 'jupiter', 'rahu', 'ketu'])
 // Rāśi element, for a faint sector tint: fire, earth, air, water repeating.
 const ELEMENT = ['fire', 'earth', 'air', 'water']
 const ELEMENT_COLOR = { fire: '#d9663a', earth: '#3f9f5f', air: '#c9a83e', water: '#4f86c6' }
@@ -155,6 +159,15 @@ export default function SkyWheelChart({
     const n = 12
     let d = ''
     for (let i = 0; i <= n; i++) { const [x, y] = pt(lonA + (lonB - lonA) * i / n, r); d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) }
+    return d
+  }
+  // An arc hugging radius r, from `fromLon` by a SIGNED `span` (degrees) — a
+  // negative span traces backward (increasing/decreasing longitude both work),
+  // which is what keeps a retrograde body's arc on the side it actually crossed.
+  const ringArc = (fromLon, span, r) => {
+    const n = Math.max(6, Math.round(Math.abs(span) / 5))
+    let d = ''
+    for (let i = 0; i <= n; i++) { const [x, y] = pt(fromLon + span * i / n, r); d += (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) }
     return d
   }
   // Purva → P, Uttara → U (both common and IAST spellings).
@@ -437,6 +450,34 @@ export default function SkyWheelChart({
                 </line>
               )
             })}
+
+            {/* natal-degree offset (the Western "return", flagged as geometry not
+                BPHS): the hovered slow graha's shortest-arc distance from its OWN
+                natal degree, marker at the birth degree, arc ending at the glyph.
+                Uses the SIGNED shortest arc so a retrograde body (the nodes always)
+                draws the side it truly crossed, and never wraps a full circle. */}
+            {hoverTransit && hoverTransit.t.return && SLOW_RETURN.has(hoverTransit.t.key) && (() => {
+              const ret = hoverTransit.t.return
+              const dist = ret.distance   // signed shortest arc, |dist| ≤ 180
+              const col = colors ? GRAHA_COLOR[hoverTransit.t.key] : null
+              const nr = ((ret.natal_longitude % 360) + 360) % 360
+              const [nx, ny] = pt(nr, hoverTransit.r)
+              const onIt = Math.abs(dist) < 2
+              return (
+                <g className={`sw-return${onIt ? ' near' : ''}`} style={{ pointerEvents: 'none' }}>
+                  <path d={ringArc(nr, dist, hoverTransit.r)} className="sw-return-arc"
+                        style={col ? { stroke: col } : undefined}>
+                    <title>
+                      {`Transit ${namer.grahaKey(hoverTransit.t.key)} — ${Math.round(Math.abs(dist))}° from its natal degree (${namer.rasi(Math.floor(nr / 30))} ${Math.floor(nr % 30)}°)`}
+                      {onIt ? ' — on it now' : ''}
+                      {'\nGeometry only: a graha back on its own natal degree is the Western "return" frame, not a BPHS transit rule — Jyotiṣa reads Śani by its house from the natal Moon.'}
+                    </title>
+                  </path>
+                  <circle cx={nx} cy={ny} r="4.8" className="sw-return-natal"
+                          style={col ? { stroke: col } : undefined} />
+                </g>
+              )
+            })()}
 
             {placedTransit.map(({ t, lon, r }) => {
               const [px, py] = pt(lon, r)

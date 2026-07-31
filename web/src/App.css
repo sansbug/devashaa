@@ -701,6 +701,21 @@ section.meta, .chart-panel, .table-panel {
 .sw-uccha.dn polygon { fill: none; stroke: var(--accent); stroke-width: 1.1; }
 .sw-uccha.near polygon { filter: drop-shadow(0 0 2px currentColor); }
 .sw-uccha-code { font-size: 6px; fill: var(--dim); opacity: .85; font-weight: var(--strong-weight, 600); }
+/* transit (gochara) overlay: an inner "ghost" ring. Dashed + translucent so it
+   reads as an overlay against the solid natal grahas, never mistaken for them. */
+.sw-transit-ring { fill: none; stroke: var(--dim); stroke-width: .8; stroke-dasharray: 1.5 3; opacity: .35; }
+.sw-tdot { fill: var(--panel); fill-opacity: .5; stroke: var(--dim); stroke-width: 1; stroke-dasharray: 2.2 1.6; }
+.sw-tglyph { fill: var(--dim); font-size: 7.5px; font-weight: var(--strong-weight, 600); pointer-events: none; }
+.sw-tgraha.rx .sw-tdot { stroke: var(--rx); }
+.sw-tgraha.rx .sw-tglyph { fill: var(--rx); }
+.sw-tcombust { fill: none; stroke: var(--dasha-adv); stroke-width: 1.2; stroke-dasharray: 2 1.8; opacity: .85; }
+/* the "as of <date>" control row, under the wheel toggles */
+.sw-transit-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: -.2rem 0 .6rem; font-size: .78rem; color: var(--dim); }
+.sw-tb-date { display: inline-flex; align-items: center; gap: .35rem; }
+.sw-tb-date input { background: var(--sunken); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: .15rem .35rem; font: inherit; }
+.sw-tb-now { background: var(--sunken); color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: .12rem .5rem; cursor: pointer; font: inherit; }
+.sw-tb-now:hover { color: var(--ink); border-color: var(--accent); }
+.sw-transit-status { color: var(--dim); opacity: .85; font-variant-numeric: tabular-nums; }
 /* running-daśā "time remaining" readout, below the wheel */
 .sw-dasha-now {
   max-width: 480px; margin: .6rem auto 0; padding: .55rem .75rem;

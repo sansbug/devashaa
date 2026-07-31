@@ -229,6 +229,13 @@ export default function App() {
   const [varga, setVarga] = useState('D1')
   const [style, setStyle] = useState('south')
   const [health, setHealth] = useState(null)
+  // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
+  // overlay is on, so nobody pays the round-trip who hasn't asked. '' = now.
+  const [transitOn, setTransitOn] = useState(false)
+  const [transitDate, setTransitDate] = useState('')
+  const [transit, setTransit] = useState(null)
+  const [transitBusy, setTransitBusy] = useState(false)
+  const [transitErr, setTransitErr] = useState('')
   const [profiles, setProfiles] = useState(() => listProfiles())
   const [activeProfile, setActiveProfile] = useState(null)
   // Which graha the analysis panel is showing. Sūrya is the conventional
@@ -419,6 +426,29 @@ export default function App() {
       } catch { /* the account panel remains the source of truth for the server */ }
     }
   }
+
+  // Fetch the transit geometry whenever the overlay is on and the birth data or
+  // chosen moment changes. Cancels in-flight fetches so a fast date change can't
+  // land its stale result after a newer one.
+  useEffect(() => {
+    if (!transitOn || !chart || !place) return
+    let cancelled = false
+    setTransitBusy(true); setTransitErr('')
+    fetch(`${API}/api/gochara`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date, time,
+        latitude: place.latitude, longitude: place.longitude, timezone: place.timezone,
+        ...(transitDate ? { transit_date: transitDate } : {}),
+      }),
+    })
+      .then((r) => r.json().then((j) => { if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`); return j }))
+      .then((j) => { if (!cancelled) setTransit(j) })
+      .catch((e) => { if (!cancelled) { setTransitErr(e.message); setTransit(null) } })
+      .finally(() => { if (!cancelled) setTransitBusy(false) })
+    return () => { cancelled = true }
+  }, [transitOn, transitDate, chart, date, time, place])
 
   const ready = date && time && place
   const Chart = style === 'south' ? SouthIndianChart
@@ -634,6 +664,13 @@ export default function App() {
                 dashaLords={dashaLords}
                 runningDasha={runningDasha}
                 combust={combust}
+                transit={transit}
+                transitOn={transitOn}
+                setTransitOn={setTransitOn}
+                transitDate={transitDate}
+                setTransitDate={setTransitDate}
+                transitBusy={transitBusy}
+                transitErr={transitErr}
               />
               {style === 'south' && varga === 'D1' && <RulerLegend />}
               {style === 'north' && (

@@ -30,6 +30,7 @@ import { useState } from 'react'
 const SIZE = 520
 const C = SIZE / 2
 const R_PLANET = 156       // base radius for graha glyphs
+const R_TRANSIT = 116      // inner "ghost ring" for transiting grahas
 const R_SIGN_IN = 186
 const R_SIGN_OUT = 232
 const R_SIGN_LABEL = 210
@@ -54,6 +55,10 @@ const GRAHA_COLOR = {
 }
 const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
   venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }
+const ordinal = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100
+  return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
 // Rāśi element, for a faint sector tint: fire, earth, air, water repeating.
 const ELEMENT = ['fire', 'earth', 'air', 'water']
 const ELEMENT_COLOR = { fire: '#d9663a', earth: '#3f9f5f', air: '#c9a83e', water: '#4f86c6' }
@@ -103,6 +108,7 @@ function Toggle({ on, set, children }) {
 export default function SkyWheelChart({
   grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
   active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha, combust,
+  transit, transitOn, setTransitOn, transitDate, setTransitDate, transitBusy, transitErr,
 }) {
   const [shade, setShade] = useState(true)
   const [colors, setColors] = useState(true)
@@ -113,6 +119,7 @@ export default function SkyWheelChart({
   const [dignityOn, setDignityOn] = useState(true)
   const [ucchaOn, setUcchaOn] = useState(true)
 
+  const todayStr = new Date().toISOString().slice(0, 10)
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
   const ang = (lon) => (180 - (lon - ascLon)) * DEG
   const pt = (lon, r) => [C + r * Math.cos(ang(lon)), C + r * Math.sin(ang(lon))]
@@ -161,6 +168,23 @@ export default function SkyWheelChart({
   }
 
   const isD1 = vargaKey === 'D1'
+
+  // Transiting grahas share the wheel's geometry but ride an inner "ghost" ring;
+  // a crowded cluster staggers inward the same way the natal grahas do.
+  const placedTransit = (transitOn && isD1 && transit && !transit.error && transit.grahas)
+    ? transit.grahas
+        .map((t) => ({ t, lon: t.longitude, a: ((180 - (t.longitude - ascLon)) % 360 + 360) % 360 }))
+        .sort((p, q) => p.a - q.a)
+    : []
+  {
+    let tLastA = -99, tLevel = 0
+    for (const p of placedTransit) {
+      const gap = Math.min(Math.abs(p.a - tLastA), 360 - Math.abs(p.a - tLastA))
+      tLevel = gap < 10 ? Math.min(tLevel + 1, 3) : 0
+      p.r = R_TRANSIT - tLevel * 22
+      tLastA = p.a
+    }
+  }
   const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
   // Exaltation (uccha) and fall (nīca) landmarks: the exact BPHS ch.3 vv.49–50
@@ -197,7 +221,26 @@ export default function SkyWheelChart({
         <Toggle on={dashaOn} set={setDashaOn}>Daśā</Toggle>
         <Toggle on={dignityOn} set={setDignityOn}>Dignity</Toggle>
         <Toggle on={ucchaOn} set={setUcchaOn}>Uccha ▲ / nīca ▽</Toggle>
+        {setTransitOn && <Toggle on={transitOn} set={setTransitOn}>Transits ◦</Toggle>}
       </div>
+      {transitOn && isD1 && (
+        <div className="sw-transit-bar">
+          <label className="sw-tb-date">
+            Transits as of
+            <input type="date" value={transitDate || todayStr}
+                   onChange={(e) => setTransitDate(e.target.value)} />
+          </label>
+          {transitDate && (
+            <button type="button" className="sw-tb-now" onClick={() => setTransitDate('')}>Now</button>
+          )}
+          <span className="sw-transit-status">
+            {transitBusy ? 'loading…'
+              : transitErr ? `⚠ ${transitErr}`
+              : transit && transit.transit_utc ? `${transit.grahas.length} grahas · ${transit.transit_utc}`
+              : ''}
+          </span>
+        </div>
+      )}
       {dignityOn && isD1 && (
         <div className="sw-dig-legend" aria-label="Dignity state colour key">
           {DIGNITY_LEGEND.map(([k, label]) => (
@@ -355,6 +398,40 @@ export default function SkyWheelChart({
             </g>
           )
         })}
+
+        {/* transit (gochara) overlay: an inner ghost ring of where the grahas
+            stand now / at the chosen date, against the birth chart. Facts only —
+            the good/bad transit reading is a separate, not-yet-built layer. */}
+        {transitOn && isD1 && placedTransit.length > 0 && (
+          <>
+            <circle cx={C} cy={C} r={R_TRANSIT} className="sw-transit-ring" />
+            {placedTransit.map(({ t, lon, r }) => {
+              const [px, py] = pt(lon, r)
+              const col = colors ? GRAHA_COLOR[t.key] : null
+              const combustT = t.combustion && t.combustion.combust
+              const conj = (t.conjunct_natal || []).map((c) => c.key === 'lagna' ? 'the lagna' : namer.grahaKey(c.key))
+              const asp = (t.aspects_natal || []).map((a) => a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target))
+              return (
+                <g key={`t${t.key}`} className={`sw-tgraha${t.retrograde ? ' rx' : ''}`}>
+                  <title>
+                    {`Transit ${namer.grahaKey(t.key)} — ${namer.rasi(t.rasi)} ${t.degree}°${pad2(t.minute)}'`}
+                    {t.retrograde ? ' ℞' : ''}
+                    {` · ${ordinal(t.house_from_moon)} from the natal Moon, ${ordinal(t.house_from_lagna)} from the lagna`}
+                    {combustT ? ' · combust' : ''}
+                    {conj.length ? ` · conjoins ${conj.join(', ')}` : ''}
+                    {asp.length ? ` · aspects ${asp.join(', ')}` : ''}
+                  </title>
+                  {combustT && <circle cx={px} cy={py} r="11.5" className="sw-tcombust" />}
+                  <circle cx={px} cy={py} r="9" className="sw-tdot" style={col ? { stroke: col } : undefined} />
+                  <text x={px} y={py} className="sw-tglyph" textAnchor="middle" dominantBaseline="central"
+                        style={col ? { fill: col } : undefined}>
+                    {CODE[t.key]}{t.retrograde ? '℞' : ''}
+                  </text>
+                </g>
+              )
+            })}
+          </>
+        )}
 
         {/* grahas: ray to centre, exact-degree tick, staggered glyph */}
         {isD1 && placed.map(({ g, lon, r }) => {

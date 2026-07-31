@@ -459,6 +459,30 @@ export default function SkyWheelChart({
               </g>
             )}
 
+            {/* conjunction highlight: the transit graha shares a sign with these
+                natal points (yuti) — a connector ties them and the natal graha is
+                ringed. Kept at full opacity, distinct from the graded aspect fan. */}
+            {hoverTransit && hoverTransit.t.conjunct_natal.map((c) => {
+              const dst = natalPos[c.key]
+              if (!dst) return null
+              const [ax, ay] = pt(hoverTransit.lon, hoverTransit.r)
+              const [bx, by] = pt(dst[0], dst[1])
+              const col = colors ? GRAHA_COLOR[hoverTransit.t.key] : null
+              const isLagna = c.key === 'lagna'
+              return (
+                <g key={`tc${c.key}`} className="sw-tconj" style={{ pointerEvents: 'none' }}>
+                  <title>
+                    {`Transit ${namer.grahaKey(hoverTransit.t.key)} conjoins ${isLagna ? 'the lagna' : namer.grahaKey(c.key)}`}
+                    {c.arc != null ? ` — ${Math.abs(Math.round(c.arc))}° apart` : ' (same sign)'}
+                  </title>
+                  <line x1={ax} y1={ay} x2={bx} y2={by} className="sw-tconj-line"
+                        style={col ? { stroke: col } : undefined} />
+                  {!isLagna && <circle cx={bx} cy={by} r="20" className="sw-tconj-ring"
+                                       style={col ? { stroke: col } : undefined} />}
+                </g>
+              )
+            })}
+
             {/* natal-degree offset (the Western "return", flagged as geometry not
                 BPHS): the hovered slow graha's shortest-arc distance from its OWN
                 natal degree, marker at the birth degree, arc ending at the glyph.

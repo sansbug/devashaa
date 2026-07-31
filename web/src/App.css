@@ -726,6 +726,10 @@ section.meta, .chart-panel, .table-panel {
 /* the aspect fan steps back while the natal-degree arc shares the same hover */
 .sw-taspect-group { transition: opacity .15s ease; }
 .sw-taspect-group.dim { opacity: .38; }
+/* conjunction (yuti): a solid tie from the transit graha to the natal point it
+   shares a sign with, plus a dashed ring around that natal graha. */
+.sw-tconj-line { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .8; stroke-linecap: round; }
+.sw-tconj-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 3 2; opacity: .9; }
 /* natal-degree offset (Western "return", geometry-only): a track from the
    graha's natal degree to where it is now; the hollow marker is its birth degree,
    the glyph is the current end — the two anchor even a tiny arc. */

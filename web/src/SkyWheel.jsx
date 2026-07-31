@@ -209,6 +209,9 @@ export default function SkyWheelChart({
   for (const p of placed) natalPos[p.g.key] = [p.lon, p.r]
   natalPos.lagna = [ascLon, R_SIGN_IN]
   const hoverTransit = markedT ? placedTransit.find((p) => p.t.key === markedT) : null
+  // The natal-degree arc only shows for slow grahas; when it does, the aspect
+  // fan steps back so the two overlays establish a hierarchy instead of competing.
+  const returnShowing = !!(hoverTransit && hoverTransit.t.return && SLOW_RETURN.has(hoverTransit.t.key))
   const [ascX, ascY] = pt(ascLon, R_SIGN_IN)
 
   // Exaltation (uccha) and fall (nīca) landmarks: the exact BPHS ch.3 vv.49–50
@@ -431,25 +434,30 @@ export default function SkyWheelChart({
             <circle cx={C} cy={C} r={R_TRANSIT} className="sw-transit-ring" />
 
             {/* aspect lines for the hovered/pinned transit graha: from its inner-
-                ring glyph to each natal point it aspects, weighted by ch.26 strength */}
-            {hoverTransit && hoverTransit.t.aspects_natal.map((a) => {
-              const dst = natalPos[a.target]
-              if (!dst) return null
-              const [ax, ay] = pt(hoverTransit.lon, hoverTransit.r)
-              const [bx, by] = pt(dst[0], dst[1])
-              const col = colors ? GRAHA_COLOR[hoverTransit.t.key] : null
-              return (
-                <line key={`ta${a.target}`} x1={ax} y1={ay} x2={bx} y2={by}
-                      className={`sw-taspect${a.special ? ' special' : ''}`}
-                      style={{ strokeOpacity: 0.25 + a.strength * 0.6, strokeWidth: 0.7 + a.strength * 1.9, ...(col ? { stroke: col } : {}) }}>
-                  <title>
-                    {`Transit ${namer.grahaKey(hoverTransit.t.key)}'s ${ordinal(a.house)} aspect`}
-                    {a.special ? ' (special, full)' : ''}
-                    {` on ${a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target)}`}
-                  </title>
-                </line>
-              )
-            })}
+                ring glyph to each natal point it aspects, weighted by ch.26 strength.
+                Dimmed as a group while the natal-degree arc shares the hover. */}
+            {hoverTransit && (
+              <g className={`sw-taspect-group${returnShowing ? ' dim' : ''}`}>
+                {hoverTransit.t.aspects_natal.map((a) => {
+                  const dst = natalPos[a.target]
+                  if (!dst) return null
+                  const [ax, ay] = pt(hoverTransit.lon, hoverTransit.r)
+                  const [bx, by] = pt(dst[0], dst[1])
+                  const col = colors ? GRAHA_COLOR[hoverTransit.t.key] : null
+                  return (
+                    <line key={`ta${a.target}`} x1={ax} y1={ay} x2={bx} y2={by}
+                          className={`sw-taspect${a.special ? ' special' : ''}`}
+                          style={{ strokeOpacity: 0.25 + a.strength * 0.6, strokeWidth: 0.7 + a.strength * 1.9, ...(col ? { stroke: col } : {}) }}>
+                      <title>
+                        {`Transit ${namer.grahaKey(hoverTransit.t.key)}'s ${ordinal(a.house)} aspect`}
+                        {a.special ? ' (special, full)' : ''}
+                        {` on ${a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target)}`}
+                      </title>
+                    </line>
+                  )
+                })}
+              </g>
+            )}
 
             {/* natal-degree offset (the Western "return", flagged as geometry not
                 BPHS): the hovered slow graha's shortest-arc distance from its OWN

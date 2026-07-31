@@ -34,8 +34,8 @@ export const THEMES = [
   },
 ]
 
-/** New visitors land on the luminous theme. */
-export const DEFAULT_THEME = 'aarti'
+/** New visitors land on Midnight (the 3rd swatch). */
+export const DEFAULT_THEME = 'midnight'
 
 const KEYS = new Set(THEMES.map((t) => t.key))
 

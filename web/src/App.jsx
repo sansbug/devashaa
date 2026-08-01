@@ -460,7 +460,8 @@ export default function App() {
   // overlay. Time isn't spatial, but WHERE the ruling graha sits is.
   const dashaLords = (() => {
     const dv = chart && chart.dasha && chart.dasha.variants
-    const tree = dv ? (dv['360'] || Object.values(dv)[0]) : null
+    const dk = chart && chart.dasha ? String(chart.dasha.default_year_days).replace('.0', '') : null
+    const tree = dv ? (dv[dk] || dv['360'] || Object.values(dv)[0]) : null
     const maha = tree && tree.mahadashas && tree.mahadashas.find((m) => m.is_current)
     const antar = maha && maha.sub && maha.sub.find((a) => a.is_current)
     return { maha: maha && maha.lord, antar: antar && antar.lord }
@@ -470,7 +471,8 @@ export default function App() {
   // on the backend, and each node's `end` is the boundary we count down to.
   const runningDasha = (() => {
     const dv = chart && chart.dasha && chart.dasha.variants
-    const tree = dv ? (dv['360'] || Object.values(dv)[0]) : null
+    const dk = chart && chart.dasha ? String(chart.dasha.default_year_days).replace('.0', '') : null
+    const tree = dv ? (dv[dk] || dv['360'] || Object.values(dv)[0]) : null
     const maha = tree && tree.mahadashas && tree.mahadashas.find((m) => m.is_current)
     if (!maha) return null
     const antar = maha.sub && maha.sub.find((a) => a.is_current)

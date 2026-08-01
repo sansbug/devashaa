@@ -40,11 +40,12 @@ VIMSHOTTARI: list[tuple[str, str, int]] = [
 TOTAL_YEARS = 120
 
 # Days per daśā-year, for projecting daśā-years onto the calendar. BPHS's own
-# ch.46 worked example implies 360 (sāvana), so that is the default; 365.25
-# (Julian) is what Jagannātha Hora and most modern software use. See docs.
+# BPHS ch.46's worked example implies 360 (sāvana); 365.25 (Julian) is what
+# Jagannātha Hora and most modern software use. Both ship as switchable variants;
+# the DEFAULT is the modern 365.25 (user's choice), with 360·BPHS one click away.
 YEAR_DAYS_SAVANA = 360.0
 YEAR_DAYS_JULIAN = 365.25
-DEFAULT_YEAR_DAYS = YEAR_DAYS_SAVANA
+DEFAULT_YEAR_DAYS = YEAR_DAYS_JULIAN
 
 _ORDER = [k for k, _, _ in VIMSHOTTARI]
 _YEARS = {k: y for k, _, y in VIMSHOTTARI}

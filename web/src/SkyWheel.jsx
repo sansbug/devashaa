@@ -379,8 +379,6 @@ export default function SkyWheelChart({
 
         {/* horizon: the Ascendant→Descendant diameter (exactly horizontal) */}
         <line x1={C - R_MAX} y1={C} x2={C + R_MAX} y2={C} className="sw-horizon" />
-        <text x={C - R_MAX + 4} y={C - 8} className="sw-horizon-label">East · rising</text>
-        <text x={C + R_MAX - 4} y={C - 8} className="sw-horizon-label" textAnchor="end">West · setting</text>
 
         {/* the lagna, pinned to the eastern horizon */}
         <g className="sw-asc">

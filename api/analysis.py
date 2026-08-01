@@ -42,6 +42,7 @@ import avastha as av
 import drishti as dr
 import functional as fn
 import karakas as kar
+import bhava_phala as bhp
 
 # The seven grahas BPHS assigns dignity, lordship and relationships to. The
 # nodes are handled separately and mostly return unavailable — that absence is
@@ -338,5 +339,12 @@ def analyse(chart_positions, lagna, moon_waxing=None):
         )
     except Exception as e:  # noqa: BLE001
         out["karakas"] = {"available": False, "reason": str(e)}
+
+    # Bhāva-phala — the house-by-house cited reading (ch.24/11/32). A failure here
+    # must not cost the user the rest of their analysis.
+    try:
+        out["bhava_phala"] = bhp.bhava_phala(chart_positions, lagna)
+    except Exception as e:  # noqa: BLE001
+        out["bhava_phala"] = {"error": f"Bhāva-phala failed: {e}"}
 
     return out

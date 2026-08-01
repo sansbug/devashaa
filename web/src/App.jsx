@@ -3,6 +3,7 @@ import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
 import MotionPanel from './MotionPanel.jsx'
+import BhavaPanel from './BhavaPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -742,6 +743,10 @@ export default function App() {
 
           {chart.motion && !chart.motion.error && (
             <MotionPanel data={chart.motion} namer={namer} />
+          )}
+
+          {chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
+            <BhavaPanel data={chart.analysis.bhava_phala} namer={namer} />
           )}
 
           <section className="table-panel" id="rg-dasha">

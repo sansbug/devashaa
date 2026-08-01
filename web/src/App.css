@@ -730,6 +730,27 @@ section.meta, .chart-panel, .table-panel {
    shares a sign with, plus a dashed ring around that natal graha. */
 .sw-tconj-line { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .8; stroke-linecap: round; }
 .sw-tconj-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 3 2; opacity: .9; }
+
+/* bhāva-phala — house-by-house reading */
+.bhava-list { display: flex; flex-direction: column; gap: .5rem; }
+.bhava-card { border: 1px solid var(--line); border-radius: 8px; padding: .55rem .7rem; background: var(--sunken); }
+.bhava-head { display: flex; align-items: baseline; gap: .55rem; width: 100%; background: none; border: none; cursor: pointer; color: var(--ink); font: inherit; text-align: left; padding: 0; }
+.bhava-num { font-weight: var(--strong-weight, 700); color: var(--accent); min-width: 2.5rem; }
+.bhava-sign { color: var(--dim); font-size: .85rem; min-width: 5rem; }
+.bhava-lordline { flex: 1; font-size: .9rem; }
+.bhava-caret { color: var(--dim); font-size: 1.1rem; line-height: 1; }
+.bhava-sig { margin: .35rem 0 .3rem; font-size: .8rem; color: var(--dim); font-style: italic; }
+.bhava-rule { margin: .25rem 0; }
+.bhava-effect { margin: 0 0 .15rem; font-size: .9rem; }
+.bhava-exc { margin: .2rem 0 0; font-size: .82rem; color: var(--dim); }
+.bhava-combo { margin: .25rem 0 0; font-size: .8rem; color: var(--accent); }
+.bhava-detail { margin-top: .5rem; padding-top: .45rem; border-top: 1px dashed var(--line); }
+.bhava-meta { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; font-size: .82rem; }
+.bhava-meta em { color: var(--dim); font-style: normal; margin-right: .25rem; }
+.bhava-occ-note, .bhava-notes, .bhava-combo-rule { margin: .4rem 0 0; font-size: .78rem; color: var(--dim); line-height: 1.4; }
+.bhava-notes em, .bhava-combo-rule em { color: var(--accent); font-style: normal; margin-right: .3rem; }
+.bhava-refusal { margin-top: .7rem; font-size: .78rem; color: var(--dim); font-style: italic; }
+.conf-sloka { color: var(--accent); }
 /* natal-degree offset (Western "return", geometry-only): a track from the
    graha's natal degree to where it is now; the hollow marker is its birth degree,
    the glyph is the current end — the two anchor even a tiny arc. */

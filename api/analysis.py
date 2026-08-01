@@ -43,6 +43,7 @@ import drishti as dr
 import functional as fn
 import karakas as kar
 import bhava_phala as bhp
+import yogas as yg
 
 # The seven grahas BPHS assigns dignity, lordship and relationships to. The
 # nodes are handled separately and mostly return unavailable — that absence is
@@ -292,10 +293,11 @@ def graha_signals(graha, chart_positions, lagna, functional_row=None):
     return sigs
 
 
-def analyse(chart_positions, lagna, moon_waxing=None):
+def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None):
     """Whole-chart analysis payload.
 
     `chart_positions` maps graha key -> {"longitude", "rasi", "vargas"}.
+    `lagna_d9` is the lagna's navāṁśa sign (for the two lagna-D9 yogas).
     """
     rasi_positions = {g: p["rasi"] for g, p in chart_positions.items()}
 
@@ -346,5 +348,11 @@ def analyse(chart_positions, lagna, moon_waxing=None):
         out["bhava_phala"] = bhp.bhava_phala(chart_positions, lagna)
     except Exception as e:  # noqa: BLE001
         out["bhava_phala"] = {"error": f"Bhāva-phala failed: {e}"}
+
+    # Yogas — which named BPHS yogas the chart forms (chs 35-39 + Vol II ch.75).
+    try:
+        out["yogas"] = yg.detect_yogas(chart_positions, lagna, lagna_d9)
+    except Exception as e:  # noqa: BLE001
+        out["yogas"] = {"error": f"Yoga detection failed: {e}"}
 
     return out

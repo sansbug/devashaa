@@ -751,6 +751,16 @@ section.meta, .chart-panel, .table-panel {
 .bhava-notes em, .bhava-combo-rule em { color: var(--accent); font-style: normal; margin-right: .3rem; }
 .bhava-refusal { margin-top: .7rem; font-size: .78rem; color: var(--dim); font-style: italic; }
 .conf-sloka { color: var(--accent); }
+
+/* yogas — the combinations panel */
+.yoga-list { display: flex; flex-direction: column; gap: .5rem; }
+.yoga-card { border: 1px solid var(--line); border-radius: 8px; padding: .55rem .7rem; background: var(--sunken); }
+.yoga-head { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.yoga-name { font-weight: var(--strong-weight, 700); }
+.yoga-fam { font-size: .68rem; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 0 .32rem; }
+.yoga-sg { font-size: .68rem; color: var(--dasha-adv); border: 1px solid var(--dasha-adv); border-radius: 4px; padding: 0 .32rem; opacity: .9; }
+.yoga-effect { margin: .35rem 0 .25rem; font-size: .88rem; line-height: 1.45; }
+.yoga-none { color: var(--dim); font-style: italic; }
 /* natal-degree offset (Western "return", geometry-only): a track from the
    graha's natal degree to where it is now; the hollow marker is its birth degree,
    the glyph is the current end — the two anchor even a tiny arc. */

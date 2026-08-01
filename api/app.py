@@ -376,7 +376,8 @@ def chart():
             g.key: {"longitude": g.longitude, "rasi": g.rasi, "vargas": g.vargas}
             for g in result.grahas
         }
-        payload["analysis"] = analyse(analysis_positions, result.lagna_rasi)
+        payload["analysis"] = analyse(analysis_positions, result.lagna_rasi,
+                                      lagna_d9=result.lagna_vargas.get("D9"))
     except Exception as e:  # noqa: BLE001
         payload["analysis"] = {"error": f"Analysis failed: {e}"}
 

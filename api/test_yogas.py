@@ -93,6 +93,55 @@ sg = [y for y in res["detected"] if y["computability"] == "strength_gated"]
 check("every strength_gated detected yoga has a strength_note",
       all(y.get("strength_note") for y in sg) if sg else True)
 
+print("\nṢaḍbala resolves the strength-gated yogas (fructifies / does not):")
+
+
+def sbtable(overrides):
+    t = {}
+    for gk in ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"):
+        st = overrides.get(gk, True)
+        t[gk] = {"strong": st, "total_rupa": 7.0 if st else 4.0, "min_required_rupa": 5.0}
+    return t
+
+
+def kahala(res):
+    return next((y for y in res["detected"] if y["name"] == "Kahala Yoga"), None)
+
+
+# Kahala clause 2 (4th lord Moon own in Cancer, conjunct 10th lord Saturn) is
+# fully computable from D1 — it carries NO Ṣaḍbala gate, so the yoga fructifies
+# even when the ascendant lord (Mars) is weak. lagna Aries(0).
+kah2 = {"sun": g(1), "moon": {"rasi": 3, "longitude": 105, "vargas": {}},
+        "mars": g(7), "mercury": g(1), "jupiter": g(8), "venus": g(10),
+        "saturn": {"rasi": 3, "longitude": 105, "vargas": {}}}
+k2 = kahala(yogas.detect_yogas(kah2, 0, shadbala=sbtable({"mars": False})))
+check("Kahala via computable clause detected", k2 is not None)
+check("computable clause fructifies despite a weak ascendant lord",
+      bool(k2) and k2["strength"]["fructifies"] is True)
+check("computable clause carries no gate graha", bool(k2) and k2["strength"]["grahas"] == [])
+
+# Kahala clause 1 (4th lord Moon in a kendra from Jupiter; Saturn elsewhere, so
+# the computable clause does NOT fire) IS gated on the ascendant lord, Mars.
+kah1 = {"sun": g(1), "moon": {"rasi": 3, "longitude": 105, "vargas": {}},
+        "mars": g(7), "mercury": g(1), "jupiter": {"rasi": 0, "longitude": 5, "vargas": {}},
+        "venus": g(5), "saturn": {"rasi": 10, "longitude": 315, "vargas": {}}}
+k1s = kahala(yogas.detect_yogas(kah1, 0, shadbala=sbtable({"mars": True})))
+k1w = kahala(yogas.detect_yogas(kah1, 0, shadbala=sbtable({"mars": False})))
+check("Kahala via gated clause detected", k1s is not None)
+check("gated clause fructifies when ascendant lord strong",
+      bool(k1s) and k1s["strength"]["fructifies"] is True)
+check("gated clause does NOT fructify when ascendant lord weak",
+      bool(k1w) and k1w["strength"]["fructifies"] is False)
+check("gated clause names the gate graha (mars)",
+      bool(k1s) and k1s["strength"]["grahas"][0]["graha"] == "mars")
+
+k_none = kahala(yogas.detect_yogas(kah2, 0))
+check("without Ṣaḍbala, no strength resolution (unverified flag kept)",
+      bool(k_none) and "strength" not in k_none)
+check("strength_resolved flag tracks Ṣaḍbala presence",
+      yogas.detect_yogas(kah2, 0, shadbala=sbtable({}))["strength_resolved"] is True
+      and yogas.detect_yogas(kah2, 0)["strength_resolved"] is False)
+
 # --- soft worked-chart fixtures (timezone-sensitive) ------------------------
 print("\nWorked charts (soft — exact reproduction depends on historical tz):")
 try:

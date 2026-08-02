@@ -293,11 +293,13 @@ def graha_signals(graha, chart_positions, lagna, functional_row=None):
     return sigs
 
 
-def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None):
+def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=None):
     """Whole-chart analysis payload.
 
     `chart_positions` maps graha key -> {"longitude", "rasi", "vargas"}.
     `lagna_d9` is the lagna's navāṁśa sign (for the two lagna-D9 yogas).
+    `shadbala` is the per-graha Ṣaḍbala verdict table; when supplied it resolves
+    the strength-gated yogas (fructifies / does not fructify).
     """
     rasi_positions = {g: p["rasi"] for g, p in chart_positions.items()}
 
@@ -351,7 +353,7 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None):
 
     # Yogas — which named BPHS yogas the chart forms (chs 35-39 + Vol II ch.75).
     try:
-        out["yogas"] = yg.detect_yogas(chart_positions, lagna, lagna_d9)
+        out["yogas"] = yg.detect_yogas(chart_positions, lagna, lagna_d9, shadbala=shadbala)
     except Exception as e:  # noqa: BLE001
         out["yogas"] = {"error": f"Yoga detection failed: {e}"}
 

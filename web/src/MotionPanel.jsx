@@ -5,8 +5,8 @@
  * to the Sun come straight from the ephemeris. The gati NAMES and the combustion
  * ORBS are the classical scheme, shown on a `traditional` footing — NOT BPHS
  * (whose combustion is a proportional rule, not a fixed orb). Cheṣṭā bala — the
- * numeric motion-strength — is refused: BPHS instructs the Seeghrocha but never
- * gives one. That refusal is stated, not hidden.
+ * numeric motion-strength — is not derived here (BPHS gives no Seeghrocha); it is
+ * computed in the Ṣaḍbala panel by Raman's method, and this panel links there.
  */
 
 // Direction is the sign of the speed; the near-stationary state (which can occur
@@ -163,13 +163,14 @@ export default function MotionPanel({ data, namer }) {
 
       {cb && !cb.available && (
         <p className="mp-cheshta">
-          <span className="src conf conf-absent" title={`${cb.reason}\n\n${cb.citation}`}>
-            Cheṣṭā bala · unavailable
+          <span className="src conf conf-corroborated" title={`${cb.reason}\n\n${cb.citation}`}>
+            Cheṣṭā bala · in Ṣaḍbala below
           </span>
           <span className="mp-cheshta-why">
-            The numeric strength of a graha's motion needs its Seeghrocha, which
-            BPHS never tabulates — so it is refused. What follows is the motion{' '}
-            <em>state</em>, not that bala.
+            BPHS itself gives no Seeghrocha, so the numeric motional strength is not
+            derived here — it is computed in the <strong>Ṣaḍbala</strong> section
+            below by Raman's method (with modern mean longitudes). What follows is
+            the motion <em>state</em>.
           </span>
         </p>
       )}

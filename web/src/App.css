@@ -761,6 +761,20 @@ section.meta, .chart-panel, .table-panel {
 .yoga-sg { font-size: .68rem; color: var(--dasha-adv); border: 1px solid var(--dasha-adv); border-radius: 4px; padding: 0 .32rem; opacity: .9; }
 .yoga-effect { margin: .35rem 0 .25rem; font-size: .88rem; line-height: 1.45; }
 .yoga-none { color: var(--dim); font-style: italic; }
+/* Ṣaḍbala resolution of a strength-gated yoga */
+.yoga-strength { display: flex; align-items: center; gap: .3rem .5rem; flex-wrap: wrap; margin: .1rem 0 .3rem; }
+.yoga-str { font-size: .66rem; text-transform: uppercase; letter-spacing: .03em; font-weight: var(--strong-weight, 600);
+  border: 1px solid; border-radius: 4px; padding: .02rem .34rem; cursor: help; }
+.yoga-str.ok { color: var(--ok-ink); border-color: var(--ok-line); }
+.yoga-str.no { color: var(--dim); border-color: var(--line); }
+.yoga-str-role { font-size: .72rem; color: var(--dim); font-style: italic; }
+.yoga-str-g { font-size: .72rem; font-variant-numeric: tabular-nums; border: 1px solid var(--line);
+  border-radius: 4px; padding: 0 .3rem; cursor: help; }
+.yoga-str-g.strong { color: var(--ok-ink); border-color: var(--ok-line); }
+.yoga-str-g.weak { color: var(--dim); opacity: .85; }
+/* a detected-but-not-fructifying yoga reads as present-yet-dormant */
+.yoga-dormant { opacity: .72; }
+.yoga-dormant .yoga-name { font-style: italic; }
 /* natal-degree offset (Western "return", geometry-only): a track from the
    graha's natal degree to where it is now; the hollow marker is its birth degree,
    the glyph is the current end — the two anchor even a tiny arc. */
@@ -1611,3 +1625,47 @@ footer a:hover { color: var(--accent); }
   .saved-toggle { width: 100%; justify-content: flex-start; }
   .saved-hint { margin-left: auto; }
 }
+
+/* ── Ṣaḍbala panel ─────────────────────────────────────────────────────── */
+/* The six balas are categorical, so their swatch hues are fixed (readable on
+   both light and dark panels); text, rules and verdicts use theme vars. */
+.sb-sthana     { fill: #5b8def; background: #5b8def; }
+.sb-dik        { fill: #40b5a8; background: #40b5a8; }
+.sb-kala       { fill: #e0a53a; background: #e0a53a; }
+.sb-cheshta    { fill: #d9743e; background: #d9743e; }
+.sb-naisargika { fill: #9b7ede; background: #9b7ede; }
+.sb-drik-pos   { fill: #58b46a; background: #58b46a; }
+.sb-drik-neg   { fill: var(--rx); background: var(--rx); opacity: .55; }
+
+.sb-bars-wrap { margin: .4rem 0 .9rem; }
+.sb-bars { display: block; width: 100%; height: auto; max-width: 720px; margin: 0 auto; overflow: visible; }
+.sb-glyph { fill: var(--ink); font-size: 11px; font-weight: var(--strong-weight, 600); }
+.sb-seg { stroke: var(--panel); stroke-width: .5; }
+.sb-min { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 2 2; opacity: .7; }
+.sb-total { fill: var(--dim); font-size: 11px; font-variant-numeric: tabular-nums; }
+.sb-verdict.is-strong { fill: var(--ok-ink); font-weight: var(--strong-weight, 600); }
+.sb-verdict.is-weak { fill: var(--rx); font-weight: var(--strong-weight, 600); }
+.sb-row.strong .sb-glyph { fill: var(--ink); }
+.sb-row.weak .sb-glyph { fill: var(--dim); }
+
+.sb-legend { display: flex; flex-wrap: wrap; gap: .3rem .9rem; justify-content: center;
+  margin-top: .3rem; font-size: .68rem; color: var(--dim); }
+.sb-leg { display: inline-flex; align-items: center; gap: .3rem; }
+.sb-sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.sb-sw.sb-minmark { background: transparent; border-left: 2px dashed var(--ink); width: 0; height: 12px; opacity: .7; border-radius: 0; }
+
+.sb-scroll { overflow-x: auto; margin-top: .4rem; }
+.sb-table { width: 100%; border-collapse: collapse; font-size: .84rem; min-width: 40rem; }
+.sb-table th, .sb-table td { padding: .32rem .45rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.sb-table th { font-size: .66rem; text-transform: uppercase; letter-spacing: .03em; color: var(--dim); font-weight: var(--strong-weight, 600); }
+.sb-table th.num, .sb-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.sb-table th[title], .sb-table td[title] { cursor: help; }
+.sb-graha { font-weight: var(--strong-weight, 600); }
+.sb-vir { color: var(--dim); }
+.sb-rupa { font-weight: var(--strong-weight, 600); }
+.sb-drik.neg { color: var(--rx); }
+.sb-drik.pos { color: var(--ok-ink); }
+.sb-badge { font-size: .68rem; padding: .05rem .4rem; border-radius: 4px; border: 1px solid; white-space: nowrap; cursor: help; }
+.sb-badge.ok { color: var(--ok-ink); border-color: var(--ok-line); }
+.sb-badge.no { color: var(--rx); border-color: var(--err-line); }
+.sb-foot { margin: .5rem 0 0; font-size: .68rem; color: var(--dim); line-height: 1.6; }

@@ -36,6 +36,7 @@ import nakshatra_techniques
 import navamsa
 import navamsa_patel
 import rao_pointers
+import shadbala_context
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -367,6 +368,20 @@ def chart():
     # it needs the ascendant's rate of change, which varies with latitude and
     # rising sign and is not on this payload. See docs/bphs-rules.md.
 
+    # Ṣaḍbala — the six-fold graha strength (B. V. Raman's codification of
+    # Parāśara). Every formula is validated to the virūpa against Raman's own
+    # Standard Horoscope (test_shadbala.py); Cheṣṭā uses modern secular mean
+    # longitudes, closing the long-standing Seeghrocha gap. Unlike the Tier-0
+    # signal stack this DOES yield a per-graha total and a strong/weak verdict,
+    # because Raman's method is an explicit, cited numeric one. Computed BEFORE
+    # the analysis so its verdict can resolve the strength-gated yogas. Degrades
+    # to an error row rather than costing the chart.
+    try:
+        payload["shadbala"] = shadbala_context.shadbala_for_chart(result)
+    except Exception as e:  # noqa: BLE001
+        payload["shadbala"] = {"error": f"Ṣaḍbala calculation failed: {e}"}
+    _sb_verdict = payload["shadbala"].get("grahas") if isinstance(payload["shadbala"], dict) else None
+
     # D1 analysis — the Tier 0 engines assembled as a per-graha SIGNAL STACK.
     # Deliberately NOT a single score: BPHS states these judgements separately
     # and never combines them (see analysis.py). A failure here must not cost
@@ -377,7 +392,8 @@ def chart():
             for g in result.grahas
         }
         payload["analysis"] = analyse(analysis_positions, result.lagna_rasi,
-                                      lagna_d9=result.lagna_vargas.get("D9"))
+                                      lagna_d9=result.lagna_vargas.get("D9"),
+                                      shadbala=_sb_verdict)
     except Exception as e:  # noqa: BLE001
         payload["analysis"] = {"error": f"Analysis failed: {e}"}
 
@@ -395,8 +411,9 @@ def chart():
     except Exception as e:  # noqa: BLE001
         payload["navamsa"] = {"error": f"Navāṁśa analysis failed: {e}"}
 
-    # Planetary motion (gati) + combustion — ephemeris facts + traditional labels;
-    # Cheṣṭā bala is refused (no Seeghrocha). Degrades to an error row.
+    # Planetary motion (gati) + combustion — ephemeris facts + traditional labels.
+    # (Cheṣṭā bala itself now lives in the ṣaḍbala section below.) Degrades to an
+    # error row.
     try:
         payload["motion"] = motion_mod.motion_analysis(
             [{"key": g.key, "longitude": g.longitude, "speed": g.speed}

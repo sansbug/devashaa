@@ -426,8 +426,93 @@ for _nm in _NABHASA_NAMES:
     _NABHASA_NON_SANKHYA[_nm] = DETECTORS[_nm]
 
 
-def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None) -> dict:
-    """`positions` maps graha key -> {rasi, longitude, vargas}; `lagna` is the lagna sign."""
+# ── Ṣaḍbala resolution of the strength-gated yogas ──────────────────────────
+# BPHS/Raman gate these yogas' results on a graha's Ṣaḍbala strength. With the
+# validated Ṣaḍbala engine (shadbala.py) the gate is no longer refused: the yoga
+# is resolved to "fructifies" (the required graha is strong) or "does not
+# fructify" (it is present in geometry but the strength clause fails). Adhi is
+# special — it always forms geometrically, and the office tier follows the
+# participating benefics' strength order (balakramat).
+def _gate_grahas(name, c):
+    """The graha(s) whose Ṣaḍbala the yoga's result hinges on, per the clause that
+    fired. An empty list means the satisfied clause carries no strength gate (it
+    is fully computable from D1), so the yoga fructifies unconditionally."""
+    if name == "Kahala Yoga":
+        # Only the primary clause (4th lord / Jupiter mutual kendra) gates on the
+        # ascendant lord. The alternative clause (4th lord own/exalted & conjunct
+        # the 10th lord) is fully computable from D1 — no Ṣaḍbala gate.
+        clause2 = (c.state.get(c.lord_of[4]) in ("own", "exalted")
+                   and _conjunct(c, c.lord_of[4], c.lord_of[10]))
+        return [] if clause2 else [c.lord_of[1]]       # ascendant lord (primary clause)
+    if name == "Bheri Yoga":
+        return [c.lord_of[9]]                          # the 9th lord
+    if name == "Strong Vargottama Moon aspected by 4+ planets":
+        return ["moon"]
+    if name == "Sankha Yoga":
+        gates = []
+        if _house(c.rasi[c.lord_of[5]], c.rasi[c.lord_of[6]]) in KENDRA:
+            gates.append(c.lord_of[1])                 # clause 1 → ascendant lord
+        if _conjunct(c, c.lord_of[1], c.lord_of[10]) and c.rasi[c.lord_of[1]] % 3 == 0:
+            gates.append(c.lord_of[9])                 # clause 2 → 9th lord
+        return gates or [c.lord_of[1]]
+    return []
+
+
+_GATE_ROLE = {
+    "Kahala Yoga": "ascendant lord",
+    "Bheri Yoga": "9th lord",
+    "Sankha Yoga": "ascendant / 9th lord",
+    "Strong Vargottama Moon aspected by 4+ planets": "the Moon",
+}
+
+
+def _strength_detail(g, sb):
+    v = sb.get(g) or {}
+    return {"graha": g, "rupa": round(v.get("total_rupa", 0.0), 2),
+            "min": v.get("min_required_rupa"), "strong": bool(v.get("strong"))}
+
+
+def _resolve_strength(name, c, sb):
+    """Resolve a strength-gated yoga against the Ṣaḍbala verdict table ``sb``
+    ({graha: {strong, total_rupa, min_required_rupa}})."""
+    if name == "Adhi Yoga from the Moon":
+        parts = [g for g in c.g7 if g in c.benefics and _from_moon(c, g) in (6, 7, 8)]
+        ranked = sorted((_strength_detail(g, sb) for g in parts),
+                        key=lambda e: -e["rupa"])
+        return {
+            "resolved": True, "role": "participating benefics (balakramat)",
+            "grahas": ranked, "met": any(e["strong"] for e in ranked),
+            # geometry forms the yoga; strength orders the office, it never voids it
+            "fructifies": True,
+            "basis": "the office follows the participants' strength order"
+                     + (f"; strongest is {ranked[0]['graha']}" if ranked else ""),
+        }
+    gates = dict.fromkeys(_gate_grahas(name, c))
+    if not gates:
+        # Formed via a clause that carries no strength requirement — fully
+        # computable from D1, so it fructifies with no Ṣaḍbala gate.
+        return {
+            "resolved": True, "role": "no strength gate (computable from D1)",
+            "grahas": [], "met": True, "fructifies": True,
+            "basis": "formed via a clause requiring no Ṣaḍbala — fully computable from D1",
+        }
+    details = [_strength_detail(g, sb) for g in gates]
+    met = any(e["strong"] for e in details)            # either satisfied clause suffices
+    return {
+        "resolved": True, "role": _GATE_ROLE.get(name, "the required graha"),
+        "grahas": details, "met": met, "fructifies": met,
+        "basis": ("the " + _GATE_ROLE.get(name, "required graha")
+                  + (" is strong (Ṣaḍbala ≥ minimum)" if met
+                     else " is not strong, so the yoga does not fructify")),
+    }
+
+
+def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None,
+                 shadbala: dict | None = None) -> dict:
+    """`positions` maps graha key -> {rasi, longitude, vargas}; `lagna` is the
+    lagna sign. When ``shadbala`` (the per-graha Ṣaḍbala verdict table) is given,
+    strength-gated yogas are resolved to fructifies / does-not-fructify instead
+    of carrying the 'strength unverified' flag."""
     c = _build(positions, lagna, lagna_d9)
     detected = []
     for name, meta in yoga_rules.YOGAS.items():
@@ -442,13 +527,25 @@ def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None) -> di
             entry = {"name": name, **meta}
             if isinstance(hit, dict):
                 entry["detail"] = hit
+            if meta.get("computability") == "strength_gated" and shadbala:
+                try:
+                    entry["strength"] = _resolve_strength(name, c, shadbala)
+                except Exception:                      # never let resolution sink the yoga
+                    pass
             detected.append(entry)
     return {
         "detected": detected,
         "count": len(detected),
         "checked": sum(1 for n in yoga_rules.YOGAS if n in DETECTORS),
         "catalogued": len(yoga_rules.YOGAS),
+        "strength_resolved": bool(shadbala),
         "note": (
+            "A yoga is listed only when its geometric condition is met. Strength-gated "
+            "yogas are resolved against the Ṣaḍbala engine — 'fructifies' when the gating "
+            "graha is strong, 'does not fructify' when the geometry is present but that "
+            "strength is lacking. Effects are the cited śloka, not a fated prediction; "
+            "no per-yoga score."
+        ) if shadbala else (
             "A yoga is listed only when its geometric condition is met. Strength-gated "
             "yogas show 'strength unverified' — the condition holds, but BPHS gates the "
             "result on a Ṣaḍbala this engine does not compute. Effects are the cited "

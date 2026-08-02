@@ -3,6 +3,7 @@ import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
 import MotionPanel from './MotionPanel.jsx'
+import ShadbalaPanel from './ShadbalaPanel.jsx'
 import BhavaPanel from './BhavaPanel.jsx'
 import YogaPanel from './YogaPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
@@ -748,8 +749,12 @@ export default function App() {
             <MotionPanel data={chart.motion} namer={namer} />
           )}
 
+          {chart.shadbala && !chart.shadbala.error && chart.shadbala.grahas && (
+            <ShadbalaPanel data={chart.shadbala} namer={namer} />
+          )}
+
           {chart.analysis && chart.analysis.yogas && !chart.analysis.yogas.error && (
-            <YogaPanel data={chart.analysis.yogas} />
+            <YogaPanel data={chart.analysis.yogas} namer={namer} />
           )}
 
           {chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (

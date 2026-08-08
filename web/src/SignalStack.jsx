@@ -21,6 +21,7 @@
  */
 
 import { useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const ORDER = [
   'vimsopaka', 'dignity', 'uccha_bala', 'baladi', 'jagradadi',
@@ -28,14 +29,14 @@ const ORDER = [
 ]
 
 const TITLE = {
-  vimsopaka: 'Viṁśopaka bala',
-  dignity: 'Dignity',
-  uccha_bala: 'Uccha bala',
-  baladi: 'Bālādi avasthā',
-  jagradadi: 'Jāgradādi avasthā',
-  functional: 'Functional nature',
-  shadbala: 'Ṣaḍbala',
-  ishta_kashta: 'Iṣṭa / Kaṣṭa phala',
+  vimsopaka: 'signalstack.title.vimsopaka',
+  dignity: 'signalstack.title.dignity',
+  uccha_bala: 'signalstack.title.uccha_bala',
+  baladi: 'signalstack.title.baladi',
+  jagradadi: 'signalstack.title.jagradadi',
+  functional: 'signalstack.title.functional',
+  shadbala: 'signalstack.title.shadbala',
+  ishta_kashta: 'signalstack.title.ishta_kashta',
 }
 
 /** Rows that carry a 0-1 proportion we can draw as a bar. Everything else is
@@ -51,9 +52,10 @@ const pretty = (v) =>
 
 function Flag({ text }) {
   const [open, setOpen] = useState(false)
+  const { t } = useLang()
   return (
     <>
-      <button type="button" className="sig-flag" title="The text does not settle this"
+      <button type="button" className="sig-flag" title={t('signalstack.flag.title')}
               aria-expanded={open} onClick={() => setOpen(!open)}>⚑</button>
       {open && <p className="sig-flag-body">{text}</p>}
     </>
@@ -62,6 +64,7 @@ function Flag({ text }) {
 
 function Row({ sig }) {
   const [open, setOpen] = useState(false)
+  const { t } = useLang()
   const frac = BAR[sig.name]?.(sig)
 
   if (!sig.available) {
@@ -69,7 +72,7 @@ function Row({ sig }) {
       <div className="sig-row unavailable">
         <div className="sig-head">
           <span className="sig-mark" aria-hidden="true">⊘</span>
-          <span className="sig-name">{TITLE[sig.name] ?? sig.name}</span>
+          <span className="sig-name">{TITLE[sig.name] ? t(TITLE[sig.name]) : sig.name}</span>
           <span className="sig-cite">{sig.citation}</span>
         </div>
         {/* The reason is the content of this row. It tells the reader exactly
@@ -89,11 +92,11 @@ function Row({ sig }) {
           </span>
         ) : <span className="sig-mark" aria-hidden="true">·</span>}
         <span className="sig-value">{pretty(sig.value)}</span>
-        <span className="sig-name">{TITLE[sig.name] ?? sig.name}</span>
+        <span className="sig-name">{TITLE[sig.name] ? t(TITLE[sig.name]) : sig.name}</span>
         <span className="sig-cite">{sig.citation}</span>
         {sig.detail && (
           <button type="button" className="sig-more" onClick={() => setOpen(!open)}
-                  aria-expanded={open} title="Show the working">
+                  aria-expanded={open} title={t('signalstack.more.title')}>
             {open ? '−' : '+'}
           </button>
         )}
@@ -105,8 +108,8 @@ function Row({ sig }) {
         // so the total is checkable rather than asserted.
         <table className="sig-working">
           <thead>
-            <tr><th>Varga</th><th>Relationship</th><th className="num">Swāṁśa</th>
-                <th className="num">Varga viśva</th><th className="num">Points</th></tr>
+            <tr><th>{t('signalstack.working.varga')}</th><th>{t('signalstack.working.relationship')}</th><th className="num">{t('signalstack.working.swamsa')}</th>
+                <th className="num">{t('signalstack.working.varga_viswa')}</th><th className="num">{t('signalstack.working.points')}</th></tr>
           </thead>
           <tbody>
             {sig.detail.rows.map((r) => (
@@ -125,6 +128,7 @@ function Row({ sig }) {
 }
 
 export default function SignalStack({ signals, namer, graha }) {
+  const { t } = useLang()
   if (!signals) return null
   const byName = Object.fromEntries(signals.map((s) => [s.name, s]))
   const ordered = ORDER.map((n) => byName[n]).filter(Boolean)
@@ -134,11 +138,7 @@ export default function SignalStack({ signals, namer, graha }) {
     <div className="signal-stack">
       <h4 className="sig-title">{graha ? namer.graha(graha) : ''}</h4>
       {[...ordered, ...extra].map((s) => <Row key={s.name} sig={s} />)}
-      <p className="sig-foot">
-        BPHS states these judgements separately and never says how to combine
-        them. Each row keeps its own scale and its own citation; there is no
-        single score here because the text authorises none.
-      </p>
+      <p className="sig-foot">{t('signalstack.foot')}</p>
     </div>
   )
 }

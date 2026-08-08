@@ -26,6 +26,7 @@
  */
 
 import { useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const SIZE = 520
 const C = SIZE / 2
@@ -78,11 +79,11 @@ const lonOf = (g) => (g.longitude != null
   : g.rasi * 30 + (g.degree || 0) + (g.minute || 0) / 60 + (g.second || 0) / 3600)
 
 const DIGNITY_WORD = {
-  exalted: 'exalted', debilitated: 'debilitated', moolatrikona: 'in mūlatrikoṇa',
-  own: 'in its own sign', friend: "in a friend's sign",
-  neutral: "in a neutral's sign", enemy: "in an enemy's sign",
+  exalted: 'sw.dword.exalted', debilitated: 'sw.dword.debilitated', moolatrikona: 'sw.dword.moolatrikona',
+  own: 'sw.dword.own', friend: 'sw.dword.friend',
+  neutral: 'sw.dword.neutral', enemy: 'sw.dword.enemy',
 }
-const dignityPhrase = (d) => (d ? ` — ${DIGNITY_WORD[d.state] ?? d.state}` : '')
+const dignityPhrase = (d, t) => (d ? ` — ${t(DIGNITY_WORD[d.state] ?? d.state)}` : '')
 
 // Dignity as a categorical STATE (BPHS ch.3 vv.49–55): seven distinct hues,
 // deliberately NOT a green→red strength ramp — BPHS never numbers dignity, so
@@ -97,9 +98,9 @@ const DIGNITY_COLOR = {
 // Legend follows BPHS's own listing (uccha → nīcha). friend/neutral/enemy are the
 // ch.3 v.55 NATURAL (permanent) relationship — friend-and-enemy resolves to neutral.
 const DIGNITY_LEGEND = [
-  ['exalted', 'exalted'], ['moolatrikona', 'mūlatrikoṇa'], ['own', 'own sign'],
-  ['friend', 'friend'], ['neutral', 'neutral'], ['enemy', 'enemy'],
-  ['debilitated', 'debilitated'],
+  ['exalted', 'sw.dig.exalted'], ['moolatrikona', 'sw.dig.moolatrikona'], ['own', 'sw.dig.own'],
+  ['friend', 'sw.dig.friend'], ['neutral', 'sw.dig.neutral'], ['enemy', 'sw.dig.enemy'],
+  ['debilitated', 'sw.dig.debilitated'],
 ]
 
 function Toggle({ on, set, children }) {
@@ -126,6 +127,7 @@ export default function SkyWheelChart({
   const [hoverT, setHoverT] = useState(null)
   const [pinT, setPinT] = useState(null)
   const markedT = pinT ?? hoverT
+  const { t } = useLang()
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
@@ -240,28 +242,28 @@ export default function SkyWheelChart({
   return (
     <div className="sw-wrap">
       <div className="sw-toggles">
-        <Toggle on={shade} set={setShade}>Horizon</Toggle>
-        <Toggle on={colors} set={setColors}>Graha colours</Toggle>
-        <Toggle on={naks} set={setNaks}>Nakṣatras</Toggle>
-        <Toggle on={padas} set={setPadas}>Pādas</Toggle>
-        <Toggle on={drishtiOn} set={setDrishtiOn}>Dṛṣṭi</Toggle>
-        <Toggle on={dashaOn} set={setDashaOn}>Daśā</Toggle>
-        <Toggle on={dignityOn} set={setDignityOn}>Dignity</Toggle>
-        <Toggle on={ucchaOn} set={setUcchaOn}>Uccha ▲ / nīca ▽</Toggle>
-        {setTransitOn && <Toggle on={transitOn} set={setTransitOn}>Transits ◦</Toggle>}
+        <Toggle on={shade} set={setShade}>{t('sw.toggle.horizon')}</Toggle>
+        <Toggle on={colors} set={setColors}>{t('sw.toggle.graha_colours')}</Toggle>
+        <Toggle on={naks} set={setNaks}>{t('sw.toggle.nakshatras')}</Toggle>
+        <Toggle on={padas} set={setPadas}>{t('sw.toggle.padas')}</Toggle>
+        <Toggle on={drishtiOn} set={setDrishtiOn}>{t('sw.toggle.drishti')}</Toggle>
+        <Toggle on={dashaOn} set={setDashaOn}>{t('sw.toggle.dasha')}</Toggle>
+        <Toggle on={dignityOn} set={setDignityOn}>{t('sw.toggle.dignity')}</Toggle>
+        <Toggle on={ucchaOn} set={setUcchaOn}>{t('sw.toggle.uccha_nica')}</Toggle>
+        {setTransitOn && <Toggle on={transitOn} set={setTransitOn}>{t('sw.toggle.transits')}</Toggle>}
       </div>
       {transitOn && isD1 && (
         <div className="sw-transit-bar">
           <label className="sw-tb-date">
-            Transits as of
+            {t('sw.transit.as_of')}
             <input type="date" value={transitDate || todayStr}
                    onChange={(e) => setTransitDate(e.target.value)} />
           </label>
           {transitDate && (
-            <button type="button" className="sw-tb-now" onClick={() => setTransitDate('')}>Now</button>
+            <button type="button" className="sw-tb-now" onClick={() => setTransitDate('')}>{t('sw.transit.now')}</button>
           )}
           <span className="sw-transit-status">
-            {transitBusy ? 'loading…'
+            {transitBusy ? t('sw.transit.loading')
               : transitErr ? `⚠ ${transitErr}`
               : transit && transit.transit_utc ? `${transit.grahas.length} grahas · ${transit.transit_utc}`
               : ''}
@@ -269,20 +271,20 @@ export default function SkyWheelChart({
         </div>
       )}
       {dignityOn && isD1 && (
-        <div className="sw-dig-legend" aria-label="Dignity state colour key">
+        <div className="sw-dig-legend" aria-label={t('sw.dig.aria')}>
           {DIGNITY_LEGEND.map(([k, label]) => (
             <span key={k} className="sw-dig-key">
-              <span className="sw-dig-sw" style={{ background: DIGNITY_COLOR[k] }} />{label}
+              <span className="sw-dig-sw" style={{ background: DIGNITY_COLOR[k] }} />{t(label)}
             </span>
           ))}
           <span className="sw-dig-note">
-            friend / neutral / enemy — natural (permanent) relations · nodes carry no dignity
+            {t('sw.dig.note')}
           </span>
         </div>
       )}
       <svg viewBox={`${C - HALF} ${C - HALF} ${2 * HALF} ${2 * HALF}`}
            className="sky-wheel" role="img"
-           aria-label="Sky wheel — the sky around the native at birth">
+           aria-label={t('sw.aria.title')}>
         {/* above / below the horizon */}
         {shade && (
           <>
@@ -398,7 +400,7 @@ export default function SkyWheelChart({
           return (
             <line key={`dr${s}`} x1={ax} y1={ay} x2={bx} y2={by} className="sw-drishti"
                   style={{ strokeOpacity: 0.22 + v * 0.6, strokeWidth: 0.8 + v * 1.7, ...(col ? { stroke: col } : {}) }}>
-              <title>{`${namer.grahaKey(active)} aspects ${namer.rasi(Number(s))} — ${{ 0.25: '¼', 0.5: '½', 0.75: '¾', 1: 'full' }[v] ?? v}`}</title>
+              <title>{`${namer.grahaKey(active)} aspects ${namer.rasi(Number(s))} — ${{ 0.25: '¼', 0.5: '½', 0.75: '¾', 1: t('sw.drishti.full') }[v] ?? v}`}</title>
             </line>
           )
         })}
@@ -413,8 +415,8 @@ export default function SkyWheelChart({
           return (
             <g key={`uc${i}`} className={`sw-uccha ${isU ? 'up' : 'dn'}${near ? ' near' : ''}`}>
               <title>
-                {`${namer.grahaKey(p.key)} — ${isU ? 'exaltation (uccha)' : 'debilitation (nīca)'} · ${namer.rasi(p.sign)} ${p.deg}°`}
-                {near ? ' — sits on it' : ''}
+                {`${namer.grahaKey(p.key)} — ${isU ? t('sw.tip.exaltation') : t('sw.tip.debilitation')} · ${namer.rasi(p.sign)} ${p.deg}°`}
+                {near ? t('sw.tip.sits_on_it') : ''}
               </title>
               <polygon points={radialTri(p.lon, R_SIGN_IN, 6, 3.1, isU)}
                        style={col ? (isU ? { fill: col } : { stroke: col }) : undefined} />
@@ -448,8 +450,8 @@ export default function SkyWheelChart({
                           style={{ strokeOpacity: 0.25 + a.strength * 0.6, strokeWidth: 0.7 + a.strength * 1.9, ...(col ? { stroke: col } : {}) }}>
                       <title>
                         {`Transit ${namer.grahaKey(hoverTransit.t.key)}'s ${ordinal(a.house)} aspect`}
-                        {a.special ? ' (special, full)' : ''}
-                        {` on ${a.target === 'lagna' ? 'the lagna' : namer.grahaKey(a.target)}`}
+                        {a.special ? t('sw.tip.special_full') : ''}
+                        {` on ${a.target === 'lagna' ? t('sw.tip.the_lagna') : namer.grahaKey(a.target)}`}
                       </title>
                     </line>
                   )
@@ -470,8 +472,8 @@ export default function SkyWheelChart({
               return (
                 <g key={`tc${c.key}`} className="sw-tconj" style={{ pointerEvents: 'none' }}>
                   <title>
-                    {`Transit ${namer.grahaKey(hoverTransit.t.key)} conjoins ${isLagna ? 'the lagna' : namer.grahaKey(c.key)}`}
-                    {c.arc != null ? ` — ${Math.abs(Math.round(c.arc))}° apart` : ' (same sign)'}
+                    {`Transit ${namer.grahaKey(hoverTransit.t.key)} conjoins ${isLagna ? t('sw.tip.the_lagna') : namer.grahaKey(c.key)}`}
+                    {c.arc != null ? ` — ${Math.abs(Math.round(c.arc))}° apart` : t('sw.tip.same_sign')}
                   </title>
                   <line x1={ax} y1={ay} x2={bx} y2={by} className="sw-tconj-line"
                         style={col ? { stroke: col } : undefined} />
@@ -499,8 +501,8 @@ export default function SkyWheelChart({
                         style={col ? { stroke: col } : undefined}>
                     <title>
                       {`Transit ${namer.grahaKey(hoverTransit.t.key)} — ${Math.round(Math.abs(dist))}° from its natal degree (${namer.rasi(Math.floor(nr / 30))} ${Math.floor(nr % 30)}°)`}
-                      {onIt ? ' — on it now' : ''}
-                      {'\nGeometry only: a graha back on its own natal degree is the Western "return" frame, not a BPHS transit rule — Jyotiṣa reads Śani by its house from the natal Moon.'}
+                      {onIt ? t('sw.tip.on_it_now') : ''}
+                      {'\n' + t('sw.tip.return_geometry')}
                     </title>
                   </path>
                   <circle cx={nx} cy={ny} r="4.8" className="sw-return-natal"
@@ -558,7 +560,7 @@ export default function SkyWheelChart({
                onClick={() => onPin?.(g.key)}>
               <title>
                 {`${g.name_en} — ${namer.rasi(g.rasi)} ${g.degree}°${pad2(g.minute)}'${pad2(g.second)}"`}
-                {g.retrograde ? ' (retrograde)' : ''}{dignityPhrase(g.dignity)}
+                {g.retrograde ? t('sw.tip.retrograde') : ''}{dignityPhrase(g.dignity, t)}
                 {isCombust ? ` · combust (${combustSep}° from the Sun)` : ''}
               </title>
               <line x1={px} y1={py} x2={C} y2={C} className="sw-ray" style={col ? { stroke: col } : undefined} />
@@ -588,7 +590,7 @@ export default function SkyWheelChart({
           const lbl = md && ad ? 'MD·AD' : md ? 'MD' : 'AD'
           return (
             <g key={`dl${g.key}`} className={`sw-dasha-mark${md ? ' md' : ' ad'}`} style={{ pointerEvents: 'none' }}>
-              <title>{md ? 'running mahādaśā lord' : 'running antardaśā lord'}</title>
+              <title>{md ? t('sw.dasha.md_lord') : t('sw.dasha.ad_lord')}</title>
               <circle cx={px} cy={py} r="18" className="sw-dasha-ring" />
               <text x={px} y={py - 21} className="sw-dasha-lbl" textAnchor="middle">{lbl}</text>
             </g>
@@ -597,20 +599,20 @@ export default function SkyWheelChart({
 
         {/* the native, at the centre */}
         <circle cx={C} cy={C} r="4" className="sw-center" />
-        <text x={C} y={C + 20} className="sw-center-label" textAnchor="middle">the native</text>
+        <text x={C} y={C + 20} className="sw-center-label" textAnchor="middle">{t('sw.center.native')}</text>
 
         {!isD1 && (
-          <text x={C} y={C - 20} className="sw-note" textAnchor="middle">real-sky view — shows the D1 rāśi</text>
+          <text x={C} y={C - 20} className="sw-note" textAnchor="middle">{t('sw.note.real_sky')}</text>
         )}
       </svg>
       {dashaOn && isD1 && runningDasha && (
         <div className="sw-dasha-now" role="note">
-          <span className="sw-dn-head">Running daśā · ends</span>
+          <span className="sw-dn-head">{t('sw.dn.head')}</span>
           <div className="sw-dn-rows">
             {runningDasha.levels.map((l) => (
               <span key={l.code} className="sw-dn-row">
                 <span className="sw-dn-code" title={
-                  l.code === 'MD' ? 'mahādaśā' : l.code === 'AD' ? 'antardaśā' : 'pratyantardaśā'
+                  l.code === 'MD' ? t('sw.dn.title.md') : l.code === 'AD' ? t('sw.dn.title.ad') : t('sw.dn.title.pd')
                 }>{l.code}</span>
                 <strong className="sw-dn-lord">{namer.grahaKey(l.lord)}</strong>
                 <span className="sw-dn-rem" title={`${l.remaining} left`}>ends {l.ends}</span>
@@ -618,8 +620,7 @@ export default function SkyWheelChart({
             ))}
           </div>
           <span className="sw-dn-note">
-            A daśā is a span of time, not a place — the rings mark where its lords
-            sit; this is when each period ends (hover for the time left).
+            {t('sw.dn.note')}
           </span>
         </div>
       )}

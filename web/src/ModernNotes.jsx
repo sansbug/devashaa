@@ -8,19 +8,22 @@
  * same tier.
  */
 
+import { useLang } from './LangContext.jsx'
+
 const CB = {
-  yes: ['trigger detectable', 'The structural condition is cleanly detectable.'],
-  partly: ['trigger approximate', 'Needs an affliction / strength judgment the app can only approximate.'],
-  no: ['method / interpretive', 'Method guidance or interpretive — not a structural flag the app computes.'],
+  yes: ['modernnotes.compute.yes.label', 'modernnotes.compute.yes.hint'],
+  partly: ['modernnotes.compute.partly.label', 'modernnotes.compute.partly.hint'],
+  no: ['modernnotes.compute.no.label', 'modernnotes.compute.no.hint'],
 }
 
 function Pointer({ p }) {
+  const { t } = useLang()
   const [label, hint] = CB[p.computable] ?? [p.computable, '']
   return (
     <li>
       <span className="nk-mod-gist"><strong>{p.title}.</strong> {p.gist}</span>
       <span className="nk-mod-meta">
-        <span className={`src compute compute-${p.computable}`} title={hint}>{label}</span>
+        <span className={`src compute compute-${p.computable}`} title={t(hint)}>{t(label)}</span>
         <span className="nk-mod-page" title={p.cite}>p.{p.page}</span>
       </span>
     </li>
@@ -28,6 +31,7 @@ function Pointer({ p }) {
 }
 
 export default function ModernNotes({ data }) {
+  const { t } = useLang()
   if (!data) return null
   const g = data.gajakesari
   const al = data.astrology_lessons
@@ -49,8 +53,8 @@ export default function ModernNotes({ data }) {
             classical tables already in the app's BPHS core, listed only so a
             reader sees what was deliberately NOT re-served from this book. */}
         <div className="mod-chips">
-          {al.traditional_tables.items.map((t) => (
-            <span key={t} className="mod-chip trad" title="already in the app's BPHS core — cross-check only">{t}</span>
+          {al.traditional_tables.items.map((tbl) => (
+            <span key={tbl} className="mod-chip trad" title={t('modernnotes.chip.tradTitle')}>{tbl}</span>
           ))}
         </div>
         <p className="rc-note">{al.modern_pointers.note}</p>

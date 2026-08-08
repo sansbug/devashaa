@@ -30,13 +30,15 @@
  */
 
 import { useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 /** Written out, never as ¼ ½ ¾. Vulgar-fraction glyphs draw their numerals at
  *  roughly half digit height, so at this size ¼ and ¾ differ only in a ~3.5px
  *  mark — the one part a reader must actually distinguish. */
-const FRACTION = { 0.25: '1/4', 0.5: '1/2', 0.75: '3/4', 1: 'full' }
-const ORDINAL = ['', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th',
-                 '8th', '9th', '10th', '11th', '12th']
+const FRACTION = { 0.25: '1/4', 0.5: '1/2', 0.75: '3/4', 1: 'drishti.fraction.full' }
+const ORDINAL = ['', 'ordinal.1st', 'ordinal.2nd', 'ordinal.3rd', 'ordinal.4th',
+                 'ordinal.5th', 'ordinal.6th', 'ordinal.7th', 'ordinal.8th',
+                 'ordinal.9th', 'ordinal.10th', 'ordinal.11th', 'ordinal.12th']
 
 /** Special full aspects, for the explanatory second line. ch.26 vv.4-5. */
 const SPECIAL = {
@@ -65,27 +67,29 @@ function Meter({ value }) {
 
 function Flag({ text }) {
   const [open, setOpen] = useState(false)
+  const { t } = useLang()
   return (
     <>
       <button type="button" className="sig-flag" aria-expanded={open}
-              title="The text does not settle this" onClick={() => setOpen(!open)}>⚑</button>
+              title={t('drishti.flag.title')} onClick={() => setOpen(!open)}>⚑</button>
       {open && <p className="sig-flag-body">{text}</p>}
     </>
   )
 }
 
 function Row({ count, countLabel, value, target, extra, onHoverSign, sign }) {
+  const { t } = useLang()
   return (
     <div className="dr-row"
          onPointerEnter={() => onHoverSign?.(sign)}
          onPointerLeave={() => onHoverSign?.(null)}>
-      <span className="dr-count">{countLabel ?? ORDINAL[count]}</span>
+      <span className="dr-count">{countLabel ?? t(ORDINAL[count])}</span>
       <Meter value={value} />
       <span className="dr-target">
         {target}
         {extra && <span className="dr-extra"> {extra}</span>}
       </span>
-      <span className="dr-frac">{FRACTION[value] ?? value}</span>
+      <span className="dr-frac">{t(FRACTION[value] ?? value)}</span>
     </div>
   )
 }
@@ -93,13 +97,14 @@ function Row({ count, countLabel, value, target, extra, onHoverSign, sign }) {
 export default function DrishtiLedger({
   drishti, grahas, namer, subject, onPickSubject, onHoverSign, varga,
 }) {
+  const { t } = useLang()
   // The engine counts from the sign a graha actually stands in. A varga sign is
   // derived, so there is no aspect "from D9 Kanyā" in Parāśara — the panel
   // refuses rather than counting from a sign the graha does not occupy.
   if (varga !== 'D1') {
     return (
       <div className="drishti-ledger">
-        <h4 className="sig-title">Dṛṣṭi</h4>
+        <h4 className="sig-title">{t('drishti.title')}</h4>
         <div className="sig-row unavailable">
           <div className="sig-head">
             <span className="sig-mark" aria-hidden="true">⊘</span>
@@ -150,7 +155,7 @@ export default function DrishtiLedger({
 
       {/* ---------------- CASTS — ch.26, graded ---------------- */}
       <h4 className="sig-title">
-        Casts <span className="sig-cite">{g.citation}</span>
+        {t('drishti.casts.title')} <span className="sig-cite">{g.citation}</span>
       </h4>
 
       {isNode ? (
@@ -161,12 +166,7 @@ export default function DrishtiLedger({
             <span className="sig-mark" aria-hidden="true">⊘</span>
             <span className="sig-name">No graha dṛṣṭi for {subjName}</span>
           </div>
-          <p className="sig-reason">
-            Ch.26 never names Rāhu or Ketu among the aspecting grahas. Their
-            graha dṛṣṭi rests on Santhanam’s note, not on the mūla, so it is not
-            computed here. What aspects <em>them</em> is not in doubt and is
-            listed below.
-          </p>
+          <p className="sig-reason">{t('drishti.casts.nodeReason')}</p>
         </div>
       ) : (
         <>
@@ -178,7 +178,7 @@ export default function DrishtiLedger({
                 // The one place the asymmetry is visible on a single line:
                 // what that occupant sends back to the subject.
                 const back = g.casts[o.key]?.grahas?.[subject]
-                return `${namer.graha(o)}${back ? ` (returns ${FRACTION[back]})` : ''}`
+                return `${namer.graha(o)}${back ? ` (returns ${t(FRACTION[back])})` : ''}`
               })
               return (
                 <Row key={s} sign={s} count={houseDistance(subjSign, s)} value={v}
@@ -190,7 +190,7 @@ export default function DrishtiLedger({
           {SPECIAL[subject] && (
             <p className="dr-note">
               {SPECIAL_WORD[subject]}’s special aspect — full on the{' '}
-              {SPECIAL[subject].map((h) => ORDINAL[h]).join(' and the ')}, where
+              {SPECIAL[subject].map((h) => t(ORDINAL[h])).join(' and the ')}, where
               the general rule would give less.
             </p>
           )}
@@ -198,7 +198,7 @@ export default function DrishtiLedger({
       )}
 
       {/* ---------------- RECEIVED ---------------- */}
-      <h4 className="sig-title">Received</h4>
+      <h4 className="sig-title">{t('drishti.received.title')}</h4>
       {Object.keys(received).length === 0 ? (
         <p className="dr-note">No graha aspects {namer.rasi(subjSign)} in this chart.</p>
       ) : (
@@ -210,24 +210,20 @@ export default function DrishtiLedger({
           const h = from === undefined ? null : houseDistance(from, subjSign)
           return (
             <Row key={k} sign={from} value={v}
-                 countLabel={h ? `${namer.grahaKey(k)}’s ${ORDINAL[h]}` : namer.grahaKey(k)}
+                 countLabel={h ? `${namer.grahaKey(k)}’s ${t(ORDINAL[h])}` : namer.grahaKey(k)}
                  target={`from ${namer.rasi(from)}`}
                  onHoverSign={onHoverSign} />
           )
         })
       )}
-      <p className="dr-note">
-        Asymmetric. The 3rd and the 8th are one-way. The 4th and the 10th are
-        mutual but unequal — a graha’s 4th is three quarters and what comes back
-        is a quarter. Only the 5th, 9th and 7th return what they send.
-      </p>
+      <p className="dr-note">{t('drishti.received.asymNote')}</p>
 
       {/* ---------------- RĀŚI DṚṢṬI — ch.8, UNGRADED ----------------
           A different element type on purpose. No count, no meter, no fraction:
           there is nothing here to grade, and rendering one would be an import
           from the chapter above. */}
       <h4 className="sig-title">
-        Rāśi dṛṣṭi <span className="sig-cite">{r.citation}</span>
+        {t('drishti.rasi.title')} <span className="sig-cite">{r.citation}</span>
       </h4>
       <p className="dr-chips-line">
         <strong>{namer.rasi(subjSign)}</strong> ⟷{' '}
@@ -238,19 +234,12 @@ export default function DrishtiLedger({
             {namer.rasi(s)}
           </span>
         ))}
-        <span className="dr-mutual">always mutual</span>
+        <span className="dr-mutual">{t('drishti.rasi.alwaysMutual')}</span>
       </p>
       <p className="dr-note">{r.ungraded_note}</p>
       {r.notes?.map((n, i) => <Flag key={i} text={n} />)}
 
-      <p className="dr-note dr-legend">
-        The meter shows the four slabs BPHS gives — a quarter, a half, three
-        quarters, full. Both doctrines here are counted <strong>from the
-        sign</strong>, not from the degree: the ruler in each cell measures
-        longitude, and no number on it is used here. Ch.26’s finer
-        degree-counted layer (vv.6-12, in virūpas) is a different instrument and
-        is not shown on this panel.
-      </p>
+      <p className="dr-note dr-legend">{t('drishti.legend')}</p>
     </div>
   )
 }

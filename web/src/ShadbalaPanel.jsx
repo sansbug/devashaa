@@ -10,16 +10,18 @@
  * modern secular mean longitudes (the "Seeghrocha" the śāstra never tabulated),
  * and Ayana follows Raman's β=0 / 24° kranti, not the true declination.
  */
+import Cite from './Cite.jsx'
+import { useLang } from './LangContext.jsx'
 const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
   venus: 'Ve', saturn: 'Sa' }
 
 // The five always-positive balas, in stacking order, + the signed Dṛk.
 const PARTS = [
-  { key: 'sthana', label: 'Sthāna', en: 'positional' },
-  { key: 'dik', label: 'Dik', en: 'directional' },
-  { key: 'kala', label: 'Kāla', en: 'temporal' },
-  { key: 'cheshta', label: 'Cheṣṭā', en: 'motional' },
-  { key: 'naisargika', label: 'Naisargika', en: 'natural' },
+  { key: 'sthana', label: 'Sthāna', en: 'shadbala.gloss.positional' },
+  { key: 'dik', label: 'Dik', en: 'shadbala.gloss.directional' },
+  { key: 'kala', label: 'Kāla', en: 'shadbala.gloss.temporal' },
+  { key: 'cheshta', label: 'Cheṣṭā', en: 'shadbala.gloss.motional' },
+  { key: 'naisargika', label: 'Naisargika', en: 'shadbala.gloss.natural' },
 ]
 const KALA_PARTS = ['nathonnatha', 'paksha', 'thribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana', 'yuddha']
 const STHANA_PARTS = ['ochcha', 'saptavargaja', 'ojayugma', 'kendra', 'drekkana']
@@ -33,6 +35,7 @@ const RATIO = (x) => (Math.floor(x * 100) / 100).toFixed(2)
     Ṣaḍbala Piṇḍa, with a marker at its minimum requirement and a verdict. Shows
     not just how strong a graha is, but which bala makes it so. */
 function StrengthBars({ grahas, namer }) {
+  const { t } = useLang()
   const rows = Object.entries(grahas)
     .map(([key, v]) => ({ key, ...v }))
     .sort((a, b) => b.ratio - a.ratio)     // strongest first, as Raman ranks them
@@ -46,7 +49,7 @@ function StrengthBars({ grahas, namer }) {
   return (
     <div className="sb-bars-wrap">
       <svg viewBox={`0 0 ${W} ${H}`} className="sb-bars" role="img"
-           aria-label="Each graha's six-fold strength, composed, against its minimum requirement">
+           aria-label={t('shadbala.bars.aria')}>
         {rows.map((v, i) => {
           const y = top + i * rowH
           const gross = grossOf(v)
@@ -62,7 +65,7 @@ function StrengthBars({ grahas, namer }) {
                 const w = ((v[p.key] || 0) / maxEnd) * plotW
                 const seg = <rect key={p.key} className={`sb-seg sb-${p.key}`} x={cx} y={y + 5}
                                   width={Math.max(0, w)} height={rowH - 12} rx="1">
-                  <title>{`${namer.grahaKey(v.key)} · ${p.label} (${p.en}): ${v1(v[p.key])} virūpa`}</title>
+                  <title>{`${namer.grahaKey(v.key)} · ${p.label} (${t(p.en)}): ${v1(v[p.key])} virūpa`}</title>
                 </rect>
                 cx += w
                 return seg
@@ -71,12 +74,12 @@ function StrengthBars({ grahas, namer }) {
               {v.drik >= 0 ? (
                 <rect className="sb-seg sb-drik-pos" x={cx} y={y + 5}
                       width={(v.drik / maxEnd) * plotW} height={rowH - 12} rx="1">
-                  <title>{`Dṛk (aspect): +${v1(v.drik)} virūpa`}</title>
+                  <title>{`Dṛk (${t('shadbala.gloss.aspect')}): +${v1(v.drik)} virūpa`}</title>
                 </rect>
               ) : (
                 <rect className="sb-seg sb-drik-neg" x={x(net)} y={y + 5}
                       width={x(gross) - x(net)} height={rowH - 12}>
-                  <title>{`Dṛk (aspect): ${v1(v.drik)} virūpa`}</title>
+                  <title>{`Dṛk (${t('shadbala.gloss.aspect')}): ${v1(v.drik)} virūpa`}</title>
                 </rect>
               )}
               {/* minimum-required marker */}
@@ -98,27 +101,22 @@ function StrengthBars({ grahas, namer }) {
           <span key={p.key} className="sb-leg"><i className={`sb-sw sb-${p.key}`} />{p.label}</span>
         ))}
         <span className="sb-leg"><i className="sb-sw sb-drik-pos" />Dṛk ±</span>
-        <span className="sb-leg"><i className="sb-sw sb-minmark" />min. required</span>
+        <span className="sb-leg"><i className="sb-sw sb-minmark" />{t('shadbala.legend.minRequired')}</span>
       </div>
     </div>
   )
 }
 
 export default function ShadbalaPanel({ data, namer }) {
+  const { t } = useLang()
   if (!data || data.error || !data.grahas) return null
   const { grahas, kala_components: kc, sthana_components: sc, method } = data
   const order = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
   return (
-    <section className="table-panel shadbala-panel" aria-label="Ṣaḍbala — six-fold strength">
-      <h3>Ṣaḍbala — the six-fold strength</h3>
-      <p className="rc-note">
-        Parāśara's six strengths — positional, directional, temporal, motional,
-        natural and aspectual — after <strong>B. V. Raman</strong>. Every formula is
-        validated to the virūpa (60 virūpa = 1 rūpa) against Raman's own worked
-        chart. This is a cited numeric method, so — unlike the signal stack — a
-        per-graha total and a strong/weak verdict are shown.
-      </p>
+    <section className="table-panel shadbala-panel" aria-label={t('shadbala.aria')}>
+      <h3>{t('shadbala.title')}</h3>
+      <p className="rc-note">{t('shadbala.note')}</p>
 
       <StrengthBars grahas={grahas} namer={namer} />
 
@@ -126,16 +124,16 @@ export default function ShadbalaPanel({ data, namer }) {
         <table className="sb-table">
           <thead>
             <tr>
-              <th>Graha</th>
-              <th className="num" title="positional">Sthāna</th>
-              <th className="num" title="directional">Dik</th>
-              <th className="num" title="temporal">Kāla</th>
-              <th className="num" title="motional">Cheṣṭā</th>
-              <th className="num" title="natural">Naisargika</th>
-              <th className="num" title="aspectual (signed)">Dṛk</th>
-              <th className="num">Total</th>
-              <th className="num" title="Ṣaḍbala Piṇḍa in rūpa">rūpa</th>
-              <th>vs min.</th>
+              <th>{t('shadbala.th.graha')}</th>
+              <th className="num" title={t('shadbala.gloss.positional')}>Sthāna</th>
+              <th className="num" title={t('shadbala.gloss.directional')}>Dik</th>
+              <th className="num" title={t('shadbala.gloss.temporal')}>Kāla</th>
+              <th className="num" title={t('shadbala.gloss.motional')}>Cheṣṭā</th>
+              <th className="num" title={t('shadbala.gloss.natural')}>Naisargika</th>
+              <th className="num" title={t('shadbala.gloss.aspectualSigned')}>Dṛk</th>
+              <th className="num">{t('shadbala.th.total')}</th>
+              <th className="num" title={t('shadbala.th.rupaTitle')}>rūpa</th>
+              <th>{t('shadbala.th.vsmin')}</th>
             </tr>
           </thead>
           <tbody>
@@ -159,7 +157,7 @@ export default function ShadbalaPanel({ data, namer }) {
                   <td>
                     <span className={`sb-badge ${v.strong ? 'ok' : 'no'}`}
                           title={`${RUPA(v.total_rupa)} rūpa vs minimum ${v.min_required_rupa} · ratio ${v.ratio.toFixed(3)}`}>
-                      {v.strong ? 'strong' : 'weak'} · {RATIO(v.ratio)}×
+                      {v.strong ? t('shadbala.badge.strong') : t('shadbala.badge.weak')} · {RATIO(v.ratio)}×
                     </span>
                   </td>
                 </tr>
@@ -169,11 +167,10 @@ export default function ShadbalaPanel({ data, namer }) {
         </table>
       </div>
       <p className="sb-foot">
-        Cheṣṭā is blank for the Sun and Moon (their motional strength rides in Ayana
-        and Pakṣa). Hover Sthāna or Kāla for the sub-components. Two method notes:{' '}
-        <span className="src" title={method?.cheshta_note}>Cheṣṭā mean-elements</span>{' '}
-        and <span className="src" title={method?.ayana_note}>Ayana kranti</span>{' '}
-        follow modern astronomy / Raman's β=0 table respectively — stated, not hidden.
+        {t('shadbala.foot.lead')}{' '}
+        <Cite className="src" detail={method?.cheshta_note}>{t('shadbala.foot.cite1')}</Cite>{' '}
+        {t('shadbala.foot.and')} <Cite className="src" detail={method?.ayana_note}>{t('shadbala.foot.cite2')}</Cite>{' '}
+        {t('shadbala.foot.tail')}
       </p>
     </section>
   )

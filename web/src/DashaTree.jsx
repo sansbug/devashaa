@@ -7,6 +7,7 @@
  */
 import { useState, useEffect } from 'react'
 import DashaTimeline from './DashaTimeline.jsx'
+import { useLang } from './LangContext.jsx'
 import { API } from './config.js'
 
 function fmtYears(y, yearDays) {
@@ -21,6 +22,7 @@ function fmtYears(y, yearDays) {
 
 function DashaNode({ node, nameOf, yearDays }) {
   const [open, setOpen] = useState(node.is_current)
+  const { t } = useLang()
   const hasSub = node.sub && node.sub.length > 0
   const label = nameOf(node.lord) || node.lord_name
 
@@ -36,7 +38,7 @@ function DashaNode({ node, nameOf, yearDays }) {
         <span className="d-lord">{label}</span>
         <span className="d-dates">{node.start} → {node.end}</span>
         <span className="d-dur">{fmtYears(node.years, yearDays)}</span>
-        {node.is_current && <span className="d-now">now</span>}
+        {node.is_current && <span className="d-now">{t('dt.node.now')}</span>}
       </button>
       {open && hasSub && (
         <div className="d-children">
@@ -55,23 +57,15 @@ function DashaNode({ node, nameOf, yearDays }) {
  * any placement it does not name, and it is usually the commonest outcome.
  */
 function DashaLegend() {
+  const { t } = useLang()
   return (
     <p className="dt-legend">
-      <span className="dt-key"><span className="dt-swatch v-favourable" /> favourable</span>
-      <span className="dt-key"><span className="dt-swatch v-adverse" /> adverse</span>
-      <span className="dt-key"><span className="dt-swatch v-contested" /> both stated</span>
-      <span className="dt-key"><span className="dt-swatch v-not_stated" /> no stated verdict</span>
+      <span className="dt-key"><span className="dt-swatch v-favourable" /> {t('dt.legend.favourable')}</span>
+      <span className="dt-key"><span className="dt-swatch v-adverse" /> {t('dt.legend.adverse')}</span>
+      <span className="dt-key"><span className="dt-swatch v-contested" /> {t('dt.legend.both_stated')}</span>
+      <span className="dt-key"><span className="dt-swatch v-not_stated" /> {t('dt.legend.no_stated_verdict')}</span>
       <br />
-      Bars apply <strong>BPHS Vol II ch.47 vv.5-6</strong>, which names a daśā
-      favourable if its lord stands in the Ascendant, in exaltation, in its own
-      sign or a friend’s, and unfavourable in the 6th, 8th or 12th, in
-      debilitation or an enemy’s sign. It is <em>not</em> a heatmap: the verse
-      gives two branches and no scale, no middle band and no rule for when both
-      fire — so “both stated” is left unarbitrated and “no stated verdict” means
-      the text is silent, which is not the same as neutral. The verdict is read
-      from the lord’s natal placement and applies to every band that lord rules.
-      Pratyantar bars repeat the mahā lord’s verdict only where that lord is the
-      period lord; ch.61’s pratyantar prose is not used.
+      {t('dt.legend.prose')}
     </p>
   )
 }
@@ -88,6 +82,7 @@ export default function DashaTree({
   const [data, setData] = useState(dasha)   // {default_year_days, variants}
   const [variant, setVariant] = useState('360')
   const [loading, setLoading] = useState(false)
+  const { t } = useLang()
 
   useEffect(() => {
     if (!antarMaha || !positions || lagna === undefined || lagna === null) return
@@ -123,7 +118,7 @@ export default function DashaTree({
     })
       .then((r) => r.json())
       .then((d) => { if (!cancelled) setData(d) })
-      .catch(() => { if (!cancelled) setData({ error: 'Daśā fetch failed' }) })
+      .catch(() => { if (!cancelled) setData({ error: t('dt.error.fetch_failed') }) })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
   }, [systemKey, dasha, chartMeta])
@@ -148,7 +143,7 @@ export default function DashaTree({
   return (
     <div className="dasha">
       <div className="dasha-controls">
-        <span className="d-label">System</span>
+        <span className="d-label">{t('dt.controls.system')}</span>
         <select
           className="dasha-select"
           value={systemKey}
@@ -160,14 +155,14 @@ export default function DashaTree({
             </option>
           ))}
         </select>
-        {loading && <span className="d-loading">loading…</span>}
+        {loading && <span className="d-loading">{t('dt.loading')}</span>}
 
-        <span className="d-label" style={{ marginLeft: 'auto' }}>Year</span>
+        <span className="d-label" style={{ marginLeft: 'auto' }}>{t('dt.controls.year')}</span>
         <button
           type="button"
           className={variant === '360' ? 'on' : ''}
           onClick={() => setVariant('360')}
-          title="360-day sāvana year — matches BPHS Ch.46's worked example"
+          title={t('dt.title.360')}
         >
           360 · BPHS
         </button>
@@ -175,23 +170,23 @@ export default function DashaTree({
           type="button"
           className={variant === '365.25' ? 'on' : ''}
           onClick={() => setVariant('365.25')}
-          title="365.25-day Julian year — matches Jagannātha Hora & most modern software"
+          title={t('dt.title.365')}
         >
-          365.25 · modern
+          {t('dt.button.365_modern')}
         </button>
       </div>
 
       <div className="dasha-head">
         <div>
-          <span className="d-label">System</span>
+          <span className="d-label">{t('dt.head.system')}</span>
           {tree.system} · {tree.total_years}-year cycle
         </div>
         <div>
-          <span className="d-label">Balance at birth</span>
+          <span className="d-label">{t('dt.head.balance_at_birth')}</span>
           {nameOf(tree.starting_lord) || tree.starting_lord_name} — {tree.balance_at_birth}
         </div>
         <div className="running">
-          <span className="d-label">Running now</span>
+          <span className="d-label">{t('dt.head.running_now')}</span>
           {chain.length
             ? chain.map((c, i) => (
                 <span key={i}>
@@ -204,7 +199,7 @@ export default function DashaTree({
       </div>
       {tree.applicability && (
         <p className="dasha-applies">
-          <strong>When applied:</strong> {tree.applicability}
+          <strong>{t('dt.applies.label')}</strong> {tree.applicability}
         </p>
       )}
       <DashaTimeline

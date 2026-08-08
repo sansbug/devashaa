@@ -1111,6 +1111,22 @@ footer a:hover { color: var(--accent); }
 .src-note, .src-table { border-style: dashed; }
 .src-absent, .src-ocr_lost { opacity: .75; }
 
+/* Cite (P1): a .src chip that carries source detail becomes a tappable popover
+   button — works on touch and keyboard, not just hover. Inherits the chip look. */
+.cite-btn {
+  background: none; font: inherit; line-height: inherit; cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.cite-btn:hover, .cite-btn.open { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.cite-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cite-pop {
+  position: fixed; display: block; z-index: 60; max-width: 280px;
+  background: var(--panel); border: 1px solid var(--accent);
+  border-radius: 7px; padding: .5rem .6rem;
+  font-size: .74rem; line-height: 1.5; letter-spacing: normal; text-transform: none;
+  color: var(--ink); white-space: pre-line; box-shadow: 0 6px 22px rgba(0,0,0,.35);
+}
+
 /* Nakṣatra attribute confidence. Mirrors the source badges: how sure we are is
    itself information, so a corroborated cell must read differently from an
    uncertain or absent one. Never red for absent — a gap is content, not error. */

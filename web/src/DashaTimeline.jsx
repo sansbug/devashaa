@@ -30,6 +30,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const DAY = 86400000
 
@@ -54,6 +55,7 @@ function fmtDate(t) {
  * the whole life — which is what makes a ten-week pratyantar readable.
  */
 function Rail({ nodes, level, namer, verdictOf, conditionsOf, now, selected, onSelect, label }) {
+  const { t } = useLang()
   if (!nodes?.length) return null
   const t0 = parse(nodes[0].start)
   const t1 = parse(nodes[nodes.length - 1].end)
@@ -91,18 +93,18 @@ function Rail({ nodes, level, namer, verdictOf, conditionsOf, now, selected, onS
               title={`${namer.grahaKey(n.lord)} — ${fmtDate(a)} → ${fmtDate(b)} (${span(b - a)})`
                      + (v ? `\n\n${v.label.toUpperCase()} — ${v.citation}`
                           + (v.favourable?.length
-                              ? `\nfavourable: ${v.favourable.map((c) => c.condition).join('; ')}`
+                              ? `\n${t('dtl.tip.favourable')} ${v.favourable.map((c) => c.condition).join('; ')}`
                               : '')
                           + (v.adverse?.length
-                              ? `\nadverse: ${v.adverse.map((c) => c.condition).join('; ')}`
+                              ? `\n${t('dtl.tip.adverse')} ${v.adverse.map((c) => c.condition).join('; ')}`
                               : '')
                           + (v.silent
-                              ? '\nNeither branch of the verse names this placement.'
+                              ? '\n' + t('dtl.tip.silent')
                               : '')
                         : '')
                      + (cond
-                        ? `\n\n${cond.chapter} — ${cond.counts.fired} of ${cond.counts.total}`
-                          + ' conditions fire'
+                        ? `\n\n${cond.chapter} — ${cond.counts.fired} ${t('dtl.tip.of')} ${cond.counts.total}`
+                          + ' ' + t('dtl.tip.conditions_fire')
                           + (cond.counts.unavailable
                               ? `, ${cond.counts.unavailable} cannot be evaluated`
                               : '')
@@ -131,7 +133,7 @@ function Rail({ nodes, level, namer, verdictOf, conditionsOf, now, selected, onS
             same instant down through the zoom levels. */}
         {nowInRail && (
           <span className="dt-now" style={{ left: `${pct(now)}%` }}>
-            <span className="dt-now-label">now</span>
+            <span className="dt-now-label">{t('dtl.now')}</span>
           </span>
         )}
       </div>
@@ -198,24 +200,26 @@ export default function DashaTimeline({
     return [m, a, p].filter(Boolean)
   }, [maha])
 
+  const { t } = useLang()
+
   if (!maha?.length) return null
 
   return (
     <div className="dasha-timeline">
       {showChain && chain.length > 0 && (
         <p className="dt-chain">
-          Running now:{' '}
+          {t('dtl.chain.running_now')}{' '}
           {chain.map((n, i) => (
             <span key={i}>
               {i > 0 && <span className="dt-sep"> › </span>}
               <strong>{namer.grahaKey(n.lord)}</strong>
-              <span className="dt-chain-end"> to {fmtDate(parse(n.end))}</span>
+              <span className="dt-chain-end"> {t('dtl.chain.to')} {fmtDate(parse(n.end))}</span>
             </span>
           ))}
         </p>
       )}
 
-      <Rail nodes={maha} level={0} label="Mahādaśā — the whole life"
+      <Rail nodes={maha} level={0} label={t('dtl.rail.maha')}
             namer={namer} verdictOf={verdictOf} now={now}
             selected={mi} onSelect={pickMaha} />
 
@@ -225,7 +229,7 @@ export default function DashaTimeline({
       {/* Rail 2 takes conditionsOf but NOT verdictOf: ch.47's mahādaśā verse
           does not reach down here, and ch.52-60 label too few branches to
           colour one. */}
-      <Rail nodes={antars} level={1} label="Antardaśā"
+      <Rail nodes={antars} level={1} label={t('dtl.rail.antar')}
             namer={namer} conditionsOf={conditionsOf} now={now}
             selected={ai} onSelect={setAi} />
 
@@ -234,7 +238,7 @@ export default function DashaTimeline({
           <p className="dt-zoom">
             ↳ inside <strong>{namer.grahaKey(antars[ai].lord)}</strong>’s antardaśā
           </p>
-          <Rail nodes={pratys} level={2} label="Pratyantardaśā"
+          <Rail nodes={pratys} level={2} label={t('dtl.rail.pratyantar')}
                 namer={namer} verdictOf={verdictOf} now={now} />
         </>
       )}

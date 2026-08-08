@@ -20,24 +20,27 @@
  */
 
 import { useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const SRC_LABEL = {
-  sloka: 'śloka', note: "translator's note", table: "translator's table",
-  derived: 'derived', absent: 'not in BPHS', ocr_lost: 'lost in this scan',
+  sloka: 'rasi.src.sloka', note: 'rasi.src.note', table: 'rasi.src.table',
+  derived: 'rasi.src.derived', absent: 'rasi.src.absent', ocr_lost: 'rasi.src.ocrLost',
 }
 
 /** Source badge. `note` is visually distinct from `sloka` on purpose: the
     difference between Parāśara and his translator is the site's whole claim. */
 function Src({ src, cite, title }) {
+  const { t } = useLang()
   if (!src) return null
   return (
     <span className={`src src-${src}`} title={title || cite || ''}>
-      {SRC_LABEL[src] ?? src}
+      {SRC_LABEL[src] ? t(SRC_LABEL[src]) : src}
     </span>
   )
 }
 
 function Cell({ label, c }) {
+  const { t } = useLang()
   if (!c) return null
   const absent = c.src === 'absent' || c.src === 'ocr_lost'
   return (
@@ -45,7 +48,7 @@ function Cell({ label, c }) {
       <span className="rc-key">{label}</span>
       <span className="rc-val">
         {absent
-          ? (c.src === 'absent' ? 'BPHS is silent' : 'lost in this scan')
+          ? (c.src === 'absent' ? t('rasi.cell.silent') : t('rasi.cell.lostInScan'))
           : String(c.value)}
       </span>
       <Src src={c.src} cite={c.ref} title={c.ocr || c.note || c.ref} />
@@ -58,6 +61,7 @@ function Cell({ label, c }) {
     Reuses the degree-ruler vocabulary from the D1 chart so the two read as
     one instrument rather than two decorations. */
 function DignityBand({ d, namer }) {
+  const { t } = useLang()
   const x = (deg) => deg * 10
   return (
     <div className="rc-band">
@@ -65,15 +69,15 @@ function DignityBand({ d, namer }) {
         <line x1="0" y1="30" x2="300" y2="30" className="rl-axis" />
         <line x1="0.5" y1="26" x2="0.5" y2="34" className="rl-axis" />
         <line x1="299.5" y1="26" x2="299.5" y2="34" className="rl-axis" />
-        {[10, 20].map((t) => (
-          <line key={t} x1={x(t)} y1="30" x2={x(t)} y2="35" className="rl-pada" />
+        {[10, 20].map((tick) => (
+          <line key={tick} x1={x(tick)} y1="30" x2={x(tick)} y2="35" className="rl-pada" />
         ))}
         {d.moolatrikona.map((a) => (
           <g key={`m${a.graha}`}>
             <rect x={x(a.from)} y="22" width={x(a.to - a.from)} height="8"
                   className="rc-mt-arc" />
             <text x={x((a.from + a.to) / 2)} y="20" className="rc-band-label">
-              {namer.grahaKey(a.graha)} mūlatrikoṇa
+              {namer.grahaKey(a.graha)} {t('rasi.band.moolatrikona')}
             </text>
           </g>
         ))}
@@ -99,19 +103,17 @@ function DignityBand({ d, namer }) {
       {d.empty && (
         // A real, citable fact rather than an empty panel — and it is true of
         // exactly four signs, which makes it informative rather than filler.
-        <p className="rc-note">No graha reaches its exaltation or its fall in
-          this rāśi. <Src src="sloka" cite="ch.3 vv.49-50" /></p>
+        <p className="rc-note">{t('rasi.dignity.emptyNote')} <Src src="sloka" cite="ch.3 vv.49-50" /></p>
       )}
       {d.debilitation.length > 0 && (
-        <p className="rc-note">Fall points are <em>derived</em>: ch.3 vv.49-50
-          name only the exaltations and place each debilitation in the seventh
-          sign from one. BPHS never names them directly.</p>
+        <p className="rc-note">{t('rasi.dignity.fallDerived')}</p>
       )}
     </div>
   )
 }
 
 function NakshatraBand({ n }) {
+  const { t } = useLang()
   const x = (deg) => deg * 10
   return (
     <div className="rc-band">
@@ -132,15 +134,14 @@ function NakshatraBand({ n }) {
                 {s.nakshatra}
               </text>
               <text x={tx} y="27" textAnchor={anchor} className="rc-band-label">
-                pāda {s.padas.join(',')}
+                {t('rasi.band.pada')} {s.padas.join(',')}
               </text>
             </g>
           )
         })}
       </svg>
       <p className="rc-note">
-        Every rāśi holds exactly nine pādas — 2¼ nakṣatras. Computed here from
-        the 27-fold and 12-fold divisions of the same circle.
+        {t('rasi.nakshatra.note')}
         <Src src="table" cite="Vol II ch.46" title={n.note} />
         <br /><em>{n.note}</em>
       </p>
@@ -151,6 +152,7 @@ function NakshatraBand({ n }) {
 /** Rāśi dṛṣṭi as a ring of chords — the visual satisfaction of a
     compatibility wheel with none of the fabrication. */
 function DrishtiRing({ sign, aspects, names }) {
+  const { t } = useLang()
   const R = 46, C = 56
   const pt = (i) => {
     const a = ((i - sign) * 30 - 90) * Math.PI / 180
@@ -160,9 +162,9 @@ function DrishtiRing({ sign, aspects, names }) {
     <div className="rc-ring">
       <svg viewBox="0 0 112 112" aria-hidden="true">
         <circle cx={C} cy={C} r={R} className="rc-ring-circle" />
-        {aspects.map((t) => {
-          const [x1, y1] = pt(sign), [x2, y2] = pt(t)
-          return <line key={t} x1={x1} y1={y1} x2={x2} y2={y2} className="rc-chord" />
+        {aspects.map((target) => {
+          const [x1, y1] = pt(sign), [x2, y2] = pt(target)
+          return <line key={target} x1={x1} y1={y1} x2={x2} y2={y2} className="rc-chord" />
         })}
         {Array.from({ length: 12 }, (_, k) => {
           const i = (sign + k) % 12
@@ -174,13 +176,10 @@ function DrishtiRing({ sign, aspects, names }) {
       </svg>
       <div>
         <p className="rc-ring-text">
-          Aspects <strong>{aspects.map((i) => names[i]).join(', ')}</strong>
+          {t('rasi.drishti.aspectsLabel')} <strong>{aspects.map((i) => names[i]).join(', ')}</strong>
         </p>
         <p className="rc-note">
-          Sign aspect — <strong>not compatibility.</strong> BPHS contains no
-          marriage matching by sign: no kūṭa, no guṇa-milan, no gaṇa, yoni or
-          nāḍī. It judges marriage from the 7th bhāva, its lord, Venus and the
-          Upapada. <Src src="sloka" cite="Vol I ch.8 vv.1-5" />
+          {t('rasi.drishti.note')} <Src src="sloka" cite="Vol I ch.8 vv.1-5" />
         </p>
       </div>
     </div>
@@ -205,6 +204,7 @@ function DrishtiRing({ sign, aspects, names }) {
  * material as ancient doctrine. Here they get it with the provenance attached.
  */
 function TranslatorSketch({ s, sign }) {
+  const { t } = useLang()
   const [open, setOpen] = useState(false)
   const [raw, setRaw] = useState(false)
   if (!s?.excerpt) return null
@@ -213,31 +213,27 @@ function TranslatorSketch({ s, sign }) {
       <button type="button" className="rc-tr-toggle" aria-expanded={open}
               onClick={() => setOpen(!open)}>
         {open ? '−' : '+'} Santhanam's sketch of the {sign} ascendant
-        <span className="rc-tr-byline">translator's commentary, not Parāśara</span>
+        <span className="rc-tr-byline">{t('rasi.sketch.byline')}</span>
       </button>
       {open && (
         <div className="rc-tr-body">
           <p className="rc-tr-warn">{s.disclaimer}</p>
           {s.confidence === 'low' && (
             <p className="rc-tr-warn low">
-              This passage sits in a collapsed two-column region of the scan and
-              is badly damaged — its section header survives only as a single
-              run-together token. The bracketed readings below are contextual
-              reconstructions, not transcriptions.
+              {t('rasi.sketch.lowConf')}
             </p>
           )}
           <blockquote className="rc-tr-quote">{s.excerpt}</blockquote>
           <p className="rc-note">
-            {s.ref} · PDF p.{s.pdf_page}. Square brackets are OCR repairs.
-            An excerpt — the full sketch is in the book.
+            {s.ref} · {t('rasi.sketch.pdfPage')}{s.pdf_page}. {t('rasi.sketch.ocrNote')}
             <button type="button" className="rc-tr-raw" onClick={() => setRaw(!raw)}>
-              {raw ? 'hide' : 'show'} the unrepaired scan
+              {raw ? t('rasi.sketch.hide') : t('rasi.sketch.show')} {t('rasi.sketch.unrepairedScan')}
             </button>
           </p>
           {raw && <blockquote className="rc-tr-quote scan">{s.scan}</blockquote>}
           {raw && s.uncertain?.length > 0 && (
             <p className="rc-note">
-              Tokens we are not confident of: {s.uncertain.map((u) => `“${u}”`).join(', ')}
+              {t('rasi.sketch.uncertainTokens')} {s.uncertain.map((u) => `“${u}”`).join(', ')}
             </p>
           )}
         </div>
@@ -248,6 +244,7 @@ function TranslatorSketch({ s, sign }) {
 
 export default function RasiCard({ r, namer, names }) {
   const [showAll, setShowAll] = useState(false)
+  const { t } = useLang()
   if (!r) return null
   const a = r.attributes
   const lagna = r.as_lagna.grahas.filter((g) => !g.is_node)
@@ -261,62 +258,62 @@ export default function RasiCard({ r, namer, names }) {
         <div>
           <h3>{r.name}</h3>
           <p className="rc-sub">
-            {r.name_en} · ruled by {namer.grahaKey(r.lord)} · {r.modality.value}
+            {r.name_en} · {t('rasi.head.ruledBy')} {namer.grahaKey(r.lord)} · {r.modality.value}
           </p>
         </div>
         <div className="rc-limb">
-          <span className="rc-limb-label">Limb of the Kālapuruṣa</span>
+          <span className="rc-limb-label">{t('rasi.head.limb')}</span>
           <strong>{r.kalapurusha_limb.value}</strong>
           <Src src="sloka" cite="ch.4 vv.1-2" title={r.kalapurusha_limb.note} />
         </div>
       </header>
 
       {r.conflict && (
-        <p className="rc-conflict-strip"><strong>Conflict in the text.</strong> {r.conflict}</p>
+        <p className="rc-conflict-strip"><strong>{t('rasi.conflict.strip')}</strong> {r.conflict}</p>
       )}
 
       <section>
-        <h4>At a glance</h4>
+        <h4>{t('rasi.section.glance')}</h4>
         <div className="rc-grid">
-          <Cell label="Element" c={a.element} />
-          <Cell label="Doṣa" c={a.dosha} />
-          <Cell label="Guṇa" c={a.guna} />
-          <Cell label="Varṇa" c={a.varna} />
-          <Cell label="Rises" c={a.rising} />
-          <Cell label="Strong by" c={a.strong} />
-          <Cell label="Direction" c={a.direction} />
-          <Cell label="Complexion" c={a.complexion} />
-          <Cell label="Build" c={a.build} />
-          <Cell label="Habitat" c={a.habitat} />
-          <Cell label="Feet" c={a.feet} />
+          <Cell label={t('rasi.attr.element')} c={a.element} />
+          <Cell label={t('rasi.attr.dosha')} c={a.dosha} />
+          <Cell label={t('rasi.attr.guna')} c={a.guna} />
+          <Cell label={t('rasi.attr.varna')} c={a.varna} />
+          <Cell label={t('rasi.attr.rises')} c={a.rising} />
+          <Cell label={t('rasi.attr.strongBy')} c={a.strong} />
+          <Cell label={t('rasi.attr.direction')} c={a.direction} />
+          <Cell label={t('rasi.attr.complexion')} c={a.complexion} />
+          <Cell label={t('rasi.attr.build')} c={a.build} />
+          <Cell label={t('rasi.attr.habitat')} c={a.habitat} />
+          <Cell label={t('rasi.attr.feet')} c={a.feet} />
         </div>
       </section>
 
       <section>
-        <h4>Dignity map of this rāśi</h4>
+        <h4>{t('rasi.section.dignityMap')}</h4>
         <DignityBand d={r.dignities} namer={namer} />
       </section>
 
       <section>
-        <h4>Nakṣatras and pādas</h4>
+        <h4>{t('rasi.section.nakshatrasPadas')}</h4>
         <NakshatraBand n={r.nakshatras} />
       </section>
 
       <section>
-        <h4>Rāśi dṛṣṭi</h4>
+        <h4>{t('rasi.section.rasiDrishti')}</h4>
         <DrishtiRing sign={r.sign} aspects={r.rasi_drishti.aspects} names={names} />
       </section>
 
       <section>
-        <h4>Grahas for this lagna</h4>
+        <h4>{t('rasi.section.grahasForLagna')}</h4>
         {/* The single most genuinely-BPHS thing on the card, and nothing on a
             Western sign card resembles it: mūla śloka, per ascendant. */}
         <div className="rc-lagna">
-          <div><span className="rc-key">Auspicious</span>
+          <div><span className="rc-key">{t('rasi.lagna.auspicious')}</span>
             <strong>{good.map((g) => namer.grahaKey(g.graha)).join(', ') || '—'}</strong></div>
-          <div><span className="rc-key">Malefic</span>
+          <div><span className="rc-key">{t('rasi.lagna.malefic')}</span>
             <strong>{bad.map((g) => namer.grahaKey(g.graha)).join(', ') || '—'}</strong></div>
-          <div><span className="rc-key">Māraka</span>
+          <div><span className="rc-key">{t('rasi.lagna.maraka')}</span>
             <strong>{killers.map((g) => namer.grahaKey(g.graha)).join(', ') || '—'}</strong></div>
         </div>
         {lagna.some((g) => g.nature === null) && (
@@ -330,16 +327,16 @@ export default function RasiCard({ r, namer, names }) {
       </section>
 
       <section>
-        <h4>Where this rāśi is used</h4>
+        <h4>{t('rasi.section.whereUsed')}</h4>
         <div className="rc-grid">
-          <Cell label="Bhāva-bala deducts" c={r.technical.bhava_bala_deduction} />
-          <Cell label="Aṣṭakavarga Rāśimāna" c={r.technical.rasimana} />
-          <Cell label="Sthira daśā" c={r.technical.sthira_dasha_years} />
+          <Cell label={t('rasi.tech.bhavaBala')} c={r.technical.bhava_bala_deduction} />
+          <Cell label={t('rasi.tech.rasimana')} c={r.technical.rasimana} />
+          <Cell label={t('rasi.tech.sthiraDasha')} c={r.technical.sthira_dasha_years} />
           <div className={`rc-cell${r.technical.badhaka_of.value === null ? ' is-absent' : ''}`}>
-            <span className="rc-key">Bādhaka</span>
+            <span className="rc-key">{t('rasi.tech.badhaka')}</span>
             <span className="rc-val">
               {r.technical.badhaka_of.value === null
-                ? 'no rule in BPHS'
+                ? t('rasi.tech.noBadhakaRule')
                 : names[r.technical.badhaka_of.value]}
             </span>
             <Src src={r.technical.badhaka_of.src} cite={r.technical.badhaka_of.ref}
@@ -347,7 +344,7 @@ export default function RasiCard({ r, namer, names }) {
           </div>
           {r.technical.is_badhaka_for.value !== null && (
             <div className="rc-cell">
-              <span className="rc-key">Is bādhaka for</span>
+              <span className="rc-key">{t('rasi.tech.isBadhakaFor')}</span>
               <span className="rc-val">{names[r.technical.is_badhaka_for.value]}</span>
               <Src src={r.technical.is_badhaka_for.src}
                    cite={r.technical.is_badhaka_for.ref}
@@ -378,17 +375,10 @@ export default function RasiCard({ r, namer, names }) {
           </p>
         )}
         <button type="button" className="rc-toggle" onClick={() => setShowAll(!showAll)}>
-          {showAll ? 'Hide' : 'Why does this matter?'}
+          {showAll ? t('rasi.absent.hide') : t('rasi.absent.whyToggle')}
         </button>
         {showAll && (
-          <p className="rc-note rc-why">
-            Every rāśi card on the internet that shows you a lucky number, a
-            gemstone or a compatible sign is showing you something invented
-            after 1900. Those attributes are not in Bṛhat Parāśara Horā Śāstra
-            at all — and where BPHS <em>does</em> assign colours, gems, tastes
-            and deities, it assigns them to the <strong>grahas</strong>, never
-            to a sign. We would rather show you the gap.
-          </p>
+          <p className="rc-note rc-why">{t('rasi.absent.why')}</p>
         )}
       </section>
 

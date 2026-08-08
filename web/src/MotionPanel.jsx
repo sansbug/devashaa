@@ -8,10 +8,12 @@
  * numeric motion-strength — is not derived here (BPHS gives no Seeghrocha); it is
  * computed in the Ṣaḍbala panel by Raman's method, and this panel links there.
  */
+import Cite from './Cite.jsx'
+import { useLang } from './LangContext.jsx'
 
 // Direction is the sign of the speed; the near-stationary state (which can occur
 // on either side of a station) is carried by the gati label (vikala) beside it.
-const DIR_LABEL = (m) => (m.retrograde ? 'retrograde ℞' : 'direct')
+const DIR_LABEL = (m) => (m.retrograde ? 'motion.dir.retrograde' : 'motion.dir.direct')
 
 const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
   venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }
@@ -19,17 +21,18 @@ const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
 // 1 = the graha's own mean. The five regions ARE the gati classification.
 const DOM_LO = -1.6, DOM_HI = 2.4
 const BANDS = [
-  { lo: DOM_LO, hi: -0.15, iast: 'vakra', en: 'retrograde' },
-  { lo: -0.15, hi: 0.15, iast: 'vikala', en: 'stationary' },
-  { lo: 0.15, hi: 0.9, iast: 'manda', en: 'slow' },
-  { lo: 0.9, hi: 1.1, iast: 'sama', en: 'average' },
-  { lo: 1.1, hi: DOM_HI, iast: 'atichāra', en: 'swift' },
+  { lo: DOM_LO, hi: -0.15, iast: 'vakra', en: 'motion.band.retrograde' },
+  { lo: -0.15, hi: 0.15, iast: 'vikala', en: 'motion.band.stationary' },
+  { lo: 0.15, hi: 0.9, iast: 'manda', en: 'motion.band.slow' },
+  { lo: 0.9, hi: 1.1, iast: 'sama', en: 'motion.band.average' },
+  { lo: 1.1, hi: DOM_HI, iast: 'atichāra', en: 'motion.band.swift' },
 ]
 
 /** The gati spectrum: each graha at its speed÷mean, over the five traditional
     bands. Facts (speed, direction) drive the position; the bands and combustion
     ring are the traditional layer. */
 function MotionSpectrum({ grahas, namer }) {
+  const { t } = useLang()
   const W = 700, PADL = 12, PADR = 12, plotW = W - PADL - PADR
   const top = 20, bot = 92
   const x = (r) => PADL + (Math.max(DOM_LO, Math.min(DOM_HI, r)) - DOM_LO) / (DOM_HI - DOM_LO) * plotW
@@ -54,21 +57,21 @@ function MotionSpectrum({ grahas, namer }) {
   return (
     <div className="ms-wrap">
       <svg viewBox={`0 0 ${W} 138`} className="ms-svg" role="img"
-           aria-label="Each graha's speed relative to its own mean, across the five traditional gati bands">
+           aria-label={t('motion.spectrum.aria')}>
         {BANDS.map((b, i) => (
           <rect key={i} className={`ms-band ms-b-${b.iast.replace('ā', 'a')}`}
                 x={x(b.lo)} y={top} width={x(b.hi) - x(b.lo)} height={bot - top} />
         ))}
         <line className="ms-axis" x1={x(0)} y1={top} x2={x(0)} y2={bot} />
         <line className="ms-axis" x1={x(1)} y1={top} x2={x(1)} y2={bot} />
-        <text className="ms-axis-lbl" x={x(0)} y={top - 4} textAnchor="middle">station</text>
-        <text className="ms-axis-lbl" x={x(1)} y={top - 4} textAnchor="middle">mean</text>
+        <text className="ms-axis-lbl" x={x(0)} y={top - 4} textAnchor="middle">{t('motion.axis.station')}</text>
+        <text className="ms-axis-lbl" x={x(1)} y={top - 4} textAnchor="middle">{t('motion.axis.mean')}</text>
         {BANDS.map((b, i) => {
           const cx = (x(b.lo) + x(b.hi)) / 2
           return (
             <g key={`l${i}`}>
               <text className="ms-band-iast" x={cx} y={bot + 14} textAnchor="middle">{b.iast}</text>
-              <text className="ms-band-en" x={cx} y={bot + 25} textAnchor="middle">{b.en}</text>
+              <text className="ms-band-en" x={cx} y={bot + 25} textAnchor="middle">{t(b.en)}</text>
             </g>
           )
         })}
@@ -85,11 +88,7 @@ function MotionSpectrum({ grahas, namer }) {
           </g>
         ))}
       </svg>
-      <p className="ms-cap">
-        Each graha's speed as a fraction of its <em>own</em> mean — a fact; left of
-        the station line it is retrograde, right of “mean” it is swift. The five
-        bands are the traditional gati (not BPHS); a dashed ring marks a combust graha.
-      </p>
+      <p className="ms-cap">{t('motion.spectrum.caption')}</p>
     </div>
   )
 }
@@ -102,6 +101,7 @@ const COMBUST_ORDER = ['moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
     as a faint "burn reach" bar from the Sun, and a dot at its actual separation.
     A dot inside its bar is combust. Separation is a fact; the orbs are traditional. */
 function CombustionStrip({ grahas, namer }) {
+  const { t } = useLang()
   const rows = COMBUST_ORDER.map((k) => grahas.find((g) => g.key === k))
     .filter((g) => g && g.combustion.applies)
   if (!rows.length) return null
@@ -113,7 +113,7 @@ function CombustionStrip({ grahas, namer }) {
   return (
     <div className="cs-wrap">
       <svg viewBox={`0 0 ${W} ${H}`} className="cs-svg" role="img"
-           aria-label="Each graha's distance from the Sun against its own combustion orb">
+           aria-label={t('motion.strip.aria')}>
         {TICKS.map((t) => (
           <g key={t}>
             <line className="cs-grid" x1={x(t)} y1="20" x2={x(t)} y2={H - 2} />
@@ -127,7 +127,7 @@ function CombustionStrip({ grahas, namer }) {
             <g key={g.key} className={`cs-row${c.combust ? ' combust' : ''}`}>
               <title>
                 {`${namer.grahaKey(g.key)} — ${c.separation}° from the Sun · own orb ${c.orb}° → ${c.combust ? 'combust' : 'free'}`}
-                {c.confidence === 'uncertain' ? '\n(uncertain — the retrograde orb is OCR-damaged)' : ''}
+                {c.confidence === 'uncertain' ? '\n' + t('motion.strip.uncertainNote') : ''}
               </title>
               <rect className="cs-orb" x={x(0)} y={y - 7} width={x(c.orb) - x(0)} height="14" />
               {over && <text className="cs-over" x={X1 - 1} y={y - 10} textAnchor="end">›{Math.round(c.separation)}°</text>}
@@ -137,58 +137,44 @@ function CombustionStrip({ grahas, namer }) {
           )
         })}
       </svg>
-      <p className="cs-cap">
-        Distance from the Sun (a fact). The faint bar is each graha's <em>own</em>{' '}
-        combustion orb; a graha whose dot sits inside its bar is <strong>combust</strong>.
-        Orbs are traditional (not BPHS); a retrograde Mercury/Venus orb is uncertain.
-        The Sun (source) and the nodes are not shown.
-      </p>
+      <p className="cs-cap">{t('motion.strip.caption')}</p>
     </div>
   )
 }
 
 export default function MotionPanel({ data, namer }) {
+  const { t } = useLang()
   if (!data || data.error) return null
   const cb = data.cheshta_bala
 
   return (
-    <section className="table-panel motion-panel" aria-label="Planetary motion and combustion">
-      <h3>Motion (gati) &amp; combustion</h3>
-      <p className="rc-note">
-        Speed, direction and the separation from the Sun are <strong>facts</strong>{' '}
-        from the ephemeris. The gati names (vakra / manda / …) and the combustion
-        orbs are <strong>traditional</strong> — <em>not</em> BPHS, whose combustion
-        is a proportional rule across 0–180° from the Sun, not a fixed orb.
-      </p>
+    <section className="table-panel motion-panel" aria-label={t('motion.panel.aria')}>
+      <h3>{t('motion.title')}</h3>
+      <p className="rc-note">{t('motion.rcNote')}</p>
 
       {cb && !cb.available && (
         <p className="mp-cheshta">
-          <span className="src conf conf-corroborated" title={`${cb.reason}\n\n${cb.citation}`}>
-            Cheṣṭā bala · in Ṣaḍbala below
-          </span>
-          <span className="mp-cheshta-why">
-            BPHS itself gives no Seeghrocha, so the numeric motional strength is not
-            derived here — it is computed in the <strong>Ṣaḍbala</strong> section
-            below by Raman's method (with modern mean longitudes). What follows is
-            the motion <em>state</em>.
-          </span>
+          <Cite className="src conf conf-corroborated" detail={`${cb.reason}\n\n${cb.citation}`}>
+            {t('motion.cheshta.cite')}
+          </Cite>
+          <span className="mp-cheshta-why">{t('motion.cheshta.why')}</span>
         </p>
       )}
 
-      <h4 className="mp-sub">Speed — relative to each graha's mean</h4>
+      <h4 className="mp-sub">{t('motion.sub.speed')}</h4>
       <MotionSpectrum grahas={data.grahas} namer={namer} />
 
-      <h4 className="mp-sub">Combustion — distance from the Sun</h4>
+      <h4 className="mp-sub">{t('motion.sub.combustion')}</h4>
       <CombustionStrip grahas={data.grahas} namer={namer} />
 
       <div className="mp-scroll">
         <table className="mp-table">
           <thead>
             <tr>
-              <th>Graha</th>
-              <th>Motion</th>
+              <th>{t('motion.table.graha')}</th>
+              <th>{t('motion.table.motion')}</th>
               <th className="num">°/day</th>
-              <th>Combustion</th>
+              <th>{t('motion.table.combustion')}</th>
             </tr>
           </thead>
           <tbody>
@@ -197,9 +183,9 @@ export default function MotionPanel({ data, namer }) {
                 <td className="mp-graha">{namer.grahaKey(key)}</td>
                 <td>
                   <span className={`mp-dir mp-${m.retrograde ? 'retro' : 'direct'}`}>
-                    {DIR_LABEL(m)}
+                    {t(DIR_LABEL(m))}
                   </span>
-                  <span className="mp-gati" title={`${m.gati.en} — gati (traditional)`}>
+                  <span className="mp-gati" title={`${m.gati.en} — ${t('motion.gati.tradTooltip')}`}>
                     {m.gati.iast}{m.pace ? ` · ${m.pace}` : ''}
                   </span>
                 </td>
@@ -213,9 +199,9 @@ export default function MotionPanel({ data, namer }) {
                   ) : (
                     <span className={`mp-comb${c.combust ? ' is-combust' : ''}`}
                           title={`${c.separation}° from the Sun · orb ${c.orb}°\n\n${c.note}`}>
-                      {c.combust ? 'combust' : 'free'} · {c.separation}°
+                      {c.combust ? t('motion.status.combust') : t('motion.status.free')} · {c.separation}°
                       <span className={`src mp-tier mp-${c.confidence === 'uncertain' ? 'uncertain' : 'trad'}`}>
-                        {c.confidence === 'uncertain' ? 'uncertain' : 'traditional'}
+                        {c.confidence === 'uncertain' ? t('motion.status.uncertain') : t('motion.status.traditional')}
                       </span>
                     </span>
                   )}

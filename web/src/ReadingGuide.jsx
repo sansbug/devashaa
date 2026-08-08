@@ -14,6 +14,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const DIGNITY_WORD = {
   exalted: 'exalted — its strongest', debilitated: 'debilitated — its weakest',
@@ -43,7 +44,7 @@ function buildCtx(chart, namer) {
 
 const STEPS = [
   {
-    title: 'Start with three points',
+    title: 'rg.step1.title',
     cite: 'BPHS Vol I, ch.34',
     enter: (a, c) => { a.scrollTo('#rg-positions'); a.highlightSign(c.lagna) },
     body: (c) => (
@@ -55,8 +56,8 @@ const STEPS = [
     ),
   },
   {
-    title: 'Every sign is a house',
-    cite: 'whole-sign bhāvas',
+    title: 'rg.step2.title',
+    cite: 'rg.step2.cite',
     enter: (a, c) => { a.setStyle('south'); a.scrollTo('.chart-panel'); a.highlightSign(c.seventh) },
     body: (c) => (
       <>Because <strong>{c.namer.rasi(c.lagna)}</strong> rises, it is your{' '}
@@ -66,7 +67,7 @@ const STEPS = [
     ),
   },
   {
-    title: 'How strong is each graha',
+    title: 'rg.step3.title',
     cite: 'BPHS Vol I, ch.3',
     enter: (a, c) => { a.selectGraha(c.dign.key); a.scrollTo('#rg-signals') },
     body: (c) => (
@@ -78,7 +79,7 @@ const STEPS = [
     ),
   },
   {
-    title: 'Friend or foe depends on your lagna',
+    title: 'rg.step4.title',
     cite: 'BPHS Vol I, ch.34 / ch.44',
     enter: (a) => { a.scrollTo('#rg-signals') },
     body: (c) => (
@@ -91,19 +92,13 @@ const STEPS = [
     ),
   },
   {
-    title: 'Where each graha casts its gaze',
+    title: 'rg.step5.title',
     cite: 'BPHS Vol I, ch.26',
     enter: (a) => { a.setStyle('wheel'); a.scrollTo('.chart-panel') },
-    body: () => (
-      <>Every graha aspects the <strong>7th</strong> sign from itself; Mars also
-        the 4th &amp; 8th, Jupiter the 5th &amp; 9th, Saturn the 3rd &amp; 10th —
-        this is <strong>dṛṣṭi</strong>. The dṛṣṭi ledger lists who aspects whom,
-        and the <strong>Sky wheel</strong> (now shown) draws each graha's rays in
-        to the centre.</>
-    ),
+    body: (c, t) => t('rg.step5.body'),
   },
   {
-    title: 'When it happens: the daśā',
+    title: 'rg.step6.title',
     cite: 'BPHS Vol II, ch.46-47',
     enter: (a) => { a.scrollTo('#rg-dasha') },
     body: (c) => (
@@ -119,19 +114,13 @@ const STEPS = [
     ),
   },
   {
-    title: 'Go deeper: the divisional charts',
+    title: 'rg.step7.title',
     cite: 'ṣoḍaśavarga',
     enter: (a) => { a.setVarga('D9'); a.setStyle('south'); a.scrollTo('.chart-panel') },
-    body: () => (
-      <>The rāśi (<strong>D1</strong>) is the body; the sixteen divisions refine
-        each area — the <strong>D9 (navāṁśa)</strong>, shown now, for marriage and
-        dharma; D10 for career; and so on. The same grahas fall into new signs,
-        and a graha strong in D1 but weak across the vargas is a different story
-        from one strong in both.</>
-    ),
+    body: (c, t) => t('rg.step7.body'),
   },
   {
-    title: 'The navāṁśa has its own reading',
+    title: 'rg.step8.title',
     cite: 'C. S. Patel · modern',
     enter: (a) => {
       a.setVarga('D9'); a.setStyle('south')
@@ -158,25 +147,20 @@ const STEPS = [
     },
   },
   {
-    title: 'Reading, not guessing',
-    cite: 'the whole point',
+    title: 'rg.step9.title',
+    cite: 'rg.step9.cite',
     enter: (a) => { a.setVarga('D1') },
-    body: () => (
-      <>A reading is <em>you</em> weighing these cited signals together —
-        strength, function, aspect, timing, and their echo across the vargas. This
-        site shows no single "score", and where the text is silent it says so.
-        That refusal to guess is the difference between reading a chart and being
-        told a story.</>
-    ),
+    body: (c, t) => t('rg.step9.body'),
   },
 ]
 
 // The index of the navāṁśa step, so callers can open the guide straight to it
 // without hardcoding a position that reordering the steps would break.
-export const NAVAMSA_STEP = STEPS.findIndex((s) => s.title.startsWith('The navāṁśa'))
+export const NAVAMSA_STEP = STEPS.findIndex((s) => s.title === 'rg.step8.title')
 
 export default function ReadingGuide({ chart, namer, actions, onClose, initialStep = 0 }) {
   const [step, setStep] = useState(initialStep)
+  const { t } = useLang()
   const ctx = useMemo(() => buildCtx(chart, namer), [chart, namer])
   const aRef = useRef(actions)
   aRef.current = actions
@@ -188,16 +172,16 @@ export default function ReadingGuide({ chart, namer, actions, onClose, initialSt
   const last = STEPS.length - 1
 
   return (
-    <div className="reading-guide" role="dialog" aria-label="How to read this chart">
+    <div className="reading-guide" role="dialog" aria-label={t('rg.aria.title')}>
       <div className="rg-head">
-        <span className="rg-count">Reading a chart · {step + 1}/{STEPS.length}</span>
-        <button type="button" className="rg-close" onClick={onClose} aria-label="Close guide">×</button>
+        <span className="rg-count">{t('rg.count')} · {step + 1}/{STEPS.length}</span>
+        <button type="button" className="rg-close" onClick={onClose} aria-label={t('rg.close.aria')}>×</button>
       </div>
       <h4 className="rg-title">
-        {s.title}
-        <span className="rg-cite" title={`Cited to ${s.cite}`}>{s.cite}</span>
+        {t(s.title)}
+        <span className="rg-cite" title={`Cited to ${t(s.cite)}`}>{t(s.cite)}</span>
       </h4>
-      <p className="rg-body">{s.body(ctx)}</p>
+      <p className="rg-body">{s.body(ctx, t)}</p>
       <div className="rg-dots" aria-hidden="true">
         {STEPS.map((_, i) => (
           <span key={i} className={`rg-dot${i === step ? ' on' : ''}`} onClick={() => setStep(i)} />
@@ -205,11 +189,11 @@ export default function ReadingGuide({ chart, namer, actions, onClose, initialSt
       </div>
       <div className="rg-nav">
         <button type="button" onClick={() => setStep((v) => Math.max(0, v - 1))} disabled={step === 0}>
-          ‹ Back
+          {t('rg.nav.back')}
         </button>
         {step < last
-          ? <button type="button" className="rg-next" onClick={() => setStep((v) => v + 1)}>Next ›</button>
-          : <button type="button" className="rg-next" onClick={onClose}>Done</button>}
+          ? <button type="button" className="rg-next" onClick={() => setStep((v) => v + 1)}>{t('rg.nav.next')}</button>
+          : <button type="button" className="rg-next" onClick={onClose}>{t('rg.nav.done')}</button>}
       </div>
     </div>
   )

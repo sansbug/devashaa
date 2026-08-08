@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
@@ -18,6 +18,8 @@ import Account from './Account.jsx'
 import Privacy from './Privacy.jsx'
 import Methodology from './Methodology.jsx'
 import ValidationPage from './ValidationPage.jsx'
+import { LangContext, useLang } from './LangContext.jsx'
+import { t as tFn } from './i18n.js'
 import { profileIdFor, removeProfile as removeFromAccount } from './account.js'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
@@ -76,6 +78,7 @@ const fmtAyan = (v) => {
 }
 
 function PlaceField({ onPick, place }) {
+  const { t } = useLang()
   const [q, setQ] = useState(place?.name || '')
   const [hits, setHits] = useState([])
   const [busy, setBusy] = useState(false)
@@ -111,13 +114,13 @@ function PlaceField({ onPick, place }) {
 
   return (
     <div className="field place-field">
-      <label htmlFor="place">Birth place</label>
+      <label htmlFor="place">{t('form.place.label')}</label>
       <input
         id="place" type="text" value={q} autoComplete="off"
-        placeholder="City, region, country"
+        placeholder={t('form.place')}
         onChange={(e) => setQ(e.target.value)}
       />
-      {busy && <div className="hint">searching…</div>}
+      {busy && <div className="hint">{t('form.searching')}</div>}
       {hits.length > 0 && (
         <ul className="hits">
           {hits.map((p, i) => (
@@ -338,6 +341,9 @@ export default function App() {
     document.documentElement.lang = lang
   }, [lang])
   const namer = makeNamer(nameStyle)
+  // Bound translator + shared context value for the UI chrome (Phase-1 i18n).
+  const langValue = useMemo(() => ({ lang, t: (k, f) => tFn(lang, k, f) }), [lang])
+  const { t } = langValue
 
   useEffect(() => {
     fetch(`${API}/api/health`)
@@ -529,6 +535,7 @@ export default function App() {
   if (route === '/validation') return <ValidationPage lang={lang} setLang={setLang} onBack={() => go('/')} />
 
   return (
+    <LangContext.Provider value={langValue}>
     <div className="page">
       <Appearance
         theme={theme} setTheme={setTheme}
@@ -539,13 +546,13 @@ export default function App() {
         <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>
         <Logo />
         <p className="sub">
-          Sidereal · Lahiri ayanāṁśa · whole-sign bhāvas · Swiss Ephemeris
-          <br />after <em>Bṛhat Parāśara Horā Śāstra</em>
+          {t('header.sub')}
+          <br />{t('header.after')} <em>Bṛhat Parāśara Horā Śāstra</em>
         </p>
         {health && (
           <div className={`health ${health.status}`}>
             {health.status === 'ok'
-              ? '● ephemeris verified — reading .se1 (JPL DE431)'
+              ? t('ephem.ok')
               : `● ephemeris ${health.status} — charts refused`}
           </div>
         )}
@@ -556,13 +563,13 @@ export default function App() {
           <button type="button" className="saved-toggle" aria-expanded={savedOpen}
                   onClick={() => setSavedOpen((o) => !o)}>
             <span className="saved-caret" aria-hidden="true">{savedOpen ? '−' : '+'}</span>
-            Save your charts
+            {t('saved.title')}
             <span className="saved-hint">
               {acct
                 ? `signed in as ${acct.userid}`
                 : profiles.length
                   ? `${profiles.length} in this browser`
-                  : 'in this browser, or to an account'}
+                  : t('saved.here')}
             </span>
           </button>
           <Profiles
@@ -583,23 +590,23 @@ export default function App() {
 
       <form onSubmit={submit} className="birth-form">
         <div className="field">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">{t('form.name')}</label>
           <input id="name" value={name} onChange={(e) => setName(e.target.value)}
-                 placeholder="optional" />
+                 placeholder={t('form.name.ph')} />
         </div>
         <div className="field">
-          <label htmlFor="date">Birth date</label>
+          <label htmlFor="date">{t('form.date')}</label>
           <input id="date" type="date" value={date} required
                  onChange={(e) => setDate(e.target.value)} />
         </div>
         <div className="field">
-          <label htmlFor="time">Birth time (24h, local)</label>
+          <label htmlFor="time">{t('form.time')}</label>
           <input id="time" type="time" value={time} required
                  onChange={(e) => setTime(e.target.value)} />
         </div>
         <PlaceField onPick={setPlace} place={place} />
         <button type="submit" className="go" disabled={!ready || busy}>
-          {busy ? 'Calculating…' : 'Cast chart'}
+          {busy ? t('form.casting') : t('form.cast')}
         </button>
       </form>
 
@@ -742,7 +749,7 @@ export default function App() {
 
           {chart.analysis && !chart.analysis.error && (
             <section className="table-panel" id="rg-signals">
-              <h3>What BPHS says about each graha</h3>
+              <h3>{t('ref.grahaSignals.title')}</h3>
               <div className="graha-picker">
                 {chart.grahas.map((g) => (
                   <button type="button" key={g.key}
@@ -777,7 +784,7 @@ export default function App() {
           )}
 
           <section className="table-panel" id="rg-dasha">
-            <h3>Daśā</h3>
+            <h3>{t('dasha.title')}</h3>
             <DashaTree
               dasha={chart.dasha}
               chartMeta={{
@@ -800,7 +807,7 @@ export default function App() {
             {chart.dasha?.chara?.lengths?.length > 0 && (
               <div className="chara-block">
                 <h4 className="chara-h">
-                  Chara Daśā <span className="chara-tag">Jaimini · sign-based</span>
+                  {t('dasha.chara.title')} <span className="chara-tag">{t('dasha.chara.tag')}</span>
                 </h4>
                 <CharaDashaTimeline
                   chara={chart.dasha.chara}
@@ -813,13 +820,13 @@ export default function App() {
           </section>
 
           <section className="table-panel">
-            <h3>Grahas</h3>
+            <h3>{t('ref.grahaTable.title')}</h3>
             <div className="scroll">
               <table>
                 <thead>
                   <tr>
-                    <th>Graha</th><th>Rāśi</th><th>Degree</th><th>Bhāva</th>
-                    <th>Nakṣatra</th><th>Pada</th><th>Deity</th><th>Rāśi lord</th><th>Speed</th>
+                    <th>{t('grahaTable.graha')}</th><th>{t('grahaTable.rasi')}</th><th>{t('grahaTable.degree')}</th><th>{t('grahaTable.bhava')}</th>
+                    <th>{t('grahaTable.nakshatra')}</th><th>{t('grahaTable.pada')}</th><th>{t('grahaTable.deity')}</th><th>{t('grahaTable.rasiLord')}</th><th>{t('grahaTable.speed')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -853,9 +860,9 @@ export default function App() {
           </section>
 
           <section className="table-panel">
-            <h3>Ṣoḍaśavarga — all sixteen divisions</h3>
+            <h3>{t('ref.varga.title')}</h3>
             <p className="rc-note varga-caption">
-              Hover a column heading for what each division is read for. {VARGA_SIG_NOTE}
+              {t('ref.varga.caption')} {VARGA_SIG_NOTE}
             </p>
             <div className="scroll">
               <table className="varga-table">
@@ -893,15 +900,8 @@ export default function App() {
           reference pages about the twelve signs, not a reading, and they work
           with no birth data at all. */}
       <section className="table-panel rasi-section">
-        <h3>The twelve rāśis</h3>
-        <p className="rc-note rasi-intro">
-          Reference pages, not sun-signs — and with no date ranges, because BPHS
-          has none. There is not one statement in either volume of the form
-          “one born with the Sun in …”; ch.34, the closest thing to “what your
-          sign means”, is keyed to the <strong>lagna</strong> throughout. Cast a
-          chart above and it will tell you your lagna, your janma rāśi (Moon)
-          and your Sūrya rāśi — all three, computed.
-        </p>
+        <h3>{t('ref.rasi.title')}</h3>
+        <p className="rc-note rasi-intro">{t('ref.rasi.intro')}</p>
         <div className="rasi-picker">
           {Array.from({ length: 12 }, (_, i) => (
             <button type="button" key={i}
@@ -911,7 +911,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        {openRasi !== null && !rasis && <p className="hint">loading…</p>}
+        {openRasi !== null && !rasis && <p className="hint">{t('ref.loading')}</p>}
         {openRasi !== null && rasis && rasis[openRasi] && (
           <RasiCard
             r={rasis[openRasi]}
@@ -925,15 +925,8 @@ export default function App() {
           exactly the gaṇa/yoni/nāḍī material BPHS lacks, filled from named
           sources on its own tier rather than left for a reader to invent. */}
       <section className="table-panel rasi-section">
-        <h3>The twenty-seven nakṣatras</h3>
-        <p className="rc-note rasi-intro">
-          The muhūrta-tradition attributes of each nakṣatra — gaṇa, yoni, śakti
-          and the rest — that <strong>BPHS itself does not carry.</strong> Shown
-          on a <strong>traditional</strong> tier beside the BPHS deity and
-          Viṁśottarī lord, never blended into them, with every cell citing its
-          source and how sure we are of it. Nāḍī is left an explicit gap: it is
-          in neither source book.
-        </p>
+        <h3>{t('ref.nak.title')}</h3>
+        <p className="rc-note rasi-intro">{t('ref.nak.intro')}</p>
         <div className="rasi-picker">
           {NAK_NAMES.map((nm, i) => (
             <button type="button" key={i}
@@ -943,7 +936,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        {openNak !== null && !nakAttrs && <p className="hint">loading…</p>}
+        {openNak !== null && !nakAttrs && <p className="hint">{t('ref.loading')}</p>}
         {openNak !== null && nakAttrs?.nakshatras?.[openNak] && (
           <NakshatraCard
             n={nakAttrs.nakshatras[openNak]}
@@ -956,31 +949,25 @@ export default function App() {
       {/* The adjacent "K.N. Rao (modern)" bucket (§3b) — not nakṣatra-based, so
           its own reference block rather than a card. Collapsed by default. */}
       <section className="table-panel rasi-section">
-        <h3>Modern method notes — K.N. Rao</h3>
-        <p className="rc-note rasi-intro">
-          Not nakṣatra-based and <strong>not BPHS</strong> — one modern author's
-          method pointers (how he assesses the Gajakesari yoga; notes on his
-          <em> Astrology Lessons</em>), kept in their own bucket, attributed and
-          never presented as a verdict on any chart.
-        </p>
+        <h3>{t('ref.rao.title')}</h3>
+        <p className="rc-note rasi-intro">{t('ref.rao.intro')}</p>
         <button type="button" className="rc-toggle"
                 aria-expanded={raoOpen}
                 onClick={() => setRaoOpen((o) => !o)}>
-          {raoOpen ? 'Hide' : 'Show'} the K.N. Rao (modern) pointers
+          {raoOpen ? t('ref.rao.hideFull') : t('ref.rao.showFull')}
         </button>
-        {raoOpen && !raoData && <p className="hint">loading…</p>}
+        {raoOpen && !raoData && <p className="hint">{t('ref.loading')}</p>}
         {raoOpen && raoData?.error && (
-          <p className="hint">Could not load — the backend may be waking.</p>
+          <p className="hint">{t('ref.rao.loadError')}</p>
         )}
         {raoOpen && raoData && !raoData.error && <ModernNotes data={raoData} />}
       </section>
 
       <footer>
         <p>
-          Positions from the Swiss Ephemeris <code>.se1</code> files (JPL DE431).
-          Divisional rules follow BPHS. Powered by the AGPL Swiss Ephemeris —{' '}
+          {t('footer.ephem')}{' '}
           <a href={import.meta.env.VITE_SOURCE_URL || '#'} rel="noreferrer">
-            source code
+            {t('footer.source')}
           </a>.
         </p>
         <p>
@@ -996,19 +983,19 @@ export default function App() {
         </p>
         <p>
           <a href="/privacy"
-             onClick={(e) => { e.preventDefault(); go('/privacy') }}>Privacy</a>
-          {' '}— no cookies, no trackers, and your charts are encrypted before
-          they leave your device.
+             onClick={(e) => { e.preventDefault(); go('/privacy') }}>{t('footer.privacy')}</a>
+          {' '}{t('footer.privacyNote')}
         </p>
         <p>
-          Place data from{' '}
+          {t('footer.placeFrom')}{' '}
           <a href="https://www.geonames.org" rel="noreferrer">GeoNames</a>,
-          licensed{' '}
+          {' '}{t('footer.licensed')}{' '}
           <a href="https://creativecommons.org/licenses/by/4.0/" rel="noreferrer">
             CC BY 4.0
           </a>.
         </p>
       </footer>
     </div>
+    </LangContext.Provider>
   )
 }

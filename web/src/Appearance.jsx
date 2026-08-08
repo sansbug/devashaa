@@ -1,6 +1,7 @@
 import { NAME_STYLES } from './naming.js'
 import { THEMES } from './themes.js'
 import InstallButton from './InstallButton.jsx'
+import { useLang } from './LangContext.jsx'
 
 const LANGS = [
   { key: 'en', label: 'English', short: 'EN' },
@@ -8,9 +9,10 @@ const LANGS = [
 ]
 
 export default function Appearance({ theme, setTheme, nameStyle, setNameStyle, lang, setLang }) {
+  const { t } = useLang()
   return (
     <div className="appearance">
-      <span className="a-label">{lang === 'hi' ? 'भाषा' : 'Language'}</span>
+      <span className="a-label">{t('appearance.language')}</span>
       <div className="lang-switch" role="group" aria-label="Language">
         {LANGS.map((l) => (
           <button
@@ -27,7 +29,7 @@ export default function Appearance({ theme, setTheme, nameStyle, setNameStyle, l
         ))}
       </div>
 
-      <span className="a-label">Theme</span>
+      <span className="a-label">{t('appearance.theme')}</span>
       <div className="swatches" role="group" aria-label="Colour theme">
         {THEMES.map((t) => (
           <button
@@ -43,7 +45,7 @@ export default function Appearance({ theme, setTheme, nameStyle, setNameStyle, l
         ))}
       </div>
 
-      <span className="a-label">Names</span>
+      <span className="a-label">{t('appearance.names')}</span>
       <select
         className="name-select"
         value={nameStyle}

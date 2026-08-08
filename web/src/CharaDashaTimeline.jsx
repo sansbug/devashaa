@@ -23,6 +23,7 @@
  */
 
 import { useState } from 'react'
+import { useLang } from './LangContext.jsx'
 
 const DAY = 86400000
 const YEAR = 365.2425 * DAY               // a calendar year, for age↔date only
@@ -33,6 +34,7 @@ const yearOfMs = (ms) => new Date(ms).getUTCFullYear()
 
 export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
   const [direction, setDirection] = useState('direct')
+  const { t } = useLang()
   if (!chara?.lengths?.length || lagna === undefined || lagna === null) return null
 
   const bySign = Object.fromEntries(chara.lengths.map((l) => [l.sign, l]))
@@ -65,34 +67,25 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
 
   return (
     <div className="chara-dasha">
-      <p className="cd-caveat">
-        <strong>Sequence direction is not in the available source.</strong> The
-        rule that decides whether the twelve signs run zodiacally forward
-        (“direct”) or backward (“reverse”) from the lagna is in the book’s
-        Chapter 3, absent from the scanned copy. The per-sign <em>lengths</em>
-        here are validated against the book’s worked examples; the <em>order</em>
-        is the direction you choose below. The book’s own examples all run
-        direct, so that is the default — but it is your assumption, not a sourced
-        result.
-      </p>
+      <p className="cd-caveat">{t('cd.caveat')}</p>
 
       <div className="cd-controls">
-        <span className="d-label">Direction</span>
+        <span className="d-label">{t('cd.label.direction')}</span>
         <button type="button" className={direction === 'direct' ? 'on' : ''}
                 onClick={() => setDirection('direct')}
-                title="Signs run zodiacally forward from the lagna">direct</button>
+                title={t('cd.btn.direct.title')}>{t('cd.btn.direct')}</button>
         <button type="button" className={direction === 'reverse' ? 'on' : ''}
                 onClick={() => setDirection('reverse')}
-                title="Signs run backward from the lagna">reverse</button>
+                title={t('cd.btn.reverse.title')}>{t('cd.btn.reverse')}</button>
         <span className="cd-total">{total}-year cycle · from lagna {namer.rasi(lagna)}</span>
       </div>
 
       {current && (
         <p className="dt-chain">
-          Running now: <strong>{namer.rasi(current.sign)}</strong> daśā
-          {' '}(lord {namer.grahaKey(current.lord)}) — age{' '}
+          {t('cd.chain.running_now')} <strong>{namer.rasi(current.sign)}</strong> {t('cd.chain.dasha')}
+          {' '}({t('cd.chain.lord')} {namer.grahaKey(current.lord)}) — {t('cd.chain.age')}{' '}
           {fmtAge(current.start)}–{fmtAge(current.end)}
-          {birthMs != null && <span className="dt-chain-end"> · to {calYear(current.end)}</span>}
+          {birthMs != null && <span className="dt-chain-end"> · {t('cd.chain.to')} {calYear(current.end)}</span>}
         </p>
       )}
 
@@ -106,8 +99,8 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
                    className={`dt-band${running ? ' running' : ''}${past ? ' past' : ''}`}
                    style={{ left: `${pct(b.start)}%`, width: `${pct(b.years)}%` }}
                    title={`${namer.rasi(b.sign)} — ${b.years}y (age ${fmtAge(b.start)}–${fmtAge(b.end)})`
-                     + (b.own ? ' · own sign → full 12 years' : '')
-                     + ` · Chara lord ${namer.grahaKey(b.lord)}`}>
+                     + (b.own ? ' · ' + t('cd.tip.own_full') : '')
+                     + ` · ${t('cd.tip.chara_lord')} ${namer.grahaKey(b.lord)}`}>
                 <span className="dt-band-lord">{namer.rasi(b.sign)}</span>
                 <span className="dt-band-dur">{b.years}y</span>
               </div>
@@ -115,17 +108,17 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
           })}
           {withinLife && (
             <span className="dt-now" style={{ left: `${pct(nowAge)}%` }}>
-              <span className="dt-now-label">now</span>
+              <span className="dt-now-label">{t('cd.now')}</span>
             </span>
           )}
         </div>
         <div className="dt-axis">
           <span className="dt-tick" style={{ left: '0%' }}>
-            birth{birthMs != null && ` · ${yearOfMs(birthMs)}`}
+            {t('cd.axis.birth')}{birthMs != null && ` · ${yearOfMs(birthMs)}`}
           </span>
           {ticks.map((a) => (
             <span key={a} className="dt-tick" style={{ left: `${pct(a)}%` }}>
-              age {a}{birthMs != null && ` · ${calYear(a)}`}
+              {t('cd.axis.age')} {a}{birthMs != null && ` · ${calYear(a)}`}
             </span>
           ))}
         </div>
@@ -135,15 +128,15 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
         <table>
           <thead>
             <tr>
-              <th>#</th><th>Rāśi</th><th>Chara lord</th><th>Years</th><th>Age</th>
-              {birthMs != null && <th>Calendar</th>}
+              <th>#</th><th>{t('cd.th.rasi')}</th><th>{t('cd.th.chara_lord')}</th><th>{t('cd.th.years')}</th><th>{t('cd.th.age')}</th>
+              {birthMs != null && <th>{t('cd.th.calendar')}</th>}
             </tr>
           </thead>
           <tbody>
             {bands.map((b, i) => (
               <tr key={i} className={current && current.sign === b.sign ? 'cd-cur' : ''}>
                 <td>{i + 1}</td>
-                <td>{namer.rasi(b.sign)}{b.own && <span className="cd-own" title="own sign → full 12 years"> ∗</span>}</td>
+                <td>{namer.rasi(b.sign)}{b.own && <span className="cd-own" title={t('cd.own.title')}> ∗</span>}</td>
                 <td>{namer.grahaKey(b.lord)}</td>
                 <td>{b.years}</td>
                 <td>{fmtAge(b.start)}–{fmtAge(b.end)}</td>

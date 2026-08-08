@@ -26,33 +26,37 @@
  */
 
 import { useState } from 'react'
+import Cite from './Cite.jsx'
+import { useLang } from './LangContext.jsx'
 
 /** Confidence badge. Mirrors the rāśi card's source badges: an absent/uncertain
     cell must read visually differently from a corroborated one, because the
     difference in how sure we are IS the information. */
 const CONF = {
-  corroborated: ['2 sources', 'Two independent sources agree'],
-  single_source: ['1 source', 'Stated by a single source'],
-  uncertain: ['uncertain', 'The stored value may itself be wrong — see the note'],
-  absent: ['not sourced', 'No source states this; a deliberate gap, never guessed'],
+  corroborated: ['nakshatra.conf.corroborated.label', 'nakshatra.conf.corroborated.hint'],
+  single_source: ['nakshatra.conf.single.label', 'nakshatra.conf.single.hint'],
+  uncertain: ['nakshatra.conf.uncertain.label', 'nakshatra.conf.uncertain.hint'],
+  absent: ['nakshatra.conf.absent.label', 'nakshatra.conf.absent.hint'],
 }
 
 function Conf({ c }) {
+  const { t } = useLang()
   const [label, hint] = CONF[c.confidence] ?? [c.confidence, '']
-  const title = [hint, ...(c.sources || []), c.note].filter(Boolean).join('\n\n')
-  return <span className={`src conf conf-${c.confidence}`} title={title}>{label}</span>
+  const title = [t(hint), ...(c.sources || []), c.note].filter(Boolean).join('\n\n')
+  return <span className={`src conf conf-${c.confidence}`} title={title}>{t(label)}</span>
 }
 
 /** One attribute cell. An absent value is content ("not sourced on this tier"),
     an uncertain one wears a ⚠ that opens its note — the value is shown, the
     doubt is shown beside it, neither is hidden. */
 function AttrCell({ label, gloss, c }) {
+  const { t } = useLang()
   const absent = c.confidence === 'absent'
   return (
     <div className={`rc-cell nk-cell${absent ? ' is-absent' : ''}`}>
       <span className="rc-key" title={gloss}>{label}</span>
       <span className="rc-val">
-        {absent ? 'not sourced on this tier' : c.value}
+        {absent ? t('nakshatra.cell.notSourcedTier') : c.value}
       </span>
       <Conf c={c} />
       {c.confidence === 'uncertain' && (
@@ -72,21 +76,22 @@ function AttrCell({ label, gloss, c }) {
     could detect the STRUCTURAL trigger; the interpretation stays the author's,
     and the three non-Parāśara techniques are fenced, never presented as results. */
 const COMPUTABLE_BADGE = {
-  yes: ['trigger detectable', 'The structural trigger (a graha or house-lord in the nakṣatra) is cleanly detectable.'],
-  partly: ['trigger approximate', 'Needs an affliction / house-connection judgment the app can only approximate.'],
-  no: ['interpretive', 'Interpretive, or leans on non-Parāśara material — not a structural flag the app computes.'],
+  yes: ['nakshatra.compute.yes.label', 'nakshatra.compute.yes.hint'],
+  partly: ['nakshatra.compute.partly.label', 'nakshatra.compute.partly.hint'],
+  no: ['nakshatra.compute.no.label', 'nakshatra.compute.no.hint'],
 }
 
 function ModernTechniques({ t }) {
+  const { t: tr } = useLang()
   const [open, setOpen] = useState(false)
   if (!t) return null
   return (
     <section className="nk-modern">
       <button type="button" className="nk-mod-toggle" aria-expanded={open}
               onClick={() => setOpen(!open)}>
-        {open ? '−' : '+'} Modern techniques
+        {open ? '−' : '+'} {tr('nakshatra.modern.toggle')}
         {t.available && <span className="nk-mod-count">{t.techniques.length}</span>}
-        <span className="nk-mod-byline">one modern author-group's index — not Parāśara</span>
+        <span className="nk-mod-byline">{tr('nakshatra.modern.byline')}</span>
       </button>
       {open && (
         <div className="nk-mod-body">
@@ -103,7 +108,7 @@ function ModernTechniques({ t }) {
             <>
               {t.theme && (
                 <p className="nk-mod-theme">
-                  Theme (author's framing): <strong>{t.theme}</strong>
+                  {tr('nakshatra.modern.theme')} <strong>{t.theme}</strong>
                 </p>
               )}
               <ol className="nk-mod-list">
@@ -113,10 +118,10 @@ function ModernTechniques({ t }) {
                     <li key={tech.n} className={tech.non_parashara ? 'is-np' : ''}>
                       <span className="nk-mod-gist">{tech.gist}</span>
                       <span className="nk-mod-meta">
-                        <span className={`src compute compute-${tech.computable}`} title={hint}>{label}</span>
-                        <span className="nk-mod-page" title={tech.cite}>p.{tech.page}</span>
+                        <span className={`src compute compute-${tech.computable}`} title={tr(hint)}>{tr(label)}</span>
+                        <span className="nk-mod-page" title={tech.cite}>{tr('nakshatra.modern.page')}{tech.page}</span>
                         {tech.non_parashara && (
-                          <span className="src np-tag" title={tech.non_parashara}>⚠ non-Parāśara</span>
+                          <Cite className="src np-tag" detail={tech.non_parashara}>⚠ {tr('nakshatra.modern.nonParashara')}</Cite>
                         )}
                       </span>
                     </li>
@@ -134,19 +139,20 @@ function ModernTechniques({ t }) {
 const FIELD_ORDER = ['symbol', 'gana', 'guna', 'yoni', 'body_part', 'purushartha',
   'quality', 'shakti', 'dosha', 'nadi']
 const FALLBACK_META = {
-  symbol: ['Symbol', 'The classical emblem / asterism figure'],
-  gana: ['Gaṇa', 'Temperament — Deva / Manuṣya / Rākṣasa'],
-  guna: ['Guṇa', 'Dominant strand — Sattva / Rajas / Tamas'],
-  yoni: ['Yoni (animal)', 'Sexual-compatibility animal (Aṣṭakūṭa)'],
-  body_part: ['Kālapuruṣa aṅga', 'Body part in the cosmic-person scheme'],
-  purushartha: ['Puruṣārtha', 'Life-aim — Dharma / Artha / Kāma / Mokṣa'],
-  quality: ['Activity (muhūrta)', 'Muhūrta activity-class — Light/Fierce/Fixed/…'],
-  shakti: ['Śakti', "The nakṣatra's animating power"],
-  dosha: ['Dosha', 'Āyurvedic humour — Vāta / Pitta / Kapha'],
-  nadi: ['Nāḍī', 'Ādi / Madhya / Antya (Aṣṭakūṭa compatibility)'],
+  symbol: ['nakshatra.meta.symbol.label', 'nakshatra.meta.symbol.gloss'],
+  gana: ['nakshatra.meta.gana.label', 'nakshatra.meta.gana.gloss'],
+  guna: ['nakshatra.meta.guna.label', 'nakshatra.meta.guna.gloss'],
+  yoni: ['nakshatra.meta.yoni.label', 'nakshatra.meta.yoni.gloss'],
+  body_part: ['nakshatra.meta.bodyPart.label', 'nakshatra.meta.bodyPart.gloss'],
+  purushartha: ['nakshatra.meta.purushartha.label', 'nakshatra.meta.purushartha.gloss'],
+  quality: ['nakshatra.meta.quality.label', 'nakshatra.meta.quality.gloss'],
+  shakti: ['nakshatra.meta.shakti.label', 'nakshatra.meta.shakti.gloss'],
+  dosha: ['nakshatra.meta.dosha.label', 'nakshatra.meta.dosha.gloss'],
+  nadi: ['nakshatra.meta.nadi.label', 'nakshatra.meta.nadi.gloss'],
 }
 
 export default function NakshatraCard({ n, fieldMeta, namer }) {
+  const { t } = useLang()
   if (!n) return null
   const meta = fieldMeta || FALLBACK_META
   const label = (f) => (meta[f]?.[0] ?? f)
@@ -165,38 +171,31 @@ export default function NakshatraCard({ n, fieldMeta, namer }) {
         </div>
         {b && (
           <div className="rc-limb">
-            <span className="rc-limb-label">BPHS deity · Viṁśottarī lord</span>
+            <span className="rc-limb-label">{t('nakshatra.head.deityLord')}</span>
             <strong>{b.deity_iast} · {namer.grahaKey(b.lord)}</strong>
-            <span className="src src-sloka" title={`BPHS — ${b.cite}`}>śloka</span>
+            <Cite className="src src-sloka" detail={`BPHS — ${b.cite}`}>{t('nakshatra.head.sloka')}</Cite>
           </div>
         )}
       </header>
 
       {v && (
         <p className="rc-conflict-strip">
-          <strong>Deity variance flagged.</strong> {v.source === 'S2' ? 'Sunil John' : v.source}{' '}
+          <strong>{t('nakshatra.variance.flagged')}</strong> {v.source === 'S2' ? 'Sunil John' : v.source}{' '}
           gives {v.nakshatra} = <strong>{v.traditional}</strong>, where the app's
-          BPHS-cited data gives <strong>{v.bphs_app}</strong>. The BPHS-tier value
-          is left standing; the traditional variant is recorded, not applied.
+          BPHS-cited data gives <strong>{v.bphs_app}</strong>. {t('nakshatra.variance.standing')}
         </p>
       )}
 
       <section>
-        <h4>Attributes on the traditional tier</h4>
+        <h4>{t('nakshatra.section.attributes')}</h4>
         <div className="rc-grid">
           {/* Guard on n.cells[f]: tolerate an older API payload that predates a
               field (dosha/guṇa) so the card never crashes mid-deploy. */}
           {FIELD_ORDER.filter((f) => n.cells[f]).map((f) => (
-            <AttrCell key={f} label={label(f)} gloss={gloss(f)} c={n.cells[f]} />
+            <AttrCell key={f} label={t(label(f))} gloss={t(gloss(f))} c={n.cells[f]} />
           ))}
         </div>
-        <p className="rc-note">
-          These are <strong>not BPHS.</strong> Bṛhat Parāśara Horā Śāstra assigns
-          no gaṇa, yoni or nāḍī to a nakṣatra — the rāśi cards say as much. They
-          belong to the older Bṛhat-Saṁhitā / muhūrta tradition and ship here on a{' '}
-          <strong>traditional</strong> footing, beside the BPHS deity above, never
-          blended into it. Every cell names its source and how sure we are of it.
-        </p>
+        <p className="rc-note">{t('nakshatra.attributes.note')}</p>
       </section>
 
       {/* Last on the card, always. A different tier (modern), a different look,

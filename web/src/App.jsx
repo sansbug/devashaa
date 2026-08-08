@@ -16,6 +16,8 @@ import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
 import Privacy from './Privacy.jsx'
+import Methodology from './Methodology.jsx'
+import ValidationPage from './ValidationPage.jsx'
 import { profileIdFor, removeProfile as removeFromAccount } from './account.js'
 import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
@@ -320,11 +322,21 @@ export default function App() {
   const [nameStyle, setNameStyle] = useState(
     () => localStorage.getItem('nameStyle') || 'common',
   )
+  // UI language — persisted, and set on <html lang> for accessibility. Currently
+  // drives the methodology page; the rest of the UI follows in later passes.
+  const [lang, setLang] = useState(() => {
+    const s = localStorage.getItem('lang')
+    return s === 'hi' || s === 'en' ? s : 'en'
+  })
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('theme', theme)
   }, [theme])
   useEffect(() => { localStorage.setItem('nameStyle', nameStyle) }, [nameStyle])
+  useEffect(() => {
+    localStorage.setItem('lang', lang)
+    document.documentElement.lang = lang
+  }, [lang])
   const namer = makeNamer(nameStyle)
 
   useEffect(() => {
@@ -513,12 +525,15 @@ export default function App() {
   })()
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
+  if (route === '/methodology') return <Methodology lang={lang} setLang={setLang} onBack={() => go('/')} />
+  if (route === '/validation') return <ValidationPage lang={lang} setLang={setLang} onBack={() => go('/')} />
 
   return (
     <div className="page">
       <Appearance
         theme={theme} setTheme={setTheme}
         nameStyle={nameStyle} setNameStyle={setNameStyle}
+        lang={lang} setLang={setLang}
       />
       <header>
         <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>
@@ -967,6 +982,17 @@ export default function App() {
           <a href={import.meta.env.VITE_SOURCE_URL || '#'} rel="noreferrer">
             source code
           </a>.
+        </p>
+        <p>
+          <a href="/methodology"
+             onClick={(e) => { e.preventDefault(); go('/methodology') }}>
+            {lang === 'hi' ? 'देवाशा किस तरह अलग है' : 'How Devashaa is different'}
+          </a>
+          {'  ·  '}
+          <a href="/validation"
+             onClick={(e) => { e.preventDefault(); go('/validation') }}>
+            {lang === 'hi' ? 'हम गणित की जाँच कैसे करते हैं' : 'How we check the math'}
+          </a>
         </p>
         <p>
           <a href="/privacy"

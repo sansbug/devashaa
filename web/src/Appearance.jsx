@@ -1,9 +1,32 @@
 import { NAME_STYLES } from './naming.js'
 import { THEMES } from './themes.js'
+import InstallButton from './InstallButton.jsx'
 
-export default function Appearance({ theme, setTheme, nameStyle, setNameStyle }) {
+const LANGS = [
+  { key: 'en', label: 'English', short: 'EN' },
+  { key: 'hi', label: 'हिन्दी', short: 'हिं' },
+]
+
+export default function Appearance({ theme, setTheme, nameStyle, setNameStyle, lang, setLang }) {
   return (
     <div className="appearance">
+      <span className="a-label">{lang === 'hi' ? 'भाषा' : 'Language'}</span>
+      <div className="lang-switch" role="group" aria-label="Language">
+        {LANGS.map((l) => (
+          <button
+            key={l.key}
+            type="button"
+            className={`lang-btn${lang === l.key ? ' on' : ''}`}
+            onClick={() => setLang(l.key)}
+            title={l.label}
+            aria-pressed={lang === l.key}
+            lang={l.key}
+          >
+            {l.short}
+          </button>
+        ))}
+      </div>
+
       <span className="a-label">Theme</span>
       <div className="swatches" role="group" aria-label="Colour theme">
         {THEMES.map((t) => (
@@ -33,6 +56,9 @@ export default function Appearance({ theme, setTheme, nameStyle, setNameStyle })
           </option>
         ))}
       </select>
+
+      {/* Appears only when the browser reports the PWA is installable. */}
+      <InstallButton />
     </div>
   )
 }

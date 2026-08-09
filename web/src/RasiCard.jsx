@@ -256,9 +256,10 @@ export default function RasiCard({ r, namer, names }) {
     <article className="rasi-card">
       <header className="rc-head">
         <div>
-          <h3>{r.name}</h3>
+          <h3>{namer.style === 'devanagari' ? namer.rasi(r.sign) : r.name}</h3>
           <p className="rc-sub">
-            {r.name_en} · {t('rasi.head.ruledBy')} {namer.grahaKey(r.lord)} · {r.modality.value}
+            {namer.style !== 'devanagari' && <>{r.name_en} · </>}
+            {t('rasi.head.ruledBy')} {namer.grahaKey(r.lord)} · {r.modality.value}
           </p>
         </div>
         <div className="rc-limb">

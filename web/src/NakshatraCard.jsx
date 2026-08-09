@@ -174,7 +174,7 @@ export default function NakshatraCard({ n, fieldMeta, namer }) {
         <div>
           <h3>{namer.nakshatra(n)}</h3>
           <p className="rc-sub">
-            nakṣatra {n.index} of 27 · {n.name} / {n.name_iast}
+            nakṣatra {n.index} of 27{namer.style !== 'devanagari' && ` · ${n.name} / ${n.name_iast}`}
           </p>
         </div>
         {b && (

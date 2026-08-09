@@ -867,13 +867,15 @@ export default function App() {
                     <tr key={g.key}>
                       <td className="graha-name">
                         {namer.graha(g)}
-                        {/* the English gloss is redundant once names ARE English */}
-                        {nameStyle !== 'english' &&
+                        {/* English gloss: an aid for the Latin transliteration
+                            styles. Redundant once names ARE English — or already
+                            Indic (Devanāgarī). */}
+                        {nameStyle !== 'english' && nameStyle !== 'devanagari' &&
                           <span className="en"> {g.name_en}</span>}
                       </td>
                       <td>
                         {namer.grahaRasi(g)}
-                        {nameStyle !== 'english' &&
+                        {nameStyle !== 'english' && nameStyle !== 'devanagari' &&
                           <span className="en"> {g.rasi_name_en}</span>}
                       </td>
                       <td className="num">

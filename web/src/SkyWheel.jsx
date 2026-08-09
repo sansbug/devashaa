@@ -56,6 +56,10 @@ const GRAHA_COLOR = {
 }
 const CODE = { sun: 'Su', moon: 'Mo', mars: 'Ma', mercury: 'Me', jupiter: 'Ju',
   venus: 'Ve', saturn: 'Sa', rahu: 'Ra', ketu: 'Ke' }
+// Devanāgarī graha codes (the standard Hindi-jyotiṣa abbreviations) for the
+// Devanāgarī name style; the wheel's glyph slot is too small for full names.
+const CODE_DEV = { sun: 'सू', moon: 'चं', mars: 'मं', mercury: 'बु', jupiter: 'गु',
+  venus: 'शु', saturn: 'श', rahu: 'रा', ketu: 'के' }
 const ordinal = (n) => {
   const s = ['th', 'st', 'nd', 'rd'], v = n % 100
   return n + (s[(v - 20) % 10] || s[v] || s[0])
@@ -388,7 +392,7 @@ export default function SkyWheelChart({
           <polygon points={`${ascX - 12},${ascY - 6} ${ascX - 12},${ascY + 6} ${ascX - 2},${ascY}`} />
           <text x={ascX - 16} y={ascY - 8} textAnchor="end">
             <title>{`Lagna — ${namer.rasi(lagnaRasi)} ${(ascLon % 30).toFixed(2)}°`}</title>
-            Lagna {Math.floor(ascLon % 30)}°
+            {namer.style === 'devanagari' ? 'लग्न' : 'Lagna'} {Math.floor(ascLon % 30)}°
           </text>
         </g>
 
@@ -574,7 +578,7 @@ export default function SkyWheelChart({
               {isCombust && <circle cx={px} cy={py} r="16.5" className="sw-combust" />}
               <circle cx={px} cy={py} r="13" className="sw-gdot" style={col ? { stroke: col } : undefined} />
               <text x={px} y={py} className="sw-gglyph" textAnchor="middle" dominantBaseline="central" style={col ? { fill: col } : undefined}>
-                {(CODE[g.key] || g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
+                {((namer.style === 'devanagari' ? CODE_DEV[g.key] : CODE[g.key]) || g.name_en.slice(0, 2))}{g.retrograde ? '℞' : ''}
               </text>
               <text x={px} y={py + 22} className="sw-gdeg" textAnchor="middle">{g.degree}°{pad2(g.minute)}′</text>
             </g>

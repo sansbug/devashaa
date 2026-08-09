@@ -146,9 +146,14 @@ export function SouthIndianChart({
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
             >
-              <div className="cell-sign">
+              {/* The numeral is the RĀŚI number (Meṣa 1 … Mīna 12), a fixed
+                  property of the sign — not the bhāva. The bhāva (and its
+                  kendra/trikoṇa/duḥsthāna nature) still decorates the numeral
+                  and is named in the tooltip. */}
+              <div className="cell-sign"
+                   title={`${namer.rasi(sign)} — rāśi ${sign + 1} · bhāva ${bhavaOf(sign, lagna)}`}>
                 <span className={bhavaClass(bhavaOf(sign, lagna))}>
-                  {bhavaOf(sign, lagna)}
+                  {sign + 1}
                 </span>
                 <span className="cell-sep">·</span>
                 {namer.rasi(sign)}
@@ -225,8 +230,10 @@ export function NorthIndianChart({
               <polygon points={r.pts} className="north-locate" />
             )}
             <text x={r.cx} y={top} className="north-sign">
-              <title>{`Bhāva ${bhava} — ${namer.rasi(sign)}`}</title>
-              <tspan className="north-bhava">{bhava}</tspan>
+              {/* The numeral is the RĀŚI number (Meṣa 1 … Mīna 12); the bhāva is
+                  given by the region's fixed position and named in the tooltip. */}
+              <title>{`${namer.rasi(sign)} — rāśi ${sign + 1} · bhāva ${bhava}`}</title>
+              <tspan className="north-bhava">{sign + 1}</tspan>
               {` · ${namer.rasi(sign)}`}
             </text>
             {occupants.map((g, k) => (

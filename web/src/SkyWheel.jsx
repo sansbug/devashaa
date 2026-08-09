@@ -314,7 +314,8 @@ export default function SkyWheelChart({
         <circle cx={C} cy={C} r={R_SIGN_OUT} className="sw-ring" />
         <circle cx={C} cy={C} r={R_SIGN_IN} className="sw-ring" />
 
-        {/* rāśi names + bhāva numbers */}
+        {/* rāśi names + rāśi numbers (Meṣa 1 … Mīna 12); the bhāva is named in
+            the tooltip. */}
         {Array.from({ length: 12 }, (_, s) => {
           const [lx, ly] = pt(s * 30 + 15, R_SIGN_LABEL)
           const [bx, by] = pt(s * 30 + 15, R_BHAVA)
@@ -322,7 +323,7 @@ export default function SkyWheelChart({
             <g key={`l${s}`}>
               <text x={lx} y={ly} className="sw-sign" textAnchor="middle" dominantBaseline="middle">{namer.rasi(s)}</text>
               <text x={bx} y={by} className="sw-bhava" textAnchor="middle" dominantBaseline="middle">
-                <title>{`Bhāva ${bhavaOf(s)} — ${namer.rasi(s)}`}</title>{bhavaOf(s)}
+                <title>{`${namer.rasi(s)} — rāśi ${s + 1} · bhāva ${bhavaOf(s)}`}</title>{s + 1}
               </text>
             </g>
           )

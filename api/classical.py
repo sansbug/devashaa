@@ -39,15 +39,45 @@ def _in_sign_map(module) -> dict:
     return {"sun": getattr(module, "SUN_IN_SIGN", {})}
 
 
+# Adaptation content-classes collapse to the six §5 tags the UI badge knows
+# (docs/classical-sources-policy.md §5). Anything else (e.g. "else", "offspring",
+# "clean") is not a dated-content class and is dropped, so the badge only ever
+# shows a recognised label.
+_CLASS_CANON = {
+    "caste": "caste",
+    "gender": "gender", "gender/marriage": "gender", "gender-marriage": "gender",
+    "gender & marriage": "gender",
+    "slavery": "slavery", "slavery/servitude": "slavery", "slavery-servitude": "slavery",
+    "slavery/servitude/rank": "slavery", "slavery/rank": "slavery", "servitude": "slavery",
+    "servitude/rank": "slavery",
+    "occupation": "occupation", "occupation-status": "occupation",
+    "occupation/commerce": "occupation",
+    "health": "health", "disease": "health", "death/disease": "health",
+    "poverty": "health", "death/disease/poverty": "health", "death-disease-poverty": "health",
+    "archaic": "archaic", "archaic-referent": "archaic",
+}
+
+
+def _norm_classes(classes) -> list:
+    out = []
+    for c in classes or []:
+        v = _CLASS_CANON.get(str(c).strip().lower())
+        if v and v not in out:
+            out.append(v)
+    return out
+
+
 def _source_reading(module, graha: str, sign: int) -> dict | None:
     entry = _in_sign_map(module).get(graha, {}).get(sign)
     if not entry:
         return None
+    adapt = dict(entry["adaptation"])
+    adapt["classes"] = _norm_classes(adapt.get("classes"))
     return {
         "source": module.SOURCE,
         "citation": entry["citation"],
         "gist": entry["gist"],
-        "adaptation": entry["adaptation"],
+        "adaptation": adapt,
         "confidence": entry["confidence"],
     }
 

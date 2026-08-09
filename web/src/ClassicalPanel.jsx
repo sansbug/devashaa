@@ -19,7 +19,7 @@ const CLASS_KEY = {
 
 /** The historical-context badge (policy §5): flags a reading that touches dated
  *  social content, and on tap explains how it was handled. Chrome is localized;
- *  the raw adaptation action/note (scholarly metadata) stay in English for now. */
+ *  the adaptation action/note come pre-localized from the API (ADAPT_HI). */
 function HistoricalBadge({ adaptation, date }) {
   const { t } = useLang()
   const cls = (adaptation?.classes || []).filter((c) => c && c !== 'clean')

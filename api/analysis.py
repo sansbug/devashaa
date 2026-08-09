@@ -347,7 +347,7 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
     # Bhāva-phala — the house-by-house cited reading (ch.24/11/32). A failure here
     # must not cost the user the rest of their analysis.
     try:
-        out["bhava_phala"] = bhp.bhava_phala(chart_positions, lagna)
+        out["bhava_phala"] = bhp.bhava_phala(chart_positions, lagna, lang=lang)
     except Exception as e:  # noqa: BLE001
         out["bhava_phala"] = {"error": f"Bhāva-phala failed: {e}"}
 

@@ -45,8 +45,16 @@ def _house_of(rasi: int, lagna: int) -> int:
     return (rasi - lagna) % 12 + 1
 
 
-def bhava_phala(positions: dict, lagna: int) -> dict:
-    """`positions` maps graha key -> {"rasi": int, ...}; `lagna` is the lagna sign (0-11)."""
+def bhava_phala(positions: dict, lagna: int, lang: str = "en") -> dict:
+    """`positions` maps graha key -> {"rasi": int, ...}; `lagna` is the lagna sign
+    (0-11). ``lang='hi'`` serves the Hindi renderings (bhava_phala_rules_hi) for
+    every string that has one, falling back to English otherwise."""
+    H = None
+    if lang == "hi":
+        try:
+            import bhava_phala_rules_hi as H
+        except Exception:
+            H = None
     rasi = {g: p["rasi"] for g, p in positions.items()}
 
     # Which houses each graha lords (a graha owns two rāśis, so two houses).
@@ -68,13 +76,16 @@ def bhava_phala(positions: dict, lagna: int) -> dict:
         rule = R.LORD_IN_HOUSE.get((h, lord_house)) if lord_house else None
         lord_rule = None
         if rule:
+            k = (h, lord_house)
             lord_rule = {
                 "verse": rule["verse"],
                 "citation": f"BPHS I ch.24 v.{rule['verse']}",
-                "effect": rule["effect"],
-                "lagna_exception": rule["lagna_exception"],
+                "effect": H.EFFECTS_HI.get(k, rule["effect"]) if H else rule["effect"],
+                "lagna_exception": (H.EXCEPTIONS_HI.get(k, rule["lagna_exception"])
+                                    if H else rule["lagna_exception"]),
                 "exception_source": rule["exception_source"],
-                "notes_caveat": rule["notes_caveat"],
+                "notes_caveat": (H.CAVEATS_HI.get(k, rule["notes_caveat"])
+                                 if H else rule["notes_caveat"]),
             }
 
         # Dual lordship: this lord also rules these OTHER houses → ch.24 vv.145-148.
@@ -94,7 +105,8 @@ def bhava_phala(positions: dict, lagna: int) -> dict:
             "lord_rule": lord_rule,                  # cited ch.24 effect
             "lord_also_rules": also_rules,           # other houses this lord owns
             "combination_applies": bool(also_rules), # ch.24 vv.145-148 in play
-            "significations": R.HOUSE_SIGNIFICATIONS[h],   # ch.11
+            "significations": ({**R.HOUSE_SIGNIFICATIONS[h], "text": H.SIGNIF_HI[h]}
+                               if H and h in H.SIGNIF_HI else R.HOUSE_SIGNIFICATIONS[h]),   # ch.11
             "karaka": R.HOUSE_KARAKA[h],             # graha key; join to its signal-stack state
             "karaka_citation": "BPHS I ch.32 vv.31-34",
             "occupants": occupants,                  # context only — no cited effect (see note)
@@ -103,8 +115,11 @@ def bhava_phala(positions: dict, lagna: int) -> dict:
 
     return {
         "bhavas": bhavas,
-        "combination_rule": R.COMBINATION_RULE,      # ch.24 vv.145-148, verbatim
-        "planet_in_house": PLANET_IN_HOUSE_NOTE,     # the sourced refusal
-        "no_composite": NO_COMPOSITE_NOTE,
+        "combination_rule": (H.COMBINATION_RULE_HI if H and H.COMBINATION_RULE_HI
+                             else R.COMBINATION_RULE),      # ch.24 vv.145-148, verbatim
+        "planet_in_house": (H.PLANET_IN_HOUSE_NOTE_HI if H and H.PLANET_IN_HOUSE_NOTE_HI
+                            else PLANET_IN_HOUSE_NOTE),     # the sourced refusal
+        "no_composite": (H.NO_COMPOSITE_HI if H and H.NO_COMPOSITE_HI
+                         else NO_COMPOSITE_NOTE),
         "source": "BPHS Vol I (Santhanam): ch.24 lord-in-house, ch.11 significations, ch.32 kārakas.",
     }

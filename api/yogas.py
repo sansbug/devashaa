@@ -508,11 +508,19 @@ def _resolve_strength(name, c, sb):
 
 
 def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None,
-                 shadbala: dict | None = None) -> dict:
+                 shadbala: dict | None = None, lang: str = "en") -> dict:
     """`positions` maps graha key -> {rasi, longitude, vargas}; `lagna` is the
     lagna sign. When ``shadbala`` (the per-graha Ṣaḍbala verdict table) is given,
     strength-gated yogas are resolved to fructifies / does-not-fructify instead
-    of carrying the 'strength unverified' flag."""
+    of carrying the 'strength unverified' flag. ``lang='hi'`` serves the Hindi
+    śloka-effect where one exists (yoga_rules_hi), falling back to English."""
+    effects_hi = {}
+    if lang == "hi":
+        try:
+            from yoga_rules_hi import EFFECTS_HI
+            effects_hi = EFFECTS_HI
+        except Exception:
+            effects_hi = {}
     c = _build(positions, lagna, lagna_d9)
     detected = []
     for name, meta in yoga_rules.YOGAS.items():
@@ -525,6 +533,8 @@ def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None,
             hit = None
         if hit:
             entry = {"name": name, **meta}
+            if name in effects_hi:                         # Hindi śloka-effect
+                entry["effect"] = effects_hi[name]
             if isinstance(hit, dict):
                 entry["detail"] = hit
             if meta.get("computability") == "strength_gated" and shadbala:

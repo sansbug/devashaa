@@ -345,6 +345,27 @@ export default function App() {
   const langValue = useMemo(() => ({ lang, t: (k, f) => tFn(lang, k, f) }), [lang])
   const { t } = langValue
 
+  // Re-cast when the language changes so the generated readings switch too
+  // (the birth params are unchanged; only `lang` on the request differs).
+  const langFirstRun = useRef(true)
+  useEffect(() => {
+    if (langFirstRun.current) { langFirstRun.current = false; return }
+    if (!chart || chart.error || !place || !date || !time) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const r = await fetch(`${API}/api/chart`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, date, time, lang,
+            latitude: place.latitude, longitude: place.longitude, timezone: place.timezone }),
+        })
+        const j = await r.json()
+        if (!cancelled && r.ok) setChart(j)
+      } catch { /* keep the current chart on a failed re-cast */ }
+    })()
+    return () => { cancelled = true }
+  }, [lang])  // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     fetch(`${API}/api/health`)
       .then((r) => r.json())
@@ -388,7 +409,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name, date, time,
+          name, date, time, lang,
           latitude: place?.latitude, longitude: place?.longitude,
           timezone: place?.timezone,
         }),
@@ -418,7 +439,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: p.name, date: p.date, time: p.time,
+          name: p.name, date: p.date, time: p.time, lang,
           latitude: p.place.latitude, longitude: p.place.longitude,
           timezone: p.place.timezone,
         }),

@@ -304,6 +304,7 @@ def places():
 @app.post("/api/chart")
 def chart():
     body = request.get_json(silent=True) or {}
+    lang = body.get("lang") if body.get("lang") in ("en", "hi") else "en"
 
     missing = [f for f in ("date", "time", "latitude", "longitude")
                if body.get(f) in (None, "")]
@@ -393,7 +394,7 @@ def chart():
         }
         payload["analysis"] = analyse(analysis_positions, result.lagna_rasi,
                                       lagna_d9=result.lagna_vargas.get("D9"),
-                                      shadbala=_sb_verdict)
+                                      shadbala=_sb_verdict, lang=lang)
     except Exception as e:  # noqa: BLE001
         payload["analysis"] = {"error": f"Analysis failed: {e}"}
 

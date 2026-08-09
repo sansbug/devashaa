@@ -457,7 +457,7 @@ LORD_IN_HOUSE = {
 HOUSE_SIGNIFICATIONS = {
     1: {"citation": "BPHS Vol I, Ch.11 v.2 (p.121)", "text": "INDICATIONS OF THE FIRST HOUSE: physique, appearance, intellect (or the organ of intelligence, i.e. brain), complexion of the body, vigour, weakness, happiness, grief and innate nature are all to be guessed through the ascending sign."},
     2: {"citation": "BPHS Vol I, Ch.11 v.3 (p.121)", "text": "SECOND HOUSE: Wealth, grains (food etc.), family, death, enemies, metals, precious stones etc. are to be understood through the 2nd house."},
-    3: {"citation": "BPHS Vol I, Ch.11 v.4 (p.121)", "text": "THIRD HOUSE: From the 3rd house, know of the following: tilour, servants (attendants etc.), brothers, sisters etc. initiatory instrucitons (upadesa), journey, and parent's death."},
+    3: {"citation": "BPHS Vol I, Ch.11 v.4 (p.121)", "text": "THIRD HOUSE: From the 3rd house, know of the following: valour, servants (attendants etc.), brothers, sisters etc. initiatory instructions (upadesa), journey, and parent's death."},
     4: {"citation": "BPHS Vol I, Ch.11 v.5 (p.121)", "text": "FOURTH HOUSE: Conveyances, relatives, mother, happiness, treasure, lands and houses are to be consulted through the 4th house."},
     5: {"citation": "BPHS Vol I, Ch.11 v.6 (p.122)", "text": "FIFTH HOUSE: The learned should deduce from the 5th house amulets, sacred spells, learning, knowledge, sons, royalty (or authority), fall of position etc."},
     6: {"citation": "BPHS Vol I, Ch.11 v.7 (p.122)", "text": "SIXTH HOUSE: Maternal uncle, doubts about death, enemies, ulcers, step mother etc. are to be estimated from the 6th house."},

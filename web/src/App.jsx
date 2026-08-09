@@ -341,6 +341,18 @@ export default function App() {
     document.documentElement.lang = lang
   }, [lang])
   const namer = makeNamer(nameStyle)
+
+  // Switching the UI language also moves the NAME style to that language's
+  // natural default — Hindi → Devanāgarī, English → the Latin "common" spelling —
+  // while staying switchable: the dropdown can still pick any style, and a manual
+  // pick holds until the next language switch. Fires only on a real user toggle
+  // (not on mount), so a persisted manual choice survives a reload.
+  const changeLang = (next) => {
+    setLang(next)
+    setNameStyle((cur) => (next === 'hi' ? 'devanagari'
+                          : next === 'en' && cur === 'devanagari' ? 'common'
+                          : cur))
+  }
   // Bound translator + shared context value for the UI chrome (Phase-1 i18n).
   const langValue = useMemo(() => ({ lang, t: (k, f) => tFn(lang, k, f) }), [lang])
   const { t } = langValue
@@ -552,8 +564,8 @@ export default function App() {
   })()
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
-  if (route === '/methodology') return <Methodology lang={lang} setLang={setLang} onBack={() => go('/')} />
-  if (route === '/validation') return <ValidationPage lang={lang} setLang={setLang} onBack={() => go('/')} />
+  if (route === '/methodology') return <Methodology lang={lang} setLang={changeLang} onBack={() => go('/')} />
+  if (route === '/validation') return <ValidationPage lang={lang} setLang={changeLang} onBack={() => go('/')} />
 
   return (
     <LangContext.Provider value={langValue}>
@@ -561,7 +573,7 @@ export default function App() {
       <Appearance
         theme={theme} setTheme={setTheme}
         nameStyle={nameStyle} setNameStyle={setNameStyle}
-        lang={lang} setLang={setLang}
+        lang={lang} setLang={changeLang}
       />
       <header>
         <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>

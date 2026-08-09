@@ -172,7 +172,7 @@ export default function NakshatraCard({ n, fieldMeta, namer }) {
         {b && (
           <div className="rc-limb">
             <span className="rc-limb-label">{t('nakshatra.head.deityLord')}</span>
-            <strong>{b.deity_iast} · {namer.grahaKey(b.lord)}</strong>
+            <strong>{namer.style === 'devanagari' ? namer.deity(b) : b.deity_iast} · {namer.grahaKey(b.lord)}</strong>
             <Cite className="src src-sloka" detail={`BPHS — ${b.cite}`}>{t('nakshatra.head.sloka')}</Cite>
           </div>
         )}

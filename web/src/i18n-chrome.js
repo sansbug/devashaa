@@ -1232,7 +1232,7 @@ export const CHROME = {
     "hi": "देवता में भिन्नता चिह्नित।"
   },
   "nakshatra.variance.gives": {
-    "en": "gives {nakshatra} = {traditional}, where the app's BPHS-cited data gives {bphs_app}.",
+    "en": "{source} gives {nakshatra} = {traditional}, where the app's BPHS-cited data gives {bphs_app}.",
     "hi": "{source} {nakshatra} = {traditional} बताता है, जबकि ऐप का BPHS-उद्धृत डेटा {bphs_app} बताता है।"
   },
   "nakshatra.variance.standing": {

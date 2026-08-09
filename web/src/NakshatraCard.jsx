@@ -39,6 +39,14 @@ const CONF = {
   absent: ['nakshatra.conf.absent.label', 'nakshatra.conf.absent.hint'],
 }
 
+/** Devanāgarī for the few nakṣatra/deity names that appear in the deity-variance
+ *  strip. These come from DEITY_TRADITION_VARIANTS in IAST-ish spellings that do
+ *  not key naming.js's tables, so they are mapped here (author names stay Latin). */
+const VARIANT_DEV = {
+  Hasta: 'हस्त', 'Svātī': 'स्वाती',
+  'Savitṛ': 'सवितृ', 'Sūrya': 'सूर्य', 'Vāyu': 'वायु', Marut: 'मरुत्',
+}
+
 function Conf({ c }) {
   const { t } = useLang()
   const [label, hint] = CONF[c.confidence] ?? [c.confidence, '']
@@ -178,13 +186,32 @@ export default function NakshatraCard({ n, fieldMeta, namer }) {
         )}
       </header>
 
-      {v && (
-        <p className="rc-conflict-strip">
-          <strong>{t('nakshatra.variance.flagged')}</strong> {v.source === 'S2' ? 'Sunil John' : v.source}{' '}
-          gives {v.nakshatra} = <strong>{v.traditional}</strong>, where the app's
-          BPHS-cited data gives <strong>{v.bphs_app}</strong>. {t('nakshatra.variance.standing')}
-        </p>
-      )}
+      {v && (() => {
+        // The comparison sentence comes from i18n (word order differs by language);
+        // interpolate the values into the template, keeping the two compared
+        // deities bold. In the Devanāgarī style the embedded nakṣatra/deity names
+        // follow suit — the author name stays in its own script.
+        const dev = namer.style === 'devanagari'
+        const nm = (x) => (dev ? (VARIANT_DEV[x] ?? x) : x)
+        const vals = {
+          source: v.source === 'S2' ? 'Sunil John' : v.source,
+          nakshatra: nm(v.nakshatra), traditional: nm(v.traditional), bphs_app: nm(v.bphs_app),
+        }
+        const parts = t('nakshatra.variance.gives').split(/(\{[a-z_]+\})/i)
+        return (
+          <p className="rc-conflict-strip">
+            <strong>{t('nakshatra.variance.flagged')}</strong>{' '}
+            {parts.map((part, i) => {
+              const m = part.match(/^\{([a-z_]+)\}$/i)
+              if (!m) return part
+              const val = vals[m[1]] ?? part
+              return (m[1] === 'traditional' || m[1] === 'bphs_app')
+                ? <strong key={i}>{val}</strong> : val
+            })}{' '}
+            {t('nakshatra.variance.standing')}
+          </p>
+        )
+      })()}
 
       <section>
         <h4>{t('nakshatra.section.attributes')}</h4>

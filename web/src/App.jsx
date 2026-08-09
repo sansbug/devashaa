@@ -322,9 +322,21 @@ export default function App() {
   const [theme, setTheme] = useState(
     () => validTheme(localStorage.getItem('theme') ?? DEFAULT_THEME),
   )
-  const [nameStyle, setNameStyle] = useState(
-    () => localStorage.getItem('nameStyle') || 'common',
-  )
+  const [nameStyle, setNameStyle] = useState(() => {
+    const stored = localStorage.getItem('nameStyle')
+    // One-time migration: Devanāgarī is the natural default name style for the
+    // Hindi UI, but visitors who chose Hindi BEFORE it shipped are stuck on the
+    // legacy Latin 'common' default — the language→style auto-switch only fires
+    // on an explicit toggle, not on load. Move those users to Devanāgarī once;
+    // any later explicit pick persists (the flag stops this from re-running).
+    if (!localStorage.getItem('nameStyleHiMigrated_v1')) {
+      localStorage.setItem('nameStyleHiMigrated_v1', '1')
+      if (localStorage.getItem('lang') === 'hi' && (!stored || stored === 'common')) {
+        return 'devanagari'
+      }
+    }
+    return stored || 'common'
+  })
   // UI language — persisted, and set on <html lang> for accessibility. Currently
   // drives the methodology page; the rest of the UI follows in later passes.
   const [lang, setLang] = useState(() => {

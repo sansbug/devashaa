@@ -44,6 +44,7 @@ import functional as fn
 import karakas as kar
 import bhava_phala as bhp
 import yogas as yg
+import classical
 
 # The seven grahas BPHS assigns dignity, lordship and relationships to. The
 # nodes are handled separately and mostly return unavailable — that absence is
@@ -356,5 +357,12 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
         out["yogas"] = yg.detect_yogas(chart_positions, lagna, lagna_d9, shadbala=shadbala, lang=lang)
     except Exception as e:  # noqa: BLE001
         out["yogas"] = {"error": f"Yoga detection failed: {e}"}
+
+    # Classical concordance — non-BPHS classical texts on their own `classical`
+    # tier (pilot: Sārāvalī Sun-in-sign, ch.22). Never blended with Parāśara.
+    try:
+        out["classical"] = classical.build(chart_positions)
+    except Exception as e:  # noqa: BLE001
+        out["classical"] = {"readings": [], "error": f"Classical layer failed: {e}"}
 
     return out

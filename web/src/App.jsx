@@ -6,6 +6,7 @@ import MotionPanel from './MotionPanel.jsx'
 import ShadbalaPanel from './ShadbalaPanel.jsx'
 import BhavaPanel from './BhavaPanel.jsx'
 import YogaPanel from './YogaPanel.jsx'
+import ClassicalPanel from './ClassicalPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -826,6 +827,10 @@ export default function App() {
 
           {chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
             <BhavaPanel data={chart.analysis.bhava_phala} namer={namer} />
+          )}
+
+          {chart.analysis && chart.analysis.classical && (
+            <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
 
           <section className="table-panel" id="rg-dasha">

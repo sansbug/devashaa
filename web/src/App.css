@@ -763,6 +763,40 @@ section.meta, .chart-panel, .table-panel {
 .bhava-refusal { margin-top: .7rem; font-size: .78rem; color: var(--dim); font-style: italic; }
 .conf-sloka { color: var(--accent); }
 
+/* Classical concordance — non-BPHS classical sources on their own tier. */
+.classical-panel .cl-reading { margin-top: 1rem; }
+.classical-panel .cl-place { margin: 0 0 .5rem; font-size: 1rem; }
+.cl-source {
+  border-left: 2px solid var(--line);
+  padding: .1rem 0 .1rem .8rem;
+  margin: .6rem 0;
+}
+.cl-src-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .45rem; margin-bottom: .3rem; }
+.cl-tier {
+  font-size: .6rem; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--bg); background: var(--accent); border-radius: 3px; padding: .08rem .35rem;
+  font-weight: var(--strong-weight, 700);
+}
+.cl-src-name { font-size: .92rem; }
+.cl-src-meta { font-size: .7rem; color: var(--dim); }
+.cl-gist { margin: .2rem 0 .35rem; font-size: .86rem; line-height: 1.62; }
+.cl-hist {
+  display: inline-block; font-size: .68rem; font-style: normal;
+  color: var(--dim); border: 1px dashed var(--line); border-radius: 4px;
+  padding: .05rem .4rem; cursor: pointer;
+}
+.cl-coverage { margin-top: .9rem; font-size: .68rem; color: var(--dim); font-style: italic; }
+
+/* Ṣaḍbala "what the six strengths mean" explainer (collapsed by default). */
+.sb-explain { margin: .4rem 0 .2rem; }
+.sb-explain > summary { cursor: pointer; color: var(--accent); font-size: .78rem; }
+.sb-explain-lead { margin: .55rem 0; font-size: .82rem; color: var(--dim); line-height: 1.6; }
+.sb-explain-list { margin: .4rem 0; }
+.sb-explain-list dt { font-weight: var(--strong-weight, 700); margin-top: .5rem; font-size: .85rem; }
+.sb-explain-list dt span { font-weight: 400; color: var(--dim); font-size: .72rem; }
+.sb-explain-list dd { margin: .1rem 0 0; font-size: .82rem; line-height: 1.55; }
+.sb-explain-foot { margin: .55rem 0 0; font-size: .78rem; color: var(--dim); font-style: italic; }
+
 /* yogas — the combinations panel */
 .yoga-list { display: flex; flex-direction: column; gap: .5rem; }
 .yoga-card { border: 1px solid var(--line); border-radius: 8px; padding: .55rem .7rem; background: var(--sunken); }

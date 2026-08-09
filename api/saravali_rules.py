@@ -1,13 +1,13 @@
 """
 Sārāvalī of Kalyāṇa Varma (~9-10th c. CE), R. Santhanam tr. (Ranjan) — CLASSICAL tier.
 
-PILOT: the Sun in the rāśis (ch.22). Each entry is a site-authored, cited,
-adaptation-classified GIST per docs/classical-sources-policy.md — a rendering, NOT
-a reproduction of the copyrighted translation. Every gist was verified against the
-Vol 1 edition and independently checked for faithfulness, policy, and non-fatalism.
+The Sun in the 12 rāśis (Sārāvalī ch.22). Each entry is a site-authored, cited,
+adaptation-classified GIST per docs/classical-sources-policy.md — a rendering, NOT a
+reproduction of the copyrighted translation. Every gist was verified against the Vol 1
+edition and independently checked for faithfulness, policy (§5), and non-fatalism.
 
 adaptation.classes uses the §5 tags: caste / gender / slavery / occupation / health /
-remedy / archaic. action/note record how each dated class was handled.
+archaic (empty = clean). action/note record how each dated class was handled.
 """
 
 SOURCE = {
@@ -16,8 +16,7 @@ SOURCE = {
     "tier": "classical",
 }
 
-# graha key -> sign index (0=Meṣa … 11=Mīna) -> entry.  Pilot ships 9 of 12 signs;
-# Gemini, Aquarius, Pisces await extraction (see policy §7).
+# graha key -> sign index (0=Meṣa … 11=Mīna) -> entry. Sun-in-sign complete (12/12).
 SUN_IN_SIGN = {
     0: {  # Aries
         "citation": 'Sārāvalī 22.2-3',
@@ -31,6 +30,13 @@ SUN_IN_SIGN = {
         "gist": "Sārāvalī (22.10–11, ~10th c.) reads a Taurus Sun as someone the text calls beautiful — a variant reads fortunate/handsome — dignified in bearing and wise, with a lean, spare build, who nonetheless has hardships to endure. It credits the native with an abundance of fine things (good food, garlands, fine clothing and fragrances) and genuine skill in the arts of song, instrumental music and dance. As its own ~10th-century view — not fate, and not medical guidance — the text also flags a proneness to complaints of the face and eyes and a caution around water, and reads the native as having few children (neutralised from the text's 'few sons'). Sārāvalī 22.10–11 further voices an aversion toward 'barren (or confined) women'; that judgement is not reproduced here — it is a value-laden claim about a category of women, not a reading of the native.",
         "adaptation": {"classes": ['health', 'gender'], "action": "neutralise + refuse (disease/hazard kept as the text's dated stated-effect; remainder clean)",
                         "note": "Health/hazard items (disease of the face and eyes, emaciated/lean body, danger from water) are kept as the text's own dated stated-effect — framed as the ~10th-c. reading, not fate, with no medical claim. 'Few sons' is NEUTRALISED to 'few children': the son-preference is dropped, the progeny principle kept. The aversion to 'barren (or confined) women' is REFUSED as a value-laden gendered judgement about a class of women with no surviving neutral structural core. All remaining themes — beautiful/fortunate, decorum, wisdom, enduring hardship, being endowed with food/garlands/robes/scents, and skill in singing/instrumental music/dance — are CLEAN and ship plainly, attributed and dated. No caste, occupation-status, slavery, remedy, or archaic-referent content present; no death-timing."},
+        "confidence": "corroborated",
+    },
+    2: {  # Gemini
+        "citation": 'Sārāvalī 22.18-19',
+        "gist": 'Sārāvalī reads a Gemini Sun native as a scholar — sweet in speech, well-conducted, modest, and affectionate, particularly toward their own children. The text assigns command of worldly, secular learning (which it explicitly frames as distinct from knowledge of Brahman, the Supreme Spirit — i.e. spiritual self-knowledge, not the brahmin caste) together with mastery of the śāstras, the traditional sciences and scriptures, and an aptitude for astrology. It reads the person as liberal (generous), skilful, exceedingly affluent, and fortunate, though only mediocre in physical appearance. In its own idiom it also assigns "two mothers," traditionally understood as being raised by two mother-figures — for example a birth mother alongside a second, foster or step-maternal figure.',
+        "adaptation": {"classes": ['archaic'], "action": 'gloss',
+                        "note": "Two non-clean items, both ARCHAIC-REFERENT, handled by GLOSS (not omission): (1) 'expert in profane/worldly knowledge as opposed to the knowledge of Brahman/the Supreme Spirit, and in the śāstras' — kept and rendered in context as command of secular learning held distinct from Brahman the Supreme Spirit (i.e. spiritual self-knowledge), plus mastery of the traditional śāstras. NB: 'Brahman' here is the metaphysical Absolute, NOT the brahmin varṇa — so this is religious-path framing (gloss), with NO caste verdict to omit. (2) 'two mothers' — kept and glossed as being raised by two mother-figures (e.g. birth mother plus a foster/step maternal figure), offered as illustration, not asserted as fact. Everything else ships CLEAN: scholar, sweet speech, good conduct, affection particularly toward one's own offspring (already offspring-neutral — no number-of-sons claim to neutralise), generosity, skill, exceeding affluence, mediocre appearance, fortune, modesty, and astrologer as a livelihood/aptitude (no high/low status ranking present, so occupation-status has nothing to drop — effectively clean). No caste, slavery/servitude, value-laden gendered, death/disease/poverty, or remedy content is present. Framed throughout as 'the text reads/assigns…' per attribution-over-endorsement, with the ~9–10th-c. date visible."},
         "confidence": "corroborated",
     },
     3: {  # Cancer
@@ -80,6 +86,20 @@ SUN_IN_SIGN = {
         "gist": "Sārāvalī (22.56–57, ~10th c.) reads the native with the Sun in Capricorn as of a low, base disposition — acquisitive, timid, and changeable of mind, drawn to ill-chosen company and fond of wandering. It has them make their way through modest, hard-won work while taking on many and varied undertakings, yet describes them as physically weak, distant from their kin, and — through quarrels with relatives — liable to heavy losses, with a hearty appetite. This is the text's ~10th-century reading of the placement, not a statement of fate, and not medical advice.",
         "adaptation": {"classes": ['gender', 'occupation', 'health'], "action": 'neutralise (gender/marriage) + drop-status (occupation) + keep-cited-not-fated + health-disclaimer (death/disease/poverty); all remaining traits clean',
                         "note": "Gender/marriage: 'interested in bad women' neutralised to partner-neutral 'drawn to ill-chosen company' — this is the native's own inclination toward unwholesome associations (a real structural principle), not a value-laden prediction about a spouse's looks/character, so neutralise (not refuse) is the correct §5 action; the gendered value-judgement is dropped. Occupation-status: 'advance with mean jobs' kept as the livelihood-through-labor theme with the low-status judgement dropped ('modest, hard-won work'). Death/disease/poverty: 'will lose everything due to conflicts with relatives' and 'weak' retained as the text's stated effects, cited and dated, framed as the ~10th-c. view rather than fate; an explicit 'not medical advice' disclaimer is added per §5 for the weakness/poverty content. No outright death-timing appears, so nothing is refused. Remaining traits (base/lowly, greedy, timid, fickle-minded, fond of wandering, endowed with various deeds, devoid of relatives, voracious eater) are clean character/temperament readings, retained and attributed as 'the text reads the native as…', never 'you will'. No caste verdict, slavery/servitude/rank, archaic referent, or remedy content is present in the verse."},
+        "confidence": "corroborated",
+    },
+    10: {  # Aquarius
+        "citation": 'Sārāvalī 22.64–65',
+        "gist": 'Sārāvalī reads the Sun in Aquarius as marking a native of great physical strength and courage, but with a short, quick temper. It assigns a nature that is steadfast and firm in its undertakings yet inconstant in friendship, alongside traits it frames unfavourably: fraudulent dealing, miserliness, carelessness about personal cleanliness, and being disliked by learned people. On fortune, the text describes benefit coming through one\'s partner and the domestic sphere [neutralised from the verse\'s "fortunate through housewives"], while otherwise assigning modest wealth and a discontented, unhappy state. It also states — as a ~10th-century reading of the placement, not a prediction and not medical advice — a proneness to heart ailments.',
+        "adaptation": {"classes": ['gender', 'health'], "action": 'neutralise',
+                        "note": "Verse mixes one gendered fortune-clause with health and wealth content; the rest is clean temperament/character. GENDER (§5 gender & marriage): 'fortunate through housewives' neutralised to partner-/household-neutral — the structural principle (fortune via the marital/domestic sphere) survives, the gendered category-claim is dropped; correctly NOT a refuse case, since it is a fortune clause about the native rather than a value-laden judgement about a category of women. DISEASE (§5 disease timing): 'heart diseases' kept as the text's dated stated-effect, framed as a ~10th-c. view not as fate, with an explicit not-medical-advice disclaimer and no death-timing. POVERTY: 'little wealth' and the emotional 'miserable' kept as dated stated-effects, not fate. No caste, servitude/rank, occupation-ranking, remedy/ritual, or death-timing content present — nothing omitted or refused. Remaining traits (strength/courage, short temper, firmness in activity, inconstant friendship, fraudulence, uncleanliness, miserliness, disliked by the learned) ship clean under dated attribution framing."},
+        "confidence": "corroborated",
+    },
+    11: {  # Pisces
+        "citation": 'Sārāvalī 22.66-67',
+        "gist": "Sārāvalī (~10th c.) reads the Sun in Pisces as marking a friendly, sociable temperament with a strong acquisitive drive — inclined to accumulate wealth and to enjoy pleasure and companionship — together with cheerfulness and learning. It assigns the capacity to overcome many rivals and pronounced prosperity: the native is read as wealthy, endowed with a partner and good children, and — in the text's dated household terms — attended by servants. It ties material gain especially to commerce carried across sea and river (maritime/riverine trade). On character it assigns eloquent, persuasive speech coupled with a tendency to untruth. As the text's dated somatic note — its stated effect, not a prediction and not medical advice — Sārāvalī flags a susceptibility to ailments of the genital/private region. It also assigns many siblings (co-born).",
+        "adaptation": {"classes": ['gender', 'offspring', 'slavery/servitude/rank', 'health', 'occupation/commerce'], "action": 'neutralise+historicise',
+                        "note": "Multi-class entry; ships with the §5 historical-context badge. NEUTRALISE gender/marriage: 'fond of women' -> pleasure-/company-loving inclination (the native's sensual/sociable disposition survives as a structural principle; it is a judgement about the native, not a value-laden claim about a category of women, so neutralise is correct rather than refuse); 'endowed with wife' -> endowed with a partner. NEUTRALISE offspring: 'good sons' -> good children. HISTORICISE slavery/servitude/rank: 'servants' retained only as a dated marker of household prosperity, badged, not endorsed (§5 permits omit or historicise). DEATH/DISEASE: 'diseases of the private parts' KEPT as the text's dated, cited stated-effect, framed NOT as fate and NOT as medical advice; no death-timing present, so no refusal triggered. OCCUPATION/COMMERCE: 'wealth via sea/river transactions' kept as theme with no high/low status ranking to drop. CLEAN and kept plainly: friendly, tendency to amass, happy, learned, overcomes many enemies (violent 'destroy' softened to 'overcome', theme intact), wealthy/rich, eloquent-but-untruthful (character trait, not caste/gender), many co-born/siblings. No caste verdict, no remedy/ritual/gemstone, and no death-timing appear in this verse, so none required omission or refusal."},
         "confidence": "corroborated",
     },
 }

@@ -56,6 +56,23 @@ const MANUAL = {
   'grahaTable.deity': { en: 'Deity', hi: 'देवता' },
   'grahaTable.rasiLord': { en: 'Rāśi lord', hi: 'राशि स्वामी' },
   'grahaTable.speed': { en: 'Speed', hi: 'गति' },
+
+  // ── classical concordance panel ───────────────────────────────────────────
+  'classical.title': { en: 'Classical sources', hi: 'शास्त्रीय स्रोत' },
+  'classical.in': { en: 'in', hi: 'में' },
+  'classical.hist.prefix': { en: 'historical', hi: 'ऐतिहासिक' },
+  'classical.class.caste': { en: 'caste', hi: 'जाति' },
+  'classical.class.gender': { en: 'gender & marriage', hi: 'लिंग एवं विवाह' },
+  'classical.class.slavery': { en: 'servitude', hi: 'सेवावृत्ति' },
+  'classical.class.occupation': { en: 'occupation', hi: 'व्यवसाय' },
+  'classical.class.health': { en: 'illness', hi: 'रोग' },
+  'classical.class.archaic': { en: 'archaic terms', hi: 'पुरातन संदर्भ' },
+  'classical.hist.detailLead': { en: 'Historical material', hi: 'ऐतिहासिक सामग्री' },
+  'classical.hist.detailTouches': { en: 'This reading touches:', hi: 'यह पाठ इनसे संबंधित है:' },
+  'classical.hist.detailNote': {
+    en: 'Shown for completeness, not as a judgement — handled per our adaptation policy:',
+    hi: 'पूर्णता हेतु दर्शाया गया, निर्णय के रूप में नहीं — हमारी अनुकूलन नीति के अनुसार नियंत्रित:',
+  },
 }
 
 // Chrome (the 482 extracted panel strings) plus the hand-written entry-experience

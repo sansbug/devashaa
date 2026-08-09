@@ -10,23 +10,31 @@
 import Cite from './Cite.jsx'
 import { useLang } from './LangContext.jsx'
 
-// The §5 content-classes that make a reading carry historical-context adaptation.
-const CLASS_LABEL = {
-  caste: 'caste', gender: 'gender & marriage', slavery: 'servitude',
-  occupation: 'occupation', health: 'illness', archaic: 'archaic terms',
+// The §5 content-classes → i18n key for the badge label (docs/classical-sources-policy.md).
+const CLASS_KEY = {
+  caste: 'classical.class.caste', gender: 'classical.class.gender',
+  slavery: 'classical.class.slavery', occupation: 'classical.class.occupation',
+  health: 'classical.class.health', archaic: 'classical.class.archaic',
 }
 
 /** The historical-context badge (policy §5): flags a reading that touches dated
- *  social content, and on tap explains how it was handled. */
+ *  social content, and on tap explains how it was handled. Chrome is localized;
+ *  the raw adaptation action/note (scholarly metadata) stay in English for now. */
 function HistoricalBadge({ adaptation, date }) {
+  const { t } = useLang()
   const cls = (adaptation?.classes || []).filter((c) => c && c !== 'clean')
   if (!cls.length) return null
-  const labels = cls.map((c) => CLASS_LABEL[c] || c).join(' · ')
+  const labels = cls.map((c) => (CLASS_KEY[c] ? t(CLASS_KEY[c], c) : c)).join(' · ')
   const detail =
-    `Historical material (${date}). This reading touches: ${labels}. ` +
-    `Shown for completeness, not as a judgement — handled per our adaptation policy: ` +
+    `${t('classical.hist.detailLead', 'Historical material')} (${date}). ` +
+    `${t('classical.hist.detailTouches', 'This reading touches:')} ${labels}. ` +
+    `${t('classical.hist.detailNote', 'Shown for completeness, not as a judgement — handled per our adaptation policy:')} ` +
     `${adaptation.action}. ${adaptation.note || ''}`
-  return <Cite className="src cl-hist" detail={detail}>⧗ historical — {labels}</Cite>
+  return (
+    <Cite className="src cl-hist" detail={detail}>
+      ⧗ {t('classical.hist.prefix', 'historical')} — {labels}
+    </Cite>
+  )
 }
 
 export default function ClassicalPanel({ data, namer }) {

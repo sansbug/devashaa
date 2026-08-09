@@ -361,7 +361,7 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
     # Classical concordance — non-BPHS classical texts on their own `classical`
     # tier (pilot: Sārāvalī Sun-in-sign, ch.22). Never blended with Parāśara.
     try:
-        out["classical"] = classical.build(chart_positions)
+        out["classical"] = classical.build(chart_positions, lang=lang)
     except Exception as e:  # noqa: BLE001
         out["classical"] = {"readings": [], "error": f"Classical layer failed: {e}"}
 

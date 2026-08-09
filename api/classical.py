@@ -55,8 +55,8 @@ _NOTE = {
     ),
 }
 _COVERAGE = {
-    "en": "Grahas in the rāśis — Sārāvalī (Sun/Moon/Mars/Mercury) + Bṛhat Jātaka (all seven).",
-    "hi": "राशियों में ग्रह — सारावली (सूर्य/चन्द्र/मङ्गल/बुध) + बृहत् जातक (सातों)।",
+    "en": "Grahas in the rāśis — Sārāvalī (all seven) + Bṛhat Jātaka (all seven).",
+    "hi": "राशियों में ग्रह — सारावली (सातों) + बृहत् जातक (सातों)।",
 }
 
 

@@ -15,10 +15,12 @@ string, falling back to English wherever a translation is missing.
 import saravali_rules as sv
 
 _SOURCES = [sv]
-_HI = {}  # source id -> {graha: {sign: hi_gist}}
+_HI = {}        # source id -> {graha: {sign: hi_gist}}
+_ADAPT_HI = {}  # source id -> {graha: {sign: {action, note}}} (badge popover metadata)
 try:
     import saravali_rules_hi
     _HI["saravali"] = saravali_rules_hi.GIST_HI
+    _ADAPT_HI["saravali"] = getattr(saravali_rules_hi, "ADAPT_HI", {})
 except Exception:  # noqa: BLE001
     pass
 try:
@@ -29,6 +31,7 @@ except Exception:  # noqa: BLE001
 try:
     import brihat_jataka_rules_hi
     _HI["brihat_jataka"] = brihat_jataka_rules_hi.GIST_HI
+    _ADAPT_HI["brihat_jataka"] = getattr(brihat_jataka_rules_hi, "ADAPT_HI", {})
 except Exception:  # noqa: BLE001
     pass
 
@@ -97,11 +100,18 @@ def _source_reading(module, graha: str, sign: int, lang: str) -> dict | None:
     if not entry:
         return None
     gist = entry["gist"]
+    adapt = dict(entry["adaptation"])
     if lang == "hi":
-        hi = _HI.get(module.SOURCE["id"], {}).get(graha, {}).get(sign)
+        sid = module.SOURCE["id"]
+        hi = _HI.get(sid, {}).get(graha, {}).get(sign)
         if hi:
             gist = hi
-    adapt = dict(entry["adaptation"])
+        ah = _ADAPT_HI.get(sid, {}).get(graha, {}).get(sign)
+        if ah:
+            if ah.get("action"):
+                adapt["action"] = ah["action"]
+            if ah.get("note"):
+                adapt["note"] = ah["note"]
     adapt["classes"] = _norm_classes(adapt.get("classes"))
     return {
         "source": module.SOURCE,

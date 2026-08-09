@@ -1,17 +1,17 @@
 """
 Classical-tier readings served as a cited concordance (docs/classical-sources-policy.md).
 
-Sun-in-sign concordance: for the Sun's rāśi, every registered classical source that
-has an extracted reading contributes one cited, adaptation-classified GIST — a
-rendering, never a reproduction — on the `classical` provenance tier, NEVER blended
-with BPHS. Each placement's `sources` list IS the concordance; adding a text just
-appends another entry.
+Planet-in-sign concordance: for each graha the chart places, every registered classical
+source that has an extracted reading for that (graha, rāśi) contributes one cited,
+adaptation-classified GIST — a rendering, never a reproduction — on the `classical`
+provenance tier, NEVER blended with BPHS or with each other. Each placement's `sources`
+list IS the concordance.
+
+A source module exposes SOURCE plus either IN_SIGN = {graha_key: {sign: entry}} (the
+general form) or the legacy SUN_IN_SIGN = {sign: entry} (Sun only).
 """
 import saravali_rules as sv
 
-# Registered Sun-in-sign sources, in display order. Each is a module exposing
-# SOURCE + SUN_IN_SIGN. Import defensively so a not-yet-populated source never
-# breaks the chart.
 _SOURCES = [sv]
 try:
     import brihat_jataka_rules as bj
@@ -19,17 +19,28 @@ try:
 except Exception:  # noqa: BLE001
     pass
 
+# Classical order; the nodes (Rāhu/Ketu) carry no graha-in-sign phala in these texts.
+GRAHA_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]
+
 _NOTE = (
     "Readings from classical texts other than BPHS, on their own provenance tier and "
     "never blended with Parāśara. Each line is a cited, dated rendering — not a fated "
     "prediction — adapted per our historical-material policy: caste verdicts are dropped, "
-    "gendered judgements about a spouse are refused, disease is kept only as the text's "
-    "own dated view (not medical advice), and archaic referents (kings, etc.) are glossed."
+    "gendered judgements are neutralised or refused, disease/poverty are kept only as the "
+    "text's own dated view (not advice), and archaic referents (kings, etc.) are glossed."
 )
 
 
-def _source_reading(module, sign: int) -> dict | None:
-    entry = getattr(module, "SUN_IN_SIGN", {}).get(sign)
+def _in_sign_map(module) -> dict:
+    """A module's {graha: {sign: entry}} table, tolerating the legacy Sun-only form."""
+    m = getattr(module, "IN_SIGN", None)
+    if m is not None:
+        return m
+    return {"sun": getattr(module, "SUN_IN_SIGN", {})}
+
+
+def _source_reading(module, graha: str, sign: int) -> dict | None:
+    entry = _in_sign_map(module).get(graha, {}).get(sign)
     if not entry:
         return None
     return {
@@ -41,25 +52,21 @@ def _source_reading(module, sign: int) -> dict | None:
     }
 
 
-def _sun_reading(sign: int) -> dict | None:
-    sources = [r for m in _SOURCES if (r := _source_reading(m, sign))]
-    if not sources:
-        return None
-    return {"graha": "sun", "sign": sign, "sources": sources}
-
-
 def build(positions: dict) -> dict:
     """`positions` maps graha key -> {"rasi": int, ...}. Returns the classical
-    concordance for the placements we have extracted. Pilot: the Sun's rāśi."""
+    concordance: one reading per graha we have extracted, each with a `sources` list."""
     readings = []
-    sun = positions.get("sun")
-    if sun is not None:
-        r = _sun_reading(sun["rasi"])
-        if r:
-            readings.append(r)
+    for g in GRAHA_ORDER:
+        p = positions.get(g)
+        if p is None:
+            continue
+        sign = p["rasi"]
+        sources = [r for m in _SOURCES if (r := _source_reading(m, g, sign))]
+        if sources:
+            readings.append({"graha": g, "sign": sign, "sources": sources})
     return {
         "readings": readings,
         "note": _NOTE,
         "policy": "docs/classical-sources-policy.md",
-        "coverage": "Sun in the rāśis — Sārāvalī (ch.22) + Bṛhat Jātaka (ch.18).",
+        "coverage": "Grahas in the rāśis — Sārāvalī (Sun) + Bṛhat Jātaka (all seven).",
     }

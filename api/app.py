@@ -35,6 +35,8 @@ import nakshatra_attrs
 import nakshatra_techniques
 import navamsa
 import navamsa_patel
+import panchang
+import panchang_score
 import rao_pointers
 import shadbala_context
 from rasis import all_rasis, rasi
@@ -531,6 +533,91 @@ def gochara_route():
         return jsonify({"error": f"Transit geometry failed: {e}"}), 500
 
     return jsonify(result)
+
+
+@app.post("/api/panchang")
+def panchang_day():
+    """Generic pañcāṅga for a civil date at a place — the five limbs + the day's
+    auspicious/inauspicious windows. No horoscope needed."""
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "latitude", "longitude") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude and longitude must be numbers"}), 400
+    try:
+        d = datetime.strptime(body["date"], "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD"}), 400
+    if not EPHE_YEAR_MIN <= d.year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"year {d.year} outside ephemeris range "
+                                 f"({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    try:
+        pan = panchang.panchanga(d, lat, lon, tz_name)
+    except shadbala_context.ShadbalaUnavailable as e:
+        return jsonify({"error": str(e)}), 422
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Pañcāṅga failed: {e}"}), 500
+    pan.pop("_moon_sign", None)
+    return jsonify(pan)
+
+
+@app.post("/api/panchang/calendar")
+def panchang_calendar():
+    """Chart-tailored month: for each day, an auspiciousness score (tārā-bala +
+    candra-bala + Moon-transit + day-quality) for a specific birth chart, ready to
+    tint a heatmap. Birth fields as /api/chart, plus `year` and `month`; the
+    pañcāṅga place defaults to the birth place (override with cur_latitude/…)."""
+    import calendar as _calmod
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "time", "latitude", "longitude", "year", "month")
+               if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+        year, month = int(body["year"]), int(body["month"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude/longitude/year/month must be numbers"}), 400
+    if not 1 <= month <= 12:
+        return jsonify({"error": "month must be 1-12"}), 400
+    try:
+        natal_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD and time HH:MM (24h)"}), 400
+    if not EPHE_YEAR_MIN <= natal_dt.year <= EPHE_YEAR_MAX or not EPHE_YEAR_MIN <= year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"year outside ephemeris range ({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    plat = float(body.get("cur_latitude", lat))
+    plon = float(body.get("cur_longitude", lon))
+    ptz = body.get("cur_timezone") or (timezone_at(plat, plon) if body.get("cur_latitude") else tz_name)
+    try:
+        natal = compute_chart(local_dt=natal_dt, latitude=lat, longitude=lon, tz_name=tz_name)
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Birth chart failed: {e}"}), 500
+    moon = next(g for g in natal.grahas if g.key == "moon")
+    birth = {"moon_nak": moon.nakshatra.index, "moon_sign": moon.rasi,
+             "lagna_sign": natal.lagna_rasi, "dasha_lord": None}
+    days = []
+    for dd in range(1, _calmod.monthrange(year, month)[1] + 1):
+        d = datetime(year, month, dd).date()
+        try:
+            pan = panchang.panchanga(d, plat, plon, ptz)
+            sc = panchang_score.score_day(pan, birth)
+        except shadbala_context.ShadbalaUnavailable:
+            continue
+        except Exception:  # noqa: BLE001
+            continue
+        days.append({"date": d.isoformat(), "score": sc["score"], "band": sc["band"],
+                     "tithi": pan["tithi"]["name"], "paksha": pan["tithi"]["paksha"],
+                     "nakshatra": pan["nakshatra"]["name"], "vara": pan["vara"]["name"],
+                     "yoga": pan["yoga"]["name"], "windows": pan["windows"], "detail": sc})
+    return jsonify({"year": year, "month": month, "days": days,
+                    "birth": {"moon_nakshatra": moon.nakshatra.name_iast,
+                              "moon_sign": moon.rasi, "lagna_sign": natal.lagna_rasi}})
 
 
 @app.post("/api/dasha")

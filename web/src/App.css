@@ -1761,7 +1761,13 @@ footer a:hover { color: var(--accent); }
 .pc-nav:hover { border-color: var(--accent); }
 .pc-legend { display: inline-flex; align-items: center; gap: .3rem; margin-left: auto; font-size: .78rem; opacity: .85; }
 .pc-legend i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; margin-left: .5rem; }
-.pc-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: .4rem 0; }
+.pc-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: .4rem auto; max-width: 22rem; }
+/* embedded in the chart-figure: blend in, keep it compact */
+.chart-figure .panchang-panel { border: 0; padding: 0; margin: 0; background: transparent; }
+.panchang-panel > h3 { font-size: 1.02rem; margin: 0 0 .35rem; }
+.panchang-panel .pc-head { justify-content: center; }
+.panchang-panel .pc-legend { margin-left: 0; flex-basis: 100%; justify-content: center; }
+.panchang-panel .pc-detail { max-width: 34rem; margin-left: auto; margin-right: auto; }
 .pc-wd { text-align: center; font-size: .72rem; opacity: .6; padding: .2rem 0; }
 .pc-cell { position: relative; aspect-ratio: 1 / 1; border: 0; border-radius: 6px; cursor: pointer; padding: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center;

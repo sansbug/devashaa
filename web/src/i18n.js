@@ -63,6 +63,7 @@ const MANUAL = {
   'classical.houseTitle': { en: 'Planet-in-house (bhāva)', hi: 'भाव में ग्रह (भाव-फल)' },
   'classical.bhava': { en: 'bhāva', hi: 'भाव' },
   // ── Panchāṅga ──
+  'panchang.tab': { en: 'Pañcāṅga', hi: 'पञ्चाङ्ग' },
   'panchang.title': { en: 'Pañcāṅga — auspicious days', hi: 'पञ्चाङ्ग — शुभ दिन' },
   'panchang.limbs': { en: 'Pañcāṅga', hi: 'पञ्चाङ्ग' },
   'panchang.foryou': { en: 'For this chart', hi: 'इस कुंडली हेतु' },

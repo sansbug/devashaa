@@ -705,21 +705,30 @@ export default function App() {
                         onClick={() => setStyle('north')}>North Indian</button>
                 <button type="button" className={style === 'wheel' ? 'on' : ''}
                         onClick={() => setStyle('wheel')}>Sky wheel</button>
+                <button type="button" className={style === 'panchang' ? 'on' : ''}
+                        onClick={() => setStyle('panchang')}>{t('panchang.tab', 'Pañcāṅga')}</button>
               </div>
-              <div className="vargas">
-                {VARGA_LABELS.map(([k, label]) => (
-                  <button type="button" key={k} title={`${label} — ${VARGA_SIG[k]}`}
-                          className={varga === k ? 'on' : ''}
-                          onClick={() => setVarga(k)}>{k}</button>
-                ))}
-              </div>
-              <div className="varga-name">
-                <strong>{VARGA_LABELS.find(([k]) => k === varga)[1]}</strong>
-                <span className="varga-sig"> — read for {VARGA_SIG[varga]}</span>
-                <span className="varga-tier" title={VARGA_SIG_NOTE}>traditional</span>
-              </div>
+              {style !== 'panchang' && (
+                <div className="vargas">
+                  {VARGA_LABELS.map(([k, label]) => (
+                    <button type="button" key={k} title={`${label} — ${VARGA_SIG[k]}`}
+                            className={varga === k ? 'on' : ''}
+                            onClick={() => setVarga(k)}>{k}</button>
+                  ))}
+                </div>
+              )}
+              {style !== 'panchang' && (
+                <div className="varga-name">
+                  <strong>{VARGA_LABELS.find(([k]) => k === varga)[1]}</strong>
+                  <span className="varga-sig"> — read for {VARGA_SIG[varga]}</span>
+                  <span className="varga-tier" title={VARGA_SIG_NOTE}>traditional</span>
+                </div>
+              )}
             </div>
             <div className="chart-figure">
+              {style === 'panchang' ? (
+                <PanchangHeatmap date={date} time={time} place={place} />
+              ) : (<>
               <Chart
                 grahas={chart.grahas}
                 lagnaRasi={chart.lagna_rasi}
@@ -762,6 +771,7 @@ export default function App() {
                   true MC is not 90° from the lagna along the ecliptic).
                 </p>
               )}
+              </>)}
             </div>
             {varga === 'D9' && chart.navamsa && !chart.navamsa.error && (
               <>
@@ -833,8 +843,6 @@ export default function App() {
           {chart.analysis && chart.analysis.classical && (
             <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
-
-          <PanchangHeatmap date={date} time={time} place={place} />
 
           <section className="table-panel" id="rg-dasha">
             <h3>{t('dasha.title')}</h3>

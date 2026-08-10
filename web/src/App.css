@@ -1753,3 +1753,35 @@ footer a:hover { color: var(--accent); }
 .sb-badge.ok { color: var(--ok-ink); border-color: var(--ok-line); }
 .sb-badge.no { color: var(--rx); border-color: var(--err-line); }
 .sb-foot { margin: .5rem 0 0; font-size: .68rem; color: var(--dim); line-height: 1.6; }
+
+/* ── Panchāṅga heatmap ─────────────────────────────────────────────── */
+.panchang-panel .pc-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin: .2rem 0 .6rem; }
+.pc-nav { background: var(--quote-bg); color: var(--ink); border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 6px; width: 2rem; height: 2rem; font-size: 1.1rem; cursor: pointer; line-height: 1; }
+.pc-nav:hover { border-color: var(--accent); }
+.pc-legend { display: inline-flex; align-items: center; gap: .3rem; margin-left: auto; font-size: .78rem; opacity: .85; }
+.pc-legend i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; margin-left: .5rem; }
+.pc-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: .4rem 0; }
+.pc-wd { text-align: center; font-size: .72rem; opacity: .6; padding: .2rem 0; }
+.pc-cell { position: relative; aspect-ratio: 1 / 1; border: 0; border-radius: 6px; cursor: pointer; padding: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #17130a; text-shadow: 0 1px 0 rgba(255,255,255,.4); font-family: inherit; }
+.pc-cell .pc-d { font-size: .82rem; font-weight: 600; line-height: 1; }
+.pc-cell .pc-s { font-size: .68rem; font-weight: 700; opacity: .9; }
+.pc-cell:hover { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pc-cell.pc-sel { outline: 2px solid var(--ink); outline-offset: 1px; }
+.pc-blank { background: transparent; cursor: default; }
+.pc-na { background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); text-shadow: none; opacity: .5; cursor: default; }
+.pc-err { color: var(--err-ink); }
+.pc-detail { border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent); border-radius: 8px;
+  padding: .7rem .8rem; margin-top: .6rem; background: var(--quote-bg); }
+.pc-detail-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; font-size: .95rem; }
+.pc-band { color: #17130a; font-weight: 800; border-radius: 5px; padding: .05rem .45rem; text-shadow: 0 1px 0 rgba(255,255,255,.4); }
+.pc-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem 1.2rem; }
+.pc-detail-grid h5 { margin: 0 0 .3rem; font-size: .82rem; color: var(--accent); text-transform: uppercase; letter-spacing: .04em; }
+.pc-row { display: flex; gap: .4rem; font-size: .82rem; padding: .12rem 0; align-items: baseline; }
+.pc-k { flex: 0 0 6.5rem; opacity: .65; }
+.pc-v { flex: 1; }
+.pc-src { opacity: .5; font-size: .72rem; font-style: italic; }
+.pc-note { font-size: .76rem; opacity: .7; margin: .6rem 0 0; line-height: 1.4; }
+@media (max-width: 480px) { .pc-k { flex-basis: 5rem; } .pc-cell .pc-s { font-size: .62rem; } }

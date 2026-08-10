@@ -21,6 +21,7 @@ from panchang import _YOGA_BAD
 # ── tārā-bala: 9-fold cycle from the janma nakṣatra ──────────────────────────
 _TARA = ["Janma", "Sampat", "Vipat", "Kṣema", "Pratyari", "Sādhaka", "Vadha",
          "Mitra", "Ati-mitra"]
+_TARA_HI = ["जन्म", "सम्पत्", "विपत्", "क्षेम", "प्रत्यरि", "साधक", "वध", "मित्र", "अति-मित्र"]
 _TARA_GOOD = {1, 3, 5, 7, 8}   # Sampat, Kṣema, Sādhaka, Mitra, Ati-mitra (0-based)
 _TARA_BAD = {2, 4, 6}          # Vipat, Pratyari, Vadha
 # Janma (0) is mixed/neutral.
@@ -31,7 +32,7 @@ def tarabala(birth_nak_index: int, day_nak_index: int) -> dict:
     n = (day_nak_index - birth_nak_index) % 27
     idx = n % 9
     verdict = "favourable" if idx in _TARA_GOOD else ("unfavourable" if idx in _TARA_BAD else "mixed")
-    return {"tara": _TARA[idx], "index": idx + 1, "verdict": verdict,
+    return {"tara": _TARA[idx], "tara_hi": _TARA_HI[idx], "index": idx + 1, "verdict": verdict,
             "source": "9-tārā cycle from the janma-nakṣatra (muhūrta / BPHS)"}
 
 

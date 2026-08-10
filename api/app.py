@@ -612,9 +612,12 @@ def panchang_calendar():
         except Exception:  # noqa: BLE001
             continue
         days.append({"date": d.isoformat(), "score": sc["score"], "band": sc["band"],
-                     "tithi": pan["tithi"]["name"], "paksha": pan["tithi"]["paksha"],
-                     "nakshatra": pan["nakshatra"]["name"], "vara": pan["vara"]["name"],
-                     "yoga": pan["yoga"]["name"], "windows": pan["windows"], "detail": sc})
+                     "tithi": pan["tithi"]["name"], "tithi_hi": pan["tithi"]["name_hi"],
+                     "paksha": pan["tithi"]["paksha"],
+                     "nakshatra": pan["nakshatra"]["name"], "nakshatra_hi": pan["nakshatra"]["name_hi"],
+                     "vara": pan["vara"]["name"], "vara_hi": pan["vara"]["name_hi"],
+                     "yoga": pan["yoga"]["name"], "yoga_hi": pan["yoga"]["name_hi"],
+                     "windows": pan["windows"], "detail": sc})
     return jsonify({"year": year, "month": month, "days": days,
                     "birth": {"moon_nakshatra": moon.nakshatra.name_iast,
                               "moon_sign": moon.rasi, "lagna_sign": natal.lagna_rasi}})

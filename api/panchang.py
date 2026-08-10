@@ -51,6 +51,22 @@ _VARA = [("Ravivāra", "sun"), ("Somavāra", "moon"), ("Maṅgalavāra", "mars")
          ("Budhavāra", "mercury"), ("Guruvāra", "jupiter"), ("Śukravāra", "venus"),
          ("Śanivāra", "saturn")]
 
+# ── Devanāgarī parallels (served alongside IAST for Hindi mode) ──────────────
+_TITHI_HI = ["प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी",
+             "अष्टमी", "नवमी", "दशमी", "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "पूर्णिमा"]
+_YOGA_HI = ["विष्कम्भ", "प्रीति", "आयुष्मान्", "सौभाग्य", "शोभन", "अतिगण्ड", "सुकर्मा",
+            "धृति", "शूल", "गण्ड", "वृद्धि", "ध्रुव", "व्याघात", "हर्षण", "वज्र", "सिद्धि",
+            "व्यतीपात", "वरीयान्", "परिघ", "शिव", "सिद्ध", "साध्य", "शुभ", "शुक्ल",
+            "ब्रह्मा", "इन्द्र", "वैधृति"]
+_VARA_HI = ["रविवार", "सोमवार", "मङ्गलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"]
+_NAK_HI = ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "पुष्य",
+           "आश्लेषा", "मघा", "पूर्वाफाल्गुनी", "उत्तराफाल्गुनी", "हस्त", "चित्रा", "स्वाति",
+           "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढा", "उत्तराषाढा", "श्रवण",
+           "धनिष्ठा", "शतभिषा", "पूर्वाभाद्रपदा", "उत्तराभाद्रपदा", "रेवती"]
+_KARANA_HI = {"Bava": "बव", "Bālava": "बालव", "Kaulava": "कौलव", "Taitila": "तैतिल",
+              "Gara": "गर", "Vaṇija": "वणिज", "Viṣṭi": "विष्टि", "Kiṁstughna": "किंस्तुघ्न",
+              "Śakuni": "शकुनि", "Catuṣpada": "चतुष्पद", "Nāga": "नाग"}
+
 # Which 1/8th of the daytime each inauspicious window falls in, by weekday (Sun=0).
 _RAHU = [8, 2, 7, 5, 6, 4, 3]        # rāhu-kāla part (1-8)
 _YAMA = [5, 4, 3, 2, 1, 7, 6]        # yama-gaṇḍa
@@ -149,8 +165,10 @@ def panchanga(date: _dt.date, latitude: float, longitude: float, tz_name: str) -
     paksha = "śukla" if ti_idx < 15 else "kṛṣṇa"
     ti_in_paksha = ti_idx % 15                       # 0..14
     ti_name = _TITHI[ti_in_paksha]
+    ti_name_hi = _TITHI_HI[ti_in_paksha]
     if ti_in_paksha == 14:
         ti_name = "Pūrṇimā" if paksha == "śukla" else "Amāvāsyā"
+        ti_name_hi = "पूर्णिमा" if paksha == "śukla" else "अमावस्या"
     yo_idx, yo_frac = _span_at_sunrise(jd_rise, swe.SUN, swe.MOON, NAKSHATRA_ARC, 27)
     # yoga uses the SUM; _span_at_sunrise subtracts, so recompute the sum here.
     moon_lon = _lon(jd_rise, swe.MOON)
@@ -167,15 +185,17 @@ def panchanga(date: _dt.date, latitude: float, longitude: float, tz_name: str) -
     return {
         "date": date.isoformat(),
         "_moon_sign": int(moon_lon // 30),   # 0-11, for chart-tailored scoring
-        "tithi": {"index": ti_idx + 1, "name": ti_name, "paksha": paksha,
+        "tithi": {"index": ti_idx + 1, "name": ti_name, "name_hi": ti_name_hi, "paksha": paksha,
                   "number_in_paksha": ti_in_paksha + 1,
                   "group": _TITHI_GROUP[ti_in_paksha % 5], "elapsed": round(ti_frac, 3)},
-        "vara": {"index": wd, "name": vara_name, "lord": vara_lord},
-        "nakshatra": {"index": nak.index, "name": nak.name_iast, "pada": nak.pada,
-                      "lord": _NAK_LORD[(nak.index - 1) % 9],
+        "vara": {"index": wd, "name": vara_name, "name_hi": _VARA_HI[wd], "lord": vara_lord},
+        "nakshatra": {"index": nak.index, "name": nak.name_iast, "name_hi": _NAK_HI[nak.index - 1],
+                      "pada": nak.pada, "lord": _NAK_LORD[(nak.index - 1) % 9],
                       "elapsed": round(nak.fraction, 3)},
-        "yoga": {"index": yo_idx + 1, "name": _YOGA[yo_idx], "auspicious": yo_idx not in _YOGA_BAD},
-        "karana": {"name": kar_name, "auspicious": not kar_bad},
+        "yoga": {"index": yo_idx + 1, "name": _YOGA[yo_idx], "name_hi": _YOGA_HI[yo_idx],
+                 "auspicious": yo_idx not in _YOGA_BAD},
+        "karana": {"name": kar_name, "name_hi": _KARANA_HI.get(kar_name, kar_name),
+                   "auspicious": not kar_bad},
         "windows": _windows(jd_rise, jd_set, jd_next, wd, off),
         "note": ("Pañcāṅga computed at sunrise (sidereal/Lahiri). The five limbs and "
                  "the day-windows describe the day itself; they are not a verdict on "

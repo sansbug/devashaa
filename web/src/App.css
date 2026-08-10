@@ -1762,6 +1762,10 @@ footer a:hover { color: var(--accent); }
 .pc-legend { display: inline-flex; align-items: center; gap: .3rem; margin-left: auto; font-size: .78rem; opacity: .85; }
 .pc-legend i { width: .8rem; height: .8rem; border-radius: 3px; display: inline-block; margin-left: .5rem; }
 .pc-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin: .4rem auto; max-width: 22rem; }
+/* Calendar + "special days" list side by side when there's room; stack when not. */
+.pc-calwrap { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; align-items: flex-start; justify-content: center; }
+.pc-calwrap .pc-cal { flex: 0 0 auto; width: 21rem; max-width: 100%; margin: .4rem 0; }
+.pc-calwrap .pc-festlist { flex: 1 1 13rem; min-width: 12rem; max-width: 22rem; margin: .4rem 0 0; }
 /* embedded in the chart-figure: blend in, keep it compact */
 .chart-figure .panchang-panel { border: 0; padding: 0; margin: 0; background: transparent; }
 .panchang-panel > h3 { font-size: 1.02rem; margin: 0 0 .35rem; }

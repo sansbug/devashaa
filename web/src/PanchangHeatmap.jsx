@@ -202,6 +202,7 @@ export default function PanchangHeatmap({ date, time, place }) {
       )}
       {busy && <p className="rc-note">{t('panchang.loading', 'Computing the month…')}</p>}
       {err && <p className="rc-note pc-err">{err}</p>}
+      <div className="pc-calwrap">
       <div className="pc-cal" role="grid">
         {WD.map((w) => <div key={w} className="pc-wd">{t(`wd.${w}`, w)}</div>)}
         {cells.map((c, i) => c == null ? <div key={i} className="pc-cell pc-blank" />
@@ -226,6 +227,7 @@ export default function PanchangHeatmap({ date, time, place }) {
           })())}
       </div>
       <MonthFestivals days={data?.days} t={t} lang={lang} />
+      </div>
       {sel && !sel.empty && <DayDetail day={sel} t={t} lang={lang} />}
     </section>
   )

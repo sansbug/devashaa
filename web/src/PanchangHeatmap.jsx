@@ -61,10 +61,10 @@ function DayDetail({ day, t, lang }) {
         </div>
         <div>
           <h5>{t('panchang.foryou', 'For this chart')}</h5>
-          <Row label={t('panchang.tarabala', 'Tārā-bala')} value={`${H(d.tarabala.tara, d.tarabala.tara_hi)} · ${verdict(d.tarabala.verdict)}`} source={d.tarabala.source} />
-          <Row label={t('panchang.candrabala', 'Candra-bala')} value={`${t('panchang.house', 'house')} ${d.candrabala.house_from_moon} · ${verdict(d.candrabala.verdict)}`} source={d.candrabala.source} />
-          <Row label={t('panchang.transit', 'Moon transit')} value={`${t('panchang.bhava', 'bhāva')} ${d.moon_transit.bhava_from_lagna} · ${verdict(d.moon_transit.verdict)}`} source={d.moon_transit.source} />
-          <Row label={t('panchang.dayquality', 'Day quality')} value={d.day_quality.flags.length ? d.day_quality.flags.join(', ') : verdict('clean')} source={d.day_quality.source} />
+          <Row label={t('panchang.tarabala', 'Tārā-bala')} value={`${H(d.tarabala.tara, d.tarabala.tara_hi)} · ${verdict(d.tarabala.verdict)}`} source={H(d.tarabala.source, d.tarabala.source_hi)} />
+          <Row label={t('panchang.candrabala', 'Candra-bala')} value={`${t('panchang.house', 'house')} ${d.candrabala.house_from_moon} · ${verdict(d.candrabala.verdict)}`} source={H(d.candrabala.source, d.candrabala.source_hi)} />
+          <Row label={t('panchang.transit', 'Moon transit')} value={`${t('panchang.bhava', 'bhāva')} ${d.moon_transit.bhava_from_lagna} · ${verdict(d.moon_transit.verdict)}`} source={H(d.moon_transit.source, d.moon_transit.source_hi)} />
+          <Row label={t('panchang.dayquality', 'Day quality')} value={((lang === 'hi' && d.day_quality.flags_hi) || d.day_quality.flags).length ? ((lang === 'hi' && d.day_quality.flags_hi) || d.day_quality.flags).join(', ') : verdict('clean')} source={H(d.day_quality.source, d.day_quality.source_hi)} />
         </div>
         <div>
           <h5>{t('panchang.windows', 'Windows')}</h5>

@@ -33,7 +33,8 @@ def tarabala(birth_nak_index: int, day_nak_index: int) -> dict:
     idx = n % 9
     verdict = "favourable" if idx in _TARA_GOOD else ("unfavourable" if idx in _TARA_BAD else "mixed")
     return {"tara": _TARA[idx], "tara_hi": _TARA_HI[idx], "index": idx + 1, "verdict": verdict,
-            "source": "9-tārā cycle from the janma-nakṣatra (muhūrta / BPHS)"}
+            "source": "9-tārā cycle from the janma-nakṣatra (muhūrta / BPHS)",
+            "source_hi": "जन्म-नक्षत्र से 9-तारा चक्र (मुहूर्त / बीपीएचएस)"}
 
 
 # ── candra-bala: day Moon-sign counted from the birth Moon-sign ──────────────
@@ -46,7 +47,8 @@ def candrabala(birth_moon_sign: int, day_moon_sign: int) -> dict:
     h = (day_moon_sign - birth_moon_sign) % 12 + 1
     verdict = "favourable" if h in _CHANDRA_GOOD else ("unfavourable" if h in _CHANDRA_BAD else "mixed")
     return {"house_from_moon": h, "verdict": verdict,
-            "source": "candra-bala: the transiting Moon-sign counted from the janma-rāśi"}
+            "source": "candra-bala: the transiting Moon-sign counted from the janma-rāśi",
+            "source_hi": "चन्द्र-बल: जन्म-राशि से गिनी गई गोचर चन्द्र-राशि"}
 
 
 # ── moon transit as a bhāva from the lagna (gochara) ─────────────────────────
@@ -58,7 +60,8 @@ def moon_transit(lagna_sign: int, day_moon_sign: int) -> dict:
     h = (day_moon_sign - lagna_sign) % 12 + 1
     verdict = "favourable" if h in _TRANSIT_GOOD else ("unfavourable" if h in _TRANSIT_BAD else "mixed")
     return {"bhava_from_lagna": h, "verdict": verdict,
-            "source": "gochara: the transiting Moon as a bhāva from the lagna"}
+            "source": "gochara: the transiting Moon as a bhāva from the lagna",
+            "source_hi": "गोचर: लग्न से भाव के रूप में गोचर चन्द्र"}
 
 
 # ── the day's own quality (tithi / yoga / karaṇa) ────────────────────────────
@@ -66,19 +69,21 @@ _RIKTA = {4, 9, 14}   # Riktā tithis (number in pakṣa) — weak for beginning
 
 
 def day_quality(pan: dict) -> dict:
-    flags = []
+    flags, flags_hi = [], []
     t = pan["tithi"]
     if t["number_in_paksha"] in _RIKTA:
-        flags.append("Riktā tithi")
+        flags.append("Riktā tithi"); flags_hi.append("रिक्ता तिथि")
     if t["name"] == "Amāvāsyā":
-        flags.append("Amāvāsyā")
+        flags.append("Amāvāsyā"); flags_hi.append("अमावस्या")
     if not pan["yoga"]["auspicious"]:
         flags.append("malefic yoga (%s)" % pan["yoga"]["name"])
+        flags_hi.append("अशुभ योग (%s)" % pan["yoga"].get("name_hi", pan["yoga"]["name"]))
     if not pan["karana"]["auspicious"] and pan["karana"]["name"] == "Viṣṭi":
-        flags.append("Viṣṭi (Bhadrā) karaṇa")
+        flags.append("Viṣṭi (Bhadrā) karaṇa"); flags_hi.append("विष्टि (भद्रा) करण")
     verdict = "clean" if not flags else ("weak" if len(flags) == 1 else "unfavourable")
-    return {"flags": flags, "verdict": verdict,
-            "source": "day's own tithi / yoga / karaṇa (muhūrta)"}
+    return {"flags": flags, "flags_hi": flags_hi, "verdict": verdict,
+            "source": "day's own tithi / yoga / karaṇa (muhūrta)",
+            "source_hi": "दिन की अपनी तिथि / योग / करण (मुहूर्त)"}
 
 
 _W = {"favourable": 1.0, "clean": 1.0, "mixed": 0.5, "weak": 0.4,

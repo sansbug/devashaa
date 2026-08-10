@@ -152,7 +152,16 @@ export default function PanchangHeatmap({ date, time, place }) {
       }),
     })
       .then((r) => r.json())
-      .then((j) => { if (!alive) return; if (j.error) setErr(j.error); else { setData(j); setSel((j.days || [])[0] || null) } })
+      .then((j) => {
+        if (!alive) return
+        if (j.error) { setErr(j.error); return }
+        setData(j)
+        // Open on today when the shown month is the current one; else the 1st.
+        const now = new Date()
+        const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+        const days = j.days || []
+        setSel(days.find((d) => d.date === todayIso) || days[0] || null)
+      })
       .catch((e) => alive && setErr(String(e)))
       .finally(() => alive && setBusy(false))
     return () => { alive = false }

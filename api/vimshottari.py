@@ -215,3 +215,61 @@ def _strip_jd(node: DashaPeriod) -> dict:
     d["sub"] = [_strip_jd(s) for s in node.sub]
     # asdict already recursed; rebuild sub cleanly to also strip nested jd
     return d
+
+
+def running_lords(
+    birth_jd: float,
+    moon_nakshatra_index: int,        # 1-27
+    moon_nakshatra_fraction: float,   # 0-1 through the nakṣatra
+    as_of_jd: float,
+    year_days: float = DEFAULT_YEAR_DAYS,
+    depth: int = 2,
+) -> list[str]:
+    """The daśā lord keys active at ``as_of_jd`` — one per level up to ``depth``
+    (depth=2 → ``[mahādaśā, antardaśā]``).
+
+    Same anchoring math as :func:`build_vimshottari` (notional start before
+    birth, so every boundary is exact), but it walks straight to the period
+    containing ``as_of_jd`` at each level instead of materialising the whole
+    tree — cheap enough to call per calendar day. Returns ``[]`` when ``as_of_jd``
+    precedes the notional start of the running mahādaśā.
+    """
+    start_lord = _ORDER[(moon_nakshatra_index - 1) % 9]
+    elapsed_years = moon_nakshatra_fraction * _YEARS[start_lord]
+    notional_start = birth_jd - elapsed_years * year_days
+    if as_of_jd < notional_start:
+        return []
+
+    lords: list[str] = []
+    # Level 0: the mahādaśās, wrapping the nine-lord cycle from start_lord until
+    # the period bracketing as_of_jd is found (a few cycles cover any real span).
+    seq = _rotated_from(start_lord)
+    cursor, idx = notional_start, 0
+    seg_start = seg_dur = seg_lord = None
+    for _ in range(9 * 5):
+        lord = seq[idx % 9]
+        dur = _YEARS[lord] * year_days
+        if cursor <= as_of_jd < cursor + dur:
+            seg_start, seg_dur, seg_lord = cursor, dur, lord
+            break
+        cursor += dur
+        idx += 1
+    if seg_lord is None:
+        return []
+    lords.append(seg_lord)
+
+    # Deeper levels: subdivide the found period the same way _subdivide does.
+    while len(lords) < depth:
+        c, found = seg_start, None
+        for sub in _rotated_from(seg_lord):
+            d = seg_dur * _YEARS[sub] / TOTAL_YEARS
+            if c <= as_of_jd < c + d:
+                found = (sub, c, d)
+                break
+            c += d
+        if found is None:
+            break
+        seg_lord, seg_start, seg_dur = found
+        lords.append(seg_lord)
+
+    return lords

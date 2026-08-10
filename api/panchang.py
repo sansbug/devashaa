@@ -185,6 +185,8 @@ def panchanga(date: _dt.date, latitude: float, longitude: float, tz_name: str) -
     return {
         "date": date.isoformat(),
         "_moon_sign": int(moon_lon // 30),   # 0-11, for chart-tailored scoring
+        # Sunrise/sunset/next-sunrise JD(UT), kept private for the festival
+        "_jd_rise": jd_rise, "_jd_set": jd_set, "_jd_next": jd_next,  # kāla matcher
         "tithi": {"index": ti_idx + 1, "name": ti_name, "name_hi": ti_name_hi, "paksha": paksha,
                   "number_in_paksha": ti_in_paksha + 1,
                   "group": _TITHI_GROUP[ti_in_paksha % 5], "elapsed": round(ti_frac, 3)},
@@ -201,3 +203,31 @@ def panchanga(date: _dt.date, latitude: float, longitude: float, tz_name: str) -
                  "the day-windows describe the day itself; they are not a verdict on "
                  "any person."),
     }
+
+
+# ── tithi at an arbitrary instant (festival muhūrta matching) ────────────────
+# Most festivals fall on the day their tithi prevails AT SUNRISE, but several are
+# fixed to another kāla — Diwali to pradoṣa (dusk), Mahā-śivarātri to niśīta
+# (midnight), Vijayadaśamī to aparāhṇa (afternoon). festivals.py reads the tithi
+# at the right kāla via these helpers, so those land on the civil day an almanac
+# prints rather than one day late.
+
+def tithi_pk_num_at(jd: float) -> tuple[str, int]:
+    """(pakṣa, number-in-pakṣa 1..15) of the tithi live at instant `jd`."""
+    idx = int(_norm360(_lon(jd, swe.MOON) - _lon(jd, swe.SUN)) // 12.0)  # 0..29
+    return ("shukla" if idx < 15 else "krishna"), (idx % 15) + 1
+
+
+def kala_instant(pan: dict, kala: str) -> float:
+    """The JD(UT) of a named kāla for the day described by `pan` (which must
+    still carry the private ``_jd_rise/_jd_set/_jd_next``)."""
+    r, s, n = pan["_jd_rise"], pan["_jd_set"], pan["_jd_next"]
+    if kala == "pradosha":     # dusk — the muhūrta after sunset
+        return s
+    if kala == "nishita":      # midnight — the middle of the night
+        return (s + n) / 2.0
+    if kala == "aparahna":     # afternoon — the 4th of five daytime parts
+        return r + (s - r) * 3.0 / 5.0
+    if kala == "purvahna":     # forenoon — mid-morning, ~2nd of five parts
+        return r + (s - r) * 0.35
+    return r                   # "sunrise" (default)

@@ -20,7 +20,8 @@ from vedic import (
     NAKSHATRAS,
 )
 from vargas import VARGAS
-from vimshottari import DEFAULT_YEAR_DAYS, YEAR_DAYS_SAVANA, YEAR_DAYS_JULIAN
+from vimshottari import (DEFAULT_YEAR_DAYS, YEAR_DAYS_SAVANA, YEAR_DAYS_JULIAN,
+                         running_lords)
 from dashas import (
     SYSTEMS, build_dasha_system, validated_systems, ASHTOTTARI, build_ashtottari,
 )
@@ -36,7 +37,9 @@ import nakshatra_techniques
 import navamsa
 import navamsa_patel
 import panchang
+import panchang_masa
 import panchang_score
+import festivals as festivals_mod
 import rao_pointers
 import shadbala_context
 from rasis import all_rasis, rasi
@@ -557,11 +560,18 @@ def panchang_day():
     tz_name = body.get("timezone") or timezone_at(lat, lon)
     try:
         pan = panchang.panchanga(d, lat, lon, tz_name)
+        masa = panchang_masa.amanta_masa(d, tz_name)
+        sank = panchang_masa.sankranti_on(d, tz_name)
+        pan["festivals"] = festivals_mod.festivals_for_day(pan, masa, sank)
     except shadbala_context.ShadbalaUnavailable as e:
         return jsonify({"error": str(e)}), 422
     except Exception as e:  # noqa: BLE001
         return jsonify({"error": f"Pañcāṅga failed: {e}"}), 500
-    pan.pop("_moon_sign", None)
+    pan["masa"] = {"name": masa["name"], "name_hi": masa["name_hi"],
+                   "index": masa["index"], "adhika": masa["adhika"]}
+    pan["festival_note"] = festivals_mod.CONVENTION
+    for _k in ("_moon_sign", "_jd_rise", "_jd_set", "_jd_next"):
+        pan.pop(_k, None)
     return jsonify(pan)
 
 
@@ -600,13 +610,25 @@ def panchang_calendar():
         return jsonify({"error": f"Birth chart failed: {e}"}), 500
     moon = next(g for g in natal.grahas if g.key == "moon")
     birth = {"moon_nak": moon.nakshatra.index, "moon_sign": moon.rasi,
-             "lagna_sign": natal.lagna_rasi, "dasha_lord": None}
+             "lagna_sign": natal.lagna_rasi}
+    birth_jd = natal.jd_ut
+    nak_frac = moon.nakshatra.fraction
     days = []
     for dd in range(1, _calmod.monthrange(year, month)[1] + 1):
         d = datetime(year, month, dd).date()
         try:
             pan = panchang.panchanga(d, plat, plon, ptz)
+            # The running Viṁśottarī lords on this day (mahā + antar) drive the
+            # daśā-fit component; noon-UT is well inside a daśā period's span.
+            as_of = swe.julday(year, month, dd, 12.0, swe.GREG_CAL)
+            lords = running_lords(birth_jd, birth["moon_nak"], nak_frac, as_of,
+                                  year_days=DEFAULT_YEAR_DAYS, depth=2)
+            birth["dasha_maha"] = lords[0] if lords else None
+            birth["dasha_antar"] = lords[1] if len(lords) > 1 else None
             sc = panchang_score.score_day(pan, birth)
+            masa = panchang_masa.amanta_masa(d, ptz)
+            sank = panchang_masa.sankranti_on(d, ptz)
+            fests = festivals_mod.festivals_for_day(pan, masa, sank)
         except shadbala_context.ShadbalaUnavailable:
             continue
         except Exception:  # noqa: BLE001
@@ -617,8 +639,11 @@ def panchang_calendar():
                      "nakshatra": pan["nakshatra"]["name"], "nakshatra_hi": pan["nakshatra"]["name_hi"],
                      "vara": pan["vara"]["name"], "vara_hi": pan["vara"]["name_hi"],
                      "yoga": pan["yoga"]["name"], "yoga_hi": pan["yoga"]["name_hi"],
+                     "masa": masa["name"], "masa_hi": masa["name_hi"],
+                     "festivals": fests,
                      "windows": pan["windows"], "detail": sc})
     return jsonify({"year": year, "month": month, "days": days,
+                    "festival_note": festivals_mod.CONVENTION,
                     "birth": {"moon_nakshatra": moon.nakshatra.name_iast,
                               "moon_sign": moon.rasi, "lagna_sign": natal.lagna_rasi}})
 

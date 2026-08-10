@@ -1791,3 +1791,28 @@ footer a:hover { color: var(--accent); }
 .pc-src { opacity: .5; font-size: .72rem; font-style: italic; }
 .pc-note { font-size: .76rem; opacity: .7; margin: .6rem 0 0; line-height: 1.4; }
 @media (max-width: 480px) { .pc-k { flex-basis: 5rem; } .pc-cell .pc-s { font-size: .62rem; } }
+
+/* Festival marker on a heatmap cell — a corner dot readable on any tint (dark
+   dot + white ring), sized by importance. Shape/size, never colour alone. */
+.pc-fest-dot { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px;
+  border-radius: 50%; background: #2a2118; box-shadow: 0 0 0 1.5px rgba(255,255,255,.85); }
+.pc-fest-dot.imp-major { width: 8px; height: 8px; }
+.pc-fest-dot.imp-notable { width: 6px; height: 6px; }
+.pc-fest-dot.imp-observance { width: 5px; height: 5px; opacity: .7; }
+
+/* Festival chips — in the day detail and the month list. */
+.pc-fest-day { display: flex; flex-wrap: wrap; gap: .25rem; margin: -.15rem 0 .5rem; }
+.pc-fest-tag { display: inline-block; font-size: .72rem; padding: .03rem .45rem; border-radius: 10px; }
+.pc-fest-tag.imp-major { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--ink); font-weight: 600; }
+.pc-fest-tag.imp-notable { background: color-mix(in srgb, var(--ink) 9%, transparent); }
+.pc-fest-tag.imp-observance { border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); opacity: .78; font-size: .68rem; }
+
+/* "Special days this month" list. */
+.pc-festlist { margin: .55rem auto 0; max-width: 30rem; }
+.pc-festlist summary { cursor: pointer; color: var(--accent); text-transform: uppercase;
+  letter-spacing: .04em; font-size: .78rem; font-weight: 600; }
+.pc-festlist ul { list-style: none; margin: .4rem 0 0; padding: 0; max-height: 12rem; overflow: auto; }
+.pc-festlist li { display: flex; gap: .55rem; align-items: baseline; padding: .18rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+.pc-fl-date { flex: 0 0 1.5rem; text-align: right; font-weight: 700; opacity: .7; font-variant-numeric: tabular-nums; }
+.pc-fl-names { flex: 1; display: flex; flex-wrap: wrap; gap: .25rem; align-items: baseline; }

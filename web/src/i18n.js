@@ -60,6 +60,8 @@ const MANUAL = {
   // ── classical concordance panel ───────────────────────────────────────────
   'classical.title': { en: 'Classical sources', hi: 'शास्त्रीय स्रोत' },
   'classical.in': { en: 'in', hi: 'में' },
+  'classical.houseTitle': { en: 'Planet-in-house (bhāva)', hi: 'भाव में ग्रह (भाव-फल)' },
+  'classical.bhava': { en: 'bhāva', hi: 'भाव' },
   'classical.hist.prefix': { en: 'historical', hi: 'ऐतिहासिक' },
   'classical.class.caste': { en: 'caste', hi: 'जाति' },
   'classical.class.gender': { en: 'gender & marriage', hi: 'लिंग एवं विवाह' },

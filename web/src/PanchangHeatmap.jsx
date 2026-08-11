@@ -71,7 +71,7 @@ function DayDetail({ day, t, lang }) {
         <div className="pc-fest-day">
           {fests.map((f) => (
             <span key={f.key} className={`pc-fest-tag imp-${f.importance}`}
-                  title={H(f.significance, f.significance_hi)}>{H(f.name, f.name_hi)}</span>
+                  title={H(f.significance, f.significance_hi)}>{H(f.name, f.name_hi)}{f.kala === 'drik-muhurta' && <sup className="pc-fest-src" title={t('panchang.drikSrc', 'Date per DrikPanchang')}>‡</sup>}</span>
           ))}
         </div>
       )}
@@ -127,7 +127,7 @@ function MonthFestivals({ days, t, lang }) {
             <span className="pc-fl-names">
               {(dy.festivals).map((f) => (
                 <span key={f.key} className={`pc-fest-tag imp-${f.importance}`}
-                      title={H(f.significance, f.significance_hi)}>{H(f.name, f.name_hi)}</span>
+                      title={H(f.significance, f.significance_hi)}>{H(f.name, f.name_hi)}{f.kala === 'drik-muhurta' && <sup className="pc-fest-src" title={t('panchang.drikSrc', 'Date per DrikPanchang')}>‡</sup>}</span>
               ))}
             </span>
           </li>

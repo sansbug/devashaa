@@ -80,6 +80,7 @@ const MANUAL = {
   'panchang.masa': { en: 'Lunar month', hi: 'चांद्र मास' },
   'panchang.festivals': { en: 'Festivals & observances', hi: 'पर्व एवं व्रत' },
   'panchang.monthFestivals': { en: 'Special days this month', hi: 'इस माह के विशेष दिन' },
+  'panchang.drikSrc': { en: 'Date per DrikPanchang (bhadrā-adjusted muhūrta)', hi: 'तिथि DrikPanchang अनुसार (भद्रा-समायोजित मुहूर्त)' },
   'panchang.house': { en: 'house', hi: 'भाव' },
   'panchang.bhava': { en: 'bhāva', hi: 'भाव' },
   'panchang.sunrise': { en: 'Sunrise · sunset', hi: 'सूर्योदय · सूर्यास्त' },

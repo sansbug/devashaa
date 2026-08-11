@@ -562,7 +562,7 @@ def panchang_day():
         pan = panchang.panchanga(d, lat, lon, tz_name)
         masa = panchang_masa.amanta_masa(d, tz_name)
         sank = panchang_masa.sankranti_on(d, tz_name)
-        pan["festivals"] = festivals_mod.festivals_for_day(pan, masa, sank)
+        pan["festivals"] = festivals_mod.festivals_for_day(pan, masa, sank, tz_name)
     except shadbala_context.ShadbalaUnavailable as e:
         return jsonify({"error": str(e)}), 422
     except Exception as e:  # noqa: BLE001
@@ -628,7 +628,7 @@ def panchang_calendar():
             sc = panchang_score.score_day(pan, birth)
             masa = panchang_masa.amanta_masa(d, ptz)
             sank = panchang_masa.sankranti_on(d, ptz)
-            fests = festivals_mod.festivals_for_day(pan, masa, sank)
+            fests = festivals_mod.festivals_for_day(pan, masa, sank, ptz)
         except shadbala_context.ShadbalaUnavailable:
             continue
         except Exception:  # noqa: BLE001

@@ -1811,6 +1811,7 @@ footer a:hover { color: var(--accent); }
 .pc-fest-tag.imp-major { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--ink); font-weight: 600; }
 .pc-fest-tag.imp-notable { background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .pc-fest-tag.imp-observance { border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); opacity: .78; font-size: .68rem; }
+.pc-fest-src { font-size: .7em; opacity: .6; margin-left: 1px; cursor: help; }
 
 /* "Special days this month" list. */
 .pc-festlist { margin: .55rem auto 0; max-width: 30rem; }

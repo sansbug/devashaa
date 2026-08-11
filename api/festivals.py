@@ -26,6 +26,8 @@ an ``adhika`` month matches none of them (the recurring vratas still match).
 """
 from __future__ import annotations
 
+import datetime as _dt
+
 from festivals_data import FESTIVALS
 from panchang import tithi_pk_num_at, kala_window
 
@@ -36,10 +38,39 @@ CONVENTION = (
     "madhyāhna (Rāma-navamī, Gaṇeśa-caturthī), pūrvāhṇa (Vasant-pañcamī), or "
     "moonrise (Saṅkaṣṭī, Karva Chauth) — with the standard first/last tie-break. "
     "Amānta month reckoning. Observances that split by tradition (smārta vs "
-    "vaiṣṇava) are given on the mainstream day. Holika-Dahan's bhadrā (Viṣṭi-"
-    "karaṇa) deferral is not modelled, so in a bhadrā-complicated year Holika-"
-    "Dahan and the Holi that follows it can fall one day early."
+    "vaiṣṇava) are given on the mainstream day. Holikā-Dahan's day, in a bhadrā "
+    "(Viṣṭi-karaṇa) year, follows DrikPanchang's published New-Delhi muhūrta for "
+    "2020-2035 (the bhadrā-vāsa Mukha/Puñccha sub-system it uses is not computed "
+    "here); Holi/Dhulandi is the day after. Outside India or that year range the "
+    "computed date is used."
 )
+
+# ── Bhadrā override — sourced DrikPanchang muhūrta, not a computation ─────────
+# Holikā-Dahan's DAY in a bhadrā-complicated year is decided by DrikPanchang's
+# Bhadrā Mukha/Puñccha + bhadrā-vāsa (loka) sub-system, which the vyāpti engine
+# does not reproduce: it can differ by a day (2 of 16 years — 2023 and 2026 —
+# the rest already agree). For India we defer to DrikPanchang's published
+# New-Delhi Holikā-Dahan dates; Holi/Dhulandi is always the next day. This is
+# authored, sourced data — a muhūrta lookup — and lapses outside the range, where
+# the computed date is used. Source: drikpanchang.com Holika Dahan timings, New
+# Delhi (geoname-id 1261481), retrieved 2026-08.
+_HOLIKA_DAHAN = {   # year -> (month, day), New Delhi
+    2020: (3, 9),  2021: (3, 28), 2022: (3, 17), 2023: (3, 7),
+    2024: (3, 24), 2025: (3, 13), 2026: (3, 3),  2027: (3, 21),
+    2028: (3, 10), 2029: (2, 28), 2030: (3, 19), 2031: (3, 8),
+    2032: (3, 26), 2033: (3, 15), 2034: (3, 4),  2035: (3, 23),
+}
+_OVERRIDE_TZ = "Asia/Kolkata"       # the override dates are Indian (IST) dates
+_OVERRIDE_KEYS = ("holika-dahan", "holi")
+
+
+def _override_date(key: str, year: int) -> _dt.date | None:
+    """The sourced date for a bhadrā-gated festival, or None outside the table."""
+    hd = _HOLIKA_DAHAN.get(year)
+    if hd is None:
+        return None
+    base = _dt.date(year, hd[0], hd[1])
+    return base if key == "holika-dahan" else base + _dt.timedelta(days=1)
 
 _IMPORTANCE_RANK = {"major": 0, "notable": 1, "observance": 2}
 
@@ -101,16 +132,21 @@ def _public(f: dict, **extra) -> dict:
     return out
 
 
-def festivals_for_day(pan: dict, masa: dict | None, sankranti_sign: int | None) -> list[dict]:
+def festivals_for_day(pan: dict, masa: dict | None, sankranti_sign: int | None,
+                      tz_name: str | None = None) -> list[dict]:
     """Every festival/observance falling on this day.
 
     `pan` — a :func:`panchang.panchanga` dict (carrying the private sunrise/…/
     moonrise JDs). `masa` — an :func:`panchang_masa.amanta_masa` dict (or None to
     skip month-specific festivals). `sankranti_sign` — the sidereal rāśi the Sun
-    enters today, or None. Returns public dicts sorted major→observance.
+    enters today, or None. `tz_name` — the place's zone; when it is India's, the
+    bhadrā-gated festivals use the sourced DrikPanchang override. Returns public
+    dicts sorted major→observance.
     """
     masa_idx = masa["index"] if masa else None
     adhika = bool(masa and masa.get("adhika"))
+    override_active = (tz_name == _OVERRIDE_TZ)
+    today = _dt.date.fromisoformat(pan["date"])
 
     hits: list[dict] = []
     for f in FESTIVALS:
@@ -118,6 +154,15 @@ def festivals_for_day(pan: dict, masa: dict | None, sankranti_sign: int | None) 
             if sankranti_sign is not None and f["solar_sign"] == sankranti_sign:
                 hits.append(_public(f))
             continue
+
+        # Bhadrā-gated festivals in India: the sourced muhūrta date wins outright
+        # over the vyāpti computation (only within the override's year range).
+        if override_active and f["key"] in _OVERRIDE_KEYS:
+            od = _override_date(f["key"], today.year)
+            if od is not None:
+                if today == od:
+                    hits.append(_public(f, kala="drik-muhurta"))
+                continue   # override decided it; do not also run the vyāpti path
 
         tidx = (0 if f["paksha"] == "shukla" else 15) + (f["tithi"] - 1)   # 0..29
         window, tie = _VYAPTI.get(f["key"], _DEFAULT)

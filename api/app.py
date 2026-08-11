@@ -570,7 +570,7 @@ def panchang_day():
     pan["masa"] = {"name": masa["name"], "name_hi": masa["name_hi"],
                    "index": masa["index"], "adhika": masa["adhika"]}
     pan["festival_note"] = festivals_mod.CONVENTION
-    for _k in ("_moon_sign", "_jd_rise", "_jd_set", "_jd_next"):
+    for _k in ("_moon_sign", "_jd_rise", "_jd_set", "_jd_next", "_jd_moonrise"):
         pan.pop(_k, None)
     return jsonify(pan)
 
@@ -635,7 +635,7 @@ def panchang_calendar():
             continue
         days.append({"date": d.isoformat(), "score": sc["score"], "band": sc["band"],
                      "tithi": pan["tithi"]["name"], "tithi_hi": pan["tithi"]["name_hi"],
-                     "paksha": pan["tithi"]["paksha"],
+                     "tithi_end": pan["tithi"]["end"], "paksha": pan["tithi"]["paksha"],
                      "nakshatra": pan["nakshatra"]["name"], "nakshatra_hi": pan["nakshatra"]["name_hi"],
                      "vara": pan["vara"]["name"], "vara_hi": pan["vara"]["name_hi"],
                      "yoga": pan["yoga"]["name"], "yoga_hi": pan["yoga"]["name_hi"],

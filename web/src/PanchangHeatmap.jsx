@@ -54,6 +54,12 @@ function DayDetail({ day, t, lang }) {
     ? `${t(key, fallback)} · ${Math.round(wt[wkey] * 100)}%` : t(key, fallback)
   const df = d.dasha_fit
   const fests = day.festivals || []
+  // "YYYY-MM-DD HH:MM" → "HH:MM" (or "HH:MM (DD)" if it ends the next day).
+  const endTime = (s) => {
+    if (!s) return null
+    const [d0, hm] = s.split(' ')
+    return d0 === day.date ? hm : `${hm} (${d0.slice(-2)})`
+  }
   return (
     <div className="pc-detail">
       <div className="pc-detail-head">
@@ -72,7 +78,7 @@ function DayDetail({ day, t, lang }) {
       <div className="pc-detail-grid">
         <div>
           <h5>{t('panchang.limbs', 'Pañcāṅga')}</h5>
-          <Row label={t('panchang.tithi', 'Tithi')} value={`${H(day.tithi, day.tithi_hi)} (${t('panchang.' + day.paksha, day.paksha)})`} />
+          <Row label={t('panchang.tithi', 'Tithi')} value={`${H(day.tithi, day.tithi_hi)} (${t('panchang.' + day.paksha, day.paksha)})${day.tithi_end ? ` · → ${endTime(day.tithi_end)}` : ''}`} />
           <Row label={t('panchang.masa', 'Lunar month')} value={day.masa ? H(day.masa, day.masa_hi) : null} />
           <Row label={t('panchang.vara', 'Vāra')} value={H(day.vara, day.vara_hi)} />
           <Row label={t('panchang.nakshatra', 'Nakṣatra')} value={H(day.nakshatra, day.nakshatra_hi)} />

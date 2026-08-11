@@ -117,6 +117,7 @@ function MonthFestivals({ days, t, lang }) {
   const H = (en, hi) => (lang === 'hi' && hi) ? hi : en
   const rows = (days || []).filter((dy) => (dy.festivals || []).length)
   if (!rows.length) return null
+  const hasDrik = rows.some((dy) => (dy.festivals || []).some((f) => f.kala === 'drik-muhurta'))
   return (
     <details className="pc-festlist" open>
       <summary>{t('panchang.monthFestivals', 'Special days this month')}</summary>
@@ -133,6 +134,11 @@ function MonthFestivals({ days, t, lang }) {
           </li>
         ))}
       </ul>
+      {hasDrik && (
+        <p className="pc-fl-note">
+          <sup className="pc-fest-src">‡</sup> {t('panchang.drikSrc', 'Date per DrikPanchang (bhadrā-adjusted muhūrta)')}
+        </p>
+      )}
     </details>
   )
 }

@@ -8,6 +8,7 @@ import BhavaPanel from './BhavaPanel.jsx'
 import YogaPanel from './YogaPanel.jsx'
 import ClassicalPanel from './ClassicalPanel.jsx'
 import PanchangHeatmap from './PanchangHeatmap.jsx'
+import MatrixPanel from './MatrixPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -843,6 +844,8 @@ export default function App() {
           {chart.analysis && chart.analysis.classical && (
             <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
+
+          <MatrixPanel date={date} time={time} place={place} namer={namer} />
 
           <section className="table-panel" id="rg-dasha">
             <h3>{t('dasha.title')}</h3>

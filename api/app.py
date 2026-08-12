@@ -36,6 +36,7 @@ import nakshatra_attrs
 import nakshatra_techniques
 import navamsa
 import navamsa_patel
+import matrix
 import panchang
 import panchang_masa
 import panchang_score
@@ -463,6 +464,37 @@ def chart():
         payload["dasha"] = {"error": f"Daśā calculation failed: {e}"}
 
     return jsonify(payload)
+
+
+@app.post("/api/matrix")
+def matrix_endpoint():
+    """Chart-analysis matrix — per-chart domain verdicts (v1: bhāva + kāraka).
+
+    A signed iṣṭa/kaṣṭa verdict per bhāva and per life-theme, each a transparent,
+    cited, weighted composite of the natal factor web. See api/matrix.py.
+    """
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "time", "latitude", "longitude") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude and longitude must be numbers"}), 400
+    try:
+        local_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD and time HH:MM (24h)"}), 400
+    if not EPHE_YEAR_MIN <= local_dt.year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"Year {local_dt.year} outside ephemeris range "
+                                 f"({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    try:
+        chart = compute_chart(local_dt=local_dt, latitude=lat, longitude=lon, tz_name=tz_name)
+        out = matrix.build(chart)
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Matrix build failed: {e}"}), 500
+    return jsonify(out)
 
 
 @app.post("/api/gochara")

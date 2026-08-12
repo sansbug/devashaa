@@ -34,6 +34,7 @@ function Ledger({ comps, nm, t }) {
     if (c.factor === 'karaka' || c.factor === 'sthira_karaka') return `${t('matrix.karaka', 'Kāraka')} · ${nm(c.graha)}`
     if (c.factor === 'chara_karaka') return `${c.role} · ${c.graha ? nm(c.graha) : '—'}`
     if (c.factor === 'yoga') return `${t('matrix.yoga', 'Yoga')} · ${c.slot}`
+    if (c.factor === 'varga') return `${t('matrix.varga', 'Varga')} · ${c.chart}`
     return c.factor
   }
   return (

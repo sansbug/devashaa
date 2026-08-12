@@ -94,6 +94,7 @@ const MANUAL = {
   'matrix.lord': { en: 'Lord', hi: 'स्वामी' }, 'matrix.lcol': { en: 'Lord', hi: 'स्वामी' },
   'matrix.occ': { en: 'Occ.', hi: 'ग्रह' }, 'matrix.asp': { en: 'Asp.', hi: 'दृष्टि' },
   'matrix.karaka': { en: 'Kāraka', hi: 'कारक' }, 'matrix.yoga': { en: 'Yoga', hi: 'योग' },
+  'matrix.varga': { en: 'Varga', hi: 'वर्ग' },
   'matrix.net': { en: 'Net', hi: 'निवल' },
   'matrix.band.thriving': { en: 'thriving', hi: 'समृद्ध' },
   'matrix.band.supported': { en: 'supported', hi: 'समर्थित' },

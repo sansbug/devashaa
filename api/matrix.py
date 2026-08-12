@@ -63,43 +63,46 @@ def band_of(net: float) -> str:
 THEMES = [
     {"key": "self", "name": "Self · vitality · mind",
      "houses": {1: 0.55}, "sthira": {"sun": 0.15, "moon": 0.15}, "chara": {},
-     "yoga": {"arishta": 0.15}},
+     "yoga": {"arishta": 0.15}, "varga": None},          # D1 = the natal chart itself
     {"key": "wealth", "name": "Wealth · finances",
-     "houses": {2: 0.28, 11: 0.22, 5: 0.06, 9: 0.06},
-     "sthira": {"jupiter": 0.08, "venus": 0.06}, "chara": {}, "yoga": {"dhana": 0.24}},
+     "houses": {2: 0.28, 11: 0.20, 5: 0.06, 9: 0.06},
+     "sthira": {"jupiter": 0.08, "venus": 0.06}, "chara": {}, "yoga": {"dhana": 0.16},
+     "varga": {"chart": "D2", "weight": 0.10}},
     {"key": "career", "name": "Career · status",
-     "houses": {10: 0.32, 6: 0.08, 7: 0.06, 11: 0.06, 2: 0.04},
-     "sthira": {"sun": 0.05, "saturn": 0.05, "mercury": 0.04},
-     "chara": {"AmK": 0.12}, "yoga": {"raja": 0.18}},
+     "houses": {10: 0.28, 6: 0.07, 7: 0.05, 11: 0.06, 2: 0.04},
+     "sthira": {"sun": 0.04, "saturn": 0.05, "mercury": 0.03},
+     "chara": {"AmK": 0.11}, "yoga": {"raja": 0.12}, "varga": {"chart": "D10", "weight": 0.15}},
     {"key": "marriage", "name": "Marriage · partner",
      "houses": {7: 0.40, 2: 0.06, 8: 0.04, 12: 0.04},
      "sthira": {"venus": 0.12, "jupiter": 0.06},
-     "chara": {"DK": 0.14}, "yoga": {"_varga": 0.14}},   # → D9 next
+     "chara": {"DK": 0.12}, "yoga": {}, "varga": {"chart": "D9", "weight": 0.16}},
     {"key": "children", "name": "Children · progeny",
-     "houses": {5: 0.44, 9: 0.08}, "sthira": {"jupiter": 0.16},
-     "chara": {"PK": 0.14}, "yoga": {"santana": 0.18}},   # → D7 next
+     "houses": {5: 0.40, 9: 0.08}, "sthira": {"jupiter": 0.14},
+     "chara": {"PK": 0.12}, "yoga": {"santana": 0.10}, "varga": {"chart": "D7", "weight": 0.16}},
     {"key": "health", "name": "Health · body",
-     "houses": {1: 0.30, 6: 0.24, 8: 0.10, 12: 0.06},
-     "sthira": {"sun": 0.06, "moon": 0.06}, "chara": {}, "yoga": {"balarishta": 0.18}},
+     "houses": {1: 0.28, 6: 0.22, 8: 0.08, 12: 0.06},
+     "sthira": {"sun": 0.05, "moon": 0.05}, "chara": {}, "yoga": {"balarishta": 0.14},
+     "varga": {"chart": "D30", "weight": 0.12}},
     {"key": "education", "name": "Education · learning",
-     "houses": {4: 0.26, 5: 0.26, 2: 0.08},
-     "sthira": {"mercury": 0.10, "jupiter": 0.08}, "chara": {}, "yoga": {"budhaditya": 0.22}},
+     "houses": {4: 0.24, 5: 0.24, 2: 0.08},
+     "sthira": {"mercury": 0.10, "jupiter": 0.08}, "chara": {}, "yoga": {"budhaditya": 0.12},
+     "varga": {"chart": "D24", "weight": 0.14}},
     {"key": "home", "name": "Home · property",
-     "houses": {4: 0.60}, "sthira": {"mars": 0.12, "moon": 0.10, "venus": 0.06},
-     "chara": {}, "yoga": {"_varga": 0.12}},               # → D4 next
+     "houses": {4: 0.56}, "sthira": {"mars": 0.12, "moon": 0.10, "venus": 0.06},
+     "chara": {}, "yoga": {}, "varga": {"chart": "D4", "weight": 0.16}},
     {"key": "fortune", "name": "Fortune · dharma · father",
-     "houses": {9: 0.56}, "sthira": {"sun": 0.12, "jupiter": 0.12},
-     "chara": {}, "yoga": {"_varga": 0.20}},               # → D9 next
+     "houses": {9: 0.56}, "sthira": {"sun": 0.10, "jupiter": 0.10},
+     "chara": {}, "yoga": {}, "varga": {"chart": "D9", "weight": 0.24}},
     {"key": "enemies", "name": "Enemies · disease · debt",
-     "houses": {6: 0.62}, "sthira": {"mars": 0.10, "saturn": 0.10},
-     "chara": {}, "yoga": {"_varga": 0.18}},
+     "houses": {6: 0.72}, "sthira": {"mars": 0.14, "saturn": 0.14},
+     "chara": {}, "yoga": {}, "varga": None},            # 6th has no ṣoḍaśa varga
     {"key": "foreign", "name": "Foreign · loss · mokṣa",
      "houses": {12: 0.44, 9: 0.10, 8: 0.06},
      "sthira": {"saturn": 0.08, "ketu": 0.08, "jupiter": 0.06},
-     "chara": {}, "yoga": {"_varga": 0.18}},               # → D20 next
+     "chara": {}, "yoga": {}, "varga": {"chart": "D20", "weight": 0.18}},
     {"key": "longevity", "name": "Longevity",
      "houses": {8: 0.30, 1: 0.24, 3: 0.10}, "sthira": {"saturn": 0.16},
-     "chara": {}, "yoga": {"ayur": 0.20}, "maraka_modifier": True},
+     "chara": {}, "yoga": {"ayur": 0.20}, "varga": None, "maraka_modifier": True},
 ]
 
 # Which detected-yoga categories satisfy each theme's signature-yoga slot. The
@@ -180,6 +183,19 @@ def _state_label(dig: dict | None) -> str:
     return dig.get("state") if dig else "node"
 
 
+def _varga_disp(graha: str, varga_sign: int, varga_lagna: int | None, polarity: int) -> float:
+    """A graha's signed disposition IN a divisional chart — sign-based dignity plus
+    placement from the varga-lagna. Value ∈ [−1,+1] = polarity × varga-strength. The
+    varga gives only the SIGN, so dignity is by sign (own/exalt/friend/enemy/debil),
+    not the degree-precise uccha-bala."""
+    dig = dignity_of(graha, varga_sign * 30 + 15.0)          # None for nodes
+    s = 0.40 + (_DIGNITY_NUDGE.get(dig.get("state"), 0.0) if dig else 0.0)
+    if varga_lagna is not None:
+        vb = (varga_sign - varga_lagna) % 12 + 1
+        s += 0.12 if vb in (_KENDRA | _TRIKONA) else (-0.15 if vb in _DUSTHANA else 0.0)
+    return round(polarity * max(0.05, min(1.0, s)), 3)
+
+
 def _bhava_verdict(bh: dict, disp: dict, bhava_of: dict, dig_of: dict) -> dict:
     """One house → net iṣṭa/kaṣṭa from the four cited contributors."""
     house, lord, karaka = bh["house"], bh["lord"], bh.get("karaka")
@@ -226,9 +242,11 @@ def _bhava_verdict(bh: dict, disp: dict, bhava_of: dict, dig_of: dict) -> dict:
             "net": res["net"], "band": res["band"], "components": res["components"]}
 
 
-def _theme_verdict(theme: dict, bhava_net: dict, disp: dict,
-                   chara_assign: dict, yoga_names: list[str], yoga_families: set) -> dict:
-    """One life-theme → net, blending its bhāvas + kārakas + signature yoga."""
+def _theme_verdict(theme: dict, bhava_net: dict, disp: dict, chara_assign: dict,
+                   yoga_names: list[str], yoga_families: set,
+                   graha_vargas: dict, lagna_vargas: dict, pol: dict) -> dict:
+    """One life-theme → net, blending its bhāvas + kārakas + signature yoga + the
+    relevant divisional chart (varga)."""
     comps = []
     for h, w in theme.get("houses", {}).items():
         bn = bhava_net.get(h)
@@ -262,6 +280,22 @@ def _theme_verdict(theme: dict, bhava_net: dict, disp: dict,
         comps.append({"factor": "yoga", "slot": slot, "value": val, "weight": w,
                       "detail": detail, "citation": "BPHS yoga chapters" if tier == "sloka" else "reserved (varga)",
                       "tier": tier})
+
+    vg = theme.get("varga")
+    if vg:
+        Dxx, w = vg["chart"], vg["weight"]
+        sigs = list(theme.get("sthira", {}))          # significators = kārakas + primary-house lord
+        ph = max(theme["houses"], key=theme["houses"].get)
+        plord = (bhava_net.get(ph) or {}).get("lord")
+        if plord and plord not in sigs:
+            sigs.append(plord)
+        vlagna = (lagna_vargas or {}).get(Dxx)
+        vals = [_varga_disp(s, (graha_vargas.get(s) or {})[Dxx], vlagna, pol.get(s, 0))
+                for s in sigs if (graha_vargas.get(s) or {}).get(Dxx) is not None]
+        comps.append({"factor": "varga", "chart": Dxx,
+                      "value": round(sum(vals) / len(vals), 3) if vals else None, "weight": w,
+                      "detail": f"{Dxx} · " + ", ".join(sigs),
+                      "citation": "BPHS ṣoḍaśavarga (ch.6–7)", "tier": "sloka"})
 
     res = compose(comps)
     return {"key": theme["key"], "name": theme["name"], "net": res["net"],
@@ -308,7 +342,9 @@ def build(chart) -> dict:
     yoga_names = [e["name"].lower() for e in detected]
     yoga_families = {e.get("family") for e in detected}
 
-    themes = [_theme_verdict(t, bhava_net, disp, chara_assign, yoga_names, yoga_families) for t in THEMES]
+    graha_vargas = {g.key: g.vargas for g in grahas}
+    themes = [_theme_verdict(t, bhava_net, disp, chara_assign, yoga_names, yoga_families,
+                             graha_vargas, chart.lagna_vargas, pol) for t in THEMES]
 
     # aspect web (graha dṛṣṭi) — directed graha→graha edges for the network graph
     dchart = drishti.graha_drishti_chart({g.key: g.rasi for g in grahas}, include_nodes=True)

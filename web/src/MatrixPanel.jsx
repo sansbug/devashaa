@@ -140,9 +140,10 @@ const CLOCK_LABEL = { vims: 'Viṁśottarī', goch: 'gochara', chara: 'chara', t
 // Overall projection curve — value line (coloured by iṣṭa/kaṣṭa height) over a
 // confidence band (clock disagreement) and, once refined, an outer birth-time
 // (Monte-Carlo) envelope shown separately.
-function MatrixCurve({ steps, t, envelope }) {
+const DIR_COLOR = { up: '#2b8a6f', down: '#b03f36', shift: '#c08a1f', care: '#9a6bbf' }
+function MatrixCurve({ steps, t, envelope, events }) {
   if (!steps.length) return null
-  const W = 660, H = 150, PX = 28, PYt = 12, PYb = 18
+  const W = 660, H = 190, PX = 28, PYt = 50, PYb = 18
   const n = steps.length
   const x = (i) => PX + (i / Math.max(1, n - 1)) * (W - PX - 8)
   const y = (v) => PYt + (1 - (v + 1) / 2) * (H - PYt - PYb)
@@ -156,6 +157,11 @@ function MatrixCurve({ steps, t, envelope }) {
     ...envelope.map((e, i) => `${x(i)},${y(e.p90)}`),
     ...envelope.map((e, i) => `${x(i)},${y(e.p10)}`).reverse(),
   ].join(' ') : null
+  // major analysis events mapped onto the curve by month
+  const marks = (events || []).map((e) => {
+    const idx = steps.findIndex((s) => s.date.slice(0, 7) === String(e.date).slice(0, 7))
+    return idx >= 0 ? { ...e, idx } : null
+  }).filter(Boolean).sort((a, b) => a.idx - b.idx)
   return (
     <div className="mx-cvwrap">
       <div className="mx-tl-lbl">{t('matrix.curve', 'Overall projection · confidence band')}</div>
@@ -176,15 +182,31 @@ function MatrixCurve({ steps, t, envelope }) {
         {env && <polygon points={env} className="mx-cv-env" />}
         <polygon points={band} className="mx-cv-band" />
         <polyline points={vpts} className="mx-cv-line" stroke="url(#mxcv)" />
-        {steps.map((s, i) => (i % 6 === 0
-          ? <text key={i} x={x(i)} y={H - 3} className="mx-cv-xl">{s.date.slice(2, 7)}</text> : null))}
+        {marks.map((e, k) => {
+          const ex = x(e.idx), cy = y(steps[e.idx].overall), c = DIR_COLOR[e.dir] || '#888'
+          const ly = 14 + (k % 2) * 17
+          const anchor = ex < PX + 40 ? 'start' : ex > W - 48 ? 'end' : 'middle'
+          return (
+            <g key={k}>
+              <line x1={ex} y1={ly + 3} x2={ex} y2={cy} className="mx-cv-evline" style={{ stroke: c }} />
+              <circle cx={ex} cy={cy} r="3.2" style={{ fill: c }} />
+              <text x={ex} y={ly} className="mx-cv-evlbl" style={{ fill: c }} textAnchor={anchor}>
+                {(e.dir === 'up' ? '▲ ' : e.dir === 'down' ? '▼ ' : e.dir === 'shift' ? '↻ ' : '♥ ') + (e.label || '').slice(0, 22)}
+              </text>
+            </g>
+          )
+        })}
+        {steps.map((s, i) => {
+          const ny = i === 0 || steps[i - 1].date.slice(0, 4) !== s.date.slice(0, 4)
+          return ny ? <text key={i} x={x(i)} y={H - 3} className="mx-cv-xl yr">{s.date.slice(0, 4)}</text> : null
+        })}
       </svg>
     </div>
   )
 }
 
 // Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
-function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMin, setMcMin }) {
+function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMin, setMcMin, curveEvents }) {
   const steps = timeline.steps || []
   const order = timeline.themeOrder || []
   if (!steps.length) return null
@@ -207,7 +229,7 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
   })
   return (
     <div className="mx-tlwrap">
-      <MatrixCurve steps={steps} t={t} envelope={mc && mc.envelope} />
+      <MatrixCurve steps={steps} t={t} envelope={mc && mc.envelope} events={curveEvents} />
       <div className="mx-mc-ctl">
         <button type="button" className="mx-mc-btn" onClick={() => onRefine && onRefine(mcMin)} disabled={mcBusy}>
           {mcBusy ? t('matrix.refining', 'Refining…') : t('matrix.refine', 'Refine · birth-time')}
@@ -229,7 +251,10 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
       <div className="mx-heatwrap">
         <table className="mx-heat mx-tl-table">
           <thead>
-            <tr><th className="mx-tl-name" />{steps.map((s, i) => <th key={i} className="mx-tl-mh">{i % 3 === 0 ? ym(s.date).slice(2) : ''}</th>)}</tr>
+            <tr><th className="mx-tl-name" />{steps.map((s, i) => {
+              const ny = i === 0 || steps[i - 1].date.slice(0, 4) !== s.date.slice(0, 4)
+              return <th key={i} className={'mx-tl-mh' + (ny ? ' yr' : '')}>{ny ? s.date.slice(0, 4) : (i % 3 === 0 ? s.date.slice(5, 7) : '')}</th>
+            })}</tr>
           </thead>
           <tbody>
             <tr className="mx-tl-overall-row"><td className="mx-tl-name"><b>{t('matrix.overall', 'Overall')}</b></td>{rowCells((s) => s.overall, (s) => s.overallCf ?? 1)}</tr>
@@ -645,6 +670,10 @@ export default function MatrixPanel({ date, time, place, namer }) {
                 mcBusy={mcBusy}
                 mcMin={mcMin}
                 setMcMin={setMcMin}
+                curveEvents={data.changes ? [
+                  ...(data.changes.health || []), ...(data.changes.wealthCareer || []), ...(data.changes.relationships || []),
+                ].filter((e) => !e.care).sort((a, b) => b.cf - a.cf).slice(0, 5)
+                  .map((e) => ({ date: e.from, dir: e.direction, label: t('matrix.change.' + e.key + '.' + e.direction, e.label) })) : []}
               />
               {data.changes && <MatrixChanges changes={data.changes} nm={nm} t={t} />}
               <MatrixCalibration date={date} time={time} place={place} t={t} />

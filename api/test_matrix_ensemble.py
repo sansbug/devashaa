@@ -48,3 +48,34 @@ def test_ensemble_band_contains_value_and_conviction_bounded():
             assert lo - 1e-9 <= v <= hi + 1e-9, (tk, v, lo, hi)
             assert 0.0 <= s["conv"][tk] <= 1.0
             assert -1.0 <= v <= 1.0
+
+
+def test_project_at_matches_timeline_exactly():
+    # _project_at (used by backtest) must reproduce the timeline loop bit-for-bit,
+    # so the two never silently diverge.
+    import swisseph as swe
+    chart = vedic.compute_chart(dt.datetime(1990, 5, 15, 8, 30), 28.6139, 77.2090, "Asia/Kolkata")
+    m = matrix.build(chart)
+    ctx = matrix._projection_context(chart, m)
+    for s in m["timeline"]["steps"]:
+        y, mo, d = (int(x) for x in s["date"].split("-"))
+        jd = swe.julday(y, mo, d, 12.0, swe.GREG_CAL)
+        pj = matrix._project_at(jd, ctx)["themes"]
+        for tk, v in s["themes"].items():
+            assert abs(pj[tk]["v"] - v) < 1e-9, (tk, s["date"], pj[tk]["v"], v)
+
+
+def test_backtest_scores_and_hitrate_bounded():
+    chart = vedic.compute_chart(dt.datetime(1990, 5, 15, 8, 30), 28.6139, 77.2090, "Asia/Kolkata")
+    m = matrix.build(chart)
+    events = [{"date": "2015-06", "key": "marriage", "polarity": 1},
+              {"date": "2019-03", "key": "career", "polarity": -1}]
+    bt = matrix.backtest(chart, m, events)
+    assert bt["summary"]["n"] == 2
+    assert 0.0 <= bt["summary"]["hitRate"] <= 1.0
+    for e in bt["events"]:
+        assert e["hit"] == ((e["v"] * e["polarity"]) > 0)
+    # unknown theme keys and malformed dates are skipped, not fatal.
+    bt2 = matrix.backtest(chart, m, [{"date": "bad", "key": "career", "polarity": 1},
+                                     {"date": "2015-06", "key": "nope", "polarity": 1}])
+    assert bt2["summary"]["n"] == 0

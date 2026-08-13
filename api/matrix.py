@@ -681,3 +681,118 @@ def montecarlo(chart_fn, base_dt: _dt.datetime, minutes: float = 4.0, samples: i
                     "min of birth time. The envelope is the p10–p90 spread of the overall curve; each "
                     "event's survival is how often it still fires. Low lagna stability ⇒ the reading "
                     "is sensitive to the exact birth time (rectification would help)."}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Shared single-date evaluator — the ensemble at ONE moment (used by backtest; the
+#  timeline loop mirrors this exact math, guarded by a parity test).
+# ════════════════════════════════════════════════════════════════════════════════
+def _projection_context(chart, m_out: dict) -> dict:
+    """Precompute everything the per-date ensemble needs, once per chart."""
+    moon = next(g for g in chart.grahas if g.key == "moon")
+    lord_of = {b["house"]: b["lord"] for b in m_out["bhavas"]}
+    bnet = {b["house"]: b["net"] for b in m_out["bhavas"]}
+    disp = {k: v["disp"] for k, v in m_out["grahaDisposition"].items()}
+    base = {t["key"]: t["net"] for t in m_out["themes"]}
+    chara = (m_out.get("karakas") or {}).get("chara") or {}
+    av = m_out.get("ashtakavarga") or {}
+    sig, houses, primary = {}, {}, {}
+    for t in THEMES:
+        s = set(t.get("sthira", {}))
+        for role in t.get("chara", {}):
+            if chara.get(role):
+                s.add(chara[role])
+        ph = max(t["houses"], key=t["houses"].get)
+        primary[t["key"]] = ph
+        if lord_of.get(ph):
+            s.add(lord_of[ph])
+        sig[t["key"]] = s
+        houses[t["key"]] = set(t["houses"])
+    return {"birth_jd": chart.jd_ut, "ni": moon.nakshatra.index, "nf": moon.nakshatra.fraction,
+            "lagna": chart.lagna_rasi, "disp": disp, "bnet": bnet, "base": base,
+            "sig": sig, "houses": houses, "primary": primary,
+            "bav": av.get("bhinna"), "sav": av.get("sarva"),
+            "chara_seq": _chara_sequence(chart, _chara_direction(chart))}
+
+
+def _project_at(jd: float, ctx: dict) -> dict:
+    """The 4-clock ensemble at a single moment. Returns step meta + per-theme
+    {v, central, spread, cf, clocks}. This is the same computation the timeline loop
+    runs per month (test_matrix_ensemble asserts the two agree)."""
+    lagna, bav, sav = ctx["lagna"], ctx["bav"], ctx["sav"]
+    lords = running_lords(ctx["birth_jd"], ctx["ni"], ctx["nf"], jd, depth=3)
+    jup_s, sat_s = _transit_sign(jd, swe.JUPITER), _transit_sign(jd, swe.SATURN)
+    jup_h, sat_h = (jup_s - lagna) % 12 + 1, (sat_s - lagna) % 12 + 1
+    jup_p = ashtakavarga.transit_potency("jupiter", jup_s, bav, sav) if bav else 0.6
+    sat_p = ashtakavarga.transit_potency("saturn", sat_s, bav, sav) if bav else -0.6
+    c_maha, c_antar = _chara_running(ctx["chara_seq"], (jd - ctx["birth_jd"]) / 365.25)
+    themes = {}
+    for tk in ctx["sig"]:
+        th = ctx["houses"][tk]
+        c_vims = max(-1.0, min(1.0, sum(_LEVEL_W[i] * ctx["disp"].get(L, 0.0)
+                                        for i, L in enumerate(lords) if L in ctx["sig"][tk])))
+        gp = [jup_p] * (jup_h in th) + [sat_p] * (sat_h in th)
+        c_goch = sum(gp) / len(gp) if gp else 0.0
+        c_chara = None
+        if c_maha is not None:
+            c_chara = 0.0
+            mh = (c_maha - lagna) % 12 + 1
+            if mh in th:
+                c_chara += _CHARA_LVL[0] * ctx["bnet"].get(mh, 0.0)
+            ah = (c_antar - lagna) % 12 + 1
+            if ah in th:
+                c_chara += _CHARA_LVL[1] * ctx["bnet"].get(ah, 0.0)
+        ph = ctx["primary"][tk]
+        ps = (lagna + ph - 1) % 12
+        c_trig = ctx["bnet"].get(ph, 0.0) if (_hits(jup_s, ps, "jupiter") and _hits(sat_s, ps, "saturn")) else 0.0
+        clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
+        central, spread, cf = _fuse(clocks)
+        v = max(-1.0, min(1.0, 0.5 * ctx["base"][tk] + 0.5 * central))
+        themes[tk] = {"v": round(v, 3), "central": round(central, 3),
+                      "spread": round(spread, 3), "cf": round(cf, 2), "clocks": clocks}
+    return {"maha": lords[0] if lords else None, "antar": lords[1] if len(lords) > 1 else None,
+            "charaMaha": c_maha, "charaAntar": c_antar, "themes": themes}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Backtest (Layer 5) — calibrate against the user's own known life events
+# ════════════════════════════════════════════════════════════════════════════════
+def backtest(chart, m_out: dict, events: list) -> dict:
+    """For each event the user logged — a life-area (theme key), a month, and whether
+    it went well (+1) or badly (−1) — compute the projection value the engine would
+    have shown for that theme at that date, and whether its sign matched. Yields a
+    personal hit-rate: a track record, not a claim of proof."""
+    ctx = _projection_context(chart, m_out)
+    results, hits, dsum, tsum, thits, scored = [], 0, 0.0, 0.0, 0, 0
+    for ev in events:
+        key = ev.get("key")
+        if key not in ctx["sig"]:
+            continue
+        pol = 1 if (ev.get("polarity", 1) or 0) >= 0 else -1
+        m = str(ev.get("date", ""))
+        try:
+            y, mo = int(m[:4]), int(m[5:7])
+            jd = swe.julday(y, mo, 15, 12.0, swe.GREG_CAL)
+        except (ValueError, IndexError):
+            continue
+        pj = _project_at(jd, ctx)["themes"].get(key)
+        if not pj:
+            continue
+        v, central = pj["v"], pj["central"]
+        hit = (v * pol) > 0
+        hits += int(hit)
+        thits += int((central * pol) > 0)
+        dsum += pol * v
+        tsum += pol * central
+        scored += 1
+        results.append({"date": m, "key": key, "polarity": pol, "v": v,
+                        "central": central, "hit": bool(hit)})
+    summary = {"n": scored,
+               "hitRate": round(hits / scored, 2) if scored else None,
+               "timingHitRate": round(thits / scored, 2) if scored else None,
+               "meanDirectional": round(dsum / scored, 3) if scored else None,
+               "meanTimingDirectional": round(tsum / scored, 3) if scored else None}
+    return {"events": results, "summary": summary,
+            "note": "Backtest: for each event you logged, the projection value the engine would have "
+                    "shown for that life-area at that date, and whether its sign matched what happened. "
+                    "A personal, honest track record — indication, not proof; a small sample is only a hint."}

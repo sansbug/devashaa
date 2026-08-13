@@ -274,6 +274,98 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
   )
 }
 
+const THEME_KEYS = ['self', 'wealth', 'career', 'marriage', 'children', 'health',
+  'education', 'home', 'fortune', 'enemies', 'foreign', 'longevity']
+
+// Calibration — log real past events, backtest the projection against them for a
+// personal hit-rate. Events persist in localStorage keyed to the chart.
+function MatrixCalibration({ date, time, place, t }) {
+  const storeKey = `dvz-cal-${date}|${time}|${place && place.latitude}|${place && place.longitude}`
+  const [events, setEvents] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(storeKey) || '[]') } catch { return [] }
+  })
+  const [month, setMonth] = useState('')
+  const [theme, setTheme] = useState('career')
+  const [pol, setPol] = useState(1)
+  const [bt, setBt] = useState(null)
+  const [busy, setBusy] = useState(false)
+
+  const persist = (list) => {
+    setEvents(list); setBt(null)
+    try { localStorage.setItem(storeKey, JSON.stringify(list)) } catch { /* private mode */ }
+  }
+  const add = () => {
+    if (!/^\d{4}-\d{2}$/.test(month)) return
+    persist([...events, { date: month, key: theme, polarity: pol }])
+    setMonth('')
+  }
+  const run = () => {
+    if (!events.length || busy) return
+    setBusy(true)
+    fetch(`${API}/api/matrix/backtest`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude, timezone: place.timezone, events }),
+    })
+      .then((r) => r.json()).then((j) => { if (!j.error) setBt(j) })
+      .catch(() => {}).finally(() => setBusy(false))
+  }
+
+  return (
+    <div className="mx-cal">
+      <h4 className="mx-h">{t('matrix.calib', 'Calibration · your events')}</h4>
+      <p className="rc-note">{t('matrix.calibsub', 'Log real events to backtest the projection against your own life — a personal hit-rate, kept on this device. An honest track record, not proof.')}</p>
+      <div className="mx-cal-form">
+        <input type="month" className="mx-cal-in" value={month} onChange={(e) => setMonth(e.target.value)} aria-label={t('matrix.calmonth', 'Month')} />
+        <select className="mx-cal-sel" value={theme} onChange={(e) => setTheme(e.target.value)}>
+          {THEME_KEYS.map((k) => <option key={k} value={k}>{t('matrix.theme.' + k, k)}</option>)}
+        </select>
+        <div className="mx-cal-pol">
+          <button type="button" className={pol > 0 ? 'on' : ''} onClick={() => setPol(1)}>{t('matrix.went.good', 'went well')}</button>
+          <button type="button" className={pol < 0 ? 'on' : ''} onClick={() => setPol(-1)}>{t('matrix.went.bad', 'went badly')}</button>
+        </div>
+        <button type="button" className="mx-cal-add" onClick={add}>{t('matrix.addevent', 'Add')}</button>
+      </div>
+      {events.length > 0 && (
+        <ul className="mx-cal-list">
+          {events.map((e, i) => (
+            <li key={i}>
+              <span className={e.polarity > 0 ? 'good' : 'bad'}>{e.polarity > 0 ? '▲' : '▼'}</span>
+              <span className="mx-cal-d">{e.date}</span>
+              <span className="mx-cal-t">{t('matrix.theme.' + e.key, e.key)}</span>
+              <button type="button" className="mx-cal-x" onClick={() => persist(events.filter((_, j) => j !== i))} aria-label="remove">×</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {events.length > 0 && (
+        <button type="button" className="mx-mc-btn" onClick={run} disabled={busy}>
+          {busy ? t('matrix.backtesting', 'Backtesting…') : t('matrix.dobacktest', 'Backtest')}
+        </button>
+      )}
+      {bt && bt.summary.n > 0 && (
+        <div className="mx-cal-out">
+          <div className="mx-cal-score">
+            <b>{Math.round(bt.summary.hitRate * 100)}%</b> {t('matrix.matched', 'matched')} ({bt.summary.n}) ·
+            {' '}{t('matrix.timingagree', 'timing')} {Math.round(bt.summary.timingHitRate * 100)}%
+          </div>
+          <ul className="mx-cal-res">
+            {bt.events.map((e, i) => (
+              <li key={i} className={e.hit ? 'hit' : 'miss'}>
+                <span className="mx-cal-d">{e.date}</span>
+                <span className="mx-cal-t">{t('matrix.theme.' + e.key, e.key)}</span>
+                <span>{e.polarity > 0 ? '▲' : '▼'}</span>
+                <span className="mono mx-cal-v">{e.v >= 0 ? '+' : ''}{e.v}</span>
+                <span className="mx-cal-hit">{e.hit ? '✓' : '✗'}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mx-prov">{bt.note}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function MatrixPanel({ date, time, place, namer }) {
   const { t } = useLang()
   const [data, setData] = useState(null)
@@ -401,6 +493,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
                 mcMin={mcMin}
                 setMcMin={setMcMin}
               />
+              <MatrixCalibration date={date} time={time} place={place} t={t} />
             </>
           )}
 

@@ -277,6 +277,61 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
 const THEME_KEYS = ['self', 'wealth', 'career', 'marriage', 'children', 'health',
   'education', 'home', 'fortune', 'enemies', 'foreign', 'longevity']
 
+const CHANGE_DIR = { up: '↑', down: '↓', shift: '↻', care: '♥' }
+
+// Projected changes — typed transition-windows grouped by the three motives, with
+// the two sensitive care-signals (♥) behind an opt-in toggle.
+function MatrixChanges({ changes, nm, t }) {
+  const [showCare, setShowCare] = useState(false)
+  if (!changes) return null
+  const ym = (d) => d.slice(0, 7)
+  const groups = [
+    ['health', t('matrix.motive.health', 'Health')],
+    ['wealthCareer', t('matrix.motive.wealthCareer', 'Wealth & Career')],
+    ['relationships', t('matrix.motive.relationships', 'Relationships')],
+  ]
+  const visible = (g) => (changes[g] || []).filter((e) => showCare || !e.care)
+  const anyCare = groups.some(([g]) => (changes[g] || []).some((e) => e.care))
+  const total = groups.reduce((n, [g]) => n + visible(g).length, 0)
+  return (
+    <div className="mx-chg">
+      <h4 className="mx-h">{t('matrix.changesTitle', 'Projected changes')}</h4>
+      <p className="rc-note">{t('matrix.changesSub', 'Where a life-area is about to turn — from daśā junctions, transits and sharp swings landing on its significators. A window and a direction, not a fated event.')}</p>
+      {groups.map(([g, label]) => visible(g).length > 0 && (
+        <div key={g} className="mx-chg-group">
+          <div className="mx-chg-gh">{label}</div>
+          <ul className="mx-chg-list">
+            {visible(g).map((e, i) => (
+              <li key={i} className={'dir-' + e.direction + (e.care ? ' care' : '')}>
+                <span className="mx-chg-dir">{CHANGE_DIR[e.direction]}</span>
+                <div className="mx-chg-body">
+                  <div className="mx-chg-top">
+                    <span className="mx-chg-label">{t('matrix.change.' + e.key + '.' + e.direction, e.label)}</span>
+                    <span className="mx-chg-date">{ym(e.from)}{e.from !== e.to ? ' – ' + ym(e.to) : ''}</span>
+                  </div>
+                  <div className="mx-chg-note">{t('matrix.changenote.' + e.key, e.note)}</div>
+                  <div className="mx-chg-meta">
+                    <span className="mx-ev-cf">{Math.round(e.cf * 100)}%</span>
+                    <span className="mx-chg-drv">{t('matrix.trig.' + e.triggerType, e.triggerType)} · {nm(e.maha)}–{nm(e.antar)}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      {total === 0 && <p className="rc-note">{t('matrix.nochanges', 'No notable changes flagged in the next three years.')}</p>}
+      {anyCare && (
+        <label className="mx-chg-care">
+          <input type="checkbox" checked={showCare} onChange={(e) => setShowCare(e.target.checked)} />
+          <span>{t('matrix.showcare', 'Show sensitive relationship & wellbeing signals (♥) — offered as care and attention, never as verdicts about another person or a forecast of loss.')}</span>
+        </label>
+      )}
+      <p className="mx-prov">{changes.note}</p>
+    </div>
+  )
+}
+
 // Calibration — log real past events, backtest the projection against them for a
 // personal hit-rate. Events persist in localStorage keyed to the chart.
 function MatrixCalibration({ date, time, place, t }) {
@@ -493,6 +548,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
                 mcMin={mcMin}
                 setMcMin={setMcMin}
               />
+              {data.changes && <MatrixChanges changes={data.changes} nm={nm} t={t} />}
               <MatrixCalibration date={date} time={time} place={place} t={t} />
             </>
           )}

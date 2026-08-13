@@ -79,3 +79,35 @@ def test_backtest_scores_and_hitrate_bounded():
     bt2 = matrix.backtest(chart, m, [{"date": "bad", "key": "career", "polarity": 1},
                                      {"date": "2015-06", "key": "nope", "polarity": 1}])
     assert bt2["summary"]["n"] == 0
+
+
+def test_changes_shape_and_care_tagging():
+    chart = vedic.compute_chart(dt.datetime(1990, 5, 15, 8, 30), 28.6139, 77.2090, "Asia/Kolkata")
+    m = matrix.build(chart)
+    ch = matrix.changes(chart, m)
+    assert set(ch) >= {"health", "wealthCareer", "relationships", "note"}
+    dirs, care_keys = set(), set()
+    for g in ("health", "wealthCareer", "relationships"):
+        for e in ch[g]:
+            assert e["from"] <= e["to"]
+            assert 0.35 <= e["cf"] <= 0.92
+            assert e["direction"] in ("up", "down", "shift", "care")
+            dirs.add(e["direction"])
+            if e["care"]:
+                care_keys.add(e["key"])
+    # every care-signal must be one of the two designated (opt-in) keys, marked care.
+    assert care_keys <= {"rel.trust", "rel.tender"}
+    for g in ("health", "wealthCareer", "relationships"):
+        for e in ch[g]:
+            if e["direction"] == "care":
+                assert e["care"] is True
+
+
+def test_changes_transit_planets_include_fast_movers():
+    # Mars + nodes must be in the trigger set (phase-A faster transits).
+    assert "mars" in matrix._TRIGGER_PLANETS
+    assert "rahu" in matrix._TRIGGER_PLANETS
+    # no signature triggers ingress on a fast graha (Sun/Moon/Mercury/Venus).
+    fast = {"sun", "moon", "mercury", "venus"}
+    for sig in matrix.CHANGE_SIGS:
+        assert not (fast & set(sig.get("planets", []))), sig["key"]

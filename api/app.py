@@ -563,6 +563,34 @@ def matrix_backtest_endpoint():
     return jsonify(out)
 
 
+@app.post("/api/matrix/changes")
+def matrix_changes_endpoint():
+    """Projected changes — typed transition-windows (daśā junction + transit ingress
+    + swing) across health / wealth-career / relationships. See matrix.changes."""
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "time", "latitude", "longitude") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude and longitude must be numbers"}), 400
+    try:
+        local_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD and time HH:MM (24h)"}), 400
+    if not EPHE_YEAR_MIN <= local_dt.year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"Year {local_dt.year} outside ephemeris range "
+                                 f"({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    try:
+        chart = compute_chart(local_dt=local_dt, latitude=lat, longitude=lon, tz_name=tz_name)
+        out = matrix.changes(chart, matrix.build(chart))
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Changes failed: {e}"}), 500
+    return jsonify(out)
+
+
 @app.post("/api/gochara")
 def gochara_route():
     """Transit GEOMETRY of a moment against a natal chart (facts only).

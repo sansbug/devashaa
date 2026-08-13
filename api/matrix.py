@@ -389,6 +389,10 @@ def build(chart) -> dict:
     except Exception:
         out["ashtakavarga"] = None
     out["timeline"] = timeline(chart, out, _dt.date.today(), 36)
+    try:
+        out["changes"] = changes(chart, out)
+    except Exception:
+        out["changes"] = None
     return out
 
 
@@ -796,3 +800,186 @@ def backtest(chart, m_out: dict, events: list) -> dict:
             "note": "Backtest: for each event you logged, the projection value the engine would have "
                     "shown for that life-area at that date, and whether its sign matched what happened. "
                     "A personal, honest track record — indication, not proof; a small sample is only a hint."}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Change engine (Layer 6) — transitions, not levels: daśā junction + transit
+#  ingress + sharp swing, typed into changes across the three motives.
+# ════════════════════════════════════════════════════════════════════════════════
+_TRIGGER_PLANETS = {"mars": swe.MARS, "jupiter": swe.JUPITER, "saturn": swe.SATURN, "rahu": swe.MEAN_NODE}
+_SWING_THRESH = 0.22
+_CHANGES_NOTE = ("Projected *changes* — where a life-area is about to turn, from daśā junctions, "
+                 "slow-transit ingresses and sharp swings landing on its significators. A window and "
+                 "a direction, never a fated event or a date. The ♥ care-signals are indications to be "
+                 "present and communicate — never verdicts about another person or a mortality forecast.")
+
+# Each signature: houses + kārakas (its significators), the transit planets whose ingress
+# triggers it, which detectors apply, and how direction reads. mode: pos/neg (fixed
+# direction, gated by the driver's disposition) · shift (a move) · bi (up/down by driver)
+# · care (reframed, opt-in). theme = the timeline theme used for swing + conviction.
+CHANGE_SIGS = [
+    # ── Health (theme "health") ──
+    {"key": "health.vitality", "motive": "health", "theme": "health", "houses": [1], "karakas": ["sun"],
+     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
+     "labels": {"up": "Vitality & recovery"}, "note": "energy returns — a good time to build habits"},
+    {"key": "health.chronic", "motive": "health", "theme": "health", "houses": [6, 8], "karakas": ["saturn"],
+     "planets": ["saturn"], "triggers": ["junction", "ingress"], "mode": "neg", "tier": "sloka",
+     "labels": {"down": "Chronic load / fatigue"}, "note": "lifestyle caution: rest and pacing"},
+    {"key": "health.acute", "motive": "health", "theme": "health", "houses": [6, 8], "karakas": ["mars"],
+     "planets": ["mars"], "triggers": ["ingress"], "mode": "neg", "tier": "sloka",
+     "labels": {"down": "Acute / accident-prone"}, "note": "physical caution: injury, inflammation, surgery"},
+    {"key": "health.murky", "motive": "health", "theme": "health", "houses": [1, 6], "karakas": ["rahu", "ketu"],
+     "planets": ["rahu", "ketu"], "triggers": ["ingress"], "mode": "neg", "tier": "synthesis",
+     "labels": {"down": "Unexplained / murky"}, "note": "worth a check-up — hidden strain"},
+    # ── Wealth (theme "wealth") ──
+    {"key": "wealth.rise", "motive": "wealth", "theme": "wealth", "houses": [11, 2], "karakas": ["jupiter"],
+     "planets": ["jupiter"], "triggers": ["junction", "ingress", "swing"], "mode": "pos", "tier": "sloka",
+     "labels": {"up": "Income rise"}, "note": "earnings trending up"},
+    {"key": "wealth.windfall", "motive": "wealth", "theme": "wealth", "houses": [8, 11], "karakas": ["rahu", "jupiter"],
+     "planets": ["rahu", "jupiter"], "triggers": ["ingress"], "mode": "pos", "tier": "synthesis",
+     "labels": {"up": "Sudden gain / windfall"}, "note": "an unexpected jump — don't overextend on it"},
+    {"key": "wealth.drain", "motive": "wealth", "theme": "wealth", "houses": [12, 8, 6], "karakas": ["saturn"],
+     "planets": ["saturn", "mars"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "labels": {"down": "Expense / loss / debt"}, "note": "hold reserves — an outflow period"},
+    # ── Career (theme "career") ──
+    {"key": "career.promotion", "motive": "career", "theme": "career", "houses": [10], "karakas": ["sun"],
+     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
+     "labels": {"up": "Promotion / recognition"}, "note": "status on the rise"},
+    {"key": "career.jobloss", "motive": "career", "theme": "career", "houses": [10, 6], "karakas": ["saturn"],
+     "planets": ["saturn"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "labels": {"down": "Job-loss risk"}, "note": "secure your position; keep a fallback"},
+    {"key": "career.jobchange", "motive": "career", "theme": "career", "houses": [10, 6], "karakas": ["saturn", "mercury"],
+     "planets": [], "triggers": ["junction"], "mode": "shift", "tier": "synthesis",
+     "labels": {"shift": "Job change (a move)"}, "note": "a lateral move is likely — not a loss"},
+    {"key": "career.transition", "motive": "career", "theme": "career", "houses": [10], "karakas": ["rahu"],
+     "planets": ["rahu"], "triggers": ["ingress", "junction"], "mode": "shift", "tier": "synthesis",
+     "labels": {"shift": "Career transition (new field)"}, "note": "reinvention — a new direction opens"},
+    # ── Relationships ──
+    {"key": "rel.newbond", "motive": "rel", "theme": "marriage", "houses": [7, 5], "karakas": ["venus"],
+     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
+     "labels": {"up": "New bond / commitment"}, "note": "a beginning — openness helps"},
+    {"key": "rel.strain", "motive": "rel", "theme": "marriage", "houses": [7], "karakas": ["saturn"],
+     "planets": ["saturn", "rahu"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "labels": {"down": "Strain / separation risk"}, "note": "a rough patch — tend it with patience"},
+    {"key": "rel.trust", "motive": "rel", "theme": "marriage", "houses": [7, 12], "karakas": ["venus", "rahu"],
+     "planets": ["rahu"], "triggers": ["ingress"], "mode": "care", "tier": "synthesis", "care": True,
+     "labels": {"care": "Trust & openness"}, "note": "a period to nurture trust and communicate openly"},
+    {"key": "rel.social", "motive": "rel", "theme": "enemies", "houses": [6, 11], "karakas": ["saturn", "mercury"],
+     "planets": ["saturn", "jupiter"], "triggers": ["junction", "ingress"], "mode": "bi", "tier": "sloka",
+     "labels": {"up": "Allies & support", "down": "Rivalry / friction — guard against betrayal"},
+     "note": "the people around you are shifting"},
+    {"key": "rel.family", "motive": "rel", "theme": "home", "houses": [2, 4, 9], "karakas": ["moon", "jupiter"],
+     "planets": ["jupiter", "saturn"], "triggers": ["junction", "ingress"], "mode": "bi", "tier": "sloka",
+     "labels": {"up": "Family warmth", "down": "Family friction / distance"}, "note": "the family climate is shifting"},
+    {"key": "rel.gain", "motive": "rel", "theme": "children", "houses": [11, 5], "karakas": ["jupiter"],
+     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "synthesis",
+     "labels": {"up": "A new person / gain"}, "note": "a new bond or arrival"},
+    {"key": "rel.tender", "motive": "rel", "theme": "longevity", "houses": [8], "karakas": ["saturn"],
+     "planets": ["saturn", "ketu"], "triggers": ["ingress"], "mode": "care", "tier": "synthesis", "care": True,
+     "labels": {"care": "A tender period for a loved one"}, "note": "cherish and attend — a time to be present"},
+]
+
+_MOTIVE_GROUP = {"health": "health", "wealth": "wealthCareer", "career": "wealthCareer", "rel": "relationships"}
+
+
+def _months_between(a: str, b: str) -> int:
+    ay, am = int(a[:4]), int(a[5:7])
+    by, bm = int(b[:4]), int(b[5:7])
+    return abs((by - ay) * 12 + (bm - am))
+
+
+def _dedupe_changes(raw: list) -> list:
+    """Merge same-signature fires within 3 months into one window; rank by conviction."""
+    out = []
+    for e in sorted(raw, key=lambda x: x["date"]):
+        if out and out[-1]["key"] == e["key"] and _months_between(out[-1]["to"], e["date"]) <= 3:
+            g = out[-1]
+            g["to"] = e["date"]
+            if e["cf"] > g["cf"]:
+                g.update(cf=e["cf"], direction=e["direction"], label=e["label"],
+                         trigger=e["trigger"], maha=e["maha"], antar=e["antar"])
+        else:
+            out.append(dict(e, **{"from": e["date"], "to": e["date"]}))
+    return sorted(out, key=lambda x: x["cf"], reverse=True)
+
+
+def changes(chart, m_out: dict) -> dict:
+    """Detect typed change-windows over the projection horizon, grouped by motive."""
+    steps = (m_out.get("timeline") or {}).get("steps") or []
+    out = {"health": [], "wealthCareer": [], "relationships": []}
+    if len(steps) < 2:
+        return {**out, "note": _CHANGES_NOTE}
+    lagna = chart.lagna_rasi
+    lord_of = {b["house"]: b["lord"] for b in m_out["bhavas"]}
+    disp = {k: v["disp"] for k, v in m_out["grahaDisposition"].items()}
+
+    tsigns = []
+    for s in steps:
+        y, mo, d = (int(x) for x in s["date"].split("-"))
+        jd = swe.julday(y, mo, d, 12.0, swe.GREG_CAL)
+        row = {pk: _transit_sign(jd, ipl) for pk, ipl in _TRIGGER_PLANETS.items()}
+        row["ketu"] = (row["rahu"] + 6) % 12
+        tsigns.append(row)
+
+    for sig in CHANGE_SIGS:
+        sigset = set(sig.get("karakas", []))
+        for h in sig["houses"]:
+            if lord_of.get(h):
+                sigset.add(lord_of[h])
+        theme = sig.get("theme")
+        raw = []
+        for i in range(1, len(steps)):
+            trigs, driver = [], None
+            if "junction" in sig["triggers"]:
+                for lvl, key in (("mahā", "maha"), ("antar", "antar")):
+                    a, b = steps[i][key], steps[i - 1][key]
+                    if a != b and (a in sigset or b in sigset):
+                        trigs.append(f"{lvl}-daśā change")
+                        driver = a if a in sigset else b
+                        break
+            if "ingress" in sig["triggers"]:
+                for pk in sig.get("planets", []):
+                    if tsigns[i][pk] != tsigns[i - 1][pk] and ((tsigns[i][pk] - lagna) % 12 + 1) in sig["houses"]:
+                        trigs.append(f"{pk} transit")
+                        driver = driver or pk
+            if "swing" in sig["triggers"] and theme:
+                k = min(3, i)
+                if abs(steps[i]["themes"].get(theme, 0.0) - steps[i - k]["themes"].get(theme, 0.0)) >= _SWING_THRESH:
+                    trigs.append("sharp swing")
+            if not trigs:
+                continue
+            dd = disp.get(driver, 0.0) if driver else 0.0
+            if abs(dd) < 1e-9 and theme:
+                dd = steps[i]["themes"].get(theme, 0.0)
+            mode = sig["mode"]
+            if mode == "pos":
+                if dd <= 0.02:
+                    continue
+                direction = "up"
+            elif mode == "neg":
+                if dd >= -0.02:
+                    continue
+                direction = "down"
+            elif mode == "shift":
+                direction = "shift"
+            elif mode == "care":
+                direction = "care"
+            else:  # bi
+                direction = "up" if dd > 0.02 else "down" if dd < -0.02 else None
+                if direction is None:
+                    continue
+            label = sig["labels"].get(direction) or sig["key"]
+            tt = "junction" if "daśā" in trigs[0] else "swing" if "swing" in trigs[0] else "ingress"
+            cf = 0.4 + 0.12 * (len(trigs) - 1) + 0.22 * min(1.0, abs(dd))
+            if theme:
+                cf = 0.5 * cf + 0.5 * steps[i]["conv"].get(theme, 0.6)
+            raw.append({"date": steps[i]["date"], "key": sig["key"], "direction": direction, "label": label,
+                        "note": sig.get("note"), "cf": round(max(0.35, min(0.92, cf)), 2),
+                        "trigger": trigs[0], "triggerType": tt,
+                        "maha": steps[i]["maha"], "antar": steps[i]["antar"],
+                        "care": sig.get("care", False), "tier": sig.get("tier", "synthesis")})
+        for e in _dedupe_changes(raw)[:2]:
+            out[_MOTIVE_GROUP[sig["motive"]]].append(e)
+    for g in ("health", "wealthCareer", "relationships"):
+        out[g].sort(key=lambda e: e["date"])
+    return {**out, "note": _CHANGES_NOTE}

@@ -138,8 +138,9 @@ function MatrixAvStrip({ av, t }) {
 const CLOCK_LABEL = { vims: 'Viṁśottarī', goch: 'gochara', chara: 'chara', trig: 'trigger' }
 
 // Overall projection curve — value line (coloured by iṣṭa/kaṣṭa height) over a
-// confidence band whose width is the clocks' disagreement.
-function MatrixCurve({ steps, t }) {
+// confidence band (clock disagreement) and, once refined, an outer birth-time
+// (Monte-Carlo) envelope shown separately.
+function MatrixCurve({ steps, t, envelope }) {
   if (!steps.length) return null
   const W = 660, H = 150, PX = 28, PYt = 12, PYb = 18
   const n = steps.length
@@ -151,6 +152,10 @@ function MatrixCurve({ steps, t }) {
     ...steps.map((s, i) => `${x(i)},${y(bandOf(s)[1])}`),
     ...steps.map((s, i) => `${x(i)},${y(bandOf(s)[0])}`).reverse(),
   ].join(' ')
+  const env = envelope && envelope.length === n ? [
+    ...envelope.map((e, i) => `${x(i)},${y(e.p90)}`),
+    ...envelope.map((e, i) => `${x(i)},${y(e.p10)}`).reverse(),
+  ].join(' ') : null
   return (
     <div className="mx-cvwrap">
       <div className="mx-tl-lbl">{t('matrix.curve', 'Overall projection · confidence band')}</div>
@@ -168,6 +173,7 @@ function MatrixCurve({ steps, t }) {
         <text x="2" y={y(1) + 3} className="mx-cv-yl">+1</text>
         <text x="8" y={y(0) + 3} className="mx-cv-yl">0</text>
         <text x="2" y={y(-1) + 3} className="mx-cv-yl">−1</text>
+        {env && <polygon points={env} className="mx-cv-env" />}
         <polygon points={band} className="mx-cv-band" />
         <polyline points={vpts} className="mx-cv-line" stroke="url(#mxcv)" />
         {steps.map((s, i) => (i % 6 === 0
@@ -178,11 +184,13 @@ function MatrixCurve({ steps, t }) {
 }
 
 // Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
-function MatrixTimeline({ timeline, themeName, nm, t }) {
+function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMin, setMcMin }) {
   const steps = timeline.steps || []
   const order = timeline.themeOrder || []
   if (!steps.length) return null
   const ym = (d) => d.slice(0, 7)
+  const survOf = {}
+  if (mc && mc.events) mc.events.forEach((e) => { survOf[e.key + '|' + e.from] = e.survival })
   const segs = []
   let cur = null
   steps.forEach((s) => {
@@ -199,7 +207,20 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
   })
   return (
     <div className="mx-tlwrap">
-      <MatrixCurve steps={steps} t={t} />
+      <MatrixCurve steps={steps} t={t} envelope={mc && mc.envelope} />
+      <div className="mx-mc-ctl">
+        <button type="button" className="mx-mc-btn" onClick={() => onRefine && onRefine(mcMin)} disabled={mcBusy}>
+          {mcBusy ? t('matrix.refining', 'Refining…') : t('matrix.refine', 'Refine · birth-time')}
+        </button>
+        <select className="mx-mc-min" value={mcMin} onChange={(e) => setMcMin && setMcMin(+e.target.value)} disabled={mcBusy}>
+          {[4, 8, 15, 30].map((m) => <option key={m} value={m}>±{m} min</option>)}
+        </select>
+        {mc && (
+          <span className={'mx-mc-sum' + (mc.lagnaStability < 0.85 ? ' warn' : '')}>
+            {t('matrix.lagnastab', 'lagna stable')} {Math.round(mc.lagnaStability * 100)}% · {mc.samples} {t('matrix.runs', 'runs')}
+          </span>
+        )}
+      </div>
       <div className="mx-tl-ribbon">
         {segs.map((sg, i) => (
           <span key={i} className="mx-tl-seg" style={{ flexGrow: sg.n }} title={`${nm(sg.maha)} – ${nm(sg.antar)}`}>{nm(sg.antar)}</span>
@@ -235,6 +256,11 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
                       <i style={{ width: `${Math.round(Math.min(1, e.intensity / 0.4) * 100)}%` }} />
                     </span>
                     {e.cf != null && <span className="mx-ev-cf" title={t('matrix.conviction', 'conviction')}>{Math.round(e.cf * 100)}%</span>}
+                    {survOf[e.key + '|' + e.from] != null && (
+                      <span className="mx-ev-surv" title={t('matrix.survival', 'birth-time survival')}>
+                        {Math.round(survOf[e.key + '|' + e.from] * 100)}%↻
+                      </span>
+                    )}
                     <span className="mx-ev-drv">{e.driver ? t('matrix.clock.' + e.driver, CLOCK_LABEL[e.driver]) + ' · ' : ''}{nm(e.maha)}–{nm(e.antar)}</span>
                   </div>
                 </div>
@@ -254,11 +280,14 @@ export default function MatrixPanel({ date, time, place, namer }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
   const [open, setOpen] = useState(null)
+  const [mc, setMc] = useState(null)
+  const [mcBusy, setMcBusy] = useState(false)
+  const [mcMin, setMcMin] = useState(4)
 
   useEffect(() => {
     if (!date || !time || !place) return
     let alive = true
-    setBusy(true); setErr(''); setData(null); setOpen(null)
+    setBusy(true); setErr(''); setData(null); setOpen(null); setMc(null)
     fetch(`${API}/api/matrix`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude, timezone: place.timezone }),
@@ -269,6 +298,19 @@ export default function MatrixPanel({ date, time, place, namer }) {
       .finally(() => alive && setBusy(false))
     return () => { alive = false }
   }, [date, time, place])
+
+  const runMc = (minutes) => {
+    if (!date || !time || !place || mcBusy) return
+    setMcBusy(true)
+    fetch(`${API}/api/matrix/montecarlo`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude, timezone: place.timezone, minutes }),
+    })
+      .then((r) => r.json())
+      .then((j) => { if (!j.error) setMc(j) })
+      .catch(() => {})
+      .finally(() => setMcBusy(false))
+  }
 
   if (!date || !time || !place) return null
   const nm = (k) => (namer && namer.grahaKey ? namer.grahaKey(k) : k)
@@ -353,6 +395,11 @@ export default function MatrixPanel({ date, time, place, namer }) {
                 themeName={Object.fromEntries((data.themes || []).map((th) => [th.key, th.name]))}
                 nm={nm}
                 t={t}
+                mc={mc}
+                onRefine={runMc}
+                mcBusy={mcBusy}
+                mcMin={mcMin}
+                setMcMin={setMcMin}
               />
             </>
           )}

@@ -1874,6 +1874,20 @@ footer a:hover { color: var(--accent); }
 .mx-cv-g0 { stop-color: #2b8a6f; }
 .mx-cv-g1 { stop-color: var(--muted); }
 .mx-cv-g2 { stop-color: #b03f36; }
+.mx-cv-env { fill: color-mix(in srgb, var(--accent) 14%, transparent); stroke: none; }
+/* Monte-Carlo refine control. */
+.mx-mc-ctl { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin: .1rem 0 .6rem; }
+.mx-mc-btn { font-size: .76rem; font-weight: 600; padding: .28rem .7rem; border-radius: 999px; cursor: pointer;
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.mx-mc-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 20%, transparent); }
+.mx-mc-btn:disabled { opacity: .55; cursor: default; }
+.mx-mc-min { font-size: .74rem; padding: .22rem .4rem; border-radius: 6px; color: var(--ink);
+  background: var(--card, transparent); border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.mx-mc-sum { font-size: .74rem; color: var(--muted); }
+.mx-mc-sum.warn { color: #b8791f; font-weight: 600; }
+.mx-ev-surv { font-size: .7rem; color: var(--accent); font-variant-numeric: tabular-nums;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 999px; padding: 0 .38rem; }
 
 /* Near-future timeline — daśā ribbon over a themes×months heatmap. */
 .mx-tlwrap { margin-top: .3rem; }

@@ -497,6 +497,41 @@ def matrix_endpoint():
     return jsonify(out)
 
 
+@app.post("/api/matrix/montecarlo")
+def matrix_montecarlo_endpoint():
+    """Birth-time uncertainty of the projection — the Monte-Carlo envelope + event
+    survival. On demand (heavier than /api/matrix): recomputes the projection over a
+    Gaussian ±minutes of birth time. See matrix.montecarlo."""
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "time", "latitude", "longitude") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude and longitude must be numbers"}), 400
+    try:
+        local_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+    except ValueError:
+        return jsonify({"error": "date must be YYYY-MM-DD and time HH:MM (24h)"}), 400
+    if not EPHE_YEAR_MIN <= local_dt.year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"Year {local_dt.year} outside ephemeris range "
+                                 f"({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    try:
+        minutes = float(body.get("minutes", 4))
+        samples = int(body.get("samples", 160))
+    except (TypeError, ValueError):
+        return jsonify({"error": "minutes and samples must be numbers"}), 400
+    try:
+        def _fn(d):
+            return compute_chart(local_dt=d, latitude=lat, longitude=lon, tz_name=tz_name)
+        out = matrix.montecarlo(_fn, local_dt, minutes=minutes, samples=samples)
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Monte-Carlo failed: {e}"}), 500
+    return jsonify(out)
+
+
 @app.post("/api/gochara")
 def gochara_route():
     """Transit GEOMETRY of a moment against a natal chart (facts only).

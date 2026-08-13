@@ -24,6 +24,7 @@ contributors renormalise (so the number stays honest about what went into it).
 from __future__ import annotations
 
 import datetime as _dt
+import random as _random
 
 import swisseph as swe
 
@@ -624,3 +625,59 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
                     "sequence-direction rule), and the Saturn–Jupiter double-transit trigger — fused "
                     "into a central value with a confidence band whose width is the clocks' "
                     "disagreement. An indication, not a fated event; chara is jaimini-tier, not BPHS."}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Monte-Carlo (Layer 4) — birth-time uncertainty envelope + event survival
+# ════════════════════════════════════════════════════════════════════════════════
+def montecarlo(chart_fn, base_dt: _dt.datetime, minutes: float = 4.0, samples: int = 160) -> dict:
+    """Birth-time uncertainty of the projection. The dominant real-world error is an
+    imprecise birth time — a few minutes moves the lagna ~1° and shifts the daśā
+    balance, most sharply near a cusp. Perturb the birth time by a Gaussian ±``minutes``
+    and recompute the whole projection ``samples`` times; the scatter is a distinct,
+    second uncertainty (separate from the clocks' disagreement band). Each base event
+    gets a *survival* = the fraction of perturbed runs in which it still fires. Fixed
+    seed ⇒ a given request reproduces. ``chart_fn(dt)`` builds a chart for a datetime."""
+    samples = max(20, min(300, int(samples)))
+    minutes = max(0.5, min(60.0, float(minutes)))
+    rng = _random.Random(0x0DE7A5)
+    sigma = minutes / 2.0
+
+    base_tl = build(chart_fn(base_dt))["timeline"]
+    base_lagna = chart_fn(base_dt).lagna_rasi
+    base_dir, base_events = base_tl["charaDirection"], base_tl["events"]
+    n = len(base_tl["steps"])
+    curves = [[] for _ in range(n)]
+    hits = [0] * len(base_events)
+    lagna_same = dir_same = 0
+
+    for _ in range(samples):
+        off = max(-minutes * 1.8, min(minutes * 1.8, rng.gauss(0.0, sigma)))
+        pc = chart_fn(base_dt + _dt.timedelta(minutes=off))
+        ptl = build(pc)["timeline"]
+        for i, s in enumerate(ptl["steps"]):
+            curves[i].append(s["overall"])
+        lagna_same += (pc.lagna_rasi == base_lagna)
+        dir_same += (ptl["charaDirection"] == base_dir)
+        pev = ptl["events"]
+        for j, be in enumerate(base_events):
+            if any(pe["key"] == be["key"] and pe["good"] == be["good"]
+                   and pe["from"] <= be["to"] and be["from"] <= pe["to"] for pe in pev):
+                hits[j] += 1
+
+    def pctile(arr, p):
+        a = sorted(arr)
+        return a[min(len(a) - 1, max(0, int(round(p * (len(a) - 1)))))]
+
+    envelope = [{"date": base_tl["steps"][i]["date"],
+                 "p10": round(pctile(curves[i], 0.10), 3),
+                 "p50": round(pctile(curves[i], 0.50), 3),
+                 "p90": round(pctile(curves[i], 0.90), 3)} for i in range(n)]
+    events = [dict(be, survival=round(hits[j] / samples, 2)) for j, be in enumerate(base_events)]
+    return {"samples": samples, "minutes": minutes, "envelope": envelope, "events": events,
+            "lagnaStability": round(lagna_same / samples, 2),
+            "charaDirStability": round(dir_same / samples, 2),
+            "note": f"Birth-time uncertainty: the projection recomputed over a Gaussian ±{minutes:g} "
+                    "min of birth time. The envelope is the p10–p90 spread of the overall curve; each "
+                    "event's survival is how often it still fires. Low lagna stability ⇒ the reading "
+                    "is sensitive to the exact birth time (rectification would help)."}

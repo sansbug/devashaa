@@ -111,6 +111,62 @@ function MatrixGraph({ nodes, edges, nm, t }) {
   )
 }
 
+// Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
+function MatrixTimeline({ timeline, themeName, nm, t }) {
+  const steps = timeline.steps || []
+  const order = timeline.themeOrder || []
+  if (!steps.length) return null
+  const ym = (d) => d.slice(0, 7)
+  const segs = []
+  let cur = null
+  steps.forEach((s) => {
+    const k = `${s.maha}|${s.antar}`
+    if (!cur || cur.k !== k) { if (cur) segs.push(cur); cur = { k, maha: s.maha, antar: s.antar, n: 1 } }
+    else cur.n++
+  })
+  if (cur) segs.push(cur)
+  const rowCells = (get) => steps.map((s, i) => {
+    const v = get(s)
+    return <td key={i} className="mx-tl-cell" style={{ background: netColor(v) }}
+               title={`${ym(s.date)} · ${sv(v)}`} />
+  })
+  return (
+    <div className="mx-tlwrap">
+      <div className="mx-tl-ribbon">
+        {segs.map((sg, i) => (
+          <span key={i} className="mx-tl-seg" style={{ flexGrow: sg.n }} title={`${nm(sg.maha)} – ${nm(sg.antar)}`}>{nm(sg.antar)}</span>
+        ))}
+      </div>
+      <div className="mx-heatwrap">
+        <table className="mx-heat mx-tl-table">
+          <thead>
+            <tr><th className="mx-tl-name" />{steps.map((s, i) => <th key={i} className="mx-tl-mh">{i % 3 === 0 ? ym(s.date).slice(2) : ''}</th>)}</tr>
+          </thead>
+          <tbody>
+            <tr className="mx-tl-overall-row"><td className="mx-tl-name"><b>{t('matrix.overall', 'Overall')}</b></td>{rowCells((s) => s.overall)}</tr>
+            {order.map((tk) => (
+              <tr key={tk}><td className="mx-tl-name">{t('matrix.theme.' + tk, themeName[tk] || tk)}</td>{rowCells((s) => s.themes[tk])}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {timeline.windows && timeline.windows.length > 0 && (
+        <ul className="mx-tl-windows">
+          {timeline.windows.map((w, i) => (
+            <li key={i} className={w.good ? 'good' : 'bad'}>
+              <span className="mx-tl-dir">{w.good ? '▲' : '▼'}</span>
+              <span className="mx-tl-wname">{t('matrix.theme.' + w.key, w.name)}</span>
+              <span className="mx-tl-wdate">{ym(w.from)}{w.from !== w.to ? ' – ' + ym(w.to) : ''}</span>
+              <span className="mx-tl-wdrv">{nm(w.maha)}–{nm(w.antar)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mx-prov">{timeline.note}</p>
+    </div>
+  )
+}
+
 export default function MatrixPanel({ date, time, place, namer }) {
   const { t } = useLang()
   const [data, setData] = useState(null)
@@ -154,7 +210,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
                 <div className={'mx-card' + (on ? ' on' : '')} key={th.key}>
                   <button type="button" className="mx-card-h" aria-expanded={on} onClick={() => setOpen(on ? null : 't:' + th.key)}>
                     <span className="mx-band" style={{ background: BAND_C[th.band] }}>{sv(th.net)}</span>
-                    <span className="mx-card-name">{th.name}</span>
+                    <span className="mx-card-name">{t('matrix.theme.' + th.key, th.name)}</span>
                     <span className="mx-bandlbl">{bandLbl(th.band)}</span>
                     <span className="mx-caret">{on ? '−' : '+'}</span>
                   </button>
@@ -205,6 +261,18 @@ export default function MatrixPanel({ date, time, place, namer }) {
           <h4 className="mx-h">{t('matrix.web', 'Aspect web')}</h4>
           {data.nodes && data.edges && (
             <MatrixGraph nodes={data.nodes} edges={data.edges.aspects || []} nm={nm} t={t} />
+          )}
+
+          {data.timeline && (
+            <>
+              <h4 className="mx-h">{t('matrix.timeline', 'Near future')}</h4>
+              <MatrixTimeline
+                timeline={data.timeline}
+                themeName={Object.fromEntries((data.themes || []).map((th) => [th.key, th.name]))}
+                nm={nm}
+                t={t}
+              />
+            </>
           )}
 
           <p className="mx-prov">{data.provenance?.note}</p>

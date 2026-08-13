@@ -23,6 +23,10 @@ contributors renormalise (so the number stays honest about what went into it).
 """
 from __future__ import annotations
 
+import datetime as _dt
+
+import swisseph as swe
+
 import functional
 import bhava_phala as bhp
 import karakas as kar
@@ -30,6 +34,8 @@ import yogas as yg
 import shadbala_context
 import drishti
 from dignity import dignity_of
+from vedic import CALC_FLAGS, _norm360
+from vimshottari import running_lords
 
 # ── the bhāva aggregator (signed contributors, sum 1.0) ─────────────────────────
 # A house's net iṣṭa/kaṣṭa is a weighted sum of four contributors, each mapped to
@@ -359,7 +365,7 @@ def build(chart) -> dict:
                      "state": _state_label(dig_of.get(g.key))}
              for g in grahas}
 
-    return {
+    out = {
         "bhavas": bhavas,
         "themes": themes,
         "nodes": nodes,
@@ -375,3 +381,100 @@ def build(chart) -> dict:
                        "tiers": ["sloka", "jaimini", "synthesis"],
                        "note": "Indications from classical measures, weighted transparently — not a fated verdict."},
     }
+    out["timeline"] = timeline(chart, out, _dt.date.today(), 24)
+    return out
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Timeline (Layer 3) — the near future: daśā activation + gochara over the domains
+# ════════════════════════════════════════════════════════════════════════════════
+_LEVEL_W = (0.5, 0.32, 0.18)   # mahā, antar, pratyantar activation weights
+
+
+def _add_months(d: _dt.date, m: int) -> _dt.date:
+    y = d.year + (d.month - 1 + m) // 12
+    mo = (d.month - 1 + m) % 12 + 1
+    return _dt.date(y, mo, min(d.day, 28))
+
+
+def _transit_house(jd: float, ipl: int, lagna: int) -> int:
+    lon = _norm360(swe.calc_ut(jd, ipl, CALC_FLAGS)[0][0])
+    return (int(lon // 30) - lagna) % 12 + 1
+
+
+def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
+    """A dated near-future potential per theme + overall. At each month the running
+    Viṁśottarī lords (mahā→antar→pratyantar) ACTIVATE the themes whose significators
+    they are (kārakas + primary-house lord) — swinging the standing verdict by the
+    lord's own disposition — and transiting Jupiter/Saturn over a theme's houses add
+    a gochara nudge. An indication of the period's classical flavour, not a fated event."""
+    birth_jd = chart.jd_ut
+    moon = next(g for g in chart.grahas if g.key == "moon")
+    ni, nf = moon.nakshatra.index, moon.nakshatra.fraction
+    lagna = chart.lagna_rasi
+    disp = {k: v["disp"] for k, v in m_out["grahaDisposition"].items()}
+    lord_of = {b["house"]: b["lord"] for b in m_out["bhavas"]}
+    base = {t["key"]: t["net"] for t in m_out["themes"]}
+    names = {t["key"]: t["name"] for t in m_out["themes"]}
+    chara = (m_out.get("karakas") or {}).get("chara") or {}
+
+    sig, houses = {}, {}
+    for t in THEMES:
+        s = set(t.get("sthira", {}))
+        for role in t.get("chara", {}):
+            if chara.get(role):
+                s.add(chara[role])
+        ph = max(t["houses"], key=t["houses"].get)
+        if lord_of.get(ph):
+            s.add(lord_of[ph])
+        sig[t["key"]] = s
+        houses[t["key"]] = set(t["houses"])
+
+    steps = []
+    for m in range(months + 1):
+        d = _add_months(start, m)
+        jd = swe.julday(d.year, d.month, d.day, 12.0, swe.GREG_CAL)
+        lords = running_lords(birth_jd, ni, nf, jd, depth=3)
+        jup_h = _transit_house(jd, swe.JUPITER, lagna)
+        sat_h = _transit_house(jd, swe.SATURN, lagna)
+        tv = {}
+        for tk in sig:
+            act = sum(_LEVEL_W[i] * disp.get(L, 0.0) for i, L in enumerate(lords) if L in sig[tk])
+            goch = (0.12 if jup_h in houses[tk] else 0.0) - (0.12 if sat_h in houses[tk] else 0.0)
+            v = (0.5 * base[tk] + 0.5 * act + goch) if (act or goch) else base[tk]
+            tv[tk] = round(max(-1.0, min(1.0, v)), 3)
+        steps.append({"date": d.isoformat(),
+                      "maha": lords[0] if lords else None,
+                      "antar": lords[1] if len(lords) > 1 else None,
+                      "pratyantar": lords[2] if len(lords) > 2 else None,
+                      "overall": round(sum(tv.values()) / len(tv), 3), "themes": tv})
+
+    # flagged windows — contiguous runs where a theme is notably good/bad (|v|≥.33)
+    windows = []
+    for tk in sig:
+        run = None
+        for s in steps:
+            v = s["themes"][tk]
+            good = v >= 0
+            # a *window* is timing-driven: notable AND moved from the standing base
+            if abs(v) >= 0.28 and abs(v - base[tk]) >= 0.07:
+                if run and run["good"] == good:
+                    run["to"] = s["date"]
+                    if abs(v) > abs(run["peak"]):
+                        run.update(peak=v, maha=s["maha"], antar=s["antar"])
+                else:
+                    if run:
+                        windows.append(run)
+                    run = {"key": tk, "name": names[tk], "good": good, "from": s["date"],
+                           "to": s["date"], "peak": v, "maha": s["maha"], "antar": s["antar"]}
+            elif run:
+                windows.append(run)
+                run = None
+        if run:
+            windows.append(run)
+    windows.sort(key=lambda w: abs(w["peak"]), reverse=True)
+
+    return {"start": start.isoformat(), "months": months, "steps": steps,
+            "themeOrder": [t["key"] for t in THEMES], "windows": windows[:12],
+            "note": "Near-future indication: the running daśā activates a theme's significators, "
+                    "swung by their disposition; Jupiter/Saturn transits nudge. Not a fated event."}

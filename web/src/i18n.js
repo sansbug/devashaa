@@ -107,6 +107,8 @@ const MANUAL = {
   'matrix.nodenote': { en: 'node fill = disposition · ring size = strength', hi: 'बिंदु रंग = स्वभाव · आकार = बल' },
   'matrix.timeline': { en: 'Near future', hi: 'निकट भविष्य' },
   'matrix.overall': { en: 'Overall', hi: 'समग्र' },
+  'matrix.av': { en: 'Sarvāṣṭakavarga · transit strength', hi: 'सर्वाष्टकवर्ग · गोचर-बल' },
+  'matrix.avnote': { en: 'bindus per sign (0–56); Σ = 337 — a graha transiting a bindu-rich sign supports, a bindu-poor one afflicts', hi: 'प्रति राशि बिंदु (0–56); योग = 337 — बिंदु-समृद्ध राशि में गोचर अनुकूल, बिंदु-अल्प में प्रतिकूल' },
   'matrix.theme.self': { en: 'Self · vitality · mind', hi: 'स्वयं · प्राण · मन' },
   'matrix.theme.wealth': { en: 'Wealth · finances', hi: 'धन · वित्त' },
   'matrix.theme.career': { en: 'Career · status', hi: 'कर्म · प्रतिष्ठा' },

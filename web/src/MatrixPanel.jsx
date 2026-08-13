@@ -111,6 +111,30 @@ function MatrixGraph({ nodes, edges, nm, t }) {
   )
 }
 
+// Sarvāṣṭakavarga strip — natal bindus per sign (0..56), the transit-strength map
+// that grades the timeline's gochara. High bindus support a transit, low afflict.
+const RASI_AB = ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi']
+function MatrixAvStrip({ av, t }) {
+  const sav = av.sarva || []
+  if (!sav.length) return null
+  const peak = Math.max(...sav)
+  return (
+    <div className="mx-av">
+      <div className="mx-av-lbl">{t('matrix.av', 'Sarvāṣṭakavarga · transit strength')}</div>
+      <div className="mx-av-row">
+        {sav.map((b, i) => (
+          <span key={i} className={'mx-av-cell' + (b === peak ? ' peak' : '')}
+                style={{ background: netColor(Math.max(-1, Math.min(1, (b - 28) / 12))) }}
+                title={`${RASI_AB[i]} · ${b} bindus`}>
+            <b>{b}</b><i>{RASI_AB[i]}</i>
+          </span>
+        ))}
+      </div>
+      <div className="mx-av-note">{t('matrix.avnote', 'bindus per sign (0–56); Σ = 337 — a graha transiting a bindu-rich sign supports, a bindu-poor one afflicts')}</div>
+    </div>
+  )
+}
+
 // Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
 function MatrixTimeline({ timeline, themeName, nm, t }) {
   const steps = timeline.steps || []
@@ -266,6 +290,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
           {data.timeline && (
             <>
               <h4 className="mx-h">{t('matrix.timeline', 'Near future')}</h4>
+              {data.ashtakavarga && <MatrixAvStrip av={data.ashtakavarga} t={t} />}
               <MatrixTimeline
                 timeline={data.timeline}
                 themeName={Object.fromEntries((data.themes || []).map((th) => [th.key, th.name]))}

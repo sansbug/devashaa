@@ -1849,6 +1849,18 @@ footer a:hover { color: var(--accent); }
 .mx-rlbl { fill: var(--muted); font-size: 9px; }
 .mx-nlbl { fill: #fff; font-size: 8.5px; font-weight: 700; pointer-events: none; }
 
+/* Sarvāṣṭakavarga strip — bindus per sign. */
+.mx-av { margin: .2rem 0 .9rem; }
+.mx-av-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: .35rem; }
+.mx-av-row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.mx-av-cell { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: .25rem 0; border-radius: 3px; min-height: 2.3rem; }
+.mx-av-cell.peak { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mx-av-cell b { font-size: .82rem; font-weight: 700; color: #17130a; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255,255,255,.4); }
+.mx-av-cell i { font-size: .56rem; font-style: normal; color: #17130a; opacity: .72; }
+.mx-av-note { font-size: .68rem; color: var(--muted); margin-top: .35rem; font-style: italic; line-height: 1.4; }
+
 /* Near-future timeline — daśā ribbon over a themes×months heatmap. */
 .mx-tlwrap { margin-top: .3rem; }
 .mx-tl-ribbon { display: flex; gap: 2px; margin: 0 0 5px; }

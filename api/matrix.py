@@ -27,6 +27,7 @@ import datetime as _dt
 
 import swisseph as swe
 
+import ashtakavarga
 import functional
 import bhava_phala as bhp
 import karakas as kar
@@ -381,7 +382,11 @@ def build(chart) -> dict:
                        "tiers": ["sloka", "jaimini", "synthesis"],
                        "note": "Indications from classical measures, weighted transparently — not a fated verdict."},
     }
-    out["timeline"] = timeline(chart, out, _dt.date.today(), 24)
+    try:
+        out["ashtakavarga"] = ashtakavarga.from_chart(chart)
+    except Exception:
+        out["ashtakavarga"] = None
+    out["timeline"] = timeline(chart, out, _dt.date.today(), 36)
     return out
 
 
@@ -397,9 +402,9 @@ def _add_months(d: _dt.date, m: int) -> _dt.date:
     return _dt.date(y, mo, min(d.day, 28))
 
 
-def _transit_house(jd: float, ipl: int, lagna: int) -> int:
-    lon = _norm360(swe.calc_ut(jd, ipl, CALC_FLAGS)[0][0])
-    return (int(lon // 30) - lagna) % 12 + 1
+def _transit_sign(jd: float, ipl: int) -> int:
+    """Sidereal sign (0..11) of graha ``ipl`` at ``jd`` — for aṣṭakavarga gating."""
+    return int(_norm360(swe.calc_ut(jd, ipl, CALC_FLAGS)[0][0]) // 30)
 
 
 def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
@@ -407,7 +412,9 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
     Viṁśottarī lords (mahā→antar→pratyantar) ACTIVATE the themes whose significators
     they are (kārakas + primary-house lord) — swinging the standing verdict by the
     lord's own disposition — and transiting Jupiter/Saturn over a theme's houses add
-    a gochara nudge. An indication of the period's classical flavour, not a fated event."""
+    a gochara nudge that is *aṣṭakavarga-gated*: the nudge is signed by the bindus the
+    transiting graha holds in the sign it occupies (a bindu-rich transit supports, a
+    bindu-poor one afflicts), not by a flat good/bad. An indication, not a fated event."""
     birth_jd = chart.jd_ut
     moon = next(g for g in chart.grahas if g.key == "moon")
     ni, nf = moon.nakshatra.index, moon.nakshatra.fraction
@@ -417,6 +424,8 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
     base = {t["key"]: t["net"] for t in m_out["themes"]}
     names = {t["key"]: t["name"] for t in m_out["themes"]}
     chara = (m_out.get("karakas") or {}).get("chara") or {}
+    av = m_out.get("ashtakavarga") or {}
+    bav, sav = av.get("bhinna"), av.get("sarva")
 
     sig, houses = {}, {}
     for t in THEMES:
@@ -435,12 +444,20 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
         d = _add_months(start, m)
         jd = swe.julday(d.year, d.month, d.day, 12.0, swe.GREG_CAL)
         lords = running_lords(birth_jd, ni, nf, jd, depth=3)
-        jup_h = _transit_house(jd, swe.JUPITER, lagna)
-        sat_h = _transit_house(jd, swe.SATURN, lagna)
+        # transiting Jupiter/Saturn: sign (for AV gating) and house-from-lagna.
+        jup_s = _transit_sign(jd, swe.JUPITER)
+        sat_s = _transit_sign(jd, swe.SATURN)
+        jup_h, sat_h = (jup_s - lagna) % 12 + 1, (sat_s - lagna) % 12 + 1
+        jup_p = ashtakavarga.transit_potency("jupiter", jup_s, bav, sav) if bav else 1.0
+        sat_p = ashtakavarga.transit_potency("saturn", sat_s, bav, sav) if bav else -1.0
         tv = {}
         for tk in sig:
             act = sum(_LEVEL_W[i] * disp.get(L, 0.0) for i, L in enumerate(lords) if L in sig[tk])
-            goch = (0.12 if jup_h in houses[tk] else 0.0) - (0.12 if sat_h in houses[tk] else 0.0)
+            goch = 0.0
+            if jup_h in houses[tk]:
+                goch += 0.14 * jup_p
+            if sat_h in houses[tk]:
+                goch += 0.14 * sat_p
             v = (0.5 * base[tk] + 0.5 * act + goch) if (act or goch) else base[tk]
             tv[tk] = round(max(-1.0, min(1.0, v)), 3)
         steps.append({"date": d.isoformat(),

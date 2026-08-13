@@ -1950,8 +1950,11 @@ footer a:hover { color: var(--accent); }
 .mx-life-flbl { font-size: 8.5px; font-weight: 600; }
 .mx-life-flbl.a { fill: #3d7fb0; } .mx-life-flbl.b { fill: #c08a1f; }
 .mx-life-tp { stroke-width: 1; stroke-dasharray: 2 2; }
-.mx-life-tp.rise { stroke: color-mix(in srgb, #2b8a6f 55%, transparent); }
-.mx-life-tp.hard { stroke: color-mix(in srgb, #b03f36 55%, transparent); }
+.mx-life-tp.rise { stroke: color-mix(in srgb, #2b8a6f 50%, transparent); }
+.mx-life-tp.hard { stroke: color-mix(in srgb, #b03f36 50%, transparent); }
+.mx-life-tp.yoga { stroke: color-mix(in srgb, var(--accent) 55%, transparent); }
+.mx-life-tplbl { font-size: 8.4px; font-weight: 600; }
+.mx-life-tplbl.rise { fill: #2b8a6f; } .mx-life-tplbl.hard { fill: #b03f36; } .mx-life-tplbl.yoga { fill: var(--accent); }
 .mx-life-seg { fill: color-mix(in srgb, var(--accent) 16%, transparent); stroke: color-mix(in srgb, var(--ink) 8%, transparent); stroke-width: .5; }
 .mx-life-seglbl { fill: var(--ink); font-size: 9px; }
 .mx-life-star { fill: var(--accent); color: var(--accent); font-size: 11px; }

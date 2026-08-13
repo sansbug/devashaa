@@ -28,6 +28,7 @@ import datetime as _dt
 import swisseph as swe
 
 import ashtakavarga
+import charadasha
 import functional
 import bhava_phala as bhp
 import karakas as kar
@@ -407,6 +408,69 @@ def _transit_sign(jd: float, ipl: int) -> int:
     return int(_norm360(swe.calc_ut(jd, ipl, CALC_FLAGS)[0][0]) // 30)
 
 
+# ── the ensemble: independent timing clocks fused into a central estimate + band ──
+# Weights are synthesis (starting values, tunable), like the bhāva/theme weights.
+_CLOCK_W = {"vims": 0.40, "goch": 0.25, "chara": 0.20, "trig": 0.15}
+_CHARA_LVL = (0.6, 0.4)   # mahā / antar weight inside the chara clock
+_SPREAD_FULL = 0.5        # spread at which conviction hits 0
+
+
+def _chara_direction(chart) -> str | None:
+    """Chara-daśā SEQUENCE direction. K.N. Rao's rule (following Neelakantha; the
+    Jagannatha Hora default): the sequence runs DIRECT if the 9th sign from the lagna
+    is *odd-footed* (savya), else REVERSE. 'Odd-footed' is the savya/apasavya quadrant
+    grouping — ``charadasha.DIRECT_GROUP`` {Ar,Ta,Ge,Li,Sc,Sg} — NOT the ordinal sign
+    number (the common error). Same author the length engine already cites; the rule
+    reproduces the canonical 12-lagna direct/reverse list. Tier: jaimini, not BPHS."""
+    ninth = (chart.lagna_rasi + 8) % 12
+    return "direct" if ninth in charadasha.DIRECT_GROUP else "reverse"
+
+
+def _chara_sequence(chart, direction):
+    if direction not in ("direct", "reverse"):
+        return None
+    positions = {g.key: g.rasi for g in chart.grahas}
+    degrees = {g.key: (g.longitude % 30.0) for g in chart.grahas}
+    res = charadasha.chara_dasha(positions, degrees, lagna=chart.lagna_rasi, direction=direction)
+    seq = res.get("sequence")
+    if not seq:
+        return None
+    return {"seq": seq, "step": 1 if direction == "direct" else -1,
+            "total": res["total_years"] or 0.0}
+
+
+def _chara_running(cs, age_years):
+    """(mahā_rasi, antar_rasi) of the chara daśā at ``age_years``, or (None, None)."""
+    if not cs or cs["total"] <= 0:
+        return None, None
+    a = age_years % cs["total"]
+    for e in cs["seq"]:
+        if e["start_offset"] <= a < e["end_offset"]:
+            L = e["years"]
+            ai = max(0, min(11, int((a - e["start_offset"]) / (L / 12.0)))) if L > 0 else 0
+            return e["sign"], (e["sign"] + cs["step"] * ai) % 12
+    return None, None
+
+
+def _fuse(clocks: dict):
+    """Fuse clock activations (name→value, or None to abstain) into
+    (central, spread, conviction). Inactive clocks vote 0 (an unconfirmed lone
+    signal thus reads as disagreement → low conviction); abstainers are excluded."""
+    items = [(n, v) for n, v in clocks.items() if v is not None]
+    wsum = sum(_CLOCK_W[n] for n, _ in items)
+    if wsum <= 0:
+        return 0.0, 0.0, 0.5
+    central = sum(_CLOCK_W[n] * v for n, v in items) / wsum
+    spread = (sum(_CLOCK_W[n] * (v - central) ** 2 for n, v in items) / wsum) ** 0.5
+    conviction = max(0.0, min(1.0, 1.0 - spread / _SPREAD_FULL))
+    return central, spread, conviction
+
+
+def _hits(transit_sign: int, target_sign: int, graha: str) -> bool:
+    """A transiting graha 'hits' a sign if it occupies it or casts graha dṛṣṭi on it."""
+    return transit_sign == target_sign or drishti.graha_drishti(transit_sign, target_sign, graha) > 0
+
+
 def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
     """A dated near-future potential per theme + overall. At each month the running
     Viṁśottarī lords (mahā→antar→pratyantar) ACTIVATE the themes whose significators
@@ -426,14 +490,17 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
     chara = (m_out.get("karakas") or {}).get("chara") or {}
     av = m_out.get("ashtakavarga") or {}
     bav, sav = av.get("bhinna"), av.get("sarva")
+    bnet = {b["house"]: b["net"] for b in m_out["bhavas"]}   # Layer-2 bhāva verdicts
+    chara_seq = _chara_sequence(chart, _chara_direction(chart))   # None ⇒ chara abstains
 
-    sig, houses = {}, {}
+    sig, houses, primary = {}, {}, {}
     for t in THEMES:
         s = set(t.get("sthira", {}))
         for role in t.get("chara", {}):
             if chara.get(role):
                 s.add(chara[role])
         ph = max(t["houses"], key=t["houses"].get)
+        primary[t["key"]] = ph
         if lord_of.get(ph):
             s.add(lord_of[ph])
         sig[t["key"]] = s
@@ -448,25 +515,67 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
         jup_s = _transit_sign(jd, swe.JUPITER)
         sat_s = _transit_sign(jd, swe.SATURN)
         jup_h, sat_h = (jup_s - lagna) % 12 + 1, (sat_s - lagna) % 12 + 1
-        jup_p = ashtakavarga.transit_potency("jupiter", jup_s, bav, sav) if bav else 1.0
-        sat_p = ashtakavarga.transit_potency("saturn", sat_s, bav, sav) if bav else -1.0
-        tv = {}
+        jup_p = ashtakavarga.transit_potency("jupiter", jup_s, bav, sav) if bav else 0.6
+        sat_p = ashtakavarga.transit_potency("saturn", sat_s, bav, sav) if bav else -0.6
+        # chara (Jaimini) daśā rāśis running now (or None,None if the clock abstains)
+        c_maha, c_antar = _chara_running(chara_seq, (jd - birth_jd) / 365.25)
+        tv, tband, tconv, tclk = {}, {}, {}, {}
         for tk in sig:
-            act = sum(_LEVEL_W[i] * disp.get(L, 0.0) for i, L in enumerate(lords) if L in sig[tk])
-            goch = 0.0
-            if jup_h in houses[tk]:
-                goch += 0.14 * jup_p
-            if sat_h in houses[tk]:
-                goch += 0.14 * sat_p
-            v = (0.5 * base[tk] + 0.5 * act + goch) if (act or goch) else base[tk]
-            tv[tk] = round(max(-1.0, min(1.0, v)), 3)
+            th = houses[tk]
+            # clock 1 — Viṁśottarī: running lords that are the theme's significators.
+            c_vims = max(-1.0, min(1.0, sum(_LEVEL_W[i] * disp.get(L, 0.0)
+                                            for i, L in enumerate(lords) if L in sig[tk])))
+            # clock 2 — aṣṭakavarga-gated gochara of Jupiter/Saturn over the theme's houses.
+            gp = [jup_p] * (jup_h in th) + [sat_p] * (sat_h in th)
+            c_goch = sum(gp) / len(gp) if gp else 0.0
+            # clock 3 — chara daśā: its rāśi lands on a theme house → that bhāva's verdict.
+            c_chara = None
+            if c_maha is not None:
+                c_chara = 0.0
+                mh = (c_maha - lagna) % 12 + 1
+                if mh in th:
+                    c_chara += _CHARA_LVL[0] * bnet.get(mh, 0.0)
+                ah = (c_antar - lagna) % 12 + 1
+                if ah in th:
+                    c_chara += _CHARA_LVL[1] * bnet.get(ah, 0.0)
+            # clock 4 — double-transit trigger: Jup AND Sat both hit the primary house.
+            ph = primary[tk]
+            ps = (lagna + ph - 1) % 12
+            c_trig = bnet.get(ph, 0.0) if (_hits(jup_s, ps, "jupiter") and _hits(sat_s, ps, "saturn")) else 0.0
+
+            clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
+            central, spread, cf = _fuse(clocks)
+            v = max(-1.0, min(1.0, 0.5 * base[tk] + 0.5 * central))
+            tv[tk] = round(v, 3)
+            tband[tk] = [round(max(-1.0, v - 0.5 * spread), 3), round(min(1.0, v + 0.5 * spread), 3)]
+            tconv[tk] = round(cf, 2)
+            tclk[tk] = {"vims": round(c_vims, 2), "goch": round(c_goch, 2),
+                        "chara": (round(c_chara, 2) if c_chara is not None else None),
+                        "trig": round(c_trig, 2)}
+        ov = sum(tv.values()) / len(tv)
         steps.append({"date": d.isoformat(),
                       "maha": lords[0] if lords else None,
                       "antar": lords[1] if len(lords) > 1 else None,
                       "pratyantar": lords[2] if len(lords) > 2 else None,
-                      "overall": round(sum(tv.values()) / len(tv), 3), "themes": tv})
+                      "charaMaha": c_maha, "charaAntar": c_antar,
+                      "overall": round(ov, 3),
+                      "overallBand": [round(sum(b[0] for b in tband.values()) / len(tband), 3),
+                                      round(sum(b[1] for b in tband.values()) / len(tband), 3)],
+                      "overallCf": round(sum(tconv.values()) / len(tconv), 2),
+                      "themes": tv, "bands": tband, "conv": tconv, "clocks": tclk})
 
-    # flagged windows — contiguous runs where a theme is notably good/bad (|v|≥.33)
+    # flagged windows — contiguous runs where a theme is timing-driven notable, with
+    # the conviction and the dominant clock at the peak recorded.
+    def _driver(clk):
+        best, name = -1.0, None
+        for n, val in clk.items():
+            if val is None:
+                continue
+            m = _CLOCK_W[n] * abs(val)
+            if m > best:
+                best, name = m, n
+        return name
+
     windows = []
     for tk in sig:
         run = None
@@ -475,15 +584,17 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
             good = v >= 0
             # a *window* is timing-driven: notable AND moved from the standing base
             if abs(v) >= 0.28 and abs(v - base[tk]) >= 0.07:
+                peak_fields = {"peak": v, "maha": s["maha"], "antar": s["antar"],
+                               "cf": s["conv"][tk], "driver": _driver(s["clocks"][tk])}
                 if run and run["good"] == good:
                     run["to"] = s["date"]
                     if abs(v) > abs(run["peak"]):
-                        run.update(peak=v, maha=s["maha"], antar=s["antar"])
+                        run.update(peak_fields)
                 else:
                     if run:
                         windows.append(run)
-                    run = {"key": tk, "name": names[tk], "good": good, "from": s["date"],
-                           "to": s["date"], "peak": v, "maha": s["maha"], "antar": s["antar"]}
+                    run = {"key": tk, "name": names[tk], "good": good,
+                           "from": s["date"], "to": s["date"], **peak_fields}
             elif run:
                 windows.append(run)
                 run = None
@@ -493,5 +604,9 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
 
     return {"start": start.isoformat(), "months": months, "steps": steps,
             "themeOrder": [t["key"] for t in THEMES], "windows": windows[:12],
-            "note": "Near-future indication: the running daśā activates a theme's significators, "
-                    "swung by their disposition; Jupiter/Saturn transits nudge. Not a fated event."}
+            "clockWeights": _CLOCK_W, "charaDirection": _chara_direction(chart),
+            "note": "Near-future indication from an ensemble of independent clocks — Viṁśottarī "
+                    "daśā, aṣṭakavarga-gated Jupiter/Saturn gochara, Jaimini chara daśā (K.N. Rao "
+                    "sequence-direction rule), and the Saturn–Jupiter double-transit trigger — fused "
+                    "into a central value with a confidence band whose width is the clocks' "
+                    "disagreement. An indication, not a fated event; chara is jaimini-tier, not BPHS."}

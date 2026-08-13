@@ -1861,6 +1861,20 @@ footer a:hover { color: var(--accent); }
 .mx-av-cell i { font-size: .56rem; font-style: normal; color: #17130a; opacity: .72; }
 .mx-av-note { font-size: .68rem; color: var(--muted); margin-top: .35rem; font-style: italic; line-height: 1.4; }
 
+/* Overall projection curve + confidence band. */
+.mx-cvwrap { margin: .2rem 0 .8rem; }
+.mx-tl-lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: .3rem; }
+.mx-curve { width: 100%; height: auto; display: block; }
+.mx-cv-band { fill: color-mix(in srgb, var(--ink) 13%, transparent); stroke: none; }
+.mx-cv-line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.mx-cv-zero { stroke: color-mix(in srgb, var(--ink) 30%, transparent); stroke-width: 1; }
+.mx-cv-grid { stroke: color-mix(in srgb, var(--ink) 10%, transparent); stroke-width: 1; stroke-dasharray: 3 3; }
+.mx-cv-yl, .mx-cv-xl { fill: var(--muted); font-size: 9px; }
+.mx-cv-xl { text-anchor: middle; }
+.mx-cv-g0 { stop-color: #2b8a6f; }
+.mx-cv-g1 { stop-color: var(--muted); }
+.mx-cv-g2 { stop-color: #b03f36; }
+
 /* Near-future timeline — daśā ribbon over a themes×months heatmap. */
 .mx-tlwrap { margin-top: .3rem; }
 .mx-tl-ribbon { display: flex; gap: 2px; margin: 0 0 5px; }
@@ -1883,6 +1897,8 @@ footer a:hover { color: var(--accent); }
 .mx-tl-dir { font-weight: 700; }
 .mx-tl-wname { font-weight: 600; color: var(--ink); }
 .mx-tl-wdate { color: var(--muted); font-variant-numeric: tabular-nums; }
+.mx-tl-wcf { font-variant-numeric: tabular-nums; font-size: .7rem; color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); border-radius: 999px; padding: 0 .38rem; }
 .mx-tl-wdrv { color: var(--muted); font-size: .74rem; margin-left: auto; white-space: nowrap; }
 
 /* "Special days this month" list. */

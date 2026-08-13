@@ -135,6 +135,48 @@ function MatrixAvStrip({ av, t }) {
   )
 }
 
+const CLOCK_LABEL = { vims: 'Viṁśottarī', goch: 'gochara', chara: 'chara', trig: 'trigger' }
+
+// Overall projection curve — value line (coloured by iṣṭa/kaṣṭa height) over a
+// confidence band whose width is the clocks' disagreement.
+function MatrixCurve({ steps, t }) {
+  if (!steps.length) return null
+  const W = 660, H = 150, PX = 28, PYt = 12, PYb = 18
+  const n = steps.length
+  const x = (i) => PX + (i / Math.max(1, n - 1)) * (W - PX - 8)
+  const y = (v) => PYt + (1 - (v + 1) / 2) * (H - PYt - PYb)
+  const bandOf = (s) => s.overallBand || [s.overall, s.overall]
+  const vpts = steps.map((s, i) => `${x(i)},${y(s.overall)}`).join(' ')
+  const band = [
+    ...steps.map((s, i) => `${x(i)},${y(bandOf(s)[1])}`),
+    ...steps.map((s, i) => `${x(i)},${y(bandOf(s)[0])}`).reverse(),
+  ].join(' ')
+  return (
+    <div className="mx-cvwrap">
+      <div className="mx-tl-lbl">{t('matrix.curve', 'Overall projection · confidence band')}</div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mx-curve" role="img" aria-label="overall projection curve">
+        <defs>
+          <linearGradient id="mxcv" gradientUnits="userSpaceOnUse" x1="0" y1={y(1)} x2="0" y2={y(-1)}>
+            <stop offset="0%" className="mx-cv-g0" />
+            <stop offset="50%" className="mx-cv-g1" />
+            <stop offset="100%" className="mx-cv-g2" />
+          </linearGradient>
+        </defs>
+        <line x1={PX} y1={y(0.5)} x2={W - 8} y2={y(0.5)} className="mx-cv-grid" />
+        <line x1={PX} y1={y(-0.5)} x2={W - 8} y2={y(-0.5)} className="mx-cv-grid" />
+        <line x1={PX} y1={y(0)} x2={W - 8} y2={y(0)} className="mx-cv-zero" />
+        <text x="2" y={y(1) + 3} className="mx-cv-yl">+1</text>
+        <text x="8" y={y(0) + 3} className="mx-cv-yl">0</text>
+        <text x="2" y={y(-1) + 3} className="mx-cv-yl">−1</text>
+        <polygon points={band} className="mx-cv-band" />
+        <polyline points={vpts} className="mx-cv-line" stroke="url(#mxcv)" />
+        {steps.map((s, i) => (i % 6 === 0
+          ? <text key={i} x={x(i)} y={H - 3} className="mx-cv-xl">{s.date.slice(2, 7)}</text> : null))}
+      </svg>
+    </div>
+  )
+}
+
 // Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
 function MatrixTimeline({ timeline, themeName, nm, t }) {
   const steps = timeline.steps || []
@@ -149,13 +191,15 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
     else cur.n++
   })
   if (cur) segs.push(cur)
-  const rowCells = (get) => steps.map((s, i) => {
-    const v = get(s)
-    return <td key={i} className="mx-tl-cell" style={{ background: netColor(v) }}
-               title={`${ym(s.date)} · ${sv(v)}`} />
+  const rowCells = (vget, cfget) => steps.map((s, i) => {
+    const v = vget(s)
+    const cf = cfget ? cfget(s) : 1
+    return <td key={i} className="mx-tl-cell" style={{ background: netColor(v), opacity: 0.4 + 0.6 * cf }}
+               title={`${ym(s.date)} · ${sv(v)} · ${t('matrix.conviction', 'conviction')} ${Math.round(cf * 100)}%`} />
   })
   return (
     <div className="mx-tlwrap">
+      <MatrixCurve steps={steps} t={t} />
       <div className="mx-tl-ribbon">
         {segs.map((sg, i) => (
           <span key={i} className="mx-tl-seg" style={{ flexGrow: sg.n }} title={`${nm(sg.maha)} – ${nm(sg.antar)}`}>{nm(sg.antar)}</span>
@@ -167,9 +211,9 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
             <tr><th className="mx-tl-name" />{steps.map((s, i) => <th key={i} className="mx-tl-mh">{i % 3 === 0 ? ym(s.date).slice(2) : ''}</th>)}</tr>
           </thead>
           <tbody>
-            <tr className="mx-tl-overall-row"><td className="mx-tl-name"><b>{t('matrix.overall', 'Overall')}</b></td>{rowCells((s) => s.overall)}</tr>
+            <tr className="mx-tl-overall-row"><td className="mx-tl-name"><b>{t('matrix.overall', 'Overall')}</b></td>{rowCells((s) => s.overall, (s) => s.overallCf ?? 1)}</tr>
             {order.map((tk) => (
-              <tr key={tk}><td className="mx-tl-name">{t('matrix.theme.' + tk, themeName[tk] || tk)}</td>{rowCells((s) => s.themes[tk])}</tr>
+              <tr key={tk}><td className="mx-tl-name">{t('matrix.theme.' + tk, themeName[tk] || tk)}</td>{rowCells((s) => s.themes[tk], (s) => (s.conv ? s.conv[tk] : 1))}</tr>
             ))}
           </tbody>
         </table>
@@ -181,7 +225,8 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
               <span className="mx-tl-dir">{w.good ? '▲' : '▼'}</span>
               <span className="mx-tl-wname">{t('matrix.theme.' + w.key, w.name)}</span>
               <span className="mx-tl-wdate">{ym(w.from)}{w.from !== w.to ? ' – ' + ym(w.to) : ''}</span>
-              <span className="mx-tl-wdrv">{nm(w.maha)}–{nm(w.antar)}</span>
+              {w.cf != null && <span className="mx-tl-wcf" title={t('matrix.conviction', 'conviction')}>{Math.round(w.cf * 100)}%</span>}
+              <span className="mx-tl-wdrv">{w.driver ? t('matrix.clock.' + w.driver, CLOCK_LABEL[w.driver]) + ' · ' : ''}{nm(w.maha)}–{nm(w.antar)}</span>
             </li>
           ))}
         </ul>

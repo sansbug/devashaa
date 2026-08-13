@@ -191,7 +191,7 @@ function MatrixCurve({ steps, t, envelope, events }) {
               <line x1={ex} y1={ly + 3} x2={ex} y2={cy} className="mx-cv-evline" style={{ stroke: c }} />
               <circle cx={ex} cy={cy} r="3.2" style={{ fill: c }} />
               <text x={ex} y={ly} className="mx-cv-evlbl" style={{ fill: c }} textAnchor={anchor}>
-                {(e.dir === 'up' ? '▲ ' : e.dir === 'down' ? '▼ ' : e.dir === 'shift' ? '↻ ' : '♥ ') + (e.label || '').slice(0, 22)}
+                {(e.dir === 'up' ? '▲ ' : e.dir === 'down' ? '▼ ' : e.dir === 'shift' ? '↻ ' : '♥ ') + (e.label || '').slice(0, 16) + ' · ' + String(e.date).slice(0, 4)}
               </text>
             </g>
           )
@@ -478,7 +478,7 @@ function MatrixLifeArc({ date, time, place, nm, t }) {
   const yv = (v, i) => chartTop(i) + (1 - (Math.max(-yMax, Math.min(yMax, v)) + yMax) / (2 * yMax)) * chH
   const line = (f, i) => pts.map((p) => `${x(p.age)},${yv(p.facets[f], i)}`).join(' ')
   const ribbonY = chartTop(3)
-  const totalH = ribbonY + ribH + 16
+  const totalH = ribbonY + ribH + 26
   const ageOfYear = (yr) => (pts.find((p) => p.year === yr) || {}).age
   return (
     <div className="mx-life">
@@ -503,9 +503,9 @@ function MatrixLifeArc({ date, time, place, nm, t }) {
             const ly = 12 + (k % 2) * 14
             const anchor = tx < PX + 24 ? 'start' : tx > W - 40 ? 'end' : 'middle'
             const dcls = tp.kind === 'yoga' ? 'yoga' : tp.direction
-            const label = tp.kind === 'yoga'
+            const label = (tp.kind === 'yoga'
               ? '★ ' + tp.yoga
-              : (tp.direction === 'rise' ? '▲ ' : '▼ ') + t('matrix.facet.' + tp.facet, tp.facet)
+              : (tp.direction === 'rise' ? '▲ ' : '▼ ') + t('matrix.facet.' + tp.facet, tp.facet)) + ' · ' + tp.year
             return (
               <g key={'tp' + k}>
                 <line x1={tx} y1={ly + 3} x2={tx} y2={ribbonY} className={'mx-life-tp ' + dcls} />
@@ -523,7 +523,10 @@ function MatrixLifeArc({ date, time, place, nm, t }) {
             )
           })}
           {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90].filter((a) => a <= maxAge).map((a) => (
-            <text key={a} x={x(a)} y={totalH - 2} className="mx-cv-xl">{a}</text>
+            <g key={a}>
+              <text x={x(a)} y={totalH - 12} className="mx-cv-xl">{t('matrix.age', 'age')} {a}</text>
+              <text x={x(a)} y={totalH - 2} className="mx-cv-xl yr">{la.birthYear + a}</text>
+            </g>
           ))}
         </svg>
       </div>

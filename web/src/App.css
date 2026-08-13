@@ -1834,6 +1834,9 @@ footer a:hover { color: var(--accent); }
 
 /* ── chart-analysis matrix ── */
 .mx-panel .mx-h { margin: 1.15rem 0 .45rem; font-size: .82rem; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+/* This theme names its muted-text token --dim, not --muted; alias it so the whole
+   matrix (months, notes, drivers, subtitles) renders in the intended muted grey. */
+.mx-panel { --muted: var(--dim); }
 .mx-prov { font-size: .74rem; opacity: .6; font-style: italic; margin: .7rem 0 0; line-height: 1.4; }
 .mx-themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: .5rem; }
 .mx-card { border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 8px; overflow: hidden; }
@@ -1888,10 +1891,10 @@ footer a:hover { color: var(--accent); }
 .mx-cv-grid { stroke: color-mix(in srgb, var(--ink) 10%, transparent); stroke-width: 1; stroke-dasharray: 3 3; }
 .mx-cv-yl, .mx-cv-xl { fill: var(--muted); font-size: 9px; }
 .mx-cv-xl { text-anchor: middle; }
-.mx-cv-xl.yr { fill: var(--ink); font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; }
+.mx-cv-xl.yr { fill: var(--accent); font-weight: 700; font-size: 9.5px; font-variant-numeric: tabular-nums; }
 .mx-cv-evline { stroke-width: 1; stroke-dasharray: 2 2; opacity: .65; }
 .mx-cv-evlbl { font-size: 8.4px; font-weight: 600; }
-.mx-tl-mh.yr { color: var(--ink) !important; font-weight: 700; font-size: .62rem !important; }
+.mx-tl-mh.yr { color: var(--accent) !important; font-weight: 700; font-size: .62rem !important; }
 .mx-cv-g0 { stop-color: #2b8a6f; }
 .mx-cv-g1 { stop-color: var(--muted); }
 .mx-cv-g2 { stop-color: #b03f36; }

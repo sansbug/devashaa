@@ -983,3 +983,102 @@ def changes(chart, m_out: dict) -> dict:
     for g in ("health", "wealthCareer", "relationships"):
         out[g].sort(key=lambda e: e["date"])
     return {**out, "note": _CHANGES_NOTE}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  Life arc (Layer 7) — the whole trajectory from birth across the three motives,
+#  with the yogas that marked turning points.
+# ════════════════════════════════════════════════════════════════════════════════
+# Each life-facet is a transparent blend of the standing themes evaluated over life.
+_FACETS = {
+    "wealthEarned":   {"career": 0.5, "wealth": 0.5},                 # self-earned
+    "wealthReceived": {"fortune": 0.5, "home": 0.3, "wealth": 0.2},   # inherited / given / fortune
+    "healthPhysical": {"health": 0.5, "self": 0.3, "longevity": 0.2},
+    "healthMental":   {"self": 0.5, "home": 0.3, "education": 0.2},   # mind + peace of home + intellect
+    "relFamily":      {"home": 0.4, "fortune": 0.3, "children": 0.3},
+    "relOthers":      {"marriage": 0.5, "enemies": 0.3, "foreign": 0.2},
+}
+_ASPECTS = {"wealth": ["wealthEarned", "wealthReceived"],
+            "health": ["healthPhysical", "healthMental"],
+            "relationships": ["relFamily", "relOthers"]}
+_MAHAPURUSHA_PLANET = {"ruchaka": "mars", "bhadra": "mercury", "hamsa": "jupiter",
+                       "malavya": "venus", "sasa": "saturn", "shasha": "saturn"}
+
+
+def _life_turning_points(points: list, m_out: dict, ribbon: list) -> list:
+    """Notable local peaks/troughs of the life curve + mahāpuruṣa-yoga activations."""
+    if not points:
+        return []
+    ov = [p["overall"] for p in points]
+    W = 3
+    turns = []
+    for i, p in enumerate(points):
+        win = ov[max(0, i - W): min(len(ov), i + W + 1)]
+        v = ov[i]
+        # a *relative* rise/fall — prominence over the local window, not an absolute
+        # level (a life can turn up while still below its overall mean).
+        peak = v == max(win) and (v - min(win)) >= 0.07
+        trough = v == min(win) and (max(win) - v) >= 0.07
+        if peak or trough:
+            fk = (max if peak else min)(p["facets"], key=lambda k: p["facets"][k])
+            turns.append({"year": p["year"], "age": p["age"], "kind": "curve",
+                          "direction": "rise" if peak else "hard", "maha": p["maha"],
+                          "facet": fk, "value": v})
+    # thin adjacent same-direction extrema (keep the sharper one)
+    thinned = []
+    for t in turns:
+        if thinned and thinned[-1]["direction"] == t["direction"] and t["age"] - thinned[-1]["age"] <= 4:
+            if abs(t["value"]) > abs(thinned[-1]["value"]):
+                thinned[-1] = t
+        else:
+            thinned.append(t)
+    # mahāpuruṣa yogas → their planet's mahādaśā is the activation window
+    for y in (m_out.get("yogas") or []):
+        pl = _MAHAPURUSHA_PLANET.get(str(y.get("name", "")).lower().split()[0])
+        if not pl:
+            continue
+        seg = next((r for r in ribbon if r["lord"] == pl), None)
+        if seg:
+            thinned.append({"year": seg["from"], "toYear": seg["to"], "kind": "yoga",
+                            "direction": "yoga", "maha": pl, "yoga": y.get("name"),
+                            "family": y.get("family")})
+    thinned.sort(key=lambda t: t["year"])
+    return thinned[:14]
+
+
+def lifearc(chart, m_out: dict, extra_years: int = 3) -> dict:
+    """The person's arc from birth: yearly values for six life-facets (wealth earned/
+    received · health physical/mental · relationships family/others), the mahādaśā
+    ribbon across life, and the turning points. Reuses the shared date-evaluator."""
+    ctx = _projection_context(chart, m_out)
+    moon = next(g for g in chart.grahas if g.key == "moon")
+    ni, nf = moon.nakshatra.index, moon.nakshatra.fraction
+    by, bm, bd = swe.revjul(chart.jd_ut, swe.GREG_CAL)[:3]
+    end_year = _dt.date.today().year + max(0, extra_years)
+
+    points = []
+    for yr in range(int(by), end_year + 1):
+        jd = swe.julday(yr, 6, 15, 12.0, swe.GREG_CAL)
+        if jd < chart.jd_ut:
+            jd = chart.jd_ut
+        pj = _project_at(jd, ctx)["themes"]
+        facets = {fk: round(sum(pj[t]["v"] * w for t, w in blend.items()), 3)
+                  for fk, blend in _FACETS.items()}
+        lords = running_lords(chart.jd_ut, ni, nf, jd, depth=1)
+        points.append({"year": yr, "age": yr - int(by), "maha": lords[0] if lords else None,
+                       "overall": round(sum(facets.values()) / len(facets), 3), "facets": facets})
+
+    ribbon = []
+    for p in points:
+        if ribbon and ribbon[-1]["lord"] == p["maha"]:
+            ribbon[-1]["to"] = p["year"]
+        else:
+            ribbon.append({"lord": p["maha"], "from": p["year"], "to": p["year"]})
+
+    return {"birthYear": int(by), "nowYear": _dt.date.today().year, "points": points,
+            "ribbon": ribbon, "aspects": _ASPECTS, "facets": list(_FACETS),
+            "turningPoints": _life_turning_points(points, m_out, ribbon),
+            "note": "Life arc: each facet is a transparent blend of the standing themes evaluated "
+                    "year by year as the daśā and transits move over the chart. A broad shape of "
+                    "the life, an indication — not a record of events; the past is read the same "
+                    "way the future is projected."}

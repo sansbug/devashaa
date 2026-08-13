@@ -421,6 +421,102 @@ function MatrixCalibration({ date, time, place, t }) {
   )
 }
 
+// Life arc — the trajectory from birth across three aspects (each two sub-facets),
+// with the mahādaśā ribbon and turning-point yogas. Small multiples over age.
+const ASPECT_DEFS = [
+  ['wealth', ['wealthEarned', 'wealthReceived']],
+  ['health', ['healthPhysical', 'healthMental']],
+  ['relationships', ['relFamily', 'relOthers']],
+]
+function MatrixLifeArc({ date, time, place, nm, t }) {
+  const [la, setLa] = useState(null)
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    if (!date || !time || !place) return
+    let alive = true
+    setBusy(true); setLa(null)
+    fetch(`${API}/api/matrix/lifearc`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude, timezone: place.timezone }),
+    }).then((r) => r.json()).then((j) => { if (alive && !j.error) setLa(j) })
+      .catch(() => {}).finally(() => alive && setBusy(false))
+    return () => { alive = false }
+  }, [date, time, place])
+  if (busy) return <div className="mx-life"><h4 className="mx-h">{t('matrix.lifearc', 'Life arc — from birth')}</h4><p className="rc-note">{t('matrix.lifeloading', 'Tracing the life arc…')}</p></div>
+  if (!la || !la.points || !la.points.length) return null
+  const pts = la.points
+  const maxAge = pts[pts.length - 1].age
+  const yMax = Math.min(0.6, Math.max(0.3, ...pts.flatMap((p) => Object.values(p.facets).map((v) => Math.abs(v)))))
+  const W = 680, PX = 62, PR = 10, chH = 62, gap = 16, ribH = 22, top = 4
+  const chartTop = (i) => top + i * (chH + gap)
+  const x = (age) => PX + (age / Math.max(1, maxAge)) * (W - PX - PR)
+  const yv = (v, i) => chartTop(i) + (1 - (Math.max(-yMax, Math.min(yMax, v)) + yMax) / (2 * yMax)) * chH
+  const line = (f, i) => pts.map((p) => `${x(p.age)},${yv(p.facets[f], i)}`).join(' ')
+  const ribbonY = chartTop(3)
+  const totalH = ribbonY + ribH + 16
+  const curveTP = la.turningPoints.filter((tp) => tp.kind === 'curve')
+  const ageOfYear = (yr) => (pts.find((p) => p.year === yr) || {}).age
+  return (
+    <div className="mx-life">
+      <h4 className="mx-h">{t('matrix.lifearc', 'Life arc — from birth')}</h4>
+      <p className="rc-note">{t('matrix.lifesub', 'The whole trajectory as the daśā and transits move over the chart — wealth, health and relationships, each in two facets. A broad shape, an indication, not a record of events.')}</p>
+      <div className="mx-heatwrap">
+        <svg viewBox={`0 0 ${W} ${totalH}`} className="mx-lifesvg" role="img" aria-label="life arc chart">
+          {ASPECT_DEFS.map(([akey, facets], i) => (
+            <g key={akey}>
+              <line x1={PX} y1={yv(yMax, i)} x2={W - PR} y2={yv(yMax, i)} className="mx-cv-grid" />
+              <line x1={PX} y1={yv(0, i)} x2={W - PR} y2={yv(0, i)} className="mx-cv-zero" />
+              <text x="2" y={chartTop(i) + chH / 2} className="mx-life-alabel">{t('matrix.aspect.' + akey, akey)}</text>
+              {curveTP.map((tp, k) => (
+                <line key={k} x1={x(tp.age)} y1={chartTop(i)} x2={x(tp.age)} y2={chartTop(i) + chH}
+                      className={'mx-life-tp ' + tp.direction} />
+              ))}
+              <polyline points={line(facets[0], i)} className="mx-life-line a" />
+              <polyline points={line(facets[1], i)} className="mx-life-line b" />
+              <text x={W - PR} y={chartTop(i) + 9} className="mx-life-flbl a" textAnchor="end">{t('matrix.facet.' + facets[0], facets[0])}</text>
+              <text x={W - PR} y={chartTop(i) + chH - 2} className="mx-life-flbl b" textAnchor="end">{t('matrix.facet.' + facets[1], facets[1])}</text>
+            </g>
+          ))}
+          {la.ribbon.map((r, i) => {
+            const x1 = x(r.from - la.birthYear), x2 = x(Math.min(maxAge, r.to - la.birthYear + 1))
+            return (
+              <g key={i}>
+                <rect x={x1} y={ribbonY} width={Math.max(2, x2 - x1)} height={ribH} className="mx-life-seg" />
+                {x2 - x1 > 26 && <text x={(x1 + x2) / 2} y={ribbonY + 14} className="mx-life-seglbl" textAnchor="middle">{nm(r.lord)}</text>}
+              </g>
+            )
+          })}
+          {la.turningPoints.filter((tp) => tp.kind === 'yoga').map((tp, k) => (
+            <text key={k} x={x(ageOfYear(tp.year))} y={ribbonY - 3} className="mx-life-star" textAnchor="middle">★</text>
+          ))}
+          {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90].filter((a) => a <= maxAge).map((a) => (
+            <text key={a} x={x(a)} y={totalH - 2} className="mx-cv-xl">{a}</text>
+          ))}
+        </svg>
+      </div>
+      <div className="mx-life-leg">
+        <span><i className="a" />{t('matrix.facet.wealthEarned', 'Earned')} / {t('matrix.facet.healthPhysical', 'Physical')} / {t('matrix.facet.relFamily', 'Family')}</span>
+        <span><i className="b" />{t('matrix.facet.wealthReceived', 'Received')} / {t('matrix.facet.healthMental', 'Mental')} / {t('matrix.facet.relOthers', 'Others')}</span>
+        <span className="mx-life-star">★ {t('matrix.turnyoga', 'yoga turning point')}</span>
+      </div>
+      {la.turningPoints.length > 0 && (
+        <ul className="mx-life-tps">
+          {la.turningPoints.map((tp, i) => (
+            <li key={i} className={tp.direction}>
+              {tp.kind === 'yoga' ? (
+                <><span className="mx-life-star">★</span> <b>{tp.yoga}</b> {t('matrix.turnvia', 'yoga') } · {t('matrix.age', 'age')} {ageOfYear(tp.year)}–{ageOfYear(tp.toYear)} · {nm(tp.maha)} {t('matrix.dashaword', 'daśā')}</>
+              ) : (
+                <><span className="mx-life-dir">{tp.direction === 'rise' ? '▲' : '▼'}</span> {t('matrix.age', 'age')} {tp.age} · {t('matrix.facet.' + tp.facet, tp.facet)} · {nm(tp.maha)} {t('matrix.dashaword', 'daśā')}</>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mx-prov">{la.note}</p>
+    </div>
+  )
+}
+
 export default function MatrixPanel({ date, time, place, namer }) {
   const { t } = useLang()
   const [data, setData] = useState(null)
@@ -532,6 +628,8 @@ export default function MatrixPanel({ date, time, place, namer }) {
           {data.nodes && data.edges && (
             <MatrixGraph nodes={data.nodes} edges={data.edges.aspects || []} nm={nm} t={t} />
           )}
+
+          <MatrixLifeArc date={date} time={time} place={place} nm={nm} t={t} />
 
           {data.timeline && (
             <>

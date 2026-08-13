@@ -103,6 +103,23 @@ def test_changes_shape_and_care_tagging():
                 assert e["care"] is True
 
 
+def test_lifearc_shape_and_turning_points():
+    chart = vedic.compute_chart(dt.datetime(1990, 5, 15, 8, 30), 28.6139, 77.2090, "Asia/Kolkata")
+    m = matrix.build(chart)
+    la = matrix.lifearc(chart, m)
+    assert la["birthYear"] == 1990 and len(la["points"]) >= 30
+    facets = set(matrix._FACETS)
+    for p in la["points"]:
+        assert set(p["facets"]) == facets
+        assert all(-1.0 <= v <= 1.0 for v in p["facets"].values())
+        assert p["age"] == p["year"] - la["birthYear"]
+    # ribbon covers the whole span contiguously
+    assert la["ribbon"][0]["from"] == la["birthYear"]
+    for t in la["turningPoints"]:
+        assert t["direction"] in ("rise", "hard", "yoga")
+        assert t["kind"] in ("curve", "yoga")
+
+
 def test_changes_transit_planets_include_fast_movers():
     # Mars + nodes must be in the trigger set (phase-A faster transits).
     assert "mars" in matrix._TRIGGER_PLANETS

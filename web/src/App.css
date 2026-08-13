@@ -1936,6 +1936,31 @@ footer a:hover { color: var(--accent); }
 .mx-cal-res li.hit .mx-cal-hit { color: #2b8a6f; font-weight: 700; }
 .mx-cal-res li.miss .mx-cal-hit { color: #b03f36; font-weight: 700; }
 
+/* Life arc — small-multiples trajectory from birth. */
+.mx-life { margin-top: 1.4rem; }
+.mx-lifesvg { width: 100%; height: auto; display: block; min-width: 520px; }
+.mx-life-line { fill: none; stroke-width: 1.8; stroke-linejoin: round; }
+.mx-life-line.a { stroke: #3d7fb0; }
+.mx-life-line.b { stroke: #c08a1f; }
+.mx-life-alabel { fill: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.mx-life-flbl { font-size: 8.5px; font-weight: 600; }
+.mx-life-flbl.a { fill: #3d7fb0; } .mx-life-flbl.b { fill: #c08a1f; }
+.mx-life-tp { stroke-width: 1; stroke-dasharray: 2 2; }
+.mx-life-tp.rise { stroke: color-mix(in srgb, #2b8a6f 55%, transparent); }
+.mx-life-tp.hard { stroke: color-mix(in srgb, #b03f36 55%, transparent); }
+.mx-life-seg { fill: color-mix(in srgb, var(--accent) 16%, transparent); stroke: color-mix(in srgb, var(--ink) 8%, transparent); stroke-width: .5; }
+.mx-life-seglbl { fill: var(--ink); font-size: 9px; }
+.mx-life-star { fill: var(--accent); color: var(--accent); font-size: 11px; }
+.mx-life-leg { display: flex; flex-wrap: wrap; gap: .9rem; margin-top: .5rem; font-size: .74rem; color: var(--muted); }
+.mx-life-leg i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; margin-right: .35rem; vertical-align: middle; }
+.mx-life-leg i.a { background: #3d7fb0; } .mx-life-leg i.b { background: #c08a1f; }
+.mx-life-tps { list-style: none; margin: .7rem 0 0; padding: 0; display: grid; gap: .25rem; }
+.mx-life-tps li { font-size: .82rem; color: var(--muted); display: flex; align-items: baseline; gap: .4rem; }
+.mx-life-tps li b { color: var(--ink); }
+.mx-life-dir { font-weight: 700; }
+.mx-life-tps li.rise .mx-life-dir { color: #2b8a6f; }
+.mx-life-tps li.hard .mx-life-dir { color: #b03f36; }
+
 /* Projected changes — typed transitions grouped by motive. */
 .mx-chg { margin-top: 1.4rem; }
 .mx-chg-group { margin-top: 1rem; }

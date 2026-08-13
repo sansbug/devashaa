@@ -593,17 +593,31 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
                 else:
                     if run:
                         windows.append(run)
+                    ph = primary[tk]
                     run = {"key": tk, "name": names[tk], "good": good,
-                           "from": s["date"], "to": s["date"], **peak_fields}
+                           "from": s["date"], "to": s["date"],
+                           "house": ph, "lord": lord_of.get(ph), **peak_fields}
             elif run:
                 windows.append(run)
                 run = None
         if run:
             windows.append(run)
-    windows.sort(key=lambda w: abs(w["peak"]), reverse=True)
+    # type each window into an event: intensity = |peak| · conviction, ranked.
+    for w in windows:
+        w["intensity"] = round(abs(w["peak"]) * (w.get("cf") or 0.0), 3)
+    windows.sort(key=lambda w: w["intensity"], reverse=True)
+    # surface variety across life areas: at most 2 events per theme, up to 10 total.
+    events, per = [], {}
+    for w in windows:
+        if per.get(w["key"], 0) >= 2:
+            continue
+        per[w["key"]] = per.get(w["key"], 0) + 1
+        events.append(w)
+        if len(events) >= 10:
+            break
 
     return {"start": start.isoformat(), "months": months, "steps": steps,
-            "themeOrder": [t["key"] for t in THEMES], "windows": windows[:12],
+            "themeOrder": [t["key"] for t in THEMES], "events": events,
             "clockWeights": _CLOCK_W, "charaDirection": _chara_direction(chart),
             "note": "Near-future indication from an ensemble of independent clocks — Viṁśottarī "
                     "daśā, aṣṭakavarga-gated Jupiter/Saturn gochara, Jaimini chara daśā (K.N. Rao "

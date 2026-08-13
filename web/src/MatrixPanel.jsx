@@ -218,18 +218,30 @@ function MatrixTimeline({ timeline, themeName, nm, t }) {
           </tbody>
         </table>
       </div>
-      {timeline.windows && timeline.windows.length > 0 && (
-        <ul className="mx-tl-windows">
-          {timeline.windows.map((w, i) => (
-            <li key={i} className={w.good ? 'good' : 'bad'}>
-              <span className="mx-tl-dir">{w.good ? '▲' : '▼'}</span>
-              <span className="mx-tl-wname">{t('matrix.theme.' + w.key, w.name)}</span>
-              <span className="mx-tl-wdate">{ym(w.from)}{w.from !== w.to ? ' – ' + ym(w.to) : ''}</span>
-              {w.cf != null && <span className="mx-tl-wcf" title={t('matrix.conviction', 'conviction')}>{Math.round(w.cf * 100)}%</span>}
-              <span className="mx-tl-wdrv">{w.driver ? t('matrix.clock.' + w.driver, CLOCK_LABEL[w.driver]) + ' · ' : ''}{nm(w.maha)}–{nm(w.antar)}</span>
-            </li>
-          ))}
-        </ul>
+      {timeline.events && timeline.events.length > 0 && (
+        <div className="mx-events">
+          <div className="mx-tl-lbl">{t('matrix.events', 'Projected events')}</div>
+          <ul className="mx-ev-list">
+            {timeline.events.map((e, i) => (
+              <li key={i} className={e.good ? 'good' : 'bad'}>
+                <span className="mx-ev-dir">{e.good ? '▲' : '▼'}</span>
+                <div className="mx-ev-body">
+                  <div className="mx-ev-top">
+                    <span className="mx-ev-label">{t('matrix.event.' + e.key + '.' + (e.good ? 'good' : 'bad'), themeName[e.key] || e.key)}</span>
+                    <span className="mx-ev-date">{ym(e.from)}{e.from !== e.to ? ' – ' + ym(e.to) : ''}</span>
+                  </div>
+                  <div className="mx-ev-meta">
+                    <span className="mx-ev-int" title={`${t('matrix.intensity', 'intensity')} ${Math.round(e.intensity * 100)}%`}>
+                      <i style={{ width: `${Math.round(Math.min(1, e.intensity / 0.4) * 100)}%` }} />
+                    </span>
+                    {e.cf != null && <span className="mx-ev-cf" title={t('matrix.conviction', 'conviction')}>{Math.round(e.cf * 100)}%</span>}
+                    <span className="mx-ev-drv">{e.driver ? t('matrix.clock.' + e.driver, CLOCK_LABEL[e.driver]) + ' · ' : ''}{nm(e.maha)}–{nm(e.antar)}</span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       <p className="mx-prov">{timeline.note}</p>
     </div>

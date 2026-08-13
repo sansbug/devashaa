@@ -1901,6 +1901,25 @@ footer a:hover { color: var(--accent); }
   border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); border-radius: 999px; padding: 0 .38rem; }
 .mx-tl-wdrv { color: var(--muted); font-size: .74rem; margin-left: auto; white-space: nowrap; }
 
+/* Projected events — typed, ranked timeline events. */
+.mx-events { margin-top: .8rem; }
+.mx-ev-list { list-style: none; margin: .35rem 0 0; padding: 0; display: grid; gap: .55rem; }
+.mx-ev-list li { display: flex; gap: .55rem; align-items: flex-start; }
+.mx-ev-dir { font-weight: 700; line-height: 1.4; }
+.mx-ev-list li.good .mx-ev-dir { color: #2b8a6f; }
+.mx-ev-list li.bad .mx-ev-dir { color: #b03f36; }
+.mx-ev-body { flex: 1; min-width: 0; }
+.mx-ev-top { display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+.mx-ev-label { font-weight: 600; color: var(--ink); font-size: .92rem; }
+.mx-ev-date { color: var(--muted); font-size: .78rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mx-ev-meta { display: flex; align-items: center; gap: .6rem; margin-top: .2rem; }
+.mx-ev-int { width: 46px; height: 5px; border-radius: 3px; flex: 0 0 auto;
+  background: color-mix(in srgb, var(--ink) 12%, transparent); overflow: hidden; }
+.mx-ev-int i { display: block; height: 100%; background: var(--accent); }
+.mx-ev-cf { font-size: .7rem; color: var(--muted); font-variant-numeric: tabular-nums;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); border-radius: 999px; padding: 0 .38rem; }
+.mx-ev-drv { font-size: .74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 /* "Special days this month" list. */
 .pc-festlist { margin: .55rem auto 0; max-width: 30rem; }
 .pc-festlist summary { cursor: pointer; color: var(--accent); text-transform: uppercase;

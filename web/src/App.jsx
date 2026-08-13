@@ -238,7 +238,8 @@ export default function App() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [varga, setVarga] = useState('D1')
-  const [style, setStyle] = useState('south')
+  const [style, setStyle] = useState('north')
+  const [section, setSection] = useState('overview')
   const [health, setHealth] = useState(null)
   // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
   // overlay is on, so nobody pays the round-trip who hasn't asked. '' = now.
@@ -315,9 +316,15 @@ export default function App() {
   // Guide steps drive the real panels: select a graha (signal-stack + chart +
   // dṛṣṭi subject), switch style/varga, highlight a sign, and scroll into view.
   const selectGraha = (k) => { setPicked(k); setPinned(k); setHovered(null) }
+  // Section a scroll target lives in, so the guide can open its tab before scrolling.
+  const SECTION_OF = { '#rg-signals': 'overview', '#rg-dasha': 'dasha' }
   const guideActions = {
     setStyle, setVarga, selectGraha, highlightSign: setRowSign,
-    scrollTo: (sel) => document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+    scrollTo: (sel) => {
+      const sec = SECTION_OF[sel]
+      if (sec) setSection(sec)
+      setTimeout(() => document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), sec ? 80 : 0)
+    },
   }
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
@@ -687,14 +694,14 @@ export default function App() {
                 )}
               </div>
             </div>
-            <dl>
-              <div><dt>Local</dt><dd>{chart.local_time}</dd></div>
-              <div><dt>Zone</dt><dd>{chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</dd></div>
-              <div><dt>UTC</dt><dd>{chart.utc}</dd></div>
-              <div><dt>Julian day</dt><dd>{chart.jd_ut.toFixed(6)}</dd></div>
-              <div><dt>Ayanāṁśa</dt><dd>{fmtAyan(chart.ayanamsa_value)}</dd></div>
-              <div><dt>Lagna</dt><dd>{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} pada {chart.lagna_nakshatra.pada}</dd></div>
-            </dl>
+            <div className="meta-compact">
+              <span className="mc-item mc-lagna"><i>Lagna</i> {namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</span>
+              <span className="mc-item"><i>Local</i> {chart.local_time}</span>
+              <span className="mc-item"><i>Zone</i> {chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</span>
+              <span className="mc-item"><i>UTC</i> {chart.utc}</span>
+              <span className="mc-item"><i>JD</i> {chart.jd_ut.toFixed(4)}</span>
+              <span className="mc-item"><i>Ayanāṁśa</i> {fmtAyan(chart.ayanamsa_value)}</span>
+            </div>
           </section>
 
           <section className="chart-panel">
@@ -805,7 +812,21 @@ export default function App() {
             )}
           </section>
 
-          {chart.analysis && !chart.analysis.error && (
+          <nav className="sec-nav" role="tablist">
+            {[['overview', t('sec.overview', 'Overview')],
+              ['strength', t('sec.strength', 'Strength')],
+              ['bhava', t('sec.bhava', 'Bhāvas & Yogas')],
+              ['dasha', t('sec.dasha', 'Daśā')],
+              ['projection', t('sec.projection', 'Projection')],
+              ['classical', t('sec.classical', 'Classical')],
+              ['reference', t('sec.reference', 'Reference')]].map(([id, label]) => (
+              <button type="button" key={id} role="tab" aria-selected={section === id}
+                      className={'sec-pill' + (section === id ? ' on' : '')}
+                      onClick={() => setSection(id)}>{label}</button>
+            ))}
+          </nav>
+
+          {section === 'overview' && chart.analysis && !chart.analysis.error && (
             <section className="table-panel" id="rg-signals">
               <h3>{t('ref.grahaSignals.title')}</h3>
               <div className="graha-picker">
@@ -825,28 +846,29 @@ export default function App() {
             </section>
           )}
 
-          {chart.motion && !chart.motion.error && (
-            <MotionPanel data={chart.motion} namer={namer} />
-          )}
-
-          {chart.shadbala && !chart.shadbala.error && chart.shadbala.grahas && (
+          {section === 'strength' && chart.shadbala && !chart.shadbala.error && chart.shadbala.grahas && (
             <ShadbalaPanel data={chart.shadbala} namer={namer} />
           )}
 
-          {chart.analysis && chart.analysis.yogas && !chart.analysis.yogas.error && (
-            <YogaPanel data={chart.analysis.yogas} namer={namer} />
+          {section === 'strength' && chart.motion && !chart.motion.error && (
+            <MotionPanel data={chart.motion} namer={namer} />
           )}
 
-          {chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
+          {section === 'bhava' && chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
             <BhavaPanel data={chart.analysis.bhava_phala} namer={namer} />
           )}
 
-          {chart.analysis && chart.analysis.classical && (
+          {section === 'bhava' && chart.analysis && chart.analysis.yogas && !chart.analysis.yogas.error && (
+            <YogaPanel data={chart.analysis.yogas} namer={namer} />
+          )}
+
+          {section === 'classical' && chart.analysis && chart.analysis.classical && (
             <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
 
-          <MatrixPanel date={date} time={time} place={place} namer={namer} />
+          {section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
 
+          {section === 'dasha' && (
           <section className="table-panel" id="rg-dasha">
             <h3>{t('dasha.title')}</h3>
             <DashaTree
@@ -882,7 +904,9 @@ export default function App() {
               </div>
             )}
           </section>
+          )}
 
+          {section === 'overview' && (
           <section className="table-panel">
             <h3>{t('ref.grahaTable.title')}</h3>
             <div className="scroll">
@@ -924,7 +948,9 @@ export default function App() {
               </table>
             </div>
           </section>
+          )}
 
+          {section === 'reference' && (
           <section className="table-panel">
             <h3>{t('ref.varga.title')}</h3>
             <p className="rc-note varga-caption">
@@ -959,12 +985,13 @@ export default function App() {
               </table>
             </div>
           </section>
+          )}
         </main>
       )}
 
-      {/* Rāśi reference. Deliberately outside the chart block: these are
-          reference pages about the twelve signs, not a reading, and they work
-          with no birth data at all. */}
+      {/* Rāśi / nakṣatra / Rao reference — shown standalone on the landing page (no
+          chart) and inside the Reference tab once a chart is cast. */}
+      {(!chart || section === 'reference') && (<>
       <section className="table-panel rasi-section">
         <h3>{t('ref.rasi.title')}</h3>
         <p className="rc-note rasi-intro">{t('ref.rasi.intro')}</p>
@@ -1028,6 +1055,7 @@ export default function App() {
         )}
         {raoOpen && raoData && !raoData.error && <ModernNotes data={raoData} />}
       </section>
+      </>)}
 
       <footer>
         <p>

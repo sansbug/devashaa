@@ -64,6 +64,13 @@ const MANUAL = {
   'classical.bhava': { en: 'bhāva', hi: 'भाव' },
   // ── Panchāṅga ──
   'panchang.tab': { en: 'Pañcāṅga', hi: 'पञ्चाङ्ग' },
+  'sec.overview': { en: 'Overview', hi: 'सारांश' },
+  'sec.strength': { en: 'Strength', hi: 'बल' },
+  'sec.bhava': { en: 'Bhāvas & Yogas', hi: 'भाव व योग' },
+  'sec.dasha': { en: 'Daśā', hi: 'दशा' },
+  'sec.projection': { en: 'Projection', hi: 'प्रक्षेपण' },
+  'sec.classical': { en: 'Classical', hi: 'शास्त्रीय' },
+  'sec.reference': { en: 'Reference', hi: 'संदर्भ' },
   'panchang.title': { en: 'Pañcāṅga — auspicious days', hi: 'पञ्चाङ्ग — शुभ दिन' },
   'panchang.limbs': { en: 'Pañcāṅga', hi: 'पञ्चाङ्ग' },
   'panchang.foryou': { en: 'For this chart', hi: 'इस कुंडली हेतु' },

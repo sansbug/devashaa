@@ -448,6 +448,23 @@ section.meta, .chart-panel, .table-panel {
 }
 .varga-caption { max-width: 640px; }
 
+/* Compact chart-meta strip (local / zone / UTC / JD / ayanāṁśa / lagna). */
+.meta-compact { display: flex; flex-wrap: wrap; gap: .2rem 1rem; margin: .2rem 0 0;
+  font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--ink); }
+.mc-item i { font-style: normal; text-transform: uppercase; letter-spacing: .05em;
+  font-size: .64rem; color: var(--dim); margin-right: .3rem; }
+.mc-lagna { color: var(--accent); font-weight: 600; }
+.mc-lagna i { color: var(--accent); opacity: .8; }
+
+/* Section tab nav (Overview / Strength / Bhāvas & Yogas / …). */
+.sec-nav { display: flex; flex-wrap: wrap; gap: .35rem; margin: 1.5rem 0 1.1rem;
+  padding-bottom: .55rem; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.sec-pill { background: transparent; border: 1px solid var(--line); color: var(--dim);
+  border-radius: 999px; padding: .38rem .85rem; font-size: .82rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: color .12s, background .12s, border-color .12s; }
+.sec-pill:hover { color: var(--ink); border-color: var(--accent); }
+.sec-pill.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
 /* --- navāṁśa (D9) analysis panel — tier modern (C.S. Patel) --- */
 .nv-panel { margin-top: 1rem; }
 .nv-group { margin-top: 1.05rem; }

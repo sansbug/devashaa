@@ -57,7 +57,7 @@ const polColor = (p) => (p === 1 ? _mix(NEUTRAL, ISTA, 1) : p === -1 ? _mix(NEUT
 
 // Aspect web — grahas placed on the zodiac by longitude; dṛṣṭi as edges coloured
 // by the aspecting graha's benefic/malefic nature, node fill = disposition.
-function MatrixGraph({ nodes, edges, nm, t }) {
+function MatrixGraph({ nodes, edges, nm, t, namer }) {
   const cx = 200, cy = 200, Rr = 158, Rn = 128
   const at = (L, r) => [cx + r * Math.cos(L * Math.PI / 180), cy - r * Math.sin(L * Math.PI / 180)]
   const pos = {}
@@ -73,7 +73,7 @@ function MatrixGraph({ nodes, edges, nm, t }) {
           return (
             <g key={s}>
               <line x1={cx} y1={cy} x2={bx.toFixed(1)} y2={by.toFixed(1)} className="mx-spoke" />
-              <text x={lx.toFixed(1)} y={(ly + 3).toFixed(1)} className="mx-rlbl" textAnchor="middle">{RASI_ABBR[s]}</text>
+              <text x={lx.toFixed(1)} y={(ly + 3).toFixed(1)} className="mx-rlbl" textAnchor="middle">{namer ? namer.rasiAbbr(s) : RASI_ABBR[s]}</text>
             </g>
           )
         })}
@@ -114,7 +114,7 @@ function MatrixGraph({ nodes, edges, nm, t }) {
 // Sarvāṣṭakavarga strip — natal bindus per sign (0..56), the transit-strength map
 // that grades the timeline's gochara. High bindus support a transit, low afflict.
 const RASI_AB = ['Ar', 'Ta', 'Ge', 'Cn', 'Le', 'Vi', 'Li', 'Sc', 'Sg', 'Cp', 'Aq', 'Pi']
-function MatrixAvStrip({ av, t }) {
+function MatrixAvStrip({ av, t, namer }) {
   const sav = av.sarva || []
   if (!sav.length) return null
   const peak = Math.max(...sav)
@@ -125,8 +125,8 @@ function MatrixAvStrip({ av, t }) {
         {sav.map((b, i) => (
           <span key={i} className={'mx-av-cell' + (b === peak ? ' peak' : '')}
                 style={{ background: netColor(Math.max(-1, Math.min(1, (b - 28) / 12))) }}
-                title={`${RASI_AB[i]} · ${b} bindus`}>
-            <b>{b}</b><i>{RASI_AB[i]}</i>
+                title={`${namer ? namer.rasiAbbr(i) : RASI_AB[i]} · ${b} bindus`}>
+            <b>{b}</b><i>{namer ? namer.rasiAbbr(i) : RASI_AB[i]}</i>
           </span>
         ))}
       </div>
@@ -505,7 +505,7 @@ function MatrixLifeArc({ date, time, place, nm, t }) {
             const dcls = tp.kind === 'yoga' ? 'yoga' : tp.direction
             const label = (tp.kind === 'yoga'
               ? '★ ' + tp.yoga
-              : (tp.direction === 'rise' ? '▲ ' : '▼ ') + t('matrix.facet.' + tp.facet, tp.facet)) + ' · ' + tp.year
+              : (tp.direction === 'rise' ? '▲ ' : '▼ ') + t('matrix.turn.' + tp.facet + '.' + tp.direction, t('matrix.facet.' + tp.facet, tp.facet))) + ' · ' + tp.year
             return (
               <g key={'tp' + k}>
                 <line x1={tx} y1={ly + 3} x2={tx} y2={ribbonY} className={'mx-life-tp ' + dcls} />
@@ -542,7 +542,7 @@ function MatrixLifeArc({ date, time, place, nm, t }) {
               {tp.kind === 'yoga' ? (
                 <><span className="mx-life-star">★</span> <b>{tp.yoga}</b> {t('matrix.turnvia', 'yoga') } · {t('matrix.age', 'age')} {ageOfYear(tp.year)}–{ageOfYear(tp.toYear)} · {nm(tp.maha)} {t('matrix.dashaword', 'daśā')}</>
               ) : (
-                <><span className="mx-life-dir">{tp.direction === 'rise' ? '▲' : '▼'}</span> {t('matrix.age', 'age')} {tp.age} · {t('matrix.facet.' + tp.facet, tp.facet)} · {nm(tp.maha)} {t('matrix.dashaword', 'daśā')}</>
+                <><span className="mx-life-dir">{tp.direction === 'rise' ? '▲' : '▼'}</span> <b>{t('matrix.turn.' + tp.facet + '.' + tp.direction, t('matrix.facet.' + tp.facet, tp.facet))}</b> · {t('matrix.age', 'age')} {tp.age} ({tp.year}) · {nm(tp.maha)} {t('matrix.dashaword', 'daśā')}</>
               )}
             </li>
           ))}
@@ -662,7 +662,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
           </div>
           <h4 className="mx-h">{t('matrix.web', 'Aspect web')}</h4>
           {data.nodes && data.edges && (
-            <MatrixGraph nodes={data.nodes} edges={data.edges.aspects || []} nm={nm} t={t} />
+            <MatrixGraph nodes={data.nodes} edges={data.edges.aspects || []} nm={nm} t={t} namer={namer} />
           )}
 
           <MatrixLifeArc date={date} time={time} place={place} nm={nm} t={t} />
@@ -670,7 +670,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
           {data.timeline && (
             <>
               <h4 className="mx-h">{t('matrix.timeline', 'Near future')}</h4>
-              {data.ashtakavarga && <MatrixAvStrip av={data.ashtakavarga} t={t} />}
+              {data.ashtakavarga && <MatrixAvStrip av={data.ashtakavarga} t={t} namer={namer} />}
               <MatrixTimeline
                 timeline={data.timeline}
                 themeName={Object.fromEntries((data.themes || []).map((th) => [th.key, th.name]))}

@@ -87,6 +87,11 @@ const GRAHA_DEV_BY_COMMON = Object.fromEntries(
 /** Field suffix on the API objects for a given style (Devanāgarī has no field). */
 const SUFFIX = { common: '', iast: '_iast', english: '_en' }
 
+/** Compact rāśi abbreviations — ALWAYS the rāśi (never the Western zodiac name),
+ *  since a Jyotiṣa chart reads in rāśis. Latin for every style except Devanāgarī. */
+const RASI_ABBR_LATIN = ['Meṣ', 'Vṛṣ', 'Mit', 'Kar', 'Siṃ', 'Kan', 'Tul', 'Vṛś', 'Dha', 'Mak', 'Kum', 'Mīn']
+const RASI_ABBR_DEV = ['मेष', 'वृष', 'मिथ', 'कर्क', 'सिंह', 'कन्या', 'तुला', 'वृश्चि', 'धनु', 'मकर', 'कुंभ', 'मीन']
+
 export function makeNamer(style = 'common') {
   const dev = style === 'devanagari'
   const s = SUFFIX[style] === undefined ? '' : SUFFIX[style]
@@ -105,6 +110,8 @@ export function makeNamer(style = 'common') {
                           : pick(g, 'rasi_lord')),
     /** Rāśi by zodiac index 0-11 (charts index by sign, not by graha). */
     rasi: (i) => (RASIS[style] || RASIS.common)[i],
+    /** Compact rāśi abbreviation by index — always a rāśi, never Western. */
+    rasiAbbr: (i) => (dev ? RASI_ABBR_DEV : RASI_ABBR_LATIN)[i],
     /** Graha by KEY — for the analysis and rāśi endpoints, which cite rules
      *  rather than describe placements and so return keys, not objects. */
     grahaKey: (k) => (GRAHAS[style] || GRAHAS.common)[k] ?? k,

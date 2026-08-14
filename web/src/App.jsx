@@ -243,7 +243,7 @@ export default function App() {
   const [health, setHealth] = useState(null)
   // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
   // overlay is on, so nobody pays the round-trip who hasn't asked. '' = now.
-  const [transitOn, setTransitOn] = useState(false)
+  const [transitOn, setTransitOn] = useState(true)
   const [transitDate, setTransitDate] = useState('')
   const [transit, setTransit] = useState(null)
   const [transitBusy, setTransitBusy] = useState(false)

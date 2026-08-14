@@ -239,7 +239,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [varga, setVarga] = useState('D1')
   const [style, setStyle] = useState('north')
-  const [section, setSection] = useState('overview')
+  const [section, setSection] = useState('projection')
   const [health, setHealth] = useState(null)
   // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
   // overlay is on, so nobody pays the round-trip who hasn't asked. '' = now.
@@ -813,11 +813,11 @@ export default function App() {
           </section>
 
           <nav className="sec-nav" role="tablist">
-            {[['overview', t('sec.overview', 'Overview')],
+            {[['projection', t('sec.projection', 'Projection')],
+              ['overview', t('sec.overview', 'Overview')],
               ['strength', t('sec.strength', 'Strength')],
               ['bhava', t('sec.bhava', 'Bhāvas & Yogas')],
               ['dasha', t('sec.dasha', 'Daśā')],
-              ['projection', t('sec.projection', 'Projection')],
               ['classical', t('sec.classical', 'Classical')],
               ['reference', t('sec.reference', 'Reference')]].map(([id, label]) => (
               <button type="button" key={id} role="tab" aria-selected={section === id}

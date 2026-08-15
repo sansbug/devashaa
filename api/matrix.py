@@ -1150,10 +1150,30 @@ def _valence(t):
     return (p > n) - (p < n)   # +1 favourable · 0 mixed · −1 unfavourable
 
 
+def _facet_clauses(text, theme):
+    """Keep only the comma/semicolon-separated clauses that mention the theme, so a
+    career line drops 'happiness from wife and children' and keeps 'favour of the
+    king'. Falls back to the whole text if filtering leaves too little."""
+    kws = _THEME_KW.get(theme, [])
+    if not kws:
+        return text
+    parts = [p.strip() for p in text.replace(";", ",").split(",") if p.strip()]
+    keep = [p for p in parts if any(w in p.lower() for w in kws)]
+    joined = ", ".join(keep)
+    return joined if len(joined) >= 20 else text
+
+
+def _trim(txt):
+    if len(txt) > 220:
+        cut = txt.rfind(", ", 120, 220)
+        txt = (txt[:cut] if cut > 0 else txt[:220]).rstrip(", ") + "…"
+    return txt
+
+
 def _pick_bhps(fired, theme, want_pos):
     """The fired antardaśā result that both mentions the theme AND agrees with the
-    event's direction (``want_pos`` True/False, or None = either). None if no fired
-    result is both relevant and consistent — better silent than contradictory."""
+    event's direction (``want_pos`` True/False, or None = either), narrowed to the
+    theme-relevant clauses. None if no fired result is both relevant and consistent."""
     if not fired:
         return None
     kws = _THEME_KW.get(theme, [])
@@ -1170,11 +1190,8 @@ def _pick_bhps(fired, theme, want_pos):
     if not cands:
         return None
     best = max(cands, key=lambda x: x[0])[1]
-    txt = best["text"]
-    if len(txt) > 220:
-        cut = txt.rfind(", ", 120, 220)
-        txt = (txt[:cut] if cut > 0 else txt[:220]).rstrip(", ") + "…"
-    return {"text": txt, "cite": best["cite"], "tier": best["tier"], "kind": "period"}
+    return {"text": _trim(_facet_clauses(best["text"], theme)),
+            "cite": best["cite"], "tier": best["tier"], "kind": "period"}
 
 
 def _house_effects(chart, lagna):
@@ -1204,19 +1221,24 @@ def _enrich_bhps(chart, out):
     sig_house = {s["key"]: s["houses"][0] for s in CHANGE_SIGS}
     house_fx = _house_effects(chart, lagna)
 
+    def house_bhps(house, theme):
+        b = house_fx.get(house)
+        return {**b, "text": _trim(_facet_clauses(b["text"], theme))} if b else None
+
     # (a) inline BPHS on each event/change: the direction-consistent antardaśā result
-    # if one fires, else the primary house's BPHS effect (always available).
+    # if one fires, else the primary house's BPHS effect — both narrowed to the facet.
     for e in tl.get("events", []):
         b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
-                       e.get("key"), bool(e.get("good"))) or house_fx.get(e.get("house"))
+                       e.get("key"), bool(e.get("good"))) or house_bhps(e.get("house"), e.get("key"))
         if b:
             e["bhps"] = b
     for grp in ("health", "wealthCareer", "relationships"):
         for e in (out.get("changes") or {}).get(grp, []):
+            theme = sig_theme.get(e.get("key"), "self")
             d = e.get("direction")
             want = True if d == "up" else False if d == "down" else None
             b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
-                           sig_theme.get(e.get("key"), "self"), want) or house_fx.get(sig_house.get(e.get("key")))
+                           theme, want) or house_bhps(sig_house.get(e.get("key")), theme)
             if b:
                 e["bhps"] = b
 

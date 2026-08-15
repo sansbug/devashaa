@@ -1971,6 +1971,14 @@ footer a:hover { color: var(--accent); }
 .mx-life-tps li.rise .mx-life-dir { color: #2b8a6f; }
 .mx-life-tps li.hard .mx-life-dir { color: #b03f36; }
 
+/* BPHS specific line under an event/change. */
+.mx-bhps { margin-top: .4rem; font-size: .82rem; line-height: 1.5; color: var(--muted);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); padding: .05rem 0 .05rem .6rem; }
+.mx-bhps-tag { font-family: var(--mono, monospace); font-size: .58rem; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--accent); font-weight: 700; margin-right: .45rem; white-space: nowrap; }
+.mx-bhps-txt { font-style: italic; }
+.mx-bhps-cite { font-style: normal; color: var(--dim); font-size: .74rem; white-space: nowrap; }
+
 /* Projected changes — typed transitions grouped by motive. */
 .mx-chg { margin-top: 1.4rem; }
 .mx-chg-group { margin-top: 1rem; }

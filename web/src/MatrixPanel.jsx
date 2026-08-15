@@ -205,6 +205,18 @@ function MatrixCurve({ steps, t, envelope, events }) {
   )
 }
 
+// A specific, cited BPHS line under an event/change — the antardaśā result that
+// fired for the period, or the primary house's classical effect.
+function BphsQuote({ b, t }) {
+  if (!b) return null
+  return (
+    <div className="mx-bhps">
+      <span className="mx-bhps-tag">{b.kind === 'period' ? t('matrix.bhpsPeriod', 'BPHS · this period') : t('matrix.bhps', 'BPHS')}</span>
+      <span className="mx-bhps-txt">{b.text} <span className="mx-bhps-cite">— {b.cite}</span></span>
+    </div>
+  )
+}
+
 // Near-future timeline — a daśā ribbon over a themes×months heatmap + flagged windows.
 function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMin, setMcMin, curveEvents }) {
   const steps = timeline.steps || []
@@ -213,6 +225,7 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
   const ym = (d) => d.slice(0, 7)
   const survOf = {}
   if (mc && mc.events) mc.events.forEach((e) => { survOf[e.key + '|' + e.from] = e.survival })
+  const shownB = new Set()
   const segs = []
   let cur = null
   steps.forEach((s) => {
@@ -268,7 +281,9 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
         <div className="mx-events">
           <div className="mx-tl-lbl">{t('matrix.events', 'Projected events')}</div>
           <ul className="mx-ev-list">
-            {timeline.events.map((e, i) => (
+            {timeline.events.map((e, i) => {
+              const showB = e.bhps && !shownB.has(e.bhps.text) && (shownB.add(e.bhps.text), true)
+              return (
               <li key={i} className={e.good ? 'good' : 'bad'}>
                 <span className="mx-ev-dir">{e.good ? '▲' : '▼'}</span>
                 <div className="mx-ev-body">
@@ -288,9 +303,11 @@ function MatrixTimeline({ timeline, themeName, nm, t, mc, onRefine, mcBusy, mcMi
                     )}
                     <span className="mx-ev-drv">{e.driver ? t('matrix.clock.' + e.driver, CLOCK_LABEL[e.driver]) + ' · ' : ''}{nm(e.maha)}–{nm(e.antar)}</span>
                   </div>
+                  {showB && <BphsQuote b={e.bhps} t={t} />}
                 </div>
               </li>
-            ))}
+              )
+            })}
           </ul>
         </div>
       )}
@@ -318,6 +335,7 @@ function MatrixChanges({ changes, nm, t }) {
   const visible = (g) => (changes[g] || []).filter((e) => showCare || !e.care)
   const anyCare = groups.some(([g]) => (changes[g] || []).some((e) => e.care))
   const total = groups.reduce((n, [g]) => n + visible(g).length, 0)
+  const shownB = new Set()
   return (
     <div className="mx-chg">
       <h4 className="mx-h">{t('matrix.changesTitle', 'Projected changes')}</h4>
@@ -326,7 +344,9 @@ function MatrixChanges({ changes, nm, t }) {
         <div key={g} className="mx-chg-group">
           <div className="mx-chg-gh">{label}</div>
           <ul className="mx-chg-list">
-            {visible(g).map((e, i) => (
+            {visible(g).map((e, i) => {
+              const showB = e.bhps && !shownB.has(e.bhps.text) && (shownB.add(e.bhps.text), true)
+              return (
               <li key={i} className={'dir-' + e.direction + (e.care ? ' care' : '')}>
                 <span className="mx-chg-dir">{CHANGE_DIR[e.direction]}</span>
                 <div className="mx-chg-body">
@@ -339,9 +359,11 @@ function MatrixChanges({ changes, nm, t }) {
                     <span className="mx-ev-cf">{Math.round(e.cf * 100)}%</span>
                     <span className="mx-chg-drv">{t('matrix.trig.' + e.triggerType, e.triggerType)} · {nm(e.maha)}–{nm(e.antar)}</span>
                   </div>
+                  {showB && <BphsQuote b={e.bhps} t={t} />}
                 </div>
               </li>
-            ))}
+              )
+            })}
           </ul>
         </div>
       ))}

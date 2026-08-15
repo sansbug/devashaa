@@ -115,6 +115,8 @@ const MANUAL = {
   'matrix.timeline': { en: 'Near future', hi: 'निकट भविष्य' },
   'matrix.overall': { en: 'Overall', hi: 'समग्र' },
   'matrix.events': { en: 'Projected events', hi: 'संभावित घटनाएँ' },
+  'matrix.bhps': { en: 'BPHS', hi: 'BPHS' },
+  'matrix.bhpsPeriod': { en: 'BPHS · this period', hi: 'BPHS · यह अवधि' },
   'matrix.intensity': { en: 'intensity', hi: 'तीव्रता' },
   'matrix.event.self.good': { en: 'Vitality & fresh initiative', hi: 'ओज व नई पहल' },
   'matrix.event.self.bad': { en: 'Vitality dip · overexertion', hi: 'ओज-क्षय · अति-श्रम' },

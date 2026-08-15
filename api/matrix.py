@@ -28,6 +28,7 @@ import random as _random
 
 import swisseph as swe
 
+import antardasa
 import ashtakavarga
 import charadasha
 import functional
@@ -393,6 +394,10 @@ def build(chart) -> dict:
         out["changes"] = changes(chart, out)
     except Exception:
         out["changes"] = None
+    try:
+        _enrich_bhps(chart, out)
+    except Exception:
+        pass
     return out
 
 
@@ -1082,3 +1087,157 @@ def lifearc(chart, m_out: dict, extra_years: int = 3) -> dict:
                     "year by year as the daśā and transits move over the chart. A broad shape of "
                     "the life, an indication — not a record of events; the past is read the same "
                     "way the future is projected."}
+
+
+# ════════════════════════════════════════════════════════════════════════════════
+#  BPHS specifics — attach each period's fired antardaśā results (ch.52-60) to the
+#  events & changes, theme-matched, so a label like "Promotion" carries the actual
+#  cited classical prediction ("gain of position, favour of the king, conveyances…").
+# ════════════════════════════════════════════════════════════════════════════════
+_THEME_KW = {
+    "self": ["happiness", "health", "body", "comfort", "honour", "strength", "fame", "mind"],
+    "wealth": ["wealth", "riches", "money", "gold", "prosperity", "affluence", "treasure",
+               "cattle", "income", "gain of", "financial", "fortune"],
+    "career": ["position", "king", "government", "authority", "office", "status", "dignity",
+               "master", "command", "business", "kingdom", "ruler", "rank", "fame", "honour", "promotion"],
+    "marriage": ["wife", "spouse", "marriage", "conjugal", "husband", "woman"],
+    "children": ["children", "child", "progeny", "son", "daughter", "birth", "issue"],
+    "health": ["disease", "illness", "fever", "sickness", "affliction", "danger", "injury",
+               "ailment", "pain", "death"],
+    "education": ["learning", "knowledge", "education", "wisdom", "scholar", "study", "intellect",
+                  "skill", "science", "mantra"],
+    "home": ["house", "home", "land", "property", "mother", "residence", "domestic",
+             "conveyance", "vehicle", "comfort"],
+    "fortune": ["fortune", "dharma", "religion", "father", "preceptor", "virtue", "charity",
+                "pilgrimage", "righteous", "worship", "god"],
+    "enemies": ["enemy", "enemies", "quarrel", "dispute", "litigation", "debt", "opponent",
+                "loss", "theft", "imprisonment", "obstacle", "rival"],
+    "foreign": ["foreign", "travel", "journey", "abroad", "distant", "pilgrimage", "wandering"],
+    "longevity": ["death", "danger", "longevity", "end", "fatal", "life"],
+}
+
+
+def _fired_results(maha, antar, positions, lagna, cache):
+    """The fired antardaśā conditions for (mahā, antar) — each a specific BPHS result
+    string + its citation. Cached per pair (many events share a period)."""
+    key = (maha, antar)
+    if key not in cache:
+        fired = []
+        try:
+            cell = antardasa.evaluate_cell(maha, antar, positions=positions, lagna=lagna)
+            for c in cell.get("conditions", []):
+                if c.get("state") == "fired" and c.get("results"):
+                    fired.append({"text": " ".join(str(c["results"]).split()),
+                                  "cite": cell.get("chapter") or "BPHS ch.52-60",
+                                  "tier": c.get("source") or "sloka"})
+        except Exception:
+            pass
+        cache[key] = fired
+    return cache[key]
+
+
+_BHPS_POS = ("gain", "happiness", "opulence", "acquisition", "glory", "prosperity", "success",
+             "birth", "reverence", "fortune", "pleasure", "comfort", "honour", "auspicious",
+             "wealth", "increase", "enjoyment", "favour", "good", "profit", "elevation")
+_BHPS_NEG = ("loss", "danger", "quarrel", "disease", "debt", "theft", "destruction", "fear",
+             "death", "enmity", "obstacle", "suffering", "grief", "illness", "misery", "poverty",
+             "separation", "trouble", "evil", "difficulty", "anxiety", "downfall", "sorrow", "distress")
+
+
+def _valence(t):
+    p = sum(t.count(w) for w in _BHPS_POS)
+    n = sum(t.count(w) for w in _BHPS_NEG)
+    return (p > n) - (p < n)   # +1 favourable · 0 mixed · −1 unfavourable
+
+
+def _pick_bhps(fired, theme, want_pos):
+    """The fired antardaśā result that both mentions the theme AND agrees with the
+    event's direction (``want_pos`` True/False, or None = either). None if no fired
+    result is both relevant and consistent — better silent than contradictory."""
+    if not fired:
+        return None
+    kws = _THEME_KW.get(theme, [])
+    cands = []
+    for f in fired:
+        t = f["text"].lower()
+        ts = sum(t.count(w) for w in kws)
+        if ts == 0:
+            continue                                  # not about this theme
+        val = _valence(t)
+        if want_pos is not None and val != 0 and (val > 0) != want_pos:
+            continue                                  # contradicts the event's direction
+        cands.append((ts, f))
+    if not cands:
+        return None
+    best = max(cands, key=lambda x: x[0])[1]
+    txt = best["text"]
+    if len(txt) > 220:
+        cut = txt.rfind(", ", 120, 220)
+        txt = (txt[:cut] if cut > 0 else txt[:220]).rstrip(", ") + "…"
+    return {"text": txt, "cite": best["cite"], "tier": best["tier"], "kind": "period"}
+
+
+def _house_effects(chart, lagna):
+    """Dense per-house BPHS effect (the lord's placement result) — always available,
+    the 'what this life-area holds' fallback when no antardaśā condition fires."""
+    out = {}
+    try:
+        bp = bhp.bhava_phala({g.key: {"rasi": g.rasi} for g in chart.grahas}, lagna)
+        for b in bp.get("bhavas", []):
+            lr = b.get("lord_rule") or {}
+            eff = lr.get("effect")
+            if eff:
+                t = " ".join(str(eff).split())
+                out[b["house"]] = {"text": (t[:240] + "…") if len(t) > 240 else t,
+                                   "cite": lr.get("citation") or "BPHS", "tier": "sloka", "kind": "house"}
+    except Exception:
+        pass
+    return out
+
+
+def _enrich_bhps(chart, out):
+    positions = {g.key: g.rasi for g in chart.grahas}
+    lagna = chart.lagna_rasi
+    cache = {}
+    tl = out.get("timeline") or {}
+    sig_theme = {s["key"]: s.get("theme") for s in CHANGE_SIGS}
+    sig_house = {s["key"]: s["houses"][0] for s in CHANGE_SIGS}
+    house_fx = _house_effects(chart, lagna)
+
+    # (a) inline BPHS on each event/change: the direction-consistent antardaśā result
+    # if one fires, else the primary house's BPHS effect (always available).
+    for e in tl.get("events", []):
+        b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
+                       e.get("key"), bool(e.get("good"))) or house_fx.get(e.get("house"))
+        if b:
+            e["bhps"] = b
+    for grp in ("health", "wealthCareer", "relationships"):
+        for e in (out.get("changes") or {}).get(grp, []):
+            d = e.get("direction")
+            want = True if d == "up" else False if d == "down" else None
+            b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
+                           sig_theme.get(e.get("key"), "self"), want) or house_fx.get(sig_house.get(e.get("key")))
+            if b:
+                e["bhps"] = b
+
+    # (b) the full antardaśā reading, period by period over the horizon — the specific
+    # cited classical text, always available whether or not it maps to a timing event.
+    periods = []
+    for s in tl.get("steps", []):
+        k = (s["maha"], s["antar"])
+        if periods and periods[-1]["_k"] == k:
+            periods[-1]["to"] = s["date"]
+        else:
+            periods.append({"_k": k, "maha": s["maha"], "antar": s["antar"],
+                            "from": s["date"], "to": s["date"]})
+    for p in periods:
+        seen, results = set(), []
+        for f in _fired_results(p["maha"], p["antar"], positions, lagna, cache):
+            t = f["text"]
+            if not t or "as above" in t.lower() or t[:40] in seen:
+                continue
+            seen.add(t[:40])
+            results.append({"text": (t[:280] + "…") if len(t) > 280 else t, "cite": f["cite"]})
+        p["results"] = results[:3]
+        del p["_k"]
+    tl["periods"] = periods

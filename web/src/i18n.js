@@ -191,6 +191,7 @@ const MANUAL = {
   'matrix.trig.junction': { en: 'daśā change', hi: 'दशा-संधि' },
   'matrix.trig.ingress': { en: 'transit', hi: 'गोचर' },
   'matrix.trig.swing': { en: 'sharp swing', hi: 'तीव्र बदलाव' },
+  'matrix.trig.doubletransit': { en: 'Jup–Sat double transit', hi: 'गुरु-शनि द्वि-गोचर' },
   'matrix.change.health.vitality.up': { en: 'Vitality & recovery', hi: 'ओज व स्वास्थ्य-लाभ' },
   'matrix.change.health.chronic.down': { en: 'Chronic load / fatigue', hi: 'दीर्घकालिक थकान' },
   'matrix.change.health.acute.down': { en: 'Acute / accident-prone', hi: 'तीव्र · दुर्घटना-जोखिम' },

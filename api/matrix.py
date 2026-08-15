@@ -479,8 +479,33 @@ def _fuse(clocks: dict):
 
 
 def _hits(transit_sign: int, target_sign: int, graha: str) -> bool:
-    """A transiting graha 'hits' a sign if it occupies it or casts graha dṛṣṭi on it."""
-    return transit_sign == target_sign or drishti.graha_drishti(transit_sign, target_sign, graha) > 0
+    """A transiting graha 'hits' a sign — for the double-transit fructification rule —
+    only by OCCUPYING it or casting a FULL aspect on it (Jupiter's 5/7/9, Saturn's
+    3/7/10, and every graha's 7th — all drishti 1.0). The Parāśari ¼/½/¾ partial
+    aspects are a strength device, not a transit influence, and are excluded here so
+    the double-transit stays the strict, precise yoga it is classically meant to be."""
+    return (transit_sign == target_sign
+            or drishti.graha_drishti(transit_sign, target_sign, graha) >= 1.0 - 1e-9)
+
+
+# Parāśari bhāva-kārakas (sthira) — the natural significator of each house.
+_BHAVA_KARAKA = {1: "sun", 2: "jupiter", 3: "mars", 4: "moon", 5: "jupiter", 6: "mars",
+                 7: "venus", 8: "saturn", 9: "jupiter", 10: "mercury", 11: "jupiter", 12: "saturn"}
+
+
+def _dt_coverage(jup_s, sat_s, house, lagna, lord_key, graha_sign):
+    """Full double-transit — the fraction of {the bhāva, its lord, its kāraka} that
+    BOTH Jupiter and Saturn transit or aspect. 1.0 is the strict classical rule for a
+    promised result to fructify; 2/3 partial; the bare house alone is 1/3."""
+    targets = [(lagna + house - 1) % 12]                    # the bhāva sign
+    if lord_key and lord_key in graha_sign:
+        targets.append(graha_sign[lord_key])                # the bhāva lord's natal sign
+    kar = _BHAVA_KARAKA.get(house)
+    if kar and kar in graha_sign:
+        targets.append(graha_sign[kar])                     # the bhāva kāraka's natal sign
+    covered = sum(1 for t in targets
+                  if _hits(jup_s, t, "jupiter") and _hits(sat_s, t, "saturn"))
+    return covered / len(targets)
 
 
 def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
@@ -497,6 +522,7 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
     lagna = chart.lagna_rasi
     disp = {k: v["disp"] for k, v in m_out["grahaDisposition"].items()}
     lord_of = {b["house"]: b["lord"] for b in m_out["bhavas"]}
+    graha_sign = {g.key: g.rasi for g in chart.grahas}
     base = {t["key"]: t["net"] for t in m_out["themes"]}
     names = {t["key"]: t["name"] for t in m_out["themes"]}
     chara = (m_out.get("karakas") or {}).get("chara") or {}
@@ -550,10 +576,10 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
                 ah = (c_antar - lagna) % 12 + 1
                 if ah in th:
                     c_chara += _CHARA_LVL[1] * bnet.get(ah, 0.0)
-            # clock 4 — double-transit trigger: Jup AND Sat both hit the primary house.
+            # clock 4 — double transit: Jup AND Sat over the bhāva, its lord and its
+            # kāraka (graded by coverage — the strict classical fructification rule).
             ph = primary[tk]
-            ps = (lagna + ph - 1) % 12
-            c_trig = bnet.get(ph, 0.0) if (_hits(jup_s, ps, "jupiter") and _hits(sat_s, ps, "saturn")) else 0.0
+            c_trig = bnet.get(ph, 0.0) * _dt_coverage(jup_s, sat_s, ph, lagna, lord_of.get(ph), graha_sign)
 
             clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
             central, spread, cf = _fuse(clocks)
@@ -721,7 +747,8 @@ def _projection_context(chart, m_out: dict) -> dict:
         houses[t["key"]] = set(t["houses"])
     return {"birth_jd": chart.jd_ut, "ni": moon.nakshatra.index, "nf": moon.nakshatra.fraction,
             "lagna": chart.lagna_rasi, "disp": disp, "bnet": bnet, "base": base,
-            "sig": sig, "houses": houses, "primary": primary,
+            "sig": sig, "houses": houses, "primary": primary, "lord_of": lord_of,
+            "graha_sign": {g.key: g.rasi for g in chart.grahas},
             "bav": av.get("bhinna"), "sav": av.get("sarva"),
             "chara_seq": _chara_sequence(chart, _chara_direction(chart))}
 
@@ -754,8 +781,8 @@ def _project_at(jd: float, ctx: dict) -> dict:
             if ah in th:
                 c_chara += _CHARA_LVL[1] * ctx["bnet"].get(ah, 0.0)
         ph = ctx["primary"][tk]
-        ps = (lagna + ph - 1) % 12
-        c_trig = ctx["bnet"].get(ph, 0.0) if (_hits(jup_s, ps, "jupiter") and _hits(sat_s, ps, "saturn")) else 0.0
+        cov = _dt_coverage(jup_s, sat_s, ph, lagna, ctx["lord_of"].get(ph), ctx["graha_sign"])
+        c_trig = ctx["bnet"].get(ph, 0.0) * cov
         clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
         central, spread, cf = _fuse(clocks)
         v = max(-1.0, min(1.0, 0.5 * ctx["base"][tk] + 0.5 * central))
@@ -830,7 +857,7 @@ CHANGE_SIGS = [
      "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
      "labels": {"up": "Vitality & recovery"}, "note": "energy returns — a good time to build habits"},
     {"key": "health.chronic", "motive": "health", "theme": "health", "houses": [6, 8], "karakas": ["saturn"],
-     "planets": ["saturn"], "triggers": ["junction", "ingress"], "mode": "neg", "tier": "sloka",
+     "planets": ["saturn"], "triggers": ["junction", "ingress", "doubletransit"], "mode": "neg", "tier": "sloka",
      "labels": {"down": "Chronic load / fatigue"}, "note": "lifestyle caution: rest and pacing"},
     {"key": "health.acute", "motive": "health", "theme": "health", "houses": [6, 8], "karakas": ["mars"],
      "planets": ["mars"], "triggers": ["ingress"], "mode": "neg", "tier": "sloka",
@@ -840,33 +867,33 @@ CHANGE_SIGS = [
      "labels": {"down": "Unexplained / murky"}, "note": "worth a check-up — hidden strain"},
     # ── Wealth (theme "wealth") ──
     {"key": "wealth.rise", "motive": "wealth", "theme": "wealth", "houses": [11, 2], "karakas": ["jupiter"],
-     "planets": ["jupiter"], "triggers": ["junction", "ingress", "swing"], "mode": "pos", "tier": "sloka",
+     "planets": ["jupiter"], "triggers": ["junction", "ingress", "swing", "doubletransit"], "mode": "pos", "tier": "sloka",
      "labels": {"up": "Income rise"}, "note": "earnings trending up"},
     {"key": "wealth.windfall", "motive": "wealth", "theme": "wealth", "houses": [8, 11], "karakas": ["rahu", "jupiter"],
      "planets": ["rahu", "jupiter"], "triggers": ["ingress"], "mode": "pos", "tier": "synthesis",
      "labels": {"up": "Sudden gain / windfall"}, "note": "an unexpected jump — don't overextend on it"},
     {"key": "wealth.drain", "motive": "wealth", "theme": "wealth", "houses": [12, 8, 6], "karakas": ["saturn"],
-     "planets": ["saturn", "mars"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "planets": ["saturn", "mars"], "triggers": ["junction", "ingress", "swing", "doubletransit"], "mode": "neg", "tier": "sloka",
      "labels": {"down": "Expense / loss / debt"}, "note": "hold reserves — an outflow period"},
     # ── Career (theme "career") ──
     {"key": "career.promotion", "motive": "career", "theme": "career", "houses": [10], "karakas": ["sun"],
-     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
+     "planets": ["jupiter"], "triggers": ["junction", "ingress", "doubletransit"], "mode": "pos", "tier": "sloka",
      "labels": {"up": "Promotion / recognition"}, "note": "status on the rise"},
     {"key": "career.jobloss", "motive": "career", "theme": "career", "houses": [10, 6], "karakas": ["saturn"],
-     "planets": ["saturn"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "planets": ["saturn"], "triggers": ["junction", "ingress", "swing", "doubletransit"], "mode": "neg", "tier": "sloka",
      "labels": {"down": "Job-loss risk"}, "note": "secure your position; keep a fallback"},
     {"key": "career.jobchange", "motive": "career", "theme": "career", "houses": [10, 6], "karakas": ["saturn", "mercury"],
-     "planets": [], "triggers": ["junction"], "mode": "shift", "tier": "synthesis",
+     "planets": [], "triggers": ["junction", "doubletransit"], "mode": "shift", "tier": "synthesis",
      "labels": {"shift": "Job change (a move)"}, "note": "a lateral move is likely — not a loss"},
     {"key": "career.transition", "motive": "career", "theme": "career", "houses": [10], "karakas": ["rahu"],
      "planets": ["rahu"], "triggers": ["ingress", "junction"], "mode": "shift", "tier": "synthesis",
      "labels": {"shift": "Career transition (new field)"}, "note": "reinvention — a new direction opens"},
     # ── Relationships ──
     {"key": "rel.newbond", "motive": "rel", "theme": "marriage", "houses": [7, 5], "karakas": ["venus"],
-     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "sloka",
+     "planets": ["jupiter"], "triggers": ["junction", "ingress", "doubletransit"], "mode": "pos", "tier": "sloka",
      "labels": {"up": "New bond / commitment"}, "note": "a beginning — openness helps"},
     {"key": "rel.strain", "motive": "rel", "theme": "marriage", "houses": [7], "karakas": ["saturn"],
-     "planets": ["saturn", "rahu"], "triggers": ["junction", "ingress", "swing"], "mode": "neg", "tier": "sloka",
+     "planets": ["saturn", "rahu"], "triggers": ["junction", "ingress", "swing", "doubletransit"], "mode": "neg", "tier": "sloka",
      "labels": {"down": "Strain / separation risk"}, "note": "a rough patch — tend it with patience"},
     {"key": "rel.trust", "motive": "rel", "theme": "marriage", "houses": [7, 12], "karakas": ["venus", "rahu"],
      "planets": ["rahu"], "triggers": ["ingress"], "mode": "care", "tier": "synthesis", "care": True,
@@ -879,7 +906,7 @@ CHANGE_SIGS = [
      "planets": ["jupiter", "saturn"], "triggers": ["junction", "ingress"], "mode": "bi", "tier": "sloka",
      "labels": {"up": "Family warmth", "down": "Family friction / distance"}, "note": "the family climate is shifting"},
     {"key": "rel.gain", "motive": "rel", "theme": "children", "houses": [11, 5], "karakas": ["jupiter"],
-     "planets": ["jupiter"], "triggers": ["junction", "ingress"], "mode": "pos", "tier": "synthesis",
+     "planets": ["jupiter"], "triggers": ["junction", "ingress", "doubletransit"], "mode": "pos", "tier": "synthesis",
      "labels": {"up": "A new person / gain"}, "note": "a new bond or arrival"},
     {"key": "rel.tender", "motive": "rel", "theme": "longevity", "houses": [8], "karakas": ["saturn"],
      "planets": ["saturn", "ketu"], "triggers": ["ingress"], "mode": "care", "tier": "synthesis", "care": True,
@@ -918,6 +945,7 @@ def changes(chart, m_out: dict) -> dict:
         return {**out, "note": _CHANGES_NOTE}
     lagna = chart.lagna_rasi
     lord_of = {b["house"]: b["lord"] for b in m_out["bhavas"]}
+    graha_sign = {g.key: g.rasi for g in chart.grahas}
     disp = {k: v["disp"] for k, v in m_out["grahaDisposition"].items()}
 
     tsigns = []
@@ -953,6 +981,18 @@ def changes(chart, m_out: dict) -> dict:
                 k = min(3, i)
                 if abs(steps[i]["themes"].get(theme, 0.0) - steps[i - k]["themes"].get(theme, 0.0)) >= _SWING_THRESH:
                     trigs.append("sharp swing")
+            if "doubletransit" in sig["triggers"]:
+                # Jup AND Sat both over the bhāva, its lord and its kāraka (Saravali's
+                # fructification rule) — fired on the RISING edge, when the yoga forms.
+                for h in sig["houses"]:
+                    lk = lord_of.get(h)
+                    now = _dt_coverage(tsigns[i]["jupiter"], tsigns[i]["saturn"], h, lagna, lk, graha_sign)
+                    if now >= 2 / 3 - 1e-9:
+                        prev = _dt_coverage(tsigns[i - 1]["jupiter"], tsigns[i - 1]["saturn"], h, lagna, lk, graha_sign)
+                        if prev < 2 / 3 - 1e-9:
+                            trigs.append("Jupiter–Saturn double transit")
+                            driver = driver or lk or (sig.get("karakas") or [None])[0]
+                            break
             if not trigs:
                 continue
             dd = disp.get(driver, 0.0) if driver else 0.0
@@ -976,7 +1016,8 @@ def changes(chart, m_out: dict) -> dict:
                 if direction is None:
                     continue
             label = sig["labels"].get(direction) or sig["key"]
-            tt = "junction" if "daśā" in trigs[0] else "swing" if "swing" in trigs[0] else "ingress"
+            tt = ("junction" if "daśā" in trigs[0] else "swing" if "swing" in trigs[0]
+                  else "doubletransit" if "double transit" in trigs[0] else "ingress")
             cf = 0.4 + 0.12 * (len(trigs) - 1) + 0.22 * min(1.0, abs(dd))
             if theme:
                 cf = 0.5 * cf + 0.5 * steps[i]["conv"].get(theme, 0.6)

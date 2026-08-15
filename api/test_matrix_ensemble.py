@@ -128,3 +128,41 @@ def test_changes_transit_planets_include_fast_movers():
     fast = {"sun", "moon", "mercury", "venus"}
     for sig in matrix.CHANGE_SIGS:
         assert not (fast & set(sig.get("planets", []))), sig["key"]
+
+
+def test_double_transit_hits_only_full_aspects():
+    # The strict double-transit 'hit' is occupation or a FULL aspect, never a
+    # Parāśari ¼/½/¾ partial. Saturn's full aspects are its 3rd/7th/10th.
+    assert matrix._hits(9, 9, "saturn")               # occupation
+    assert matrix._hits(9, 11, "saturn")              # 3rd  (full)
+    assert matrix._hits(9, 3, "saturn")               # 7th  (full)
+    assert matrix._hits(9, 6, "saturn")               # 10th (full)
+    assert not matrix._hits(9, 10, "saturn")          # 2nd  (¼ partial — not a hit)
+    # Jupiter's full aspects are its 5th/7th/9th.
+    assert matrix._hits(0, 4, "jupiter") and matrix._hits(0, 6, "jupiter") and matrix._hits(0, 8, "jupiter")
+    assert not matrix._hits(0, 2, "jupiter")          # 3rd (partial for Jupiter)
+
+
+def test_double_transit_coverage_grades():
+    # lagna=0, house=1 -> bhāva sign 0; lord Mars natal @ sign 2; kāraka of 1st = Sun (absent here).
+    gs = {"mars": 2}
+    # Jup@8 fully aspects 0 (5th) & 2 (7th); Sat@10 fully aspects 0 (3rd) but NOT 2 -> 1 of 2 covered.
+    assert abs(matrix._dt_coverage(8, 10, 1, 0, "mars", gs) - 0.5) < 1e-9
+    # No coverage when neither target is doubly hit.
+    assert matrix._dt_coverage(3, 5, 1, 0, "mars", gs) == 0.0
+    # Full when both planets occupy/fully-aspect every target.
+    full = matrix._dt_coverage(0, 6, 1, 0, "mars", {"mars": 6})
+    assert full == 1.0
+
+
+def test_changes_can_emit_doubletransit_trigger():
+    # The user's own chart raises a strict full three-target double transit on a
+    # relationship house (7th) — a textbook marriage-timing yoga.
+    chart = vedic.compute_chart(dt.datetime(1975, 6, 25, 22, 32), 26.4499, 80.3319, "Asia/Kolkata")
+    m = matrix.build(chart)
+    ch = matrix.changes(chart, m)
+    types = {e["triggerType"] for g in ("health", "wealthCareer", "relationships") for e in ch[g]}
+    assert "doubletransit" in types
+    # every sig carrying the trigger only ever grades it 2/3+ (the strict gate).
+    dt_sigs = [s for s in matrix.CHANGE_SIGS if "doubletransit" in s["triggers"]]
+    assert dt_sigs and all("doubletransit" in s["triggers"] for s in dt_sigs)

@@ -117,6 +117,7 @@ const MANUAL = {
   'matrix.events': { en: 'Projected events', hi: 'संभावित घटनाएँ' },
   'matrix.bhps': { en: 'BPHS', hi: 'BPHS' },
   'matrix.bhpsPeriod': { en: 'BPHS · this period', hi: 'BPHS · यह अवधि' },
+  'matrix.classicalTag': { en: 'classical', hi: 'शास्त्रीय' },
   'matrix.intensity': { en: 'intensity', hi: 'तीव्रता' },
   'matrix.event.self.good': { en: 'Vitality & fresh initiative', hi: 'ओज व नई पहल' },
   'matrix.event.self.bad': { en: 'Vitality dip · overexertion', hi: 'ओज-क्षय · अति-श्रम' },

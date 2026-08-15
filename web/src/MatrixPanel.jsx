@@ -209,9 +209,12 @@ function MatrixCurve({ steps, t, envelope, events }) {
 // fired for the period, or the primary house's classical effect.
 function BphsQuote({ b, t }) {
   if (!b) return null
+  const tag = b.kind === 'period' ? t('matrix.bhpsPeriod', 'BPHS · this period')
+    : b.tier === 'classical' ? t('matrix.classicalTag', 'classical')
+      : t('matrix.bhps', 'BPHS')
   return (
     <div className="mx-bhps">
-      <span className="mx-bhps-tag">{b.kind === 'period' ? t('matrix.bhpsPeriod', 'BPHS · this period') : t('matrix.bhps', 'BPHS')}</span>
+      <span className="mx-bhps-tag">{tag}</span>
       <span className="mx-bhps-txt">{b.text} <span className="mx-bhps-cite">— {b.cite}</span></span>
     </div>
   )

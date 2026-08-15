@@ -25,12 +25,14 @@ from __future__ import annotations
 
 import datetime as _dt
 import random as _random
+import re as _re
 
 import swisseph as swe
 
 import antardasa
 import ashtakavarga
 import charadasha
+import classical
 import functional
 import bhava_phala as bhp
 import karakas as kar
@@ -1145,9 +1147,23 @@ _BHPS_NEG = ("loss", "danger", "quarrel", "disease", "debt", "theft", "destructi
              "separation", "trouble", "evil", "difficulty", "anxiety", "downfall", "sorrow", "distress")
 
 
+def _kw_score(text_low, kws):
+    """Keyword hits by WHOLE WORD (so 'king' doesn't match 'seeking'); multi-word
+    keywords match as a phrase."""
+    words = _re.findall(r"[a-z]+", text_low)
+    wset = set(words)
+    n = 0
+    for k in kws:
+        if " " in k:
+            n += text_low.count(k)
+        elif k in wset:
+            n += words.count(k)
+    return n
+
+
 def _valence(t):
-    p = sum(t.count(w) for w in _BHPS_POS)
-    n = sum(t.count(w) for w in _BHPS_NEG)
+    p = _kw_score(t, _BHPS_POS)
+    n = _kw_score(t, _BHPS_NEG)
     return (p > n) - (p < n)   # +1 favourable · 0 mixed · −1 unfavourable
 
 
@@ -1159,7 +1175,7 @@ def _facet_clauses(text, theme):
     if not kws:
         return text
     parts = [p.strip() for p in text.replace(";", ",").split(",") if p.strip()]
-    keep = [p for p in parts if any(w in p.lower() for w in kws)]
+    keep = [p for p in parts if _kw_score(p.lower(), kws)]
     joined = ", ".join(keep)
     return joined if len(joined) >= 20 else text
 
@@ -1181,7 +1197,7 @@ def _pick_bhps(fired, theme, want_pos):
     cands = []
     for f in fired:
         t = f["text"].lower()
-        ts = sum(t.count(w) for w in kws)
+        ts = _kw_score(t, kws)
         if ts == 0:
             continue                                  # not about this theme
         val = _valence(t)
@@ -1193,6 +1209,38 @@ def _pick_bhps(fired, theme, want_pos):
     best = max(cands, key=lambda x: x[0])[1]
     return {"text": _trim(_facet_clauses(best["text"], theme)),
             "cite": best["cite"], "tier": best["tier"], "kind": "period"}
+
+
+def _gist_core(gist):
+    """Strip the concordance framing ('X reads a native with graha in the Nth bhava
+    as …', the 'not any prediction' hedge) to the effect itself."""
+    t = str(gist)
+    i = t.find(" bhava as ")
+    if i >= 0:
+        t = t[i + len(" bhava as "):]
+    t = t.split(" — in the text")[0].split(", not any prediction")[0]
+    t = t.replace("the text also reads", "").strip(" ;,.")
+    return " ".join(t.split())
+
+
+def _occupant_effects(chart, lagna):
+    """Classical planet-in-house reading for each occupied house — a planet sitting
+    IN a house speaks to it more directly than the house-lord's placement does."""
+    out = {}
+    try:
+        readings = classical.build({g.key: {"rasi": g.rasi} for g in chart.grahas}, lagna).get("house_readings", [])
+        for r in readings:
+            srcs = r.get("sources") or []
+            if not srcs or r["house"] in out:
+                continue
+            s = srcs[0]
+            core = _gist_core(s.get("gist"))
+            if core:
+                out[r["house"]] = {"text": core, "cite": s.get("citation") or "classical",
+                                   "tier": "classical", "kind": "occupant", "graha": r["graha"]}
+    except Exception:
+        pass
+    return out
 
 
 def _house_effects(chart, lagna):
@@ -1225,23 +1273,26 @@ def _enrich_bhps(chart, out):
     sig_house = {s["key"]: s["houses"][0] for s in CHANGE_SIGS}
     house_fx = _house_effects(chart, lagna)
 
-    def house_bhps(house, theme):
-        b = house_fx.get(house)
-        if not b:
-            return None
-        eff = _facet_clauses(b["text"], theme)
-        # if the placement effect isn't facet-worded (filter left it whole), lead with
-        # the house's own facet-domain terms so the reading is unmistakably on-topic.
-        domain = _facet_clauses(b.get("sig", ""), theme)
-        if eff == b["text"] and domain and domain != b.get("sig") and len(domain) < 90:
-            eff = f"{domain} — {eff}"
-        return {**b, "text": _trim(eff)}
+    occ_fx = _occupant_effects(chart, lagna)
 
-    # (a) inline BPHS on each event/change: the direction-consistent antardaśā result
-    # if one fires, else the primary house's BPHS effect — both narrowed to the facet.
+    def place_bhps(house, theme):
+        # a planet occupying the house reads it more directly than the lord's placement.
+        src = occ_fx.get(house) or house_fx.get(house)
+        if not src:
+            return None
+        eff = _facet_clauses(src["text"], theme)
+        # if the effect isn't facet-worded, lead with the house's own domain terms.
+        sig = (house_fx.get(house) or {}).get("sig", "")
+        dom = _facet_clauses(sig, theme)
+        if eff == src["text"] and dom and dom != sig and len(dom) < 90:
+            eff = f"{dom} — {eff}"
+        return {**src, "text": _trim(eff)}
+
+    # (a) inline BPHS on each event/change: the direction-consistent antardaśā result if
+    # one fires, else the primary house's occupant / lord effect — narrowed to the facet.
     for e in tl.get("events", []):
         b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
-                       e.get("key"), bool(e.get("good"))) or house_bhps(e.get("house"), e.get("key"))
+                       e.get("key"), bool(e.get("good"))) or place_bhps(e.get("house"), e.get("key"))
         if b:
             e["bhps"] = b
     for grp in ("health", "wealthCareer", "relationships"):
@@ -1250,7 +1301,7 @@ def _enrich_bhps(chart, out):
             d = e.get("direction")
             want = True if d == "up" else False if d == "down" else None
             b = _pick_bhps(_fired_results(e.get("maha"), e.get("antar"), positions, lagna, cache),
-                           theme, want) or house_bhps(sig_house.get(e.get("key")), theme)
+                           theme, want) or place_bhps(sig_house.get(e.get("key")), theme)
             if b:
                 e["bhps"] = b
 

@@ -1223,21 +1223,41 @@ def _gist_core(gist):
     return " ".join(t.split())
 
 
+# Moralistic / degrading terms — NOT general negativity (a difficult placement should
+# still read as difficult), just the gratuitously judgmental framing to avoid.
+_PEJORATIVE = ("degradation", "downfall", "wicked", "wickedness", "evil", "sinful", "sinner",
+               "vile", "vices", "immoral", "cruel", "despicable", "shameless", "wretched",
+               "disgrace", "disgraceful", "dishonour", "dishonourable", "adulterous", "adultery",
+               "prostitute", "thief", "thieving", "wrongdoing", "intoxicants", "intoxicant",
+               "debauched", "licentious", "lewd", "contemptible", "villain", "ruined", "doomed",
+               "cursed", "torture", "torment", "tortures", "deceitful", "treacherous", "foolish",
+               "idiot", "stupid", "ugly", "deformed", "despised", "hated", "criminal", "vulgar",
+               "miserable", "wandering", "quarrelsome", "vain", "sinning", "odious", "indolent",
+               "insulted", "immoral", "gluttonous", "greedy", "cheat", "cheating", "hateful")
+# Tie-break: the gentler-toned texts first, Chamatkāra (the harshest) last.
+_SOURCE_ORDER = {"saravali": 0, "phaladipika": 1, "brihat_jataka": 2, "chamatkara": 3}
+
+
+def _harshness(gist):
+    return _kw_score(str(gist).lower(), _PEJORATIVE)
+
+
 def _occupant_effects(chart, lagna):
-    """Classical planet-in-house reading for each occupied house — a planet sitting
-    IN a house speaks to it more directly than the house-lord's placement does."""
+    """Classical planet-in-house reading for each occupied house — a planet sitting IN
+    a house speaks to it more directly than the house-lord's placement. Where a cell
+    has several sources, take the LEAST pejorative-toned one (same reading, gentler
+    framing), not the rosiest — a hard placement should still read as hard."""
     out = {}
     try:
         readings = classical.build({g.key: {"rasi": g.rasi} for g in chart.grahas}, lagna).get("house_readings", [])
         for r in readings:
-            srcs = r.get("sources") or []
+            srcs = [s for s in (r.get("sources") or []) if _gist_core(s.get("gist"))]
             if not srcs or r["house"] in out:
                 continue
-            s = srcs[0]
-            core = _gist_core(s.get("gist"))
-            if core:
-                out[r["house"]] = {"text": core, "cite": s.get("citation") or "classical",
-                                   "tier": "classical", "kind": "occupant", "graha": r["graha"]}
+            s = min(srcs, key=lambda x: (_harshness(x.get("gist")),
+                                         _SOURCE_ORDER.get((x.get("source") or {}).get("id"), 5)))
+            out[r["house"]] = {"text": _gist_core(s.get("gist")), "cite": s.get("citation") or "classical",
+                               "tier": "classical", "kind": "occupant", "graha": r["graha"]}
     except Exception:
         pass
     return out

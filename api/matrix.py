@@ -1236,6 +1236,8 @@ _PEJORATIVE = ("degradation", "downfall", "wicked", "wickedness", "evil", "sinfu
                "insulted", "immoral", "gluttonous", "greedy", "cheat", "cheating", "hateful")
 # Tie-break: the gentler-toned texts first, Chamatkāra (the harshest) last.
 _SOURCE_ORDER = {"saravali": 0, "phaladipika": 1, "brihat_jataka": 2, "chamatkara": 3}
+# At/above this many moralistic words, a lone occupant reading yields to the lord effect.
+_HARSH_MAX = 2
 
 
 def _harshness(gist):
@@ -1257,7 +1259,8 @@ def _occupant_effects(chart, lagna):
             s = min(srcs, key=lambda x: (_harshness(x.get("gist")),
                                          _SOURCE_ORDER.get((x.get("source") or {}).get("id"), 5)))
             out[r["house"]] = {"text": _gist_core(s.get("gist")), "cite": s.get("citation") or "classical",
-                               "tier": "classical", "kind": "occupant", "graha": r["graha"]}
+                               "tier": "classical", "kind": "occupant", "graha": r["graha"],
+                               "harsh": _harshness(s.get("gist"))}
     except Exception:
         pass
     return out
@@ -1296,8 +1299,11 @@ def _enrich_bhps(chart, out):
     occ_fx = _occupant_effects(chart, lagna)
 
     def place_bhps(house, theme):
-        # a planet occupying the house reads it more directly than the lord's placement.
-        src = occ_fx.get(house) or house_fx.get(house)
+        # a planet occupying the house reads it more directly than the lord's placement —
+        # but if the only occupant source is heavily moralistic, yield to the gentler
+        # lord effect rather than surface a harsh lone reading.
+        occ, lord = occ_fx.get(house), house_fx.get(house)
+        src = lord if (occ and occ.get("harsh", 0) >= _HARSH_MAX and lord) else (occ or lord)
         if not src:
             return None
         eff = _facet_clauses(src["text"], theme)

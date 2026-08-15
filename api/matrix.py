@@ -1099,7 +1099,8 @@ _THEME_KW = {
     "wealth": ["wealth", "riches", "money", "gold", "prosperity", "affluence", "treasure",
                "cattle", "income", "gain of", "financial", "fortune"],
     "career": ["position", "king", "government", "authority", "office", "status", "dignity",
-               "master", "command", "business", "kingdom", "ruler", "rank", "fame", "honour", "promotion"],
+               "master", "command", "business", "kingdom", "ruler", "rank", "fame", "honour",
+               "promotion", "profession", "livelihood", "occupation", "work", "service", "trade"],
     "marriage": ["wife", "spouse", "marriage", "conjugal", "husband", "woman"],
     "children": ["children", "child", "progeny", "son", "daughter", "birth", "issue"],
     "health": ["disease", "illness", "fever", "sickness", "affliction", "danger", "injury",
@@ -1204,9 +1205,12 @@ def _house_effects(chart, lagna):
             lr = b.get("lord_rule") or {}
             eff = lr.get("effect")
             if eff:
-                t = " ".join(str(eff).split())
-                out[b["house"]] = {"text": (t[:240] + "…") if len(t) > 240 else t,
-                                   "cite": lr.get("citation") or "BPHS", "tier": "sloka", "kind": "house"}
+                sig = ((b.get("significations") or {}).get("text") or "")
+                # keep just the governed-domains list (before "are to be understood…")
+                sig = " ".join(sig.split(":", 1)[-1].split(" are to be ")[0].split())
+                out[b["house"]] = {"text": " ".join(str(eff).split()),
+                                   "sig": sig, "cite": lr.get("citation") or "BPHS",
+                                   "tier": "sloka", "kind": "house"}
     except Exception:
         pass
     return out
@@ -1223,7 +1227,15 @@ def _enrich_bhps(chart, out):
 
     def house_bhps(house, theme):
         b = house_fx.get(house)
-        return {**b, "text": _trim(_facet_clauses(b["text"], theme))} if b else None
+        if not b:
+            return None
+        eff = _facet_clauses(b["text"], theme)
+        # if the placement effect isn't facet-worded (filter left it whole), lead with
+        # the house's own facet-domain terms so the reading is unmistakably on-topic.
+        domain = _facet_clauses(b.get("sig", ""), theme)
+        if eff == b["text"] and domain and domain != b.get("sig") and len(domain) < 90:
+            eff = f"{domain} — {eff}"
+        return {**b, "text": _trim(eff)}
 
     # (a) inline BPHS on each event/change: the direction-consistent antardaśā result
     # if one fires, else the primary house's BPHS effect — both narrowed to the facet.

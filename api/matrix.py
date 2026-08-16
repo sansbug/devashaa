@@ -422,7 +422,13 @@ def _transit_sign(jd: float, ipl: int) -> int:
 
 # ── the ensemble: independent timing clocks fused into a central estimate + band ──
 # Weights are synthesis (starting values, tunable), like the bhāva/theme weights.
-_CLOCK_W = {"vims": 0.40, "goch": 0.25, "chara": 0.20, "trig": 0.15}
+# Daśā .60 (the primary frameworks) / transit .40. Within the .40 transit budget the
+# double-transit (trig) sits at parity with gochara (goch) — BUT trig's activation is
+# convex in coverage (see c_trig), so a bare 1/3 double transit is muted and only a
+# near-full triple-target transit reaches full strength. The .20 is thus compensatory,
+# not an inflation of the clock's *net* influence: it converts trig's distribution from
+# frequent-and-weak to rare-and-decisive, matching how śāstra treats the yoga.
+_CLOCK_W = {"vims": 0.40, "goch": 0.20, "chara": 0.20, "trig": 0.20}
 _CHARA_LVL = (0.6, 0.4)   # mahā / antar weight inside the chara clock
 _SPREAD_FULL = 0.5        # spread at which conviction hits 0
 
@@ -577,9 +583,12 @@ def timeline(chart, m_out: dict, start: _dt.date, months: int = 24) -> dict:
                 if ah in th:
                     c_chara += _CHARA_LVL[1] * bnet.get(ah, 0.0)
             # clock 4 — double transit: Jup AND Sat over the bhāva, its lord and its
-            # kāraka (graded by coverage — the strict classical fructification rule).
+            # kāraka. Coverage is SQUARED (convex): a bare 1/3 house-only hit is muted
+            # to ~0.11 and only a near-full triple-target transit speaks — the rare,
+            # decisive confirmator of classical doctrine, not a frequent weak nudge.
             ph = primary[tk]
-            c_trig = bnet.get(ph, 0.0) * _dt_coverage(jup_s, sat_s, ph, lagna, lord_of.get(ph), graha_sign)
+            cov = _dt_coverage(jup_s, sat_s, ph, lagna, lord_of.get(ph), graha_sign)
+            c_trig = bnet.get(ph, 0.0) * cov * cov
 
             clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
             central, spread, cf = _fuse(clocks)
@@ -782,7 +791,7 @@ def _project_at(jd: float, ctx: dict) -> dict:
                 c_chara += _CHARA_LVL[1] * ctx["bnet"].get(ah, 0.0)
         ph = ctx["primary"][tk]
         cov = _dt_coverage(jup_s, sat_s, ph, lagna, ctx["lord_of"].get(ph), ctx["graha_sign"])
-        c_trig = ctx["bnet"].get(ph, 0.0) * cov
+        c_trig = ctx["bnet"].get(ph, 0.0) * cov * cov      # convex — see the timeline clock 4
         clocks = {"vims": c_vims, "goch": c_goch, "chara": c_chara, "trig": c_trig}
         central, spread, cf = _fuse(clocks)
         v = max(-1.0, min(1.0, 0.5 * ctx["base"][tk] + 0.5 * central))

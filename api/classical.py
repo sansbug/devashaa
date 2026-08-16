@@ -229,3 +229,16 @@ def build(positions: dict, lagna: int | None = None, lang: str = "en") -> dict:
         "policy": "docs/classical-sources-policy.md",
         "coverage": _COVERAGE.get(lang, _COVERAGE["en"]),
     }
+
+
+def readings_for(graha: str, *, house: int | None = None, sign: int | None = None,
+                 lang: str = "en") -> list[dict]:
+    """Every registered classical source that carries a reading for a SINGLE cell —
+    a (graha, house) or (graha, sign) — chosen directly rather than derived from a
+    chart. Same per-source shape build() emits. Empty when no source covers the cell:
+    absence is a missing cell, never an invented one (cite-or-refuse)."""
+    if house is not None:
+        return [r for m in _HOUSE_SOURCES if (r := _house_reading(m, graha, int(house), lang))]
+    if sign is not None:
+        return [r for m in _SOURCES if (r := _source_reading(m, graha, int(sign), lang))]
+    return []

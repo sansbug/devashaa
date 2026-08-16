@@ -21,15 +21,25 @@ readings are cited/dated, verdicts open a weighted ledger, arcs are broad shapes
 """
 from __future__ import annotations
 
+import datetime as _dt
 import re
 import unicodedata
 
+import swisseph as swe
+
 import classical
+import drishti
 import matrix as _matrix
 import vedic
 import yoga_rules
 import yogas as _yogas
 import shadbala_context
+
+# graha key → Swiss-Ephemeris body id (Ketu has none — derived from Rāhu +180°)
+_SWE_ID = {row[0]: row[5] for row in vedic.GRAHAS if row[5] is not None}
+# sign index 0-11 → its rāśi lord (dispositor), graha key
+_RASI_LORD_KEY = ["mars", "venus", "mercury", "moon", "sun", "mercury",
+                  "venus", "mars", "jupiter", "saturn", "saturn", "jupiter"]
 
 
 # ── folding + graha/rāśi vocab (canonical keys lowercase English; rāśi 0-11) ─────
@@ -293,6 +303,71 @@ def _life_block(chart, m_out: dict, grahas: list[str], facet: str | None) -> dic
             "overall": facet is None}
 
 
+# ── "everything related to this graha" — dṛṣṭi, gochara, and its role in the chart ─
+def _graha_transit(g, lagna, moon_sign, av):
+    """Where the graha transits TODAY: sign, house from lagna & Moon, and an
+    aṣṭakavarga tone (its bindus in the transited sign). None if it can't be read."""
+    try:
+        now = _dt.datetime.utcnow()
+        jd = swe.julday(now.year, now.month, now.day, 12.0, swe.GREG_CAL)
+        if g == "ketu":
+            tsign = (_matrix._transit_sign(jd, swe.MEAN_NODE) + 6) % 12
+        else:
+            ipl = _SWE_ID.get(g)
+            if ipl is None:
+                return None
+            tsign = _matrix._transit_sign(jd, ipl)
+    except Exception:  # noqa: BLE001
+        return None
+    bav = (av.get("bhinna") or {}).get(g)
+    bindu = bav[tsign] if (bav and 0 <= tsign < len(bav)) else None
+    tone = "neutral"
+    if bindu is not None:
+        tone = "supportive" if bindu >= 5 else "straining" if bindu <= 3 else "neutral"
+    return {"sign": tsign, "houseFromLagna": (tsign - lagna) % 12 + 1,
+            "houseFromMoon": ((tsign - moon_sign) % 12 + 1) if moon_sign is not None else None,
+            "bindu": bindu, "tone": tone}
+
+
+def _graha_facets(chart, m_out, g):
+    """Everything the chart says about one graha beyond a single placement: its
+    dṛṣṭi (what it aspects / is aspected by), its gochara (transit today), and its
+    structural role — lordships, natural kāraka, chara-kāraka role, dispositor,
+    conjunctions and the yogas it forms."""
+    nodes = m_out.get("nodes", {})
+    node = nodes.get(g, {})
+    sign, bhava = node.get("rasi"), node.get("bhava")
+    lagna = chart.lagna_rasi
+    moon_sign = nodes.get("moon", {}).get("rasi")
+    edges = (m_out.get("edges") or {}).get("aspects", [])
+
+    casts_grahas = sorted({e["to"] for e in edges if e["from"] == g and e.get("strength", 0) >= 0.5})
+    recv_grahas = sorted({e["from"] for e in edges if e["to"] == g and e.get("strength", 0) >= 0.5})
+    casts_houses = []
+    if sign is not None:
+        for h in range(1, 13):
+            hs = (lagna + h - 1) % 12
+            if hs != sign and drishti.graha_drishti(sign, hs, g) >= 1.0 - 1e-9:
+                casts_houses.append(h)
+
+    kar = m_out.get("karakas", {}) or {}
+    chara = kar.get("chara", {}) or {}
+    chara_roles = (["Ātmakāraka"] if kar.get("atmakaraka") == g else []) + \
+                  [r for r, gg in chara.items() if gg == g]
+    role = {
+        "rules": [b["house"] for b in m_out.get("bhavas", []) if b["lord"] == g],
+        "karakaHouses": [h for h, kk in _matrix._BHAVA_KARAKA.items() if kk == g],
+        "charaRoles": chara_roles,
+        "dispositor": _RASI_LORD_KEY[sign] if sign is not None else None,
+        "conjunct": [k for k, nd in nodes.items() if nd.get("bhava") == bhava and k != g],
+        "yogas": [y["name"] for y in m_out.get("yogas", []) if g in _YOGA_GRAHAS.get(y["name"], [])],
+        "state": node.get("state"), "retro": node.get("retro"), "strength": node.get("strength"),
+    }
+    return {"aspects": {"castsHouses": casts_houses, "castsGrahas": casts_grahas, "receivedFrom": recv_grahas},
+            "transit": _graha_transit(g, lagna, moon_sign, m_out.get("ashtakavarga") or {}),
+            "role": role}
+
+
 # ── intent composers ─────────────────────────────────────────────────────────────
 def _explain_placement(chart, m_out, intent, lang):
     g = intent["graha"]
@@ -319,6 +394,7 @@ def _explain_placement(chart, m_out, intent, lang):
                     "reading": _reading_block(classical.readings_for(g, house=house, lang=lang), lang),
                     "occupants": [k for k, nd in nodes.items() if nd.get("bhava") == house]})
     out["bhava"] = _bhava_block(next((b for b in m_out.get("bhavas", []) if b["house"] == house), None))
+    out["grahaFacets"] = _graha_facets(chart, m_out, g)
     facets = _facets_for_house(house)
     out["life"] = _life_block(chart, m_out, [g], facets[0] if facets else None)
     return out

@@ -8,7 +8,7 @@
  *   • house     — a bhāva: verdict + every occupant's cited reading + life arc
  * Every line is an indication tied to a cited source or a visible ledger, not a fate.
  */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { API } from './config.js'
 import { useLang } from './LangContext.jsx'
 
@@ -56,6 +56,8 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
   const [data, setData] = useState(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  const panelRef = useRef(null)
+  const [flash, setFlash] = useState(false)
 
   const ask = (query) => {
     const text = (query != null ? query : q).trim()
@@ -71,8 +73,19 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
       .finally(() => setBusy(false))
   }
 
-  // header global-search feeds a { q, nonce } object; run it when it changes.
-  useEffect(() => { if (initialQuery && initialQuery.q) ask(initialQuery.q) }, [initialQuery])  // eslint-disable-line react-hooks/exhaustive-deps
+  // the chart-side "Ask" box feeds a { q, nonce } object; run it, then bring the
+  // panel into view with a brief highlight so the answer is obviously "here" — the
+  // result renders in this section, well below the chart it was asked from.
+  useEffect(() => {
+    if (!initialQuery || !initialQuery.q) return
+    ask(initialQuery.q)
+    const el = panelRef.current
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setFlash(true)
+    const id = setTimeout(() => setFlash(false), 1200)
+    return () => clearTimeout(id)
+  }, [initialQuery])  // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── shared renderers ──
   const Reading = ({ reading }) => (
@@ -136,6 +149,39 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
     )
   }
 
+  const CHARA = { 'Ātmakāraka': 'Ātmakāraka', AmK: 'Amātyakāraka', DK: 'Dārakāraka', PK: 'Putrakāraka', BK: 'Bhrātṛkāraka', MK: 'Mātṛkāraka', GK: 'Gnātikāraka' }
+  const houseList = (hs) => (hs || []).map((h) => ORD[h] || h).join(', ')
+
+  const GrahaFacets = ({ gf, graha }) => {
+    const a = gf.aspects || {}, tr = gf.transit, ro = gf.role || {}
+    const casts = (a.castsHouses && a.castsHouses.length) || (a.castsGrahas && a.castsGrahas.length)
+    return (
+      <div className="xp-block">
+        <h4>{t('explain.related', 'Everything else about')} {nm(graha)}</h4>
+        <div className="xp-facets">
+          <div className="xp-facet"><span className="xp-facet-k">{t('explain.drishti', 'Dṛṣṭi · aspects')}</span>
+            <span className="xp-facet-v">
+              {casts ? <>{t('explain.castsOn', 'casts on')} {houseList(a.castsHouses)}{a.castsGrahas && a.castsGrahas.length ? ` · ${a.castsGrahas.map(nm).join(', ')}` : ''}</> : t('explain.noAspect', 'casts no full aspect')}
+              {a.receivedFrom && a.receivedFrom.length ? <> · {t('explain.aspectedBy', 'aspected by')} {a.receivedFrom.map(nm).join(', ')}</> : null}
+            </span></div>
+          {tr && <div className="xp-facet"><span className="xp-facet-k">{t('explain.gochara', 'Gochara · transit now')}</span>
+            <span className="xp-facet-v">{t('explain.todayIn', 'today in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')}{tr.houseFromMoon ? `, ${ORD[tr.houseFromMoon]} ${t('explain.fromMoon', 'from the Moon')}` : ''}{tr.bindu != null ? <> · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b> ({tr.bindu}/8 {t('explain.bindu', 'bindu')})</> : ''}</span></div>}
+          <div className="xp-facet"><span className="xp-facet-k">{t('explain.role', 'Role')}</span>
+            <span className="xp-facet-v">
+              {ro.charaRoles && ro.charaRoles.length ? <><b>{ro.charaRoles.map((r) => CHARA[r] || r).join(', ')}</b>; </> : null}
+              {ro.rules && ro.rules.length ? <>{t('explain.rules', 'rules')} {houseList(ro.rules)}; </> : null}
+              {ro.karakaHouses && ro.karakaHouses.length ? <>{t('explain.karakaOf', 'natural kāraka of')} {houseList(ro.karakaHouses)}; </> : null}
+              {ro.dispositor ? <>{t('explain.dispositor', 'dispositor')} {nm(ro.dispositor)}; </> : null}
+              {ro.conjunct && ro.conjunct.length ? <>{t('explain.with', 'with')} {ro.conjunct.map(nm).join(', ')}; </> : <>{t('explain.alone', 'alone in its house')}; </>}
+              {ro.state ? <span className="xp-state">{ro.state}{ro.retro ? ' ℞' : ''}</span> : null}
+              {ro.yogas && ro.yogas.length ? <> · {t('explain.forms', 'forms')} {ro.yogas.join(', ')}</> : null}
+            </span></div>
+        </div>
+        <p className="xp-cite-line">BPHS I ch.26 (dṛṣṭi) · gochara + aṣṭakavarga</p>
+      </div>
+    )
+  }
+
   const foot = <p className="xp-foot">{t('explain.foot', 'Classical readings are cited, dated renderings on their own tier — never blended with BPHS. The chart verdict opens a weighted ledger; the life arc is a broad shape, not a record of events.')}</p>
 
   // ── per-intent results ──
@@ -151,6 +197,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
           {data.axis === 'house' && !data.inChart && (<p className="xp-aside">{t('explain.actualHouse', 'Your')} {nm(data.graha)} {t('explain.sits', 'sits in the')} {ORD[data.placement.house] || data.placement.house} {t('explain.house', 'house')}{data.occupants && data.occupants.length ? ` · ${ORD[data.house]} ${t('explain.houseOcc', 'house holds')}: ${data.occupants.map(nm).join(', ')}` : ` · ${ORD[data.house]} ${t('explain.houseEmpty', 'house is empty')}`}.</p>)}
           {data.axis === 'sign' && (<p className="xp-aside">{rasiName(data.sign)} {t('explain.isYour', 'is your')} {ORD[data.signHouse] || data.signHouse} {t('explain.house', 'house')}.</p>)}
           <Verdict bhava={data.bhava} /></div>)}
+        {data.grahaFacets && <GrahaFacets gf={data.grahaFacets} graha={data.graha} />}
         <Life life={data.life} subjectGrahas={[data.graha]} />{foot}
       </div>)
     }
@@ -203,7 +250,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
   }
 
   return (
-    <section className="table-panel mx-panel xp-panel" id="rg-explain">
+    <section ref={panelRef} className={'table-panel mx-panel xp-panel' + (flash ? ' xp-flash' : '')} id="rg-explain">
       <h3>{t('explain.title', 'Ask your chart')}</h3>
       <p className="rc-note">{t('explain.sub', 'Ask about any placement, yoga, life-area or house. You get the cited classical reading, your own chart’s verdict for it, and when it has run across your life. An indication, not a fated reading.')}</p>
 

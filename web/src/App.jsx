@@ -613,19 +613,6 @@ export default function App() {
               : `● ephemeris ${health.status} — charts refused`}
           </div>
         )}
-        {chart && (
-          <form className="hdr-search" role="search"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  const v = e.target.elements.q.value.trim()
-                  if (v) { setExplainQuery({ q: v, nonce: Date.now() }); setSection('explain') }
-                }}>
-            <input name="q" type="text"
-                   placeholder={t('explain.headerPh', 'Ask your chart — “Jupiter in the 2nd house”, “Gajakesari yoga”, “my career”…')}
-                   aria-label={t('explain.title', 'Ask your chart')} />
-            <button type="submit">{t('explain.ask', 'Ask')}</button>
-          </form>
-        )}
       </header>
 
       <section className="saved">
@@ -747,6 +734,18 @@ export default function App() {
                   <span className="varga-tier" title={VARGA_SIG_NOTE}>traditional</span>
                 </div>
               )}
+              <form className="ask-inline" role="search"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const v = e.target.elements.q.value.trim()
+                      if (v) { setExplainQuery({ q: v, nonce: Date.now() }); setSection('explain') }
+                    }}>
+                <span className="ask-inline-ic" aria-hidden="true">✦</span>
+                <input name="q" type="text"
+                       placeholder={t('explain.askPlace', 'Ask this chart — “Jupiter”, “Gajakesari yoga”, “my career”…')}
+                       aria-label={t('explain.title', 'Ask your chart')} />
+                <button type="submit">{t('explain.ask', 'Ask')}</button>
+              </form>
             </div>
             <div className="chart-figure">
               {style === 'panchang' ? (

@@ -9,6 +9,7 @@ import YogaPanel from './YogaPanel.jsx'
 import ClassicalPanel from './ClassicalPanel.jsx'
 import PanchangHeatmap from './PanchangHeatmap.jsx'
 import MatrixPanel from './MatrixPanel.jsx'
+import ExplainPanel from './ExplainPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
@@ -240,6 +241,7 @@ export default function App() {
   const [varga, setVarga] = useState('D1')
   const [style, setStyle] = useState('north')
   const [section, setSection] = useState('projection')
+  const [explainQuery, setExplainQuery] = useState(null)
   const [health, setHealth] = useState(null)
   // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
   // overlay is on, so nobody pays the round-trip who hasn't asked. '' = now.
@@ -611,6 +613,19 @@ export default function App() {
               : `● ephemeris ${health.status} — charts refused`}
           </div>
         )}
+        {chart && (
+          <form className="hdr-search" role="search"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const v = e.target.elements.q.value.trim()
+                  if (v) { setExplainQuery({ q: v, nonce: Date.now() }); setSection('explain') }
+                }}>
+            <input name="q" type="text"
+                   placeholder={t('explain.headerPh', 'Ask your chart — “Jupiter in the 2nd house”, “Gajakesari yoga”, “my career”…')}
+                   aria-label={t('explain.title', 'Ask your chart')} />
+            <button type="submit">{t('explain.ask', 'Ask')}</button>
+          </form>
+        )}
       </header>
 
       <section className="saved">
@@ -814,6 +829,7 @@ export default function App() {
 
           <nav className="sec-nav" role="tablist">
             {[['projection', t('sec.projection', 'Projection')],
+              ['explain', t('sec.explain', 'Ask')],
               ['overview', t('sec.overview', 'Overview')],
               ['strength', t('sec.strength', 'Strength')],
               ['bhava', t('sec.bhava', 'Bhāvas & Yogas')],
@@ -867,6 +883,8 @@ export default function App() {
           )}
 
           {section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
+
+          {section === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
 
           {section === 'dasha' && (
           <section className="table-panel" id="rg-dasha">

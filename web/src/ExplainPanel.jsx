@@ -151,6 +151,15 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
     )
   }
 
+  // cited Phaladīpikā ch.26 gochara judgment (currently the Sun; partial by source)
+  const GochLine = ({ gc }) => {
+    if (!gc) return null
+    const txt = gc.status === 'favourable' ? t('explain.gochFav', 'favourable from the Moon — unobstructed')
+      : gc.status === 'obstructed' ? `${t('explain.gochObstructed', 'vedha — obstructed by')} ${(gc.blockers || []).map(nm).join(', ')}${gc.outcome ? ` (“${gc.outcome}”)` : ''}`
+      : t('explain.gochNotFav', 'not among its favourable houses from the Moon')
+    return <> · <b className={'xp-tone-' + (gc.status === 'favourable' ? 'supportive' : gc.status === 'obstructed' ? 'straining' : 'neutral')}>{txt}</b> <span className="xp-wq-cite">— {gc.citation}</span></>
+  }
+
   const CHARA = { 'Ātmakāraka': 'Ātmakāraka', AmK: 'Amātyakāraka', DK: 'Dārakāraka', PK: 'Putrakāraka', BK: 'Bhrātṛkāraka', MK: 'Mātṛkāraka', GK: 'Gnātikāraka' }
   const houseList = (hs) => (hs || []).map((h) => ORD[h] || h).join(', ')
 
@@ -167,7 +176,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
               {a.receivedFrom && a.receivedFrom.length ? <> · {t('explain.aspectedBy', 'aspected by')} {a.receivedFrom.map(nm).join(', ')}</> : null}
             </span></div>
           {tr && <div className="xp-facet"><span className="xp-facet-k">{asOf ? `${t('explain.gocharaOf', 'Gochara')} · ${monLabel(asOf)}` : t('explain.gochara', 'Gochara · transit now')}</span>
-            <span className="xp-facet-v">{asOf ? t('explain.thenIn', 'then in') : t('explain.todayIn', 'today in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')}{tr.houseFromMoon ? `, ${ORD[tr.houseFromMoon]} ${t('explain.fromMoon', 'from the Moon')}` : ''}{tr.bindu != null ? <> · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b> ({tr.bindu}/8 {t('explain.bindu', 'bindu')})</> : ''}</span></div>}
+            <span className="xp-facet-v">{asOf ? t('explain.thenIn', 'then in') : t('explain.todayIn', 'today in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')}{tr.houseFromMoon ? `, ${ORD[tr.houseFromMoon]} ${t('explain.fromMoon', 'from the Moon')}` : ''}{tr.bindu != null ? <> · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b> ({tr.bindu}/8 {t('explain.bindu', 'bindu')})</> : ''}<GochLine gc={tr.gochara} /></span></div>}
           <div className="xp-facet"><span className="xp-facet-k">{t('explain.role', 'Role')}</span>
             <span className="xp-facet-v">
               {ro.charaRoles && ro.charaRoles.length ? <><b>{ro.charaRoles.map((r) => CHARA[r] || r).join(', ')}</b>; </> : null}
@@ -277,7 +286,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
             </ul></div>)}
         <div className="xp-block"><h4>{t('explain.transitsThen', 'Slow transits then')}</h4>
           {data.transits.map((tr) => tr.sign != null && (
-            <p className="xp-aside" key={tr.graha}>{nm(tr.graha)} {t('explain.todayIn', 'in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')} · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b>{tr.bindu != null ? ` (${tr.bindu}/8)` : ''}</p>))}</div>
+            <p className="xp-aside" key={tr.graha}>{nm(tr.graha)} {t('explain.todayIn', 'in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')} · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b>{tr.bindu != null ? ` (${tr.bindu}/8)` : ''}<GochLine gc={tr.gochara} /></p>))}</div>
         {pc && (<div className="xp-block"><h4>{t('explain.auspicious', 'Auspicious days')} <span className="xp-tier">pañcāṅga</span></h4>
           <p className="xp-aside">{pc.auspicious} {t('explain.auspN', 'auspicious')} · {pc.mixed} {t('explain.mixedN', 'mixed')} · {pc.inauspicious} {t('explain.inauspN', 'inauspicious')} {t('explain.of', 'of')} {pc.days} — {t('explain.bestDays', 'best')}: {pc.best.map((b) => `${Number(b.date.slice(8, 10))} ${MON[Number(b.date.slice(5, 7)) - 1]} (${b.score})`).join(', ')}</p></div>)}
         {foot}

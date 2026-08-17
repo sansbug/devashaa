@@ -29,6 +29,7 @@ import swisseph as swe
 
 import classical
 import drishti
+import gochara_rules
 import matrix as _matrix
 import vedic
 import yoga_rules
@@ -372,9 +373,26 @@ def _life_block(chart, m_out: dict, grahas: list[str], facet: str | None) -> dic
 
 
 # ── "everything related to this graha" — dṛṣṭi, gochara, and its role in the chart ─
+def _transit_occupants_from_moon(jd, moon_sign):
+    """House-from-Moon (1-12) -> transiting graha keys standing there, for the
+    ch.26 vedha (obstruction) check."""
+    occ: dict[int, list[str]] = {}
+    for g, ipl in _SWE_ID.items():
+        try:
+            s = _matrix._transit_sign(jd, ipl)
+        except Exception:  # noqa: BLE001
+            continue
+        occ.setdefault((s - moon_sign) % 12 + 1, []).append(g)
+        if g == "rahu":
+            occ.setdefault(((s + 6) % 12 - moon_sign) % 12 + 1, []).append("ketu")
+    return occ
+
+
 def _graha_transit(g, lagna, moon_sign, av, jd=None):
     """Where the graha transits at ``jd`` (default: today): sign, house from lagna &
-    Moon, and an aṣṭakavarga tone (its bindus in the transited sign)."""
+    Moon, an aṣṭakavarga tone (its bindus in the transited sign) — and, where the
+    extracted Phaladīpikā ch.26 text covers the graha, the cited gochara judgment
+    (favourable / vedha-obstructed / not among its favourable houses)."""
     try:
         if jd is None:
             now = _dt.datetime.utcnow()
@@ -393,9 +411,16 @@ def _graha_transit(g, lagna, moon_sign, av, jd=None):
     tone = "neutral"
     if bindu is not None:
         tone = "supportive" if bindu >= 5 else "straining" if bindu <= 3 else "neutral"
-    return {"sign": tsign, "houseFromLagna": (tsign - lagna) % 12 + 1,
-            "houseFromMoon": ((tsign - moon_sign) % 12 + 1) if moon_sign is not None else None,
-            "bindu": bindu, "tone": tone}
+    hfm = ((tsign - moon_sign) % 12 + 1) if moon_sign is not None else None
+    out = {"sign": tsign, "houseFromLagna": (tsign - lagna) % 12 + 1,
+           "houseFromMoon": hfm, "bindu": bindu, "tone": tone}
+    if g == "sun" and hfm is not None and g in gochara_rules.FAVOURABLE:
+        try:
+            out["gochara"] = gochara_rules.sun_transit_judgment(
+                hfm, _transit_occupants_from_moon(jd, moon_sign))
+        except Exception:  # noqa: BLE001
+            pass
+    return out
 
 
 def _graha_facets(chart, m_out, g, jd=None):
@@ -676,7 +701,7 @@ def _explain_period(chart, m_out, intent, lang, geo=None):
     moon_sign = nodes.get("moon", {}).get("rasi")
     av = m_out.get("ashtakavarga") or {}
     transits = [{"graha": g, **(_graha_transit(g, chart.lagna_rasi, moon_sign, av, jd=mid_jd) or {})}
-                for g in ("jupiter", "saturn")]
+                for g in ("jupiter", "saturn", "sun")]
 
     return {"kind": "period", "parsed": {"kind": "period", "from": lo, "to": hi},
             "window": {"from": lo, "to": hi, "months": len(months)},

@@ -114,19 +114,20 @@ _THEME_WORDS = {
     "career": ["career", "job", "work", "profession", "occupation", "status", "business",
                "employment", "promotion", "livelihood"],
     "marriage": ["marriage", "spouse", "partner", "wife", "husband", "relationship",
-                 "love", "married", "partnership"],
+                 "love", "married", "marry", "wedding", "engaged", "engagement",
+                 "divorce", "partnership"],
     "children": ["children", "child", "kids", "kid", "progeny", "son", "daughter",
-                 "offspring", "fertility"],
+                 "offspring", "fertility", "baby", "babies", "born"],
     "health": ["health", "illness", "disease", "sickness", "wellbeing", "wellness", "fitness"],
     "education": ["education", "learning", "study", "studies", "knowledge", "academics",
                   "school", "college", "intellect"],
-    "home": ["home", "property", "mother", "land", "vehicles", "comforts", "domestic"],
+    "home": ["home", "house", "property", "mother", "land", "vehicles", "comforts", "domestic"],
     "fortune": ["fortune", "luck", "dharma", "father", "religion", "spirituality", "faith"],
     "enemies": ["enemies", "enemy", "debt", "debts", "litigation", "rivals", "obstacles",
                 "competition", "disputes"],
     "foreign": ["foreign", "abroad", "overseas", "moksha", "liberation", "expenses",
                 "isolation"],
-    "longevity": ["longevity", "lifespan", "age", "vitality"],
+    "longevity": ["longevity", "lifespan", "age", "vitality", "die", "death", "dying", "dead"],
 }
 for _tk, _words in _THEME_WORDS.items():
     for _w in _words:
@@ -140,7 +141,42 @@ _YOGA_GRAHAS = {"Ruchaka": ["mars"], "Bhadra": ["mercury"], "Hamsa": ["jupiter"]
                 "Amala Yoga": ["jupiter", "mercury", "venus"]}
 
 _SUGGESTIONS = ["Jupiter in the 2nd house", "Gajakesari yoga", "My career",
-                "Saturn in the 7th house", "10th house", "Venus in Taurus"]
+                "How is September 2026 looking?", "Chance of marriage next year",
+                "When did my career rise?"]
+
+# ── time vocabulary for period / when intents ────────────────────────────────────
+_MONTH_WORDS = {m: i for i, m in enumerate(
+    ["january", "february", "march", "april", "may", "june", "july", "august",
+     "september", "october", "november", "december"], 1)}
+_MONTH_WORDS.update({"jan": 1, "feb": 2, "mar": 3, "apr": 4, "jun": 6, "jul": 7,
+                     "aug": 8, "sep": 9, "sept": 9, "oct": 10, "nov": 11, "dec": 12})
+
+
+def _parse_window(tokens: list[str], folded: str):
+    """A (y1, m1, y2, m2) month-window from the query, or None. 'may' needs an
+    explicit year beside it (it is also a modal verb)."""
+    today = _dt.date.today()
+    year = next((int(t) for t in tokens if re.fullmatch(r"(19|20)\d\d", t)), None)
+    mon = next((_MONTH_WORDS[t] for t in tokens
+                if t in _MONTH_WORDS and (t != "may" or year is not None)), None)
+    if "next year" in folded:
+        y = today.year + 1
+        return (y, 1, y, 12)
+    if "this year" in folded:
+        return (today.year, today.month, today.year, 12)
+    if "next month" in folded:
+        y, m = (today.year + 1, 1) if today.month == 12 else (today.year, today.month + 1)
+        return (y, m, y, m)
+    if "this month" in folded:
+        return (today.year, today.month, today.year, today.month)
+    if year and mon:
+        return (year, mon, year, mon)
+    if mon:                                     # bare month → its next occurrence
+        y = today.year + (1 if mon < today.month else 0)
+        return (y, mon, y, mon)
+    if year:
+        return (year, 1, year, 12)
+    return None
 
 
 def parse_query(q: str) -> dict | None:
@@ -152,16 +188,27 @@ def parse_query(q: str) -> dict | None:
     folded = _fold(q)
     tokens = re.findall(r"[a-z0-9]+", folded)
     nospace = folded.replace(" ", "")
+    window = _parse_window(tokens, folded)
 
-    # 1 — graha (→ placement)
+    # 0 — mortality guard FIRST: any death-dating question gets the care refusal,
+    # whoever it is about — before 'mother'→home or any other token can outrank it.
+    if any(t in ("die", "death", "dying", "dead") for t in tokens):
+        return {"kind": "when", "theme": "longevity", "direction": "future",
+                "window": None, "mortality": True}
+
+    # 1 — graha (→ daśā timing, or placement)
     graha = next((_GRAHA_ALIASES[t] for t in tokens if t in _GRAHA_ALIASES), None)
     if graha is None:
         graha = next((k for a, k in _GRAHA_COMPOUND.items() if a in nospace), None)
     if graha is not None:
+        if any(t in ("dasha", "dasa", "mahadasha", "antardasha", "period", "periods") for t in tokens):
+            return {"kind": "dasha", "graha": graha}
         sign = next((_RASI_ALIASES[t] for t in tokens if t in _RASI_ALIASES), None)
         if sign is not None:
             return {"kind": "placement", "graha": graha, "house": None, "sign": sign}
-        return {"kind": "placement", "graha": graha, "house": _house_token(tokens), "sign": None}
+        house = _house_token(tokens)
+        return {"kind": "placement", "graha": graha, "house": house, "sign": None,
+                "window": window if house is None else None}
 
     # 2 — yoga
     yoga = next((_YOGA_ALIASES[t] for t in tokens if t in _YOGA_ALIASES), None)
@@ -170,14 +217,35 @@ def parse_query(q: str) -> dict | None:
     if yoga is not None:
         return {"kind": "yoga", "yoga": yoga}
 
-    # 3 — a bare house (needs a house/bhava cue so "in 2020" isn't a house)
+    # 3 — timing questions: "when did/will …", "chance of …", a theme + a window
+    theme = next((_THEME_ALIASES[t] for t in tokens if t in _THEME_ALIASES), None)
+    past = bool(re.search(r"\bwhen\s+(did|was|were|had)\b", folded))
+    future = bool(re.search(r"\bwhen\s+(will|would|shall|can|could|do|does|am|is|might|may)\b", folded)
+                  or re.search(r"\b(chance|chances|likelihood|odds)\b", folded)
+                  or re.search(r"\b(will|shall|can)\s+i\b", folded))
+    if theme is not None and (past or future):
+        return {"kind": "when", "theme": theme,
+                "direction": "past" if past and not future else "future",
+                "window": window}
+
+    # 4 — a bare house (needs a house/bhava cue so "in 2020" isn't a house)
     if any(t in ("house", "bhava", "bhāva", "houses") for t in tokens):
         h = _house_token(tokens)
         if h:
-            return {"kind": "house", "house": h}
+            return {"kind": "house", "house": h, "window": window}
 
-    # 4 — a life-theme word
-    theme = next((_THEME_ALIASES[t] for t in tokens if t in _THEME_ALIASES), None)
+    # 5 — a theme scoped to a window: past windows look back, future ones ahead
+    if theme is not None and window is not None:
+        today = _dt.date.today()
+        w_past = (window[2], window[3]) < (today.year, today.month)
+        return {"kind": "when", "theme": theme,
+                "direction": "past" if w_past else "future", "window": window}
+
+    # 6 — a bare window ("how is september 2026 looking?") → the period overview
+    if window is not None:
+        return {"kind": "period", "window": window}
+
+    # 7 — a life-theme word
     if theme is not None:
         return {"kind": "theme", "theme": theme}
 
@@ -304,12 +372,13 @@ def _life_block(chart, m_out: dict, grahas: list[str], facet: str | None) -> dic
 
 
 # ── "everything related to this graha" — dṛṣṭi, gochara, and its role in the chart ─
-def _graha_transit(g, lagna, moon_sign, av):
-    """Where the graha transits TODAY: sign, house from lagna & Moon, and an
-    aṣṭakavarga tone (its bindus in the transited sign). None if it can't be read."""
+def _graha_transit(g, lagna, moon_sign, av, jd=None):
+    """Where the graha transits at ``jd`` (default: today): sign, house from lagna &
+    Moon, and an aṣṭakavarga tone (its bindus in the transited sign)."""
     try:
-        now = _dt.datetime.utcnow()
-        jd = swe.julday(now.year, now.month, now.day, 12.0, swe.GREG_CAL)
+        if jd is None:
+            now = _dt.datetime.utcnow()
+            jd = swe.julday(now.year, now.month, now.day, 12.0, swe.GREG_CAL)
         if g == "ketu":
             tsign = (_matrix._transit_sign(jd, swe.MEAN_NODE) + 6) % 12
         else:
@@ -329,7 +398,7 @@ def _graha_transit(g, lagna, moon_sign, av):
             "bindu": bindu, "tone": tone}
 
 
-def _graha_facets(chart, m_out, g):
+def _graha_facets(chart, m_out, g, jd=None):
     """Everything the chart says about one graha beyond a single placement: its
     dṛṣṭi (what it aspects / is aspected by), its gochara (transit today), and its
     structural role — lordships, natural kāraka, chara-kāraka role, dispositor,
@@ -364,12 +433,12 @@ def _graha_facets(chart, m_out, g):
         "state": node.get("state"), "retro": node.get("retro"), "strength": node.get("strength"),
     }
     return {"aspects": {"castsHouses": casts_houses, "castsGrahas": casts_grahas, "receivedFrom": recv_grahas},
-            "transit": _graha_transit(g, lagna, moon_sign, m_out.get("ashtakavarga") or {}),
+            "transit": _graha_transit(g, lagna, moon_sign, m_out.get("ashtakavarga") or {}, jd=jd),
             "role": role}
 
 
 # ── intent composers ─────────────────────────────────────────────────────────────
-def _explain_placement(chart, m_out, intent, lang):
+def _explain_placement(chart, m_out, intent, lang, geo=None):
     g = intent["graha"]
     nodes = m_out.get("nodes", {})
     node = nodes.get(g, {})
@@ -394,13 +463,21 @@ def _explain_placement(chart, m_out, intent, lang):
                     "reading": _reading_block(classical.readings_for(g, house=house, lang=lang), lang),
                     "occupants": [k for k, nd in nodes.items() if nd.get("bhava") == house]})
     out["bhava"] = _bhava_block(next((b for b in m_out.get("bhavas", []) if b["house"] == house), None))
-    out["grahaFacets"] = _graha_facets(chart, m_out, g)
+    # "jupiter in 2027" — a graha with a window means its transit THEN, not just now
+    tjd = None
+    if intent.get("window"):
+        wy1, wm1, wy2, wm2 = intent["window"]
+        wmonths = _month_iter(wy1, wm1, wy2, wm2)
+        my, mm = wmonths[len(wmonths) // 2]
+        tjd = swe.julday(my, mm, 15, 12.0, swe.GREG_CAL)
+        out["transitAsOf"] = f"{my:04d}-{mm:02d}"
+    out["grahaFacets"] = _graha_facets(chart, m_out, g, jd=tjd)
     facets = _facets_for_house(house)
     out["life"] = _life_block(chart, m_out, [g], facets[0] if facets else None)
     return out
 
 
-def _explain_yoga(chart, m_out, intent, lang):
+def _explain_yoga(chart, m_out, intent, lang, geo=None):
     name = intent["yoga"]
     meta = yoga_rules.YOGAS.get(name)
     if not meta:
@@ -432,7 +509,7 @@ def _explain_yoga(chart, m_out, intent, lang):
     return out
 
 
-def _explain_theme(chart, m_out, intent, lang):
+def _explain_theme(chart, m_out, intent, lang, geo=None):
     tk = intent["theme"]
     tv = next((t for t in m_out.get("themes", []) if t["key"] == tk), None)
     theme_def = next((t for t in _matrix.THEMES if t["key"] == tk), {})
@@ -460,7 +537,7 @@ def _explain_theme(chart, m_out, intent, lang):
     return out
 
 
-def _explain_house(chart, m_out, intent, lang):
+def _explain_house(chart, m_out, intent, lang, geo=None):
     house = intent["house"]
     nodes = m_out.get("nodes", {})
     occupants = [k for k, nd in nodes.items() if nd.get("bhava") == house]
@@ -476,15 +553,308 @@ def _explain_house(chart, m_out, intent, lang):
     out = {"kind": "house", "house": house, "parsed": {"house": house, "kind": "house"},
            "bhava": _bhava_block(bh), "occupants": occupants, "occupantReadings": occ_readings,
            "reading": {"available": bool(occ_readings)}}
+    # "2nd house in 2027" — score the house's dominant life-theme over that window
+    if intent.get("window"):
+        tk = _HOUSE_THEME.get(house)
+        if tk:
+            ctx = _matrix._projection_context(chart, m_out)
+            names = {t["key"]: t["name"] for t in m_out.get("themes", [])}
+            wy1, wm1, wy2, wm2 = intent["window"]
+            rows = []
+            for (y, m) in _month_iter(wy1, wm1, wy2, wm2):
+                jd = max(chart.jd_ut, swe.julday(y, m, 15, 12.0, swe.GREG_CAL))
+                tv = _matrix._project_at(jd, ctx)["themes"].get(tk)
+                rows.append((tv["v"], tv["cf"]))
+            if rows:
+                fv = sum(v for v, _ in rows) / len(rows)
+                out["focus"] = {"from": f"{wy1:04d}-{wm1:02d}", "to": f"{wy2:04d}-{wm2:02d}",
+                                "theme": tk, "themeName": names.get(tk, tk),
+                                "v": round(fv, 3),
+                                "cf": round(sum(c for _, c in rows) / len(rows), 2),
+                                "tone": "supportive" if fv >= 0.08 else "challenging" if fv <= -0.08 else "neutral"}
     out["life"] = _life_block(chart, m_out, [lord] if lord else [], facets[0] if facets else None)
     return out
 
 
+# ── period + when intents: "how is Sep 2026?", "when did/will …?" ────────────────
+def _month_iter(y1, m1, y2, m2, cap=12):
+    out = []
+    y, m = y1, m1
+    while (y, m) <= (y2, m2) and len(out) < cap:
+        out.append((y, m))
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return out
+
+
+def _panchang_summary(chart, geo, months):
+    """Chart-tailored auspicious-day counts for a short window (≤2 months) — the
+    same tārā/candra/transit/daśā-fit/day-quality score the Pañcāṅga tab uses."""
+    if not geo or len(months) > 2:
+        return None
+    try:
+        import calendar as _cal
+        import panchang as _pan
+        import panchang_score as _ps
+        import vimshottari as _vim
+        moon = next(g for g in chart.grahas if g.key == "moon")
+        birth = {"moon_nak": moon.nakshatra.index, "moon_sign": moon.rasi,
+                 "lagna_sign": chart.lagna_rasi}
+        lat, lon, tz = geo["latitude"], geo["longitude"], geo["timezone"]
+        counts = {"auspicious": 0, "mixed": 0, "inauspicious": 0}
+        best = []
+        for (y, m) in months:
+            for dd in range(1, _cal.monthrange(y, m)[1] + 1):
+                try:
+                    d = _dt.date(y, m, dd)
+                    pan = _pan.panchanga(d, lat, lon, tz)
+                    lords = _vim.running_lords(chart.jd_ut, birth["moon_nak"],
+                                               moon.nakshatra.fraction,
+                                               swe.julday(y, m, dd, 12.0, swe.GREG_CAL), depth=2)
+                    birth["dasha_maha"] = lords[0] if lords else None
+                    birth["dasha_antar"] = lords[1] if len(lords) > 1 else None
+                    sc = _ps.score_day(pan, birth)
+                    counts[sc["band"]] = counts.get(sc["band"], 0) + 1
+                    best.append({"date": d.isoformat(), "score": sc["score"]})
+                except Exception:  # noqa: BLE001
+                    continue
+        if not best:
+            return None
+        best.sort(key=lambda x: -x["score"])
+        return {**counts, "days": sum(counts.values()), "best": best[:3]}
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _explain_period(chart, m_out, intent, lang, geo=None):
+    y1, mm1, y2, mm2 = intent["window"]
+    months = _month_iter(y1, mm1, y2, mm2)
+    # honesty guard: no confident readings for a window before the birth itself
+    bj = swe.revjul(chart.jd_ut, swe.GREG_CAL)
+    birth_ym = (int(bj[0]), int(bj[1]))
+    if (months[-1][0], months[-1][1]) < birth_ym:
+        return {"kind": "period", "parsed": {"kind": "period"}, "preBirth": True,
+                "birth": f"{birth_ym[0]:04d}-{birth_ym[1]:02d}",
+                "window": {"from": f"{y1:04d}-{mm1:02d}", "to": f"{y2:04d}-{mm2:02d}",
+                           "months": len(months)}}
+    months = [m for m in months if m >= birth_ym] or [birth_ym]
+    ctx = _matrix._projection_context(chart, m_out)
+    names = {t["key"]: t["name"] for t in m_out.get("themes", [])}
+    per_theme: dict[str, list] = {}
+    dashas = []
+    for (y, m) in months:
+        jd = swe.julday(y, m, 15, 12.0, swe.GREG_CAL)
+        pj = _matrix._project_at(jd, ctx)
+        if not dashas or (dashas[-1]["maha"], dashas[-1]["antar"]) != (pj["maha"], pj["antar"]):
+            dashas.append({"month": f"{y:04d}-{m:02d}", "maha": pj["maha"], "antar": pj["antar"]})
+        for tk, tv in pj["themes"].items():
+            per_theme.setdefault(tk, []).append((tv["v"], tv["cf"]))
+    agg = {tk: {"key": tk, "name": names.get(tk, tk),
+                "v": round(sum(v for v, _ in rows) / len(rows), 3),
+                "cf": round(sum(c for _, c in rows) / len(rows), 2)}
+           for tk, rows in per_theme.items()}
+    ranked = sorted(agg.values(), key=lambda a: -a["v"])
+    overall = round(sum(a["v"] for a in agg.values()) / max(1, len(agg)), 3)
+
+    lo, hi = f"{y1:04d}-{mm1:02d}", f"{months[-1][0]:04d}-{months[-1][1]:02d}"
+
+    def _overlaps(a_from, a_to):
+        return a_from[:7] <= hi and a_to[:7] >= lo
+
+    events = [e for e in m_out.get("timeline", {}).get("events", [])
+              if _overlaps(e.get("from", ""), e.get("to", ""))]
+    changes = []
+    for grp in ("health", "wealthCareer", "relationships"):
+        for e in (m_out.get("changes") or {}).get(grp, []):
+            if e.get("care"):
+                continue
+            if _overlaps(e.get("from", e.get("date", "")), e.get("to", e.get("date", ""))):
+                changes.append({"group": grp, "label": e.get("label"), "date": e.get("date"),
+                                "cf": e.get("cf"), "triggerType": e.get("triggerType")})
+    mid = months[len(months) // 2]
+    mid_jd = swe.julday(mid[0], mid[1], 15, 12.0, swe.GREG_CAL)
+    nodes = m_out.get("nodes", {})
+    moon_sign = nodes.get("moon", {}).get("rasi")
+    av = m_out.get("ashtakavarga") or {}
+    transits = [{"graha": g, **(_graha_transit(g, chart.lagna_rasi, moon_sign, av, jd=mid_jd) or {})}
+                for g in ("jupiter", "saturn")]
+
+    return {"kind": "period", "parsed": {"kind": "period", "from": lo, "to": hi},
+            "window": {"from": lo, "to": hi, "months": len(months)},
+            "overall": overall, "dasha": dashas,
+            "themes": {"best": [a for a in ranked[:3] if a["v"] > 0.05],
+                       "strain": [a for a in ranked[::-1][:3] if a["v"] < -0.05]},
+            "events": events[:5], "changes": changes[:6], "transits": transits,
+            "panchang": _panchang_summary(chart, geo, months)}
+
+
+_WHEN_REFUSE = {
+    "en": ("Questions of lifespan are not dated here — by design. The tradition treats "
+           "them as a call to care and presence, not a forecast; so does this site."),
+    "hi": ("आयु-संबंधी प्रश्नों की तिथि यहाँ नहीं दी जाती — यह हमारा सिद्धांत है। परंपरा इन्हें "
+           "देखभाल और उपस्थिति का आह्वान मानती है, भविष्यवाणी नहीं; यह स्थल भी।"),
+}
+
+
+def _explain_when(chart, m_out, intent, lang, geo=None):
+    tk, direction = intent["theme"], intent["direction"]
+    names = {t["key"]: t["name"] for t in m_out.get("themes", [])}
+    base = {"kind": "when", "theme": tk, "themeName": names.get(tk, tk),
+            "direction": direction, "parsed": {"kind": "when", "theme": tk, "direction": direction},
+            "care": False}
+    if tk == "longevity":
+        # No dating of lifespan, past or future, one's own or anyone else's.
+        return {**base, "care": True, "refusal": _WHEN_REFUSE.get(lang, _WHEN_REFUSE["en"]),
+                "windows": [], "changes": [], "focus": None, "empty": True}
+
+    ctx = _matrix._projection_context(chart, m_out)
+    if direction == "past":
+        # Yearly walk birth→now. Windows are RELATIVE — years the theme ran clearly
+        # above its own life average — so a strained axis still shows when it was
+        # most activated, and the delta says by how much.
+        by = int(swe.revjul(chart.jd_ut, swe.GREG_CAL)[0])
+        now_y = _dt.date.today().year
+        series = []
+        for yr in range(by, now_y + 1):
+            jd = max(chart.jd_ut, swe.julday(yr, 6, 15, 12.0, swe.GREG_CAL))
+            pj = _matrix._project_at(jd, ctx)
+            tv = pj["themes"].get(tk)
+            series.append((yr, tv["v"], tv["cf"], pj["maha"]))
+        mu = sum(v for _, v, _, _ in series) / max(1, len(series))
+        sd = (sum((v - mu) ** 2 for _, v, _, _ in series) / max(1, len(series))) ** 0.5
+        thr = mu + max(0.07, 0.5 * sd)
+        wins, cur = [], None
+        for (yr, v, cf, maha) in series:
+            if v >= thr:
+                if cur is None:
+                    cur = {"from": yr, "to": yr, "peak": yr, "v": v, "cf": cf, "maha": maha}
+                else:
+                    cur["to"] = yr
+                    if v > cur["v"]:
+                        cur.update({"peak": yr, "v": v, "cf": cf, "maha": maha})
+            elif cur:
+                wins.append(cur); cur = None
+        if cur:
+            wins.append(cur)
+        wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
+        for w in wins:
+            w["delta"] = round(w["v"] - mu, 3)
+            w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
+        focus = None
+        if intent.get("window"):
+            wy1, wm1, wy2, wm2 = intent["window"]
+            wmonths = _month_iter(wy1, wm1, wy2, wm2)
+            rows = []
+            for (y, m) in wmonths:
+                jd = max(chart.jd_ut, swe.julday(y, m, 15, 12.0, swe.GREG_CAL))
+                tv = _matrix._project_at(jd, ctx)["themes"].get(tk)
+                rows.append((tv["v"], tv["cf"]))
+            if rows:
+                fv = sum(v for v, _ in rows) / len(rows)
+                fc = sum(c for _, c in rows) / len(rows)
+                d = fv - mu
+                focus = {"from": f"{wy1:04d}-{wm1:02d}",
+                         "to": f"{wmonths[-1][0]:04d}-{wmonths[-1][1]:02d}",
+                         "v": round(fv, 3), "cf": round(fc, 2), "delta": round(d, 3),
+                         "tone": "supportive" if d >= 0.07 else "challenging" if d <= -0.07 else "neutral",
+                         "changesInWindow": []}
+        return {**base, "windows": wins[:4], "changes": [], "focus": focus,
+                "lifeMean": round(mu, 3), "relative": True, "empty": not wins}
+
+    # future: the 36-month timeline for this theme + its typed change events.
+    # Windows are relative here too — months clearly above the horizon's own mean.
+    steps = m_out.get("timeline", {}).get("steps", [])
+    vs = [s["themes"].get(tk, 0.0) for s in steps] or [0.0]
+    mu = sum(vs) / len(vs)
+    sd = (sum((v - mu) ** 2 for v in vs) / len(vs)) ** 0.5
+    thr = mu + max(0.07, 0.5 * sd)
+    wins, cur = [], None
+    for i, s in enumerate(steps):
+        v, cf = s["themes"].get(tk, 0.0), s["conv"].get(tk, 0.0)
+        mm = s["date"][:7]
+        if v >= thr:
+            clk = s["clocks"].get(tk, {})
+            drv = max(((n, x) for n, x in clk.items() if x is not None),
+                      key=lambda p: abs(p[1]), default=(None, 0))[0]
+            if cur is None:
+                cur = {"from": mm, "to": mm, "peak": mm, "v": v, "cf": cf,
+                       "maha": s.get("maha"), "antar": s.get("antar"), "driver": drv}
+            else:
+                cur["to"] = mm
+                if v > cur["v"]:
+                    cur.update({"peak": mm, "v": v, "cf": cf, "maha": s.get("maha"),
+                                "antar": s.get("antar"), "driver": drv})
+        elif cur:
+            wins.append(cur); cur = None
+    if cur:
+        wins.append(cur)
+    wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
+    for w in wins:
+        w["delta"] = round(w["v"] - mu, 3)
+        w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
+
+    sig_keys = {s["key"] for s in _matrix.CHANGE_SIGS
+                if s.get("theme") == tk and not s.get("care")}
+    changes = []
+    for grp in ("health", "wealthCareer", "relationships"):
+        for e in (m_out.get("changes") or {}).get(grp, []):
+            if e.get("key") in sig_keys:
+                changes.append({"label": e.get("label"), "date": e.get("date"),
+                                "cf": e.get("cf"), "triggerType": e.get("triggerType"),
+                                "direction": e.get("direction")})
+    changes.sort(key=lambda e: e.get("date") or "")
+
+    focus = None
+    if intent.get("window"):
+        y1, mm1, y2, mm2 = intent["window"]
+        lo, hi = f"{y1:04d}-{mm1:02d}", f"{y2:04d}-{mm2:02d}"
+        rows = [(s["themes"].get(tk, 0.0), s["conv"].get(tk, 0.0))
+                for s in steps if lo <= s["date"][:7] <= hi]
+        if rows:
+            fv = sum(v for v, _ in rows) / len(rows)
+            fc = sum(c for _, c in rows) / len(rows)
+            focus = {"from": lo, "to": hi, "v": round(fv, 3), "cf": round(fc, 2),
+                     "tone": "supportive" if fv >= 0.08 else "challenging" if fv <= -0.08 else "neutral",
+                     "changesInWindow": [c for c in changes if c["date"] and lo <= c["date"][:7] <= hi]}
+    return {**base, "windows": wins[:4], "changes": changes[:5], "focus": focus,
+            "lifeMean": round(mu, 3), "relative": True,
+            "empty": not wins and not changes}
+
+
+def _explain_dasha(chart, m_out, intent, lang, geo=None):
+    """"When does my Saturn period end?" — the graha's actual Viṁśottarī mahādaśā
+    spans across the 120-year cycle, current one marked, with the running antar."""
+    import vimshottari as _vim
+    g = intent["graha"]
+    moon = next(x for x in chart.grahas if x.key == "moon")
+    now = _dt.datetime.utcnow()
+    now_jd = swe.julday(now.year, now.month, now.day, 12.0, swe.GREG_CAL)
+    tree = _vim.build_vimshottari(chart.jd_ut, moon.nakshatra.index, moon.nakshatra.fraction,
+                                  depth=2, as_of_jd=now_jd,
+                                  tz_name=(geo or {}).get("timezone"))
+    periods, current = [], None
+    for mh in tree.get("mahadashas", []):
+        row = {"lord": mh["lord"], "from": str(mh["start"])[:10], "to": str(mh["end"])[:10],
+               "years": mh.get("years"), "current": bool(mh.get("is_current"))}
+        if mh.get("is_current"):
+            antar = next((s for s in (mh.get("sub") or []) if s.get("is_current")), None)
+            current = {"maha": mh["lord"], "mahaEnd": row["to"],
+                       "antar": antar and antar.get("lord"),
+                       "antarEnd": antar and str(antar.get("end"))[:10]}
+        if mh["lord"] == g:
+            periods.append(row)
+    return {"kind": "dasha", "graha": g, "parsed": {"kind": "dasha", "graha": g},
+            "periods": periods, "current": current,
+            "balanceAtBirth": tree.get("balance_at_birth"),
+            "yearSystem": tree.get("year_system")}
+
+
 _DISPATCH = {"placement": _explain_placement, "yoga": _explain_yoga,
-             "theme": _explain_theme, "house": _explain_house}
+             "theme": _explain_theme, "house": _explain_house,
+             "period": _explain_period, "when": _explain_when,
+             "dasha": _explain_dasha}
 
 
-def explain(chart, m_out: dict, query: str, lang: str = "en") -> dict:
+def explain(chart, m_out: dict, query: str, lang: str = "en", geo: dict | None = None) -> dict:
     """Route one query to its intent composer against one chart's matrix."""
     intent = parse_query(query)
     if not intent:
@@ -492,6 +862,6 @@ def explain(chart, m_out: dict, query: str, lang: str = "en") -> dict:
     fn = _DISPATCH.get(intent["kind"])
     if not fn:
         return {"query": query, "parsed": None, "suggestions": _SUGGESTIONS}
-    out = fn(chart, m_out, intent, lang)
+    out = fn(chart, m_out, intent, lang, geo)
     out["query"] = query
     return out

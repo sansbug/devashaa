@@ -12,7 +12,9 @@ import { useState, useEffect, useRef } from 'react'
 import { API } from './config.js'
 import { useLang } from './LangContext.jsx'
 
-const EXAMPLES = ['Jupiter in the 2nd house', 'Gajakesari yoga', 'My career', '10th house', 'Venus in Taurus']
+const EXAMPLES = ['Jupiter in the 2nd house', 'Gajakesari yoga', 'How is September 2026 looking?', 'Chance of marriage next year', 'When did my career rise?']
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const monLabel = (ym) => { if (!ym) return ''; const [y, m] = String(ym).split('-').map(Number); return m ? `${MON[m - 1]} ${y}` : String(ym) }
 const ORD = ['', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th']
 const NEUTRAL = [122, 127, 140], ISTA = [43, 138, 111], KASTA = [176, 63, 54]
 const _mix = (a, b, t) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`
@@ -152,7 +154,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
   const CHARA = { 'Ātmakāraka': 'Ātmakāraka', AmK: 'Amātyakāraka', DK: 'Dārakāraka', PK: 'Putrakāraka', BK: 'Bhrātṛkāraka', MK: 'Mātṛkāraka', GK: 'Gnātikāraka' }
   const houseList = (hs) => (hs || []).map((h) => ORD[h] || h).join(', ')
 
-  const GrahaFacets = ({ gf, graha }) => {
+  const GrahaFacets = ({ gf, graha, asOf }) => {
     const a = gf.aspects || {}, tr = gf.transit, ro = gf.role || {}
     const casts = (a.castsHouses && a.castsHouses.length) || (a.castsGrahas && a.castsGrahas.length)
     return (
@@ -164,8 +166,8 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
               {casts ? <>{t('explain.castsOn', 'casts on')} {houseList(a.castsHouses)}{a.castsGrahas && a.castsGrahas.length ? ` · ${a.castsGrahas.map(nm).join(', ')}` : ''}</> : t('explain.noAspect', 'casts no full aspect')}
               {a.receivedFrom && a.receivedFrom.length ? <> · {t('explain.aspectedBy', 'aspected by')} {a.receivedFrom.map(nm).join(', ')}</> : null}
             </span></div>
-          {tr && <div className="xp-facet"><span className="xp-facet-k">{t('explain.gochara', 'Gochara · transit now')}</span>
-            <span className="xp-facet-v">{t('explain.todayIn', 'today in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')}{tr.houseFromMoon ? `, ${ORD[tr.houseFromMoon]} ${t('explain.fromMoon', 'from the Moon')}` : ''}{tr.bindu != null ? <> · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b> ({tr.bindu}/8 {t('explain.bindu', 'bindu')})</> : ''}</span></div>}
+          {tr && <div className="xp-facet"><span className="xp-facet-k">{asOf ? `${t('explain.gocharaOf', 'Gochara')} · ${monLabel(asOf)}` : t('explain.gochara', 'Gochara · transit now')}</span>
+            <span className="xp-facet-v">{asOf ? t('explain.thenIn', 'then in') : t('explain.todayIn', 'today in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')}{tr.houseFromMoon ? `, ${ORD[tr.houseFromMoon]} ${t('explain.fromMoon', 'from the Moon')}` : ''}{tr.bindu != null ? <> · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b> ({tr.bindu}/8 {t('explain.bindu', 'bindu')})</> : ''}</span></div>}
           <div className="xp-facet"><span className="xp-facet-k">{t('explain.role', 'Role')}</span>
             <span className="xp-facet-v">
               {ro.charaRoles && ro.charaRoles.length ? <><b>{ro.charaRoles.map((r) => CHARA[r] || r).join(', ')}</b>; </> : null}
@@ -197,7 +199,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
           {data.axis === 'house' && !data.inChart && (<p className="xp-aside">{t('explain.actualHouse', 'Your')} {nm(data.graha)} {t('explain.sits', 'sits in the')} {ORD[data.placement.house] || data.placement.house} {t('explain.house', 'house')}{data.occupants && data.occupants.length ? ` · ${ORD[data.house]} ${t('explain.houseOcc', 'house holds')}: ${data.occupants.map(nm).join(', ')}` : ` · ${ORD[data.house]} ${t('explain.houseEmpty', 'house is empty')}`}.</p>)}
           {data.axis === 'sign' && (<p className="xp-aside">{rasiName(data.sign)} {t('explain.isYour', 'is your')} {ORD[data.signHouse] || data.signHouse} {t('explain.house', 'house')}.</p>)}
           <Verdict bhava={data.bhava} /></div>)}
-        {data.grahaFacets && <GrahaFacets gf={data.grahaFacets} graha={data.graha} />}
+        {data.grahaFacets && <GrahaFacets gf={data.grahaFacets} graha={data.graha} asOf={data.transitAsOf} />}
         <Life life={data.life} subjectGrahas={[data.graha]} />{foot}
       </div>)
     }
@@ -219,7 +221,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
     if (data.kind === 'theme') {
       const v = data.verdict
       return (<div className="xp-result">
-        <div className="xp-head"><span className="xp-q">{v ? v.name : data.theme}</span>
+        <div className="xp-head"><span className="xp-q">{t('matrix.theme.' + data.theme, v ? v.name : data.theme)}</span>
           {v && <span className="xp-band" style={{ color: BAND_C[v.band] }}>{t('matrix.band.' + v.band, v.band)} {sv(v.net)}</span>}</div>
         {v && (<div className="xp-block"><h4>{t('explain.themeVerdict', 'Where it stands')}</h4>
           <ul className="xp-ledger">{v.ledger.filter((c) => c.value != null).slice(0, 8).map((c, i) => (
@@ -233,10 +235,86 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
         <Life life={data.life} subjectGrahas={data.karakas} />{foot}
       </div>)
     }
+    if (data.kind === 'dasha') {
+      return (<div className="xp-result">
+        <div className="xp-head"><span className="xp-q">{nm(data.graha)} {t('matrix.dashaword', 'daśā')}</span></div>
+        {data.current && (<p className="xp-aside">{t('explain.nowRunning', 'Now running')}: {nm(data.current.maha)} {t('matrix.dashaword', 'daśā')} {t('explain.until', 'until')} {data.current.mahaEnd}{data.current.antar ? ` · ${nm(data.current.antar)} ${t('explain.antarWord', 'antardaśā')} ${t('explain.until', 'until')} ${data.current.antarEnd}` : ''}.</p>)}
+        <div className="xp-block"><h4>{nm(data.graha)} — {t('explain.mahaSpans', 'mahādaśā spans')}</h4>
+          {data.periods.length ? (<ul className="xp-events">
+            {data.periods.map((p, i) => (<li key={i}><span className="xp-ev up">{p.current ? '●' : '○'}</span> {p.from} → {p.to} <span className="xp-ev-d">({p.years}y{p.current ? ` · ${t('explain.runningNow', 'running now')}` : ''})</span></li>))}
+          </ul>) : (<p className="xp-aside">{t('explain.noDashaSpan', 'This graha runs no mahādaśā inside the 120-year cycle shown.')}</p>)}
+          <p className="xp-cite-line">Viṁśottarī · {data.yearSystem}</p></div>
+        {foot}
+      </div>)
+    }
+    if (data.kind === 'period' && data.preBirth) {
+      return (<div className="xp-result">
+        <div className="xp-head"><span className="xp-q">{monLabel(data.window.from)}{data.window.to !== data.window.from ? ` — ${monLabel(data.window.to)}` : ''}</span></div>
+        <p className="xp-refuse">{t('explain.preBirth', 'This window falls before the birth')} ({monLabel(data.birth)}) — {t('explain.preBirthNote', 'a natal chart reads a life, so nothing is projected before it begins.')}</p>
+        {foot}
+      </div>)
+    }
+    if (data.kind === 'period') {
+      const w = data.window
+      const label = monLabel(w.from) + (w.to !== w.from ? ` — ${monLabel(w.to)}` : '')
+      const pc = data.panchang
+      return (<div className="xp-result">
+        <div className="xp-head"><span className="xp-q">{label}</span>
+          <span className="xp-net" style={{ background: netColor(data.overall), color: '#fff' }}>{sv(data.overall)}</span></div>
+        {data.dasha && data.dasha.length > 0 && (
+          <p className="xp-aside">{t('explain.dashaThen', 'Running daśā')}: {data.dasha.map((d, i) => `${nm(d.maha)}–${nm(d.antar)}${data.dasha.length > 1 ? ` (${monLabel(d.month)}→)` : ''}`).join(' · ')}</p>)}
+        <div className="xp-block"><h4>{t('explain.themesWindow', 'Life-areas in this window')}</h4>
+          <div className="xp-thchips">
+            {data.themes.best.map((a) => (<span key={a.key} className="xp-thchip up">▲ {t('matrix.theme.' + a.key, a.name)} <b>{sv(a.v)}</b></span>))}
+            {data.themes.strain.map((a) => (<span key={a.key} className="xp-thchip down">▼ {t('matrix.theme.' + a.key, a.name)} <b>{sv(a.v)}</b></span>))}
+            {!data.themes.best.length && !data.themes.strain.length && <span className="xp-aside">{t('explain.quietWindow', 'No life-area stands out — a quiet window.')}</span>}
+          </div></div>
+        {(data.events.length > 0 || data.changes.length > 0) && (
+          <div className="xp-block"><h4>{t('explain.inWindow', 'Marked in this window')}</h4>
+            <ul className="xp-events">
+              {data.events.map((e, i) => (<li key={'e' + i}><span className={'xp-ev ' + (e.good ? 'up' : 'down')}>{e.good ? '▲' : '▼'}</span> {e.name} · {monLabel(e.from.slice(0, 7))}{e.to.slice(0, 7) !== e.from.slice(0, 7) ? `–${monLabel(e.to.slice(0, 7))}` : ''}</li>))}
+              {data.changes.map((e, i) => (<li key={'c' + i}><span className="xp-ev">↻</span> {e.label} · {monLabel((e.date || '').slice(0, 7))}<span className="xp-ev-d"> · {t('matrix.trig.' + e.triggerType, e.triggerType)}</span></li>))}
+            </ul></div>)}
+        <div className="xp-block"><h4>{t('explain.transitsThen', 'Slow transits then')}</h4>
+          {data.transits.map((tr) => tr.sign != null && (
+            <p className="xp-aside" key={tr.graha}>{nm(tr.graha)} {t('explain.todayIn', 'in')} {rasiName(tr.sign)} · {ORD[tr.houseFromLagna]} {t('explain.fromLagna', 'from lagna')} · <b className={'xp-tone-' + tr.tone}>{t('explain.tone.' + tr.tone, tr.tone)}</b>{tr.bindu != null ? ` (${tr.bindu}/8)` : ''}</p>))}</div>
+        {pc && (<div className="xp-block"><h4>{t('explain.auspicious', 'Auspicious days')} <span className="xp-tier">pañcāṅga</span></h4>
+          <p className="xp-aside">{pc.auspicious} {t('explain.auspN', 'auspicious')} · {pc.mixed} {t('explain.mixedN', 'mixed')} · {pc.inauspicious} {t('explain.inauspN', 'inauspicious')} {t('explain.of', 'of')} {pc.days} — {t('explain.bestDays', 'best')}: {pc.best.map((b) => `${Number(b.date.slice(8, 10))} ${MON[Number(b.date.slice(5, 7)) - 1]} (${b.score})`).join(', ')}</p></div>)}
+        {foot}
+      </div>)
+    }
+    if (data.kind === 'when') {
+      if (data.care) {
+        return (<div className="xp-result">
+          <div className="xp-head"><span className="xp-q">{t('matrix.theme.' + data.theme, data.themeName)}</span><span className="xp-inchart no">♥</span></div>
+          <p className="xp-refuse">{data.refusal}</p>{foot}
+        </div>)
+      }
+      const past = data.direction === 'past'
+      const winLabel = (x) => past ? (x.from === x.to ? String(x.from) : `${x.from}–${x.to}`) : (x.from === x.to ? monLabel(x.from) : `${monLabel(x.from)}–${monLabel(x.to)}`)
+      return (<div className="xp-result">
+        <div className="xp-head"><span className="xp-q">{t('matrix.theme.' + data.theme, data.themeName)}</span>
+          <span className="xp-fam">{past ? t('explain.lookingBack', 'looking back') : t('explain.ahead', 'ahead')}</span></div>
+        {data.focus && (<div className="xp-block"><h4>{monLabel(data.focus.from)}{data.focus.to !== data.focus.from ? ` — ${monLabel(data.focus.to)}` : ''}</h4>
+          <p className="xp-aside"><b className={'xp-tone-' + (data.focus.tone === 'supportive' ? 'supportive' : data.focus.tone === 'challenging' ? 'straining' : 'neutral')}>{t('explain.focus.' + data.focus.tone, data.focus.tone)}</b> · {sv(data.focus.v)} ({t('explain.agreement', 'agreement')} {Math.round((data.focus.cf || 0) * 100)}%)
+            {data.focus.delta != null && <> · {sv(data.focus.delta)} {t('explain.vsLifeMean', 'vs its life average')}</>}
+            {data.focus.changesInWindow && data.focus.changesInWindow.length > 0 && (<> — {data.focus.changesInWindow.map((c) => `${c.label} · ${monLabel((c.date || '').slice(0, 7))}`).join('; ')}</>)}</p></div>)}
+        <div className="xp-block"><h4>{past ? t('explain.strongWindowsPast', 'When it ran strongest') : t('explain.strongWindows', 'The stronger windows ahead')}</h4>
+          {data.windows.length ? (<ul className="xp-events">
+            {data.windows.map((x, i) => (<li key={i}><span className="xp-ev up">▲</span> {winLabel(x)}{x.peak !== x.from || x.peak !== x.to ? ` · ${t('explain.peak', 'peak')} ${past ? x.peak : monLabel(x.peak)}` : ''}<span className="xp-ev-d"> · {nm(x.maha)}{x.antar ? `–${nm(x.antar)}` : ''} {t('matrix.dashaword', 'daśā')} · +{(x.delta ?? x.v).toFixed ? (x.delta ?? x.v).toFixed(2) : x.delta} {t('explain.aboveMean', 'above its life average')}</span></li>))}
+          </ul>) : (<p className="xp-aside">{past ? t('explain.noPastWin', 'No years stood clearly above this axis’s own life average.') : t('explain.noFutWin', 'No standout windows in the 3-year horizon — the marked signals below carry the answer.')}</p>)}</div>
+        {!past && data.changes.length > 0 && (<div className="xp-block"><h4>{t('explain.markedSignals', 'Marked signals')}</h4>
+          <ul className="xp-events">{data.changes.map((e, i) => (
+            <li key={i}><span className={'xp-ev ' + (e.direction === 'down' ? 'down' : 'up')}>{e.direction === 'down' ? '▼' : e.direction === 'shift' ? '↻' : '▲'}</span> {e.label} · {monLabel((e.date || '').slice(0, 7))}<span className="xp-ev-d"> · {t('matrix.trig.' + e.triggerType, e.triggerType)} · {Math.round((e.cf || 0) * 100)}%</span></li>))}</ul></div>)}
+        <p className="xp-aside">{past ? t('explain.pastNote', 'The chart cannot know what happened — these are the windows where this axis was most activated, read the same way the future is projected.') : t('explain.futNote', 'Percentages are the clocks’ agreement (conviction), not a probability of a real event — an indication, never a promise.')}</p>
+        {foot}
+      </div>)
+    }
     if (data.kind === 'house') {
       return (<div className="xp-result">
         <div className="xp-head"><span className="xp-q">{ORD[data.house] || data.house} {t('explain.house', 'house')}</span>
           {data.bhava && <span className="xp-band" style={{ color: BAND_C[data.bhava.band] }}>{t('matrix.band.' + data.bhava.band, data.bhava.band)} {sv(data.bhava.net)}</span>}</div>
+        {data.focus && (<p className="xp-aside">{monLabel(data.focus.from)}{data.focus.to !== data.focus.from ? `—${monLabel(data.focus.to)}` : ''} · {t('matrix.theme.' + data.focus.theme, data.focus.themeName)}: <b className={'xp-tone-' + (data.focus.tone === 'supportive' ? 'supportive' : data.focus.tone === 'challenging' ? 'straining' : 'neutral')}>{t('explain.focus.' + data.focus.tone, data.focus.tone)}</b> {sv(data.focus.v)} ({t('explain.agreement', 'agreement')} {Math.round((data.focus.cf || 0) * 100)}%)</p>)}
         {data.bhava && (<div className="xp-block"><h4>{t('explain.inchartH', 'In your chart')}</h4>
           <p className="xp-aside">{data.occupants && data.occupants.length ? `${t('explain.houseHolds', 'Holds')}: ${data.occupants.map(nm).join(', ')}` : t('explain.houseEmptyFull', 'No graha occupies this house.')}</p>
           <Verdict bhava={data.bhava} /></div>)}

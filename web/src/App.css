@@ -1918,6 +1918,15 @@ footer a:hover { color: var(--accent); }
 .xp-occ { margin-bottom: .75rem; }
 .xp-occ-g { display: inline-block; font-weight: 600; color: var(--accent); font-size: .82rem; margin-bottom: .2rem; }
 
+/* period intent — theme chips */
+.xp-thchips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.xp-thchip { font-size: .78rem; padding: .3rem .65rem; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); background: var(--sunken); }
+.xp-thchip b { font-variant-numeric: tabular-nums; }
+.xp-thchip.up { border-color: color-mix(in srgb, var(--ok-ink, #2b8a6f) 45%, transparent); }
+.xp-thchip.up b { color: var(--ok-ink, #2b8a6f); }
+.xp-thchip.down { border-color: color-mix(in srgb, #c06a55 50%, transparent); }
+.xp-thchip.down b { color: #c06a55; }
+
 /* graha facets — dṛṣṭi / gochara / role */
 .xp-facets { display: grid; gap: .5rem; }
 .xp-facet { display: grid; grid-template-columns: 8.5rem 1fr; gap: .6rem; align-items: baseline; font-size: .84rem; }

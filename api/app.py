@@ -649,7 +649,8 @@ def matrix_explain_endpoint():
     tz_name = body.get("timezone") or timezone_at(lat, lon)
     try:
         chart = compute_chart(local_dt=local_dt, latitude=lat, longitude=lon, tz_name=tz_name)
-        out = explain_engine.explain(chart, matrix.build(chart), query[:120], lang=lang)
+        out = explain_engine.explain(chart, matrix.build(chart), query[:120], lang=lang,
+                                     geo={"latitude": lat, "longitude": lon, "timezone": tz_name})
     except Exception as e:  # noqa: BLE001
         return jsonify({"error": f"Explain failed: {e}"}), 500
     return jsonify(out)

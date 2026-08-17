@@ -694,6 +694,125 @@ def _explain_period(chart, m_out, intent, lang, geo=None):
 _THEME_AGE_FLOOR = {"marriage": 18, "children": 20, "career": 16, "wealth": 16,
                     "home": 16, "foreign": 5, "enemies": 14, "education": 3}
 
+# ── specific event texts for timing windows ──────────────────────────────────────
+_XREF = re.compile(r"^\s*(?:same|as above|see above)", re.I)
+_VREF = re.compile(r"vv?\.?\s*([0-9]+(?:\.[0-9]+)?(?:\s*-\s*[0-9]+(?:\.[0-9]+)?)?)")
+
+
+def _resolve_results(cell, cond):
+    """The mined corpus keeps the text's own back-references ('same list as
+    vv.60-61.5', 'as above') instead of duplicating result lists. Follow the text's
+    OWN pointer — to the condition whose śloka carries those verse numbers, or to
+    the previous branch for a bare 'as above' — never inventing; unresolvable
+    references yield nothing."""
+    text = (cond.get("results") or "").strip()
+    if not text or not _XREF.match(text):
+        return text
+    conds = cell.get("conditions") or []
+    m = _VREF.search(text)
+    if m:
+        ref = m.group(1).replace(" ", "").split("-")[0]
+        for other in conds:
+            if other is cond:
+                continue
+            q = (other.get("quote") or "").lstrip()
+            if q.startswith(ref):
+                alt = (other.get("results") or "").strip()
+                if alt and not _XREF.match(alt):
+                    return alt
+        return ""
+    try:
+        i = conds.index(cond)
+    except ValueError:
+        return ""
+    for j in range(i - 1, -1, -1):
+        alt = (conds[j].get("results") or "").strip()
+        if alt and not _XREF.match(alt):
+            return alt
+    return ""
+
+
+def _bhps_for_window(chart, tk, maha, antar, good=True):
+    """The SPECIFIC classical prediction for a (mahā, antar) window, theme-matched.
+    BPHS ch.52-60's antardaśā conditions are chart-gated (they fire on the antar
+    lord's house in THIS chart) and their results are concrete event lists — 'birth
+    of a son', 'gain of position through the ruler', 'marriage functions in the
+    family'. We quote only a FIRED condition whose text matches the asked theme and
+    doesn't contradict the window's direction; if none fires, no quote (cite-or-
+    refuse) — never a paraphrase."""
+    if not maha or not antar:
+        return None
+    try:
+        import antardasa
+        cell = antardasa.evaluate_cell(maha, antar,
+                                       positions={g.key: g.rasi for g in chart.grahas},
+                                       lagna=chart.lagna_rasi)
+    except Exception:  # noqa: BLE001
+        return None
+    if not cell:
+        return None
+    kws = _matrix._THEME_KW.get(tk, [])
+    best, best_score, general = None, 0, None
+    for cond in cell.get("fired", []):
+        text = _resolve_results(cell, cond)
+        if not text:
+            continue
+        low = text.lower()
+        val = _matrix._valence(low)
+        if (good and val < 0) or ((not good) and val > 0):
+            continue                       # never attach a contradicting quote
+        score = _matrix._kw_score(low, kws)
+        if score > best_score:
+            best, best_score = (cond, text), score
+        elif general is None:
+            general = (cond, text)
+    pick = best or general
+    if not pick:
+        return None
+    cond, text = pick
+    if len(text) > 240:
+        text = text[:240].rsplit(",", 1)[0] + "…"
+    return {"text": text, "cite": f"{cell.get('chapter', 'BPHS')} vv.{cell.get('verses')}",
+            "reading": cond.get("reading"), "general": best is None}
+
+
+def _yoga_indications(chart, m_out, tk):
+    """Detected yogas whose cited BPHS effect speaks to the asked theme, each tied
+    (classical principle) to the daśā windows of its forming grahas — a standing
+    promise and WHEN it is most likely to fructify. Quote + citation only."""
+    kws = _matrix._THEME_KW.get(tk, [])
+    hits = []
+    for y in m_out.get("yogas", []):
+        meta = yoga_rules.YOGAS.get(y["name"]) or {}
+        eff = (meta.get("effect") or "").lower()
+        if not eff or _matrix._kw_score(eff, kws) <= 0:
+            continue
+        hits.append((y["name"], meta))
+        if len(hits) >= 2:
+            break
+    if not hits:
+        return []
+    ribbon = None
+    out = []
+    for name, meta in hits:
+        grahas = _YOGA_GRAHAS.get(name, [])
+        windows = []
+        if grahas:
+            if ribbon is None:
+                try:
+                    ribbon = _matrix.lifearc(chart, m_out).get("ribbon", [])
+                except Exception:  # noqa: BLE001
+                    ribbon = []
+            windows = [{"from": s["from"], "to": s["to"], "lord": s["lord"]}
+                       for s in ribbon if s.get("lord") in grahas]
+        eff = meta.get("effect") or ""
+        if len(eff) > 240:
+            eff = eff[:240].rsplit(",", 1)[0] + "…"
+        out.append({"yoga": name, "effect": eff, "citation": meta.get("citation"),
+                    "grahas": grahas, "windows": windows})
+    return out
+
+
 _WHEN_REFUSE = {
     "en": ("Questions of lifespan are not dated here — by design. The tradition treats "
            "them as a call to care and presence, not a forecast; so does this site."),
@@ -727,31 +846,33 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
             jd = max(chart.jd_ut, swe.julday(yr, 6, 15, 12.0, swe.GREG_CAL))
             pj = _matrix._project_at(jd, ctx)
             tv = pj["themes"].get(tk)
-            series.append((yr, tv["v"], tv["cf"], pj["maha"]))
+            series.append((yr, tv["v"], tv["cf"], pj["maha"], pj["antar"]))
         if not series:
             return {**base, "windows": [], "changes": [], "focus": None,
                     "ageFloor": floor, "relative": True, "empty": True}
-        mu = sum(v for _, v, _, _ in series) / max(1, len(series))
-        sd = (sum((v - mu) ** 2 for _, v, _, _ in series) / max(1, len(series))) ** 0.5
+        mu = sum(v for _, v, _, _, _ in series) / max(1, len(series))
+        sd = (sum((v - mu) ** 2 for _, v, _, _, _ in series) / max(1, len(series))) ** 0.5
         thr = mu + max(0.07, 0.5 * sd)
         wins, cur = [], None
-        for (yr, v, cf, maha) in series:
+        for (yr, v, cf, maha, antar) in series:
             if v >= thr:
                 if cur is None:
-                    cur = {"from": yr, "to": yr, "peak": yr, "v": v, "cf": cf, "maha": maha}
+                    cur = {"from": yr, "to": yr, "peak": yr, "v": v, "cf": cf,
+                           "maha": maha, "antar": antar}
                 else:
                     cur["to"] = yr
                     if v > cur["v"]:
-                        cur.update({"peak": yr, "v": v, "cf": cf, "maha": maha})
+                        cur.update({"peak": yr, "v": v, "cf": cf, "maha": maha, "antar": antar})
             elif cur:
                 wins.append(cur); cur = None
         if cur:
             wins.append(cur)
         wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
-        for w in wins:
+        for w in wins[:4]:
             w["delta"] = round(w["v"] - mu, 3)
             w["age"] = w["peak"] - by
             w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
+            w["bhps"] = _bhps_for_window(chart, tk, w["maha"], w["antar"], good=True)
         focus = None
         if intent.get("window"):
             wy1, wm1, wy2, wm2 = intent["window"]
@@ -772,6 +893,7 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                          "tone": "supportive" if d >= 0.07 else "challenging" if d <= -0.07 else "neutral",
                          "changesInWindow": []}
         return {**base, "windows": wins[:4], "changes": [], "focus": focus,
+                "indications": _yoga_indications(chart, m_out, tk),
                 "ageFloor": floor, "lifeMean": round(mu, 3), "relative": True,
                 "empty": not wins}
 
@@ -806,10 +928,11 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
     if cur:
         wins.append(cur)
     wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
-    for w in wins:
+    for w in wins[:4]:
         w["delta"] = round(w["v"] - mu, 3)
         w["age"] = int(w["peak"][:4]) - by
         w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
+        w["bhps"] = _bhps_for_window(chart, tk, w.get("maha"), w.get("antar"), good=True)
 
     sig_keys = {s["key"] for s in _matrix.CHANGE_SIGS
                 if s.get("theme") == tk and not s.get("care")}
@@ -820,7 +943,10 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                     and int(e["date"][:4]) - by >= floor:
                 changes.append({"label": e.get("label"), "date": e.get("date"),
                                 "cf": e.get("cf"), "triggerType": e.get("triggerType"),
-                                "direction": e.get("direction")})
+                                "direction": e.get("direction"),
+                                "maha": e.get("maha"), "antar": e.get("antar"),
+                                "bhps": _bhps_for_window(chart, tk, e.get("maha"), e.get("antar"),
+                                                         good=e.get("direction") != "down")})
     changes.sort(key=lambda e: e.get("date") or "")
 
     focus = None
@@ -836,6 +962,7 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                      "tone": "supportive" if fv >= 0.08 else "challenging" if fv <= -0.08 else "neutral",
                      "changesInWindow": [c for c in changes if c["date"] and lo <= c["date"][:7] <= hi]}
     return {**base, "windows": wins[:4], "changes": changes[:5], "focus": focus,
+            "indications": _yoga_indications(chart, m_out, tk),
             "ageFloor": floor, "lifeMean": round(mu, 3), "relative": True,
             "empty": not wins and not changes}
 

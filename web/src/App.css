@@ -1918,6 +1918,13 @@ footer a:hover { color: var(--accent); }
 .xp-occ { margin-bottom: .75rem; }
 .xp-occ-g { display: inline-block; font-weight: 600; color: var(--accent); font-size: .82rem; margin-bottom: .2rem; }
 
+/* window śloka quotes + yoga indications */
+.xp-wq { margin: .3rem 0 .15rem 1.4rem; font-size: .78rem; color: var(--ink); font-style: italic; line-height: 1.55;
+  border-left: 2px solid var(--accent-soft, var(--line)); padding-left: .6rem; }
+.xp-wq-tag { font-style: normal; font-size: .62rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; margin-right: .35rem; }
+.xp-wq-cite { font-style: normal; font-size: .68rem; color: var(--dim); }
+.xp-wq-yoga { margin-left: 0; }
+
 /* period intent — theme chips */
 .xp-thchips { display: flex; flex-wrap: wrap; gap: .4rem; }
 .xp-thchip { font-size: .78rem; padding: .3rem .65rem; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); background: var(--sunken); }

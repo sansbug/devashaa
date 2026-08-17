@@ -687,6 +687,13 @@ def _explain_period(chart, m_out, intent, lang, geo=None):
             "panchang": _panchang_summary(chart, geo, months)}
 
 
+# Sensible age floors for event-timing questions. The math can show a life-event
+# axis "activated" in childhood (a daśā favours the 5th house at age 2), but nobody
+# has children at 2 or marries at 6 — so timing windows below the floor are not
+# shown, and the floor is stated openly in the answer rather than applied silently.
+_THEME_AGE_FLOOR = {"marriage": 18, "children": 20, "career": 16, "wealth": 16,
+                    "home": 16, "foreign": 5, "enemies": 14, "education": 3}
+
 _WHEN_REFUSE = {
     "en": ("Questions of lifespan are not dated here — by design. The tradition treats "
            "them as a call to care and presence, not a forecast; so does this site."),
@@ -707,18 +714,23 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                 "windows": [], "changes": [], "focus": None, "empty": True}
 
     ctx = _matrix._projection_context(chart, m_out)
+    floor = _THEME_AGE_FLOOR.get(tk, 0)
+    by = int(swe.revjul(chart.jd_ut, swe.GREG_CAL)[0])
     if direction == "past":
-        # Yearly walk birth→now. Windows are RELATIVE — years the theme ran clearly
-        # above its own life average — so a strained axis still shows when it was
-        # most activated, and the delta says by how much.
-        by = int(swe.revjul(chart.jd_ut, swe.GREG_CAL)[0])
+        # Yearly walk from the age floor → now. Windows are RELATIVE — years the
+        # theme ran clearly above its own average over the SENSIBLE span — so a
+        # strained axis still shows when it was most activated, and the delta says
+        # by how much. The mean deliberately excludes the sub-floor years too.
         now_y = _dt.date.today().year
         series = []
-        for yr in range(by, now_y + 1):
+        for yr in range(by + floor, now_y + 1):
             jd = max(chart.jd_ut, swe.julday(yr, 6, 15, 12.0, swe.GREG_CAL))
             pj = _matrix._project_at(jd, ctx)
             tv = pj["themes"].get(tk)
             series.append((yr, tv["v"], tv["cf"], pj["maha"]))
+        if not series:
+            return {**base, "windows": [], "changes": [], "focus": None,
+                    "ageFloor": floor, "relative": True, "empty": True}
         mu = sum(v for _, v, _, _ in series) / max(1, len(series))
         sd = (sum((v - mu) ** 2 for _, v, _, _ in series) / max(1, len(series))) ** 0.5
         thr = mu + max(0.07, 0.5 * sd)
@@ -738,11 +750,13 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
         wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
         for w in wins:
             w["delta"] = round(w["v"] - mu, 3)
+            w["age"] = w["peak"] - by
             w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
         focus = None
         if intent.get("window"):
             wy1, wm1, wy2, wm2 = intent["window"]
-            wmonths = _month_iter(wy1, wm1, wy2, wm2)
+            wmonths = [(y, m) for (y, m) in _month_iter(wy1, wm1, wy2, wm2)
+                       if y - by >= floor]
             rows = []
             for (y, m) in wmonths:
                 jd = max(chart.jd_ut, swe.julday(y, m, 15, 12.0, swe.GREG_CAL))
@@ -752,17 +766,21 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                 fv = sum(v for v, _ in rows) / len(rows)
                 fc = sum(c for _, c in rows) / len(rows)
                 d = fv - mu
-                focus = {"from": f"{wy1:04d}-{wm1:02d}",
+                focus = {"from": f"{wmonths[0][0]:04d}-{wmonths[0][1]:02d}",
                          "to": f"{wmonths[-1][0]:04d}-{wmonths[-1][1]:02d}",
                          "v": round(fv, 3), "cf": round(fc, 2), "delta": round(d, 3),
                          "tone": "supportive" if d >= 0.07 else "challenging" if d <= -0.07 else "neutral",
                          "changesInWindow": []}
         return {**base, "windows": wins[:4], "changes": [], "focus": focus,
-                "lifeMean": round(mu, 3), "relative": True, "empty": not wins}
+                "ageFloor": floor, "lifeMean": round(mu, 3), "relative": True,
+                "empty": not wins}
 
     # future: the 36-month timeline for this theme + its typed change events.
-    # Windows are relative here too — months clearly above the horizon's own mean.
-    steps = m_out.get("timeline", {}).get("steps", [])
+    # Windows are relative here too — months clearly above the horizon's own mean —
+    # and the same age floor applies (a young chart asking about marriage gets
+    # windows only from a sensible age on).
+    steps = [s for s in m_out.get("timeline", {}).get("steps", [])
+             if int(s["date"][:4]) - by >= floor]
     vs = [s["themes"].get(tk, 0.0) for s in steps] or [0.0]
     mu = sum(vs) / len(vs)
     sd = (sum((v - mu) ** 2 for v in vs) / len(vs)) ** 0.5
@@ -790,6 +808,7 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
     wins.sort(key=lambda w: -((w["v"] - mu) * max(w["cf"], 0.1)))
     for w in wins:
         w["delta"] = round(w["v"] - mu, 3)
+        w["age"] = int(w["peak"][:4]) - by
         w["v"], w["cf"] = round(w["v"], 3), round(w["cf"], 2)
 
     sig_keys = {s["key"] for s in _matrix.CHANGE_SIGS
@@ -797,7 +816,8 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
     changes = []
     for grp in ("health", "wealthCareer", "relationships"):
         for e in (m_out.get("changes") or {}).get(grp, []):
-            if e.get("key") in sig_keys:
+            if e.get("key") in sig_keys and e.get("date") \
+                    and int(e["date"][:4]) - by >= floor:
                 changes.append({"label": e.get("label"), "date": e.get("date"),
                                 "cf": e.get("cf"), "triggerType": e.get("triggerType"),
                                 "direction": e.get("direction")})
@@ -816,7 +836,7 @@ def _explain_when(chart, m_out, intent, lang, geo=None):
                      "tone": "supportive" if fv >= 0.08 else "challenging" if fv <= -0.08 else "neutral",
                      "changesInWindow": [c for c in changes if c["date"] and lo <= c["date"][:7] <= hi]}
     return {**base, "windows": wins[:4], "changes": changes[:5], "focus": focus,
-            "lifeMean": round(mu, 3), "relative": True,
+            "ageFloor": floor, "lifeMean": round(mu, 3), "relative": True,
             "empty": not wins and not changes}
 
 

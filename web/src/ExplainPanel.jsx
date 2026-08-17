@@ -295,13 +295,14 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
       return (<div className="xp-result">
         <div className="xp-head"><span className="xp-q">{t('matrix.theme.' + data.theme, data.themeName)}</span>
           <span className="xp-fam">{past ? t('explain.lookingBack', 'looking back') : t('explain.ahead', 'ahead')}</span></div>
+        {data.ageFloor > 0 && (<p className="xp-aside">{t('explain.ageFloorNote', 'Considered from age')} {data.ageFloor} {t('explain.ageFloorTail', 'on — earlier ages aren’t sensible for this question.')}</p>)}
         {data.focus && (<div className="xp-block"><h4>{monLabel(data.focus.from)}{data.focus.to !== data.focus.from ? ` — ${monLabel(data.focus.to)}` : ''}</h4>
           <p className="xp-aside"><b className={'xp-tone-' + (data.focus.tone === 'supportive' ? 'supportive' : data.focus.tone === 'challenging' ? 'straining' : 'neutral')}>{t('explain.focus.' + data.focus.tone, data.focus.tone)}</b> · {sv(data.focus.v)} ({t('explain.agreement', 'agreement')} {Math.round((data.focus.cf || 0) * 100)}%)
             {data.focus.delta != null && <> · {sv(data.focus.delta)} {t('explain.vsLifeMean', 'vs its life average')}</>}
             {data.focus.changesInWindow && data.focus.changesInWindow.length > 0 && (<> — {data.focus.changesInWindow.map((c) => `${c.label} · ${monLabel((c.date || '').slice(0, 7))}`).join('; ')}</>)}</p></div>)}
         <div className="xp-block"><h4>{past ? t('explain.strongWindowsPast', 'When it ran strongest') : t('explain.strongWindows', 'The stronger windows ahead')}</h4>
           {data.windows.length ? (<ul className="xp-events">
-            {data.windows.map((x, i) => (<li key={i}><span className="xp-ev up">▲</span> {winLabel(x)}{x.peak !== x.from || x.peak !== x.to ? ` · ${t('explain.peak', 'peak')} ${past ? x.peak : monLabel(x.peak)}` : ''}<span className="xp-ev-d"> · {nm(x.maha)}{x.antar ? `–${nm(x.antar)}` : ''} {t('matrix.dashaword', 'daśā')} · +{(x.delta ?? x.v).toFixed ? (x.delta ?? x.v).toFixed(2) : x.delta} {t('explain.aboveMean', 'above its life average')}</span></li>))}
+            {data.windows.map((x, i) => (<li key={i}><span className="xp-ev up">▲</span> {winLabel(x)}{x.peak !== x.from || x.peak !== x.to ? ` · ${t('explain.peak', 'peak')} ${past ? x.peak : monLabel(x.peak)}` : ''}<span className="xp-ev-d">{x.age != null ? ` · ${t('explain.ageWord', 'age')} ${x.age}` : ''} · {nm(x.maha)}{x.antar ? `–${nm(x.antar)}` : ''} {t('matrix.dashaword', 'daśā')} · +{(x.delta ?? x.v).toFixed ? (x.delta ?? x.v).toFixed(2) : x.delta} {t('explain.aboveMean', 'above its life average')}</span></li>))}
           </ul>) : (<p className="xp-aside">{past ? t('explain.noPastWin', 'No years stood clearly above this axis’s own life average.') : t('explain.noFutWin', 'No standout windows in the 3-year horizon — the marked signals below carry the answer.')}</p>)}</div>
         {!past && data.changes.length > 0 && (<div className="xp-block"><h4>{t('explain.markedSignals', 'Marked signals')}</h4>
           <ul className="xp-events">{data.changes.map((e, i) => (

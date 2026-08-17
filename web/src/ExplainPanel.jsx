@@ -151,13 +151,17 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
     )
   }
 
-  // cited Phaladīpikā ch.26 gochara judgment (currently the Sun; partial by source)
+  // cited Phaladīpikā ch.26 gochara judgment + per-house phala (all nine grahas)
   const GochLine = ({ gc }) => {
     if (!gc) return null
     const txt = gc.status === 'favourable' ? t('explain.gochFav', 'favourable from the Moon — unobstructed')
-      : gc.status === 'obstructed' ? `${t('explain.gochObstructed', 'vedha — obstructed by')} ${(gc.blockers || []).map(nm).join(', ')}${gc.outcome ? ` (“${gc.outcome}”)` : ''}`
-      : t('explain.gochNotFav', 'not among its favourable houses from the Moon')
-    return <> · <b className={'xp-tone-' + (gc.status === 'favourable' ? 'supportive' : gc.status === 'obstructed' ? 'straining' : 'neutral')}>{txt}</b> <span className="xp-wq-cite">— {gc.citation}</span></>
+      : gc.status === 'obstructed' ? `${t('explain.gochObstructed', 'vedha — obstructed by')} ${(gc.blockers || []).map(nm).join(', ')}`
+      : gc.status === 'not-favourable' ? t('explain.gochNotFav', 'not among its favourable houses from the Moon') : null
+    const p = gc.phala
+    return (<>
+      {txt && <> · <b className={'xp-tone-' + (gc.status === 'favourable' ? 'supportive' : gc.status === 'obstructed' ? 'straining' : 'neutral')}>{txt}</b> <span className="xp-wq-cite">— {gc.citation}</span></>}
+      {p && <span className="xp-wq xp-wq-inline"><span className="xp-wq-tag">Phaladīpikā</span> “{lang === 'hi' ? p.hi : p.en}” <span className="xp-wq-cite">— {p.citation}</span></span>}
+    </>)
   }
 
   const CHARA = { 'Ātmakāraka': 'Ātmakāraka', AmK: 'Amātyakāraka', DK: 'Dārakāraka', PK: 'Putrakāraka', BK: 'Bhrātṛkāraka', MK: 'Mātṛkāraka', GK: 'Gnātikāraka' }

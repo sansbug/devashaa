@@ -414,10 +414,10 @@ def _graha_transit(g, lagna, moon_sign, av, jd=None):
     hfm = ((tsign - moon_sign) % 12 + 1) if moon_sign is not None else None
     out = {"sign": tsign, "houseFromLagna": (tsign - lagna) % 12 + 1,
            "houseFromMoon": hfm, "bindu": bindu, "tone": tone}
-    if g == "sun" and hfm is not None and g in gochara_rules.FAVOURABLE:
+    if hfm is not None and (g in gochara_rules.FAVOURABLE or g in gochara_rules.PHALA):
         try:
-            out["gochara"] = gochara_rules.sun_transit_judgment(
-                hfm, _transit_occupants_from_moon(jd, moon_sign))
+            out["gochara"] = gochara_rules.transit_judgment(
+                g, hfm, _transit_occupants_from_moon(jd, moon_sign))
         except Exception:  # noqa: BLE001
             pass
     return out

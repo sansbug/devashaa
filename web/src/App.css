@@ -1924,6 +1924,7 @@ footer a:hover { color: var(--accent); }
 .xp-wq-tag { font-style: normal; font-size: .62rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; margin-right: .35rem; }
 .xp-wq-cite { font-style: normal; font-size: .68rem; color: var(--dim); }
 .xp-wq-yoga { margin-left: 0; }
+.xp-wq-inline { display: block; margin-left: 0; margin-top: .3rem; }
 
 /* period intent — theme chips */
 .xp-thchips { display: flex; flex-wrap: wrap; gap: .4rem; }

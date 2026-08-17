@@ -1890,17 +1890,16 @@ footer a:hover { color: var(--accent); }
 .xp-dv { color: var(--dim); font-variant-numeric: tabular-nums; }
 .xp-foot { margin: 1.1rem 0 0; font-size: .68rem; color: var(--dim); font-style: italic; line-height: 1.55; }
 
-/* chart-side "Ask this chart" box — sits inside the chart-style tab group, right after Pañcāṅga */
-.ask-inline { display: flex; align-items: center; gap: .35rem; flex: 0 1 auto; width: min(300px, 100%); margin-left: .35rem;
-  padding: .1rem .1rem .1rem .6rem; background: var(--sunken); border: 1px solid var(--line); border-radius: 999px; }
-.ask-inline:focus-within { border-color: var(--accent); }
-.ask-inline-ic { color: var(--accent); font-size: .8rem; flex: 0 0 auto; }
-.ask-inline input { flex: 1 1 auto; min-width: 0; padding: .38rem .3rem; font-size: .82rem; color: var(--ink); background: transparent; border: none; }
+/* chart-side "Ask this chart" bar — full-width row under the chart-view controls */
+.ask-inline { display: flex; align-items: center; gap: .4rem; flex: 1 0 100%; width: 100%; margin-top: .4rem;
+  padding: .18rem .18rem .18rem .8rem; background: var(--sunken); border: 1px solid var(--line); border-radius: 999px; }
+.ask-inline:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft, transparent); }
+.ask-inline-ic { color: var(--accent); font-size: .85rem; flex: 0 0 auto; }
+.ask-inline input { flex: 1 1 auto; min-width: 0; padding: .42rem .3rem; font-size: .85rem; color: var(--ink); background: transparent; border: none; }
 .ask-inline input:focus { outline: none; }
-.ask-inline button { flex: 0 0 auto; padding: .34rem .85rem; font-size: .76rem; font-weight: 600; cursor: pointer;
+.ask-inline button { flex: 0 0 auto; padding: .4rem 1.1rem; font-size: .8rem; font-weight: 600; cursor: pointer;
   color: var(--on-accent); background: var(--accent); border: none; border-radius: 999px; }
 .ask-inline button:hover { color: var(--on-accent); filter: brightness(1.06); }
-@media (max-width: 640px) { .ask-inline { width: 100%; margin-left: 0; } }
 
 /* brief highlight when the Ask panel receives a chart-side query */
 .xp-flash { animation: xpFlash 1.2s ease; }

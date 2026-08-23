@@ -11,9 +11,39 @@
 /* Names are supplied by the `namer` prop (see naming.js) so the chart follows the
    selected name style. Nothing here is abbreviated — the cells have room. */
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CellRuler, { useRulerMode } from './CellRuler'
 import { useLang } from './LangContext.jsx'
+
+/**
+ * Hover/tap state for the bhāva card. Mouse (or pen) hover previews transiently;
+ * a tap/click PINS the card (sticky) — tap the same house again, or anywhere
+ * outside the chart, to close. Touch never drives the transient path: on touch,
+ * pointerenter fires on tap but pointerleave fires the instant the finger lifts,
+ * so a hover-only card would flash and vanish on phones.
+ */
+function useBhavaHover(hoverable) {
+  const [hov, setHov] = useState(null)          // { sign, sticky } | null
+  const rootRef = useRef(null)
+  useEffect(() => {
+    if (!hov || !hov.sticky) return undefined
+    const onDoc = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) setHov(null)
+    }
+    document.addEventListener('pointerdown', onDoc)
+    return () => document.removeEventListener('pointerdown', onDoc)
+  }, [hov])
+  const enter = (sign) => (e) => {
+    if (!hoverable || (e.pointerType !== 'mouse' && e.pointerType !== 'pen')) return
+    setHov((h) => (h && h.sticky ? h : { sign, sticky: false }))
+  }
+  const leave = () => hoverable && setHov((h) => (h && h.sticky ? h : null))
+  const tap = (sign) => () => {
+    if (!hoverable) return
+    setHov((h) => (h && h.sign === sign && h.sticky ? null : { sign, sticky: true }))
+  }
+  return { hovSign: hov ? hov.sign : null, sticky: !!(hov && hov.sticky), rootRef, enter, leave, tap }
+}
 
 /** Wrapper so the viewport hook lives in its own component and can therefore
     return "no ruler at all" without breaking the rules of hooks. */
@@ -121,7 +151,7 @@ const DRISHTI_CASTERS = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', '
  * occupants plainly and a sign-count dṛṣṭi recomputed in the varga's own frame,
  * labelled as an engine extension. Pointer-events none; never steals the hover.
  */
-function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaSig }) {
+function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaSig, sticky }) {
   const { t } = useLang()
   if (sign == null || !analysis) return null
   const isD1 = vargaKey === 'D1'
@@ -193,6 +223,7 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaS
           {!isD1 && <div className="bhc-cite">{t('chart.vargaDrishtiNote', 'ch.26 sign-count applied within this varga — an engine extension, not stated by the text')}</div>}
         </div>
       )}
+      {sticky && <div className="bhc-cite">{t('chart.tapClose', 'tap the bhāva again — or anywhere outside — to close')}</div>}
       <div className="bhc-cite bhc-foot">BPHS ch.11 · ch.26 dṛṣṭi · {t('chart.hoverFoot', 'an indication, not fate')}</div>
     </div>
   )
@@ -225,7 +256,7 @@ export function SouthIndianChart({
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
   // House hover card on every varga; the card itself gates what is honest per frame.
   const hoverable = analysis && !analysis.error
-  const [hovSign, setHovSign] = useState(null)
+  const { hovSign, sticky, rootRef, enter, leave, tap } = useBhavaHover(hoverable)
 
   // The ruler measures longitude WITHIN a sign, so it is meaningful only where
   // the cell's sign is the sign the graha is actually standing in — i.e. D1.
@@ -234,7 +265,7 @@ export function SouthIndianChart({
 
   return (
     <div className="south-chart" role="img" aria-label="South Indian rāśi chart"
-         onPointerLeave={() => hoverable && setHovSign(null)}>
+         ref={rootRef} onPointerLeave={leave}>
       {SOUTH_CELLS.map((row, ri) =>
         row.map((sign, ci) => {
           if (sign === null) {
@@ -255,7 +286,7 @@ export function SouthIndianChart({
                          + (highlightSign === sign ? ' dr-locate' : '')}
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
-              onPointerEnter={() => hoverable && setHovSign(sign)}
+              onPointerEnter={enter(sign)} onClick={tap(sign)}
             >
               {/* The numeral is the RĀŚI number (Meṣa 1 … Mīna 12), a fixed
                   property of the sign — not the bhāva. The bhāva (and its
@@ -294,7 +325,7 @@ export function SouthIndianChart({
         }),
       )}
       {hoverable && hovSign != null && (
-        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
+        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas} sticky={sticky}
                         vargaKey={vargaKey} analysis={analysis} namer={namer} vargaSig={vargaSig} />
       )}
     </div>
@@ -307,10 +338,10 @@ export function NorthIndianChart({
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
   const hoverable = analysis && !analysis.error
-  const [hovSign, setHovSign] = useState(null)
+  const { hovSign, sticky, rootRef, enter, leave, tap } = useBhavaHover(hoverable)
 
   return (
-    <div className="north-wrap" onPointerLeave={() => hoverable && setHovSign(null)}>
+    <div className="north-wrap" ref={rootRef} onPointerLeave={leave}>
     <svg viewBox="-2 -2 404 404" className="north-chart" role="img"
          aria-label="North Indian bhāva chart">
       <rect x="0" y="0" width="400" height="400" className="frame" />
@@ -338,7 +369,7 @@ export function NorthIndianChart({
         const showDeg = occupants.length <= 2
 
         return (
-          <g key={bhava} onPointerEnter={() => hoverable && setHovSign(sign)}>
+          <g key={bhava} onPointerEnter={enter(sign)} onClick={tap(sign)}>
             {/* Invisible hit area so the whole wedge (not just painted glyphs)
                 triggers the bhāva hover card. First child: text stays on top. */}
             {hoverable && (
@@ -376,7 +407,7 @@ export function NorthIndianChart({
       })}
     </svg>
       {hoverable && hovSign != null && (
-        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
+        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas} sticky={sticky}
                         vargaKey={vargaKey} analysis={analysis} namer={namer} vargaSig={vargaSig} />
       )}
     </div>

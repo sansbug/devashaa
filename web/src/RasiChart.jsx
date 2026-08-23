@@ -129,7 +129,10 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
     const s = r.sources[0]
     let txt = (s.gist || '').replace(/^.*?bhava as\s*/i, '')
     if (txt.length > 200) txt = txt.slice(0, 200).replace(/[,;][^,;]*$/, '') + '…'
-    return { txt, cite: `${(s.source || {}).text || ''} ${s.citation || ''}`.trim() }
+    const book = (s.source || {}).text || ''
+    const cite = (s.citation || '').startsWith(book) ? (s.citation || '')
+      : `${book} ${s.citation || ''}`.trim()
+    return { txt, cite }
   }
   return (
     <div className="bhava-hover-card" aria-hidden="true">

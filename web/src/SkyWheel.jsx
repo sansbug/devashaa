@@ -628,8 +628,8 @@ export default function SkyWheelChart({
         <BhavaHoverCard sign={hovSign} lagna={lagnaRasi} grahas={grahas} sticky={sticky}
                         vargaKey="D1" analysis={analysis} namer={namer}
                         transitHere={(transitOn && placedTransit.length ? placedTransit : [])
-                          .filter((g) => (g.rasi ?? Math.floor(g.longitude / 30)) === hovSign)
-                          .map((g) => namer.graha(g) + (g.retrograde ? ' ℞' : ''))} />
+                          .filter((p) => Math.floor((((p.lon % 360) + 360) % 360) / 30) === hovSign)
+                          .map((p) => namer.graha(p.t) + (p.t.retrograde ? ' ℞' : ''))} />
       )}
       {dashaOn && isD1 && runningDasha && (
         <div className="sw-dasha-now" role="note">

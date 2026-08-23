@@ -187,6 +187,7 @@ const MANUAL = {
   'chart.full': { en: 'full', hi: 'पूर्ण' },
   'chart.hoverFoot': { en: 'an indication, not fate', hi: 'संकेत, नियति नहीं' },
   'chart.readFor': { en: 'read for', hi: 'पढ़ें —' },
+  'chart.transitingHere': { en: 'Transiting here now', hi: 'अभी यहाँ गोचरस्थ' },
   'chart.tapClose': { en: 'tap the bhāva again — or anywhere outside — to close', hi: 'बंद करने के लिए भाव पर फिर टैप करें — या बाहर कहीं भी' },
   'chart.vargaDrishtiNote': { en: 'ch.26 sign-count applied within this varga — an engine extension, not stated by the text', hi: 'अध्याय २६ की राशि-गणना इस वर्ग में लागू — इंजन-विस्तार, ग्रंथ का कथन नहीं' },
   'explain.pastNote': { en: 'The chart cannot know what happened — these are the windows where this axis was most activated, read the same way the future is projected.', hi: 'कुंडली नहीं जान सकती क्या हुआ — ये वे अवधियाँ हैं जब यह अक्ष सबसे सक्रिय था, उसी विधि से पढ़ी गईं जैसे भविष्य।' },

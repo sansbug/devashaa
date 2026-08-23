@@ -22,7 +22,7 @@ import { useLang } from './LangContext.jsx'
  * pointerenter fires on tap but pointerleave fires the instant the finger lifts,
  * so a hover-only card would flash and vanish on phones.
  */
-function useBhavaHover(hoverable) {
+export function useBhavaHover(hoverable) {
   const [hov, setHov] = useState(null)          // { sign, sticky } | null
   const rootRef = useRef(null)
   useEffect(() => {
@@ -151,7 +151,7 @@ const DRISHTI_CASTERS = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', '
  * occupants plainly and a sign-count dṛṣṭi recomputed in the varga's own frame,
  * labelled as an engine extension. Pointer-events none; never steals the hover.
  */
-function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaSig, sticky }) {
+export function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaSig, sticky, transitHere }) {
   const { t } = useLang()
   if (sign == null || !analysis) return null
   const isD1 = vargaKey === 'D1'
@@ -216,6 +216,12 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaS
           })}
         </div>
       ) : <div className="bhc-line bhc-dim">{t('chart.emptyHouse', 'No graha occupies this bhāva.')}</div>}
+      {transitHere && transitHere.length > 0 && (
+        <div className="bhc-sec">
+          <div className="bhc-h">{t('chart.transitingHere', 'Transiting here now')}</div>
+          <div className="bhc-line">{transitHere.join(' · ')}</div>
+        </div>
+      )}
       {aspects.length > 0 && (
         <div className="bhc-sec">
           <div className="bhc-h">{t('chart.drishtiOn', 'Dṛṣṭi on this bhāva')}{!isD1 && <span className="bhc-kind"> · {vargaKey}</span>}</div>

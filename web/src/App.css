@@ -871,7 +871,7 @@ section.meta, .chart-panel, .table-panel {
 .sw-padatick { stroke: var(--dim); stroke-width: 1; opacity: .35; }
 .sw-pada { fill: var(--dim); font-size: 6.5px; opacity: .8; font-variant-numeric: tabular-nums; }
 /* per-layer toggles */
-.sw-wrap { display: flex; flex-direction: column; align-items: center; }
+.sw-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
 .sw-toggles { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .6rem; }
 .sw-toggle {
   background: var(--sunken); border: 1px solid var(--line); color: var(--dim);

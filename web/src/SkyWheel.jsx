@@ -27,6 +27,7 @@
 
 import { useState } from 'react'
 import { useLang } from './LangContext.jsx'
+import { BhavaHoverCard, useBhavaHover } from './RasiChart.jsx'
 
 const SIZE = 520
 const C = SIZE / 2
@@ -116,7 +117,7 @@ function Toggle({ on, set, children }) {
 
 export default function SkyWheelChart({
   grahas, lagnaRasi, lagnaLongitude, vargaKey, namer, nakNames,
-  active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha, combust,
+  active, onHover, onPin, highlightSign, drishti, dashaLords, runningDasha, combust, analysis,
   transit, transitOn, setTransitOn, transitDate, setTransitDate, transitBusy, transitErr,
 }) {
   const [shade, setShade] = useState(true)
@@ -132,6 +133,10 @@ export default function SkyWheelChart({
   const [pinT, setPinT] = useState(null)
   const markedT = pinT ?? hoverT
   const { t } = useLang()
+
+  // Bhava hover/tap card — the wheel plots D1 ecliptic longitudes, so D1 only.
+  const cardable = vargaKey === 'D1' && analysis && !analysis.error
+  const { hovSign, sticky, rootRef, enter, leave, tap } = useBhavaHover(cardable)
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const ascLon = lagnaLongitude ?? lagnaRasi * 30
@@ -244,7 +249,7 @@ export default function SkyWheelChart({
     ? drishti.graha.casts[active].signs : null
 
   return (
-    <div className="sw-wrap">
+    <div className="sw-wrap" ref={rootRef} onPointerLeave={leave}>
       <div className="sw-toggles">
         <Toggle on={shade} set={setShade}>{t('sw.toggle.horizon')}</Toggle>
         <Toggle on={colors} set={setColors}>{t('sw.toggle.graha_colours')}</Toggle>
@@ -297,6 +302,13 @@ export default function SkyWheelChart({
           </>
         )}
 
+        {/* invisible full-sector hit areas (under everything): hover/tap a sign's
+            empty space raises the bhava card without touching glyph interactions */}
+        {cardable && Array.from({ length: 12 }, (_, s) => (
+          <path key={`hit${s}`} d={band(s * 30, 30, 48, R_MAX)} fill="transparent"
+                pointerEvents="all" onPointerEnter={enter(s)} onClick={tap(s)} />
+        ))}
+
         {/* rāśi bands (faint element tint) + boundaries */}
         {Array.from({ length: 12 }, (_, s) => {
           const lagnaBand = s === lagnaRasi
@@ -304,6 +316,8 @@ export default function SkyWheelChart({
           const el = ELEMENT[s % 4]
           return (
             <path key={`b${s}`} d={band(s * 30, 30, R_SIGN_IN, R_SIGN_OUT)}
+                  onPointerEnter={cardable ? enter(s) : undefined}
+                  onClick={cardable ? tap(s) : undefined}
                   className={`sw-band${lagnaBand ? ' lagna' : ''}${hi ? ' locate' : ''}`}
                   style={colors && !lagnaBand && !hi ? { fill: ELEMENT_COLOR[el], fillOpacity: 0.14 } : undefined}>
               <title>{`${namer.rasi(s)} — ${el}`}</title>
@@ -610,6 +624,13 @@ export default function SkyWheelChart({
           <text x={C} y={C - 20} className="sw-note" textAnchor="middle">{t('sw.note.real_sky')}</text>
         )}
       </svg>
+      {cardable && hovSign != null && (
+        <BhavaHoverCard sign={hovSign} lagna={lagnaRasi} grahas={grahas} sticky={sticky}
+                        vargaKey="D1" analysis={analysis} namer={namer}
+                        transitHere={(transitOn && placedTransit.length ? placedTransit : [])
+                          .filter((g) => (g.rasi ?? Math.floor(g.longitude / 30)) === hovSign)
+                          .map((g) => namer.graha(g) + (g.retrograde ? ' ℞' : ''))} />
+      )}
       {dashaOn && isD1 && runningDasha && (
         <div className="sw-dasha-now" role="note">
           <span className="sw-dn-head">{t('sw.dn.head')}</span>

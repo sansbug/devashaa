@@ -11,7 +11,9 @@
 /* Names are supplied by the `namer` prop (see naming.js) so the chart follows the
    selected name style. Nothing here is abbreviated — the cells have room. */
 
+import { useState } from 'react'
 import CellRuler, { useRulerMode } from './CellRuler'
+import { useLang } from './LangContext.jsx'
 
 /** Wrapper so the viewport hook lives in its own component and can therefore
     return "no ruler at all" without breaking the rules of hooks. */
@@ -92,6 +94,75 @@ function dignityPhrase(d) {
   return ` — ${word}; ${arc}° ${side} its exaltation point (uccha bala ${d.uccha_bala})`
 }
 
+// Rāśi index -> its lord's graha key, for the hover card's lord line.
+const RASI_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury',
+                   'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
+
+/**
+ * Hover card for a bhāva on the D1 chart: the house's BPHS ch.11 significations,
+ * each occupant with its cited classical reading, and the graha dṛṣṭi falling on
+ * the house (ch.26 graded values from the server's drishti chart). Everything
+ * shown is cited; pointer-events none so it never steals the hover.
+ */
+function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
+  const { t } = useLang()
+  if (sign == null || !analysis) return null
+  const bhava = bhavaOf(sign, lagna)
+  const occ = grahas.filter((g) => g.vargas[vargaKey] === sign)
+  const bp = analysis.bhava_phala && !analysis.bhava_phala.error
+    ? (analysis.bhava_phala.bhavas || []).find((b) => b.house === bhava) : null
+  const signif = bp && bp.significations
+  let sigText = (signif && signif.text) || ''
+  sigText = sigText.replace(/^[^:]*HOUSE[^:]*:\s*/i, '')
+  const readings = (analysis.classical && analysis.classical.house_readings) || []
+  const recv = ((analysis.drishti || {}).graha || {}).received
+  const aspects = Object.entries((recv && recv.signs && recv.signs[sign]) || {})
+    .sort((a, b) => b[1] - a[1])
+  const lordKey = RASI_LORD[sign]
+  const lord = grahas.find((g) => g.key === lordKey)
+  const kind = [[1, 4, 7, 10].includes(bhava) && 'kendra', [1, 5, 9].includes(bhava) && 'trikoṇa',
+                [6, 8, 12].includes(bhava) && 'duḥsthāna'].filter(Boolean).join(' · ')
+  const frac = (f) => (f >= 0.99 ? t('chart.full', 'full') : f >= 0.74 ? '¾' : f >= 0.49 ? '½' : '¼')
+  const gistOf = (g) => {
+    const r = readings.find((x) => x.graha === g.key && x.house === bhava)
+    if (!r || !r.sources || !r.sources.length) return null
+    const s = r.sources[0]
+    let txt = (s.gist || '').replace(/^.*?bhava as\s*/i, '')
+    if (txt.length > 200) txt = txt.slice(0, 200).replace(/[,;][^,;]*$/, '') + '…'
+    return { txt, cite: `${(s.source || {}).text || ''} ${s.citation || ''}`.trim() }
+  }
+  return (
+    <div className="bhava-hover-card" aria-hidden="true">
+      <div className="bhc-head"><b>{t('chart.bhava', 'Bhāva')} {bhava}</b> · {namer.rasi(sign)}
+        {kind && <span className="bhc-kind"> · {kind}</span>}</div>
+      {lord && <div className="bhc-line">{t('chart.lord', 'Lord')} {namer.grahaKey(lordKey)} — {t('chart.inBhava', 'in bhāva')} {bhavaOf(lord.vargas[vargaKey], lagna)}</div>}
+      {sigText && <div className="bhc-sig">{sigText} <span className="bhc-cite">— {(signif || {}).citation}</span></div>}
+      {occ.length > 0 ? (
+        <div className="bhc-sec">
+          <div className="bhc-h">{t('chart.occupants', 'Occupants')}</div>
+          {occ.map((g) => {
+            const r = gistOf(g)
+            return (
+              <div key={g.key} className="bhc-occ">
+                <b>{namer.graha(g)}{g.retrograde ? ' ℞' : ''}</b>
+                {g.dignity && DIGNITY_WORD[g.dignity.state] ? ` — ${DIGNITY_WORD[g.dignity.state]}` : ''}
+                {r && <div className="bhc-gist">“{r.txt}” <span className="bhc-cite">— {r.cite}</span></div>}
+              </div>
+            )
+          })}
+        </div>
+      ) : <div className="bhc-line bhc-dim">{t('chart.emptyHouse', 'No graha occupies this bhāva.')}</div>}
+      {aspects.length > 0 && (
+        <div className="bhc-sec">
+          <div className="bhc-h">{t('chart.drishtiOn', 'Dṛṣṭi on this bhāva')}</div>
+          <div className="bhc-line">{aspects.map(([g, f]) => `${namer.grahaKey(g)} (${frac(f)})`).join(' · ')}</div>
+        </div>
+      )}
+      <div className="bhc-cite bhc-foot">BPHS ch.11 · ch.26 dṛṣṭi · {t('chart.hoverFoot', 'an indication, not fate')}</div>
+    </div>
+  )
+}
+
 function GrahaTag({ g, namer, active, onHover, onPin }) {
   return (
     <span className={`tag${g.retrograde ? ' rx' : ''}${active ? ' active' : ''}`}
@@ -113,10 +184,13 @@ function GrahaTag({ g, namer, active, onHover, onPin }) {
 
 export function SouthIndianChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude,
-  gandanta, active, onHover, onPin, highlightSign,
+  gandanta, active, onHover, onPin, highlightSign, analysis,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
+  // House hover card: D1 only — significations, readings and dṛṣṭi are rāśi-chart facts.
+  const hoverable = vargaKey === 'D1' && analysis && !analysis.error
+  const [hovSign, setHovSign] = useState(null)
 
   // The ruler measures longitude WITHIN a sign, so it is meaningful only where
   // the cell's sign is the sign the graha is actually standing in — i.e. D1.
@@ -124,7 +198,8 @@ export function SouthIndianChart({
   const ruled = vargaKey === 'D1' && !!landmarks
 
   return (
-    <div className="south-chart" role="img" aria-label="South Indian rāśi chart">
+    <div className="south-chart" role="img" aria-label="South Indian rāśi chart"
+         onPointerLeave={() => hoverable && setHovSign(null)}>
       {SOUTH_CELLS.map((row, ri) =>
         row.map((sign, ci) => {
           if (sign === null) {
@@ -145,6 +220,7 @@ export function SouthIndianChart({
                          + (highlightSign === sign ? ' dr-locate' : '')}
               key={`${ri}-${ci}`}
               style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
+              onPointerEnter={() => hoverable && setHovSign(sign)}
             >
               {/* The numeral is the RĀŚI number (Meṣa 1 … Mīna 12), a fixed
                   property of the sign — not the bhāva. The bhāva (and its
@@ -182,17 +258,24 @@ export function SouthIndianChart({
           )
         }),
       )}
+      {hoverable && hovSign != null && (
+        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
+                        vargaKey={vargaKey} analysis={analysis} namer={namer} />
+      )}
     </div>
   )
 }
 
 export function NorthIndianChart({
-  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign,
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, analysis,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
+  const hoverable = vargaKey === 'D1' && analysis && !analysis.error
+  const [hovSign, setHovSign] = useState(null)
 
   return (
+    <div className="north-wrap" onPointerLeave={() => hoverable && setHovSign(null)}>
     <svg viewBox="-2 -2 404 404" className="north-chart" role="img"
          aria-label="North Indian bhāva chart">
       <rect x="0" y="0" width="400" height="400" className="frame" />
@@ -220,7 +303,12 @@ export function NorthIndianChart({
         const showDeg = occupants.length <= 2
 
         return (
-          <g key={bhava}>
+          <g key={bhava} onPointerEnter={() => hoverable && setHovSign(sign)}>
+            {/* Invisible hit area so the whole wedge (not just painted glyphs)
+                triggers the bhāva hover card. First child: text stays on top. */}
+            {hoverable && (
+              <polygon points={r.pts} fill="transparent" pointerEvents="all" />
+            )}
             {/* Drawn AFTER the frame and BEFORE the text, so the locator can
                 never overprint a graha name. No chords here, deliberately: the
                 interior is already a rect plus both diagonals plus an inner
@@ -252,5 +340,10 @@ export function NorthIndianChart({
         )
       })}
     </svg>
+      {hoverable && hovSign != null && (
+        <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
+                        vargaKey={vargaKey} analysis={analysis} namer={namer} />
+      )}
+    </div>
   )
 }

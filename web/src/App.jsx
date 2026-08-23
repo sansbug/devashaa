@@ -765,6 +765,7 @@ export default function App() {
                 onHover={setHovered}
                 onPin={pinGraha}
                 highlightSign={rowSign}
+                analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
                 drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 dashaLords={dashaLords}
                 runningDasha={runningDasha}

@@ -1918,6 +1918,24 @@ footer a:hover { color: var(--accent); }
 .xp-occ { margin-bottom: .75rem; }
 .xp-occ-g { display: inline-block; font-weight: 600; color: var(--accent); font-size: .82rem; margin-bottom: .2rem; }
 
+/* bhāva hover card on the D1 charts */
+.south-chart { position: relative; }
+.north-wrap { position: relative; width: 100%; }
+.bhava-hover-card { position: absolute; top: 8px; left: 8px; z-index: 6; width: min(340px, 92%);
+  pointer-events: none; background: color-mix(in srgb, var(--panel) 94%, transparent);
+  border: 1px solid var(--accent); border-radius: 10px; padding: .6rem .75rem;
+  font-size: .72rem; line-height: 1.5; color: var(--ink); box-shadow: 0 6px 24px rgba(0, 0, 0, .35); }
+.bhc-head { font-size: .8rem; margin-bottom: .15rem; }
+.bhc-kind { color: var(--accent); font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; }
+.bhc-h { color: var(--accent); font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; margin: .35rem 0 .1rem; font-weight: 700; }
+.bhc-line { color: var(--ink); }
+.bhc-dim { color: var(--dim); }
+.bhc-sig { color: var(--ink); margin-top: .25rem; }
+.bhc-gist { color: var(--dim); font-style: italic; margin: .1rem 0 .2rem; }
+.bhc-cite { color: var(--dim); font-size: .62rem; font-style: normal; }
+.bhc-foot { display: block; margin-top: .4rem; opacity: .75; }
+.bhc-occ { margin-top: .15rem; }
+
 /* window śloka quotes + yoga indications */
 .xp-wq { margin: .3rem 0 .15rem 1.4rem; font-size: .78rem; color: var(--ink); font-style: italic; line-height: 1.55;
   border-left: 2px solid var(--accent-soft, var(--line)); padding-left: .6rem; }

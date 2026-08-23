@@ -98,15 +98,33 @@ function dignityPhrase(d) {
 const RASI_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury',
                    'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 
+// Ch.26 vv.2-5 graded graha dṛṣṭi, sign-to-sign — the same table the server's
+// drishti chart uses. Needed client-side ONLY for varga frames, where the D1
+// aspect data would be the wrong frame; the seven planets cast, the nodes don't
+// (matching the server default).
+const DRISHTI_SPECIAL = { mars: [4, 8], jupiter: [5, 9], saturn: [3, 10] }
+function drishtiFrac(graha, from, to) {
+  const d = ((to - from + 12) % 12) + 1
+  if (d === 7 || (DRISHTI_SPECIAL[graha] || []).includes(d)) return 1
+  if (d === 4 || d === 8) return 0.75
+  if (d === 5 || d === 9) return 0.5
+  if (d === 3 || d === 10) return 0.25
+  return 0
+}
+const DRISHTI_CASTERS = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
+
 /**
- * Hover card for a bhāva on the D1 chart: the house's BPHS ch.11 significations,
- * each occupant with its cited classical reading, and the graha dṛṣṭi falling on
- * the house (ch.26 graded values from the server's drishti chart). Everything
- * shown is cited; pointer-events none so it never steals the hover.
+ * Hover card for a bhāva on any chart. Everywhere: the house's BPHS ch.11
+ * significations (house-generic), its nature, and its lord located in the SAME
+ * varga. D1 additionally shows each occupant's dignity and cited classical
+ * reading plus the server-computed ch.26 dṛṣṭi (rāśi-chart facts). Vargas show
+ * occupants plainly and a sign-count dṛṣṭi recomputed in the varga's own frame,
+ * labelled as an engine extension. Pointer-events none; never steals the hover.
  */
-function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
+function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer, vargaSig }) {
   const { t } = useLang()
   if (sign == null || !analysis) return null
+  const isD1 = vargaKey === 'D1'
   const bhava = bhavaOf(sign, lagna)
   const occ = grahas.filter((g) => g.vargas[vargaKey] === sign)
   const bp = analysis.bhava_phala && !analysis.bhava_phala.error
@@ -115,9 +133,19 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
   let sigText = (signif && signif.text) || ''
   sigText = sigText.replace(/^[^:]*HOUSE[^:]*:\s*/i, '')
   const readings = (analysis.classical && analysis.classical.house_readings) || []
-  const recv = ((analysis.drishti || {}).graha || {}).received
-  const aspects = Object.entries((recv && recv.signs && recv.signs[sign]) || {})
-    .sort((a, b) => b[1] - a[1])
+  let aspects
+  if (isD1) {
+    const recv = ((analysis.drishti || {}).graha || {}).received
+    aspects = Object.entries((recv && recv.signs && recv.signs[sign]) || {})
+      .sort((a, b) => b[1] - a[1])
+  } else {
+    // varga frame: same ch.26 sign-count, applied to THIS varga's signs.
+    aspects = grahas
+      .filter((g) => DRISHTI_CASTERS.includes(g.key) && g.vargas[vargaKey] !== sign)
+      .map((g) => [g.key, drishtiFrac(g.key, g.vargas[vargaKey], sign)])
+      .filter(([, f]) => f > 0)
+      .sort((a, b) => b[1] - a[1])
+  }
   const lordKey = RASI_LORD[sign]
   const lord = grahas.find((g) => g.key === lordKey)
   const kind = [[1, 4, 7, 10].includes(bhava) && 'kendra', [1, 5, 9].includes(bhava) && 'trikoṇa',
@@ -138,17 +166,20 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
     <div className="bhava-hover-card" aria-hidden="true">
       <div className="bhc-head"><b>{t('chart.bhava', 'Bhāva')} {bhava}</b> · {namer.rasi(sign)}
         {kind && <span className="bhc-kind"> · {kind}</span>}</div>
-      {lord && <div className="bhc-line">{t('chart.lord', 'Lord')} {namer.grahaKey(lordKey)} — {t('chart.inBhava', 'in bhāva')} {bhavaOf(lord.vargas[vargaKey], lagna)}</div>}
+      {!isD1 && vargaSig && (
+        <div className="bhc-line bhc-dim">{vargaKey} · {t('chart.readFor', 'read for')} {vargaSig}</div>
+      )}
+      {lord && <div className="bhc-line">{t('chart.lord', 'Lord')} {namer.grahaKey(lordKey)} — {t('chart.inBhava', 'in bhāva')} {bhavaOf(lord.vargas[vargaKey], lagna)}{!isD1 ? ` (${vargaKey})` : ''}</div>}
       {sigText && <div className="bhc-sig">{sigText} <span className="bhc-cite">— {(signif || {}).citation}</span></div>}
       {occ.length > 0 ? (
         <div className="bhc-sec">
           <div className="bhc-h">{t('chart.occupants', 'Occupants')}</div>
           {occ.map((g) => {
-            const r = gistOf(g)
+            const r = isD1 ? gistOf(g) : null
             return (
               <div key={g.key} className="bhc-occ">
                 <b>{namer.graha(g)}{g.retrograde ? ' ℞' : ''}</b>
-                {g.dignity && DIGNITY_WORD[g.dignity.state] ? ` — ${DIGNITY_WORD[g.dignity.state]}` : ''}
+                {isD1 && g.dignity && DIGNITY_WORD[g.dignity.state] ? ` — ${DIGNITY_WORD[g.dignity.state]}` : ''}
                 {r && <div className="bhc-gist">“{r.txt}” <span className="bhc-cite">— {r.cite}</span></div>}
               </div>
             )
@@ -157,8 +188,9 @@ function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer }) {
       ) : <div className="bhc-line bhc-dim">{t('chart.emptyHouse', 'No graha occupies this bhāva.')}</div>}
       {aspects.length > 0 && (
         <div className="bhc-sec">
-          <div className="bhc-h">{t('chart.drishtiOn', 'Dṛṣṭi on this bhāva')}</div>
+          <div className="bhc-h">{t('chart.drishtiOn', 'Dṛṣṭi on this bhāva')}{!isD1 && <span className="bhc-kind"> · {vargaKey}</span>}</div>
           <div className="bhc-line">{aspects.map(([g, f]) => `${namer.grahaKey(g)} (${frac(f)})`).join(' · ')}</div>
+          {!isD1 && <div className="bhc-cite">{t('chart.vargaDrishtiNote', 'ch.26 sign-count applied within this varga — an engine extension, not stated by the text')}</div>}
         </div>
       )}
       <div className="bhc-cite bhc-foot">BPHS ch.11 · ch.26 dṛṣṭi · {t('chart.hoverFoot', 'an indication, not fate')}</div>
@@ -187,12 +219,12 @@ function GrahaTag({ g, namer, active, onHover, onPin }) {
 
 export function SouthIndianChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude,
-  gandanta, active, onHover, onPin, highlightSign, analysis,
+  gandanta, active, onHover, onPin, highlightSign, analysis, vargaSig,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
-  // House hover card: D1 only — significations, readings and dṛṣṭi are rāśi-chart facts.
-  const hoverable = vargaKey === 'D1' && analysis && !analysis.error
+  // House hover card on every varga; the card itself gates what is honest per frame.
+  const hoverable = analysis && !analysis.error
   const [hovSign, setHovSign] = useState(null)
 
   // The ruler measures longitude WITHIN a sign, so it is meaningful only where
@@ -263,18 +295,18 @@ export function SouthIndianChart({
       )}
       {hoverable && hovSign != null && (
         <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
-                        vargaKey={vargaKey} analysis={analysis} namer={namer} />
+                        vargaKey={vargaKey} analysis={analysis} namer={namer} vargaSig={vargaSig} />
       )}
     </div>
   )
 }
 
 export function NorthIndianChart({
-  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, analysis,
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, analysis, vargaSig,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
-  const hoverable = vargaKey === 'D1' && analysis && !analysis.error
+  const hoverable = analysis && !analysis.error
   const [hovSign, setHovSign] = useState(null)
 
   return (
@@ -345,7 +377,7 @@ export function NorthIndianChart({
     </svg>
       {hoverable && hovSign != null && (
         <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas}
-                        vargaKey={vargaKey} analysis={analysis} namer={namer} />
+                        vargaKey={vargaKey} analysis={analysis} namer={namer} vargaSig={vargaSig} />
       )}
     </div>
   )

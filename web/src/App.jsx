@@ -766,6 +766,7 @@ export default function App() {
                 onPin={pinGraha}
                 highlightSign={rowSign}
                 analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
+                vargaSig={VARGA_SIG[varga]}
                 drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 dashaLords={dashaLords}
                 runningDasha={runningDasha}

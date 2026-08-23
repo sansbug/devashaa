@@ -186,6 +186,8 @@ const MANUAL = {
   'chart.drishtiOn': { en: 'Dṛṣṭi on this bhāva', hi: 'इस भाव पर दृष्टि' },
   'chart.full': { en: 'full', hi: 'पूर्ण' },
   'chart.hoverFoot': { en: 'an indication, not fate', hi: 'संकेत, नियति नहीं' },
+  'chart.readFor': { en: 'read for', hi: 'पढ़ें —' },
+  'chart.vargaDrishtiNote': { en: 'ch.26 sign-count applied within this varga — an engine extension, not stated by the text', hi: 'अध्याय २६ की राशि-गणना इस वर्ग में लागू — इंजन-विस्तार, ग्रंथ का कथन नहीं' },
   'explain.pastNote': { en: 'The chart cannot know what happened — these are the windows where this axis was most activated, read the same way the future is projected.', hi: 'कुंडली नहीं जान सकती क्या हुआ — ये वे अवधियाँ हैं जब यह अक्ष सबसे सक्रिय था, उसी विधि से पढ़ी गईं जैसे भविष्य।' },
   'explain.futNote': { en: 'Percentages are the clocks’ agreement (conviction), not a probability of a real event — an indication, never a promise.', hi: 'प्रतिशत घड़ियों की सहमति (विश्वास) है, वास्तविक घटना की प्रायिकता नहीं — संकेत, वचन कभी नहीं।' },
   'panchang.title': { en: 'Pañcāṅga — auspicious days', hi: 'पञ्चाङ्ग — शुभ दिन' },

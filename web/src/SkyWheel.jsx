@@ -629,7 +629,7 @@ export default function SkyWheelChart({
                         vargaKey="D1" analysis={analysis} namer={namer}
                         transitHere={(transitOn && placedTransit.length ? placedTransit : [])
                           .filter((p) => Math.floor((((p.lon % 360) + 360) % 360) / 30) === hovSign)
-                          .map((p) => namer.graha(p.t) + (p.t.retrograde ? ' ℞' : ''))} />
+                          .map((p) => (namer.grahaKey ? namer.grahaKey(p.t.key) : p.t.key) + (p.t.retrograde ? ' ℞' : ''))} />
       )}
       {dashaOn && isD1 && runningDasha && (
         <div className="sw-dasha-now" role="note">

@@ -36,6 +36,9 @@ Phaladīpikā, Ojha's Hindi *artha*) and label whose words they are.
   charts, bhāva hover cards), `SkyWheel.jsx`, `MatrixPanel.jsx`,
   `ExplainPanel.jsx`, `i18n.js` (every user string, `en` + `hi`).
 - `docs/` — doctrine and policy. Read before touching classical content.
+  `docs/projection-reference.html` is the engineering reference for the whole
+  projection stack + Ask feature (mirror of the claude.ai artifact; open it in a
+  browser). Keep it in step with the artifact when either is updated.
 
 ## Running locally
 

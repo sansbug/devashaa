@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Projection Analysis — engineering reference</title>
+<!-- Mirror of the claude.ai artifact https://claude.ai/code/artifact/a290843a-743a-4138-996d-13c3535da981
+     (snapshot 2026-09-12). The artifact is the living copy; this file is the in-repo record. -->
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+</head>
+<body>
+<style>
+  :root{
+    --ground:#f3eddf; --raised:#fbf7ee; --ink:#20263c; --ink-2:#4a5170; --ink-3:#7a7f96;
+    --line:#d9d0bd; --line-2:#e7dfcd;
+    --gold:#b9821f; --gold-soft:#e9d5a6; --gold-ink:#7a5411;
+    --lapis:#3d63a0; --lapis-soft:#cdd9ef; --lapis-ink:#2b477a;
+    --up:#2f8567; --down:#b24d3d; --care:#9a6b1c;
+    --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+    --mono:"Cascadia Code",Consolas,"SF Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0b1020; --raised:#141b30; --ink:#ece6d6; --ink-2:#b0b4cc; --ink-3:#7b8099;
+      --line:#26304c; --line-2:#1c2540; --gold:#e2ac4d; --gold-soft:#3a2f18; --gold-ink:#f0cf8f;
+      --lapis:#6f9bdd; --lapis-soft:#1b2946; --lapis-ink:#a9c4ee; --up:#4bb28c; --down:#d4705e; --care:#e0b566;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#f3eddf; --raised:#fbf7ee; --ink:#20263c; --ink-2:#4a5170; --ink-3:#7a7f96;
+    --line:#d9d0bd; --line-2:#e7dfcd; --gold:#b9821f; --gold-soft:#e9d5a6; --gold-ink:#7a5411;
+    --lapis:#3d63a0; --lapis-soft:#cdd9ef; --lapis-ink:#2b477a; --up:#2f8567; --down:#b24d3d; --care:#9a6b1c;
+  }
+  :root[data-theme="dark"]{
+    --ground:#0b1020; --raised:#141b30; --ink:#ece6d6; --ink-2:#b0b4cc; --ink-3:#7b8099;
+    --line:#26304c; --line-2:#1c2540; --gold:#e2ac4d; --gold-soft:#3a2f18; --gold-ink:#f0cf8f;
+    --lapis:#6f9bdd; --lapis-soft:#1b2946; --lapis-ink:#a9c4ee; --up:#4bb28c; --down:#d4705e; --care:#e0b566;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.62;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1000px;margin:0 auto;padding:clamp(1.4rem,4vw,4rem) clamp(1.1rem,4vw,2.6rem) 5rem;}
+  .prose{max-width:70ch;}
+  h1,h2,h3,h4{font-family:var(--serif);font-weight:600;text-wrap:balance;line-height:1.16;margin:0;}
+  p{margin:0;} a{color:var(--lapis);}
+  code,.mono{font-family:var(--mono);}
+
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:.7rem;}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold);display:inline-block;}
+  .masthead{border-bottom:1px solid var(--line);padding-bottom:2.2rem;margin-bottom:2.4rem;}
+  h1{font-size:clamp(2.3rem,7vw,4rem);letter-spacing:-.015em;margin:1.1rem 0 .2rem;}
+  h1 .amp{color:var(--gold);font-style:italic;font-weight:500;}
+  .dek{font-family:var(--serif);font-size:clamp(1.1rem,2.4vw,1.38rem);color:var(--ink-2);font-style:italic;max-width:50ch;margin-top:.7rem;}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem;}
+  .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;padding:.28rem .6rem;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--raised);}
+  .tag.g{border-color:color-mix(in srgb,var(--gold) 55%,transparent);color:var(--gold-ink);background:var(--gold-soft);}
+
+  .toc{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.6rem;}
+  .toc h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.6rem;font-weight:600;}
+  .toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem;}
+  .toc li{margin:.18rem 0;font-size:.92rem;} .toc a{text-decoration:none;color:var(--ink-2);} .toc a:hover{color:var(--lapis);}
+  @media (max-width:620px){.toc ol{columns:1;}}
+
+  section{margin-top:3.2rem;scroll-margin-top:1rem;}
+  .sec-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:1rem;border-bottom:1px solid var(--line-2);padding-bottom:.5rem;flex-wrap:wrap;}
+  .sec-num{font-family:var(--mono);font-size:.8rem;color:var(--gold);letter-spacing:.06em;flex:0 0 auto;}
+  h2{font-size:clamp(1.45rem,3.4vw,1.95rem);letter-spacing:-.01em;}
+  .file{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-left:auto;background:var(--raised);border:1px solid var(--line);border-radius:5px;padding:.15rem .5rem;}
+  .lede{font-size:1.04rem;color:var(--ink-2);margin:.1rem 0 1.1rem;max-width:68ch;}
+  p+p{margin-top:.85rem;} .prose p{color:var(--ink-2);}
+  strong{color:var(--ink);font-weight:600;} em.term{font-style:italic;font-family:var(--serif);color:var(--ink);}
+  h3.sub{font-size:1.1rem;margin:1.5rem 0 .5rem;color:var(--ink);}
+
+  .formula{font-family:var(--mono);font-size:.85rem;background:var(--ground);border:1px solid var(--line-2);border-radius:8px;padding:.7rem .85rem;color:var(--ink);overflow-x:auto;line-height:1.75;margin-top:.8rem;}
+  .formula .c{color:var(--ink-3);} .formula .k{color:var(--lapis);} .formula .g{color:var(--gold);}
+
+  .tblwrap{overflow-x:auto;margin-top:1.1rem;border:1px solid var(--line);border-radius:10px;}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:560px;}
+  th,td{text-align:left;padding:.55rem .75rem;border-bottom:1px solid var(--line-2);vertical-align:top;}
+  thead th{font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);background:var(--raised);font-weight:600;}
+  tbody tr:last-child td{border-bottom:none;}
+  td .mono, td code{font-size:.82rem;color:var(--lapis-ink);}
+  td b{color:var(--ink);}
+
+  .chip{font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;text-transform:uppercase;padding:.14rem .48rem;border-radius:4px;font-weight:600;white-space:nowrap;display:inline-block;}
+  .chip.sloka{background:color-mix(in srgb,var(--gold) 16%,transparent);color:var(--gold-ink);}
+  .chip.jaimini{background:color-mix(in srgb,var(--lapis) 16%,transparent);color:var(--lapis-ink);}
+  .chip.synth{background:color-mix(in srgb,var(--ink) 12%,transparent);color:var(--ink-2);}
+
+  .callout{border-radius:12px;padding:1rem 1.3rem;margin-top:1.3rem;background:var(--raised);border:1px solid var(--line);border-left:3px solid var(--gold);}
+  .callout.warn{border-left-color:var(--down);}
+  .callout .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);font-weight:700;}
+  .callout.warn .k{color:var(--down);}
+  .callout p{color:var(--ink-2);font-size:.96rem;margin-top:.3rem;}
+
+  .improve{display:grid;gap:.7rem;margin-top:1.1rem;}
+  .imp{display:grid;grid-template-columns:1.6rem 1fr;gap:.7rem;background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:.85rem 1rem;}
+  .imp .n{font-family:var(--mono);color:var(--lapis);font-weight:700;}
+  .imp b{color:var(--ink);} .imp span{color:var(--ink-2);font-size:.93rem;}
+  .imp .how{display:block;color:var(--ink-3);font-size:.82rem;margin-top:.3rem;font-style:italic;font-family:var(--serif);}
+
+  footer{margin-top:4rem;padding-top:1.6rem;border-top:1px solid var(--line);font-size:.86rem;color:var(--ink-3);font-style:italic;font-family:var(--serif);max-width:66ch;}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">devashaa · engineering reference · as built</div>
+    <h1>Projection <span class="amp">Analysis</span></h1>
+    <p class="dek">The whole engine, layer by layer — the real formulas, the current parameter values, and where every knob is — so you can read it and tune it.</p>
+    <div class="meta">
+      <span class="tag g">live on devashaa.com</span>
+      <span class="tag">9 layers · ~3,300 lines</span>
+      <span class="tag">api/matrix.py · api/explain.py · api/gochara_rules.py · api/ashtakavarga.py</span>
+    </div>
+    <div class="toc">
+      <h4>Contents</h4>
+      <ol>
+        <li><a href="#stack">The stack</a></li>
+        <li><a href="#av">Aṣṭakavarga (bindu engine)</a></li>
+        <li><a href="#matrix">Natal matrix (verdicts)</a></li>
+        <li><a href="#ensemble">Timeline ensemble + bands</a></li>
+        <li><a href="#events">Event-typing</a></li>
+        <li><a href="#mc">Monte-Carlo</a></li>
+        <li><a href="#backtest">Calibration backtest</a></li>
+        <li><a href="#change">Change engine</a></li>
+        <li><a href="#life">Life arc</a></li>
+        <li><a href="#explain">Ask your chart (explain)</a></li>
+        <li><a href="#tuning">The tuning surface</a></li>
+        <li><a href="#limits">Limits &amp; how to improve</a></li>
+        <li><a href="#ethos">Provenance &amp; ethics</a></li>
+      </ol>
+    </div>
+  </header>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="sec-head"><span class="sec-num">00</span><h2>The stack</h2></div>
+    <p class="lede">Everything hangs off one idea: a single date-evaluator that scores each life-area at any moment. The natal chart sets the standing level; the daśā and transits move over it. Read it forward for the near future, backward for the life arc, and perturbed for uncertainty.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Layer</th><th>What it produces</th><th>Endpoint</th></tr></thead>
+      <tbody>
+        <tr><td><b>Aṣṭakavarga</b></td><td>per-sign bindus — the transit-strength map</td><td><code>(internal)</code></td></tr>
+        <tr><td><b>Natal matrix</b></td><td>standing iṣṭa/kaṣṭa verdict per bhāva &amp; theme</td><td><code>/api/matrix</code></td></tr>
+        <tr><td><b>Timeline ensemble</b></td><td>36-mo per-theme curve + confidence band</td><td><code>/api/matrix</code> · <code>timeline</code></td></tr>
+        <tr><td><b>Event-typing</b></td><td>ranked typed "projected events"</td><td><code>timeline.events</code></td></tr>
+        <tr><td><b>Monte-Carlo</b></td><td>birth-time uncertainty envelope + survival</td><td><code>/api/matrix/montecarlo</code></td></tr>
+        <tr><td><b>Calibration</b></td><td>personal hit-rate vs logged events</td><td><code>/api/matrix/backtest</code></td></tr>
+        <tr><td><b>Change engine</b></td><td>typed transitions across 3 motives</td><td><code>/api/matrix</code> · <code>changes</code></td></tr>
+        <tr><td><b>Life arc</b></td><td>birth→now, 6 facets + turning points</td><td><code>/api/matrix/lifearc</code></td></tr>
+        <tr><td><b>Ask your chart</b></td><td>free-text query → composed, cited answer</td><td><code>/api/explain</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><span class="k">the single evaluator</span>
+      <p><code>_project_at(jd, ctx)</code> is the heart: given a Julian day and a precomputed chart context, it runs the four-clock ensemble and returns each theme's value. The timeline, backtest, Monte-Carlo and life arc all call it — the same math forward, backward, and perturbed. A parity test pins it to the timeline loop bit-for-bit.</p>
+    </div>
+  </section>
+
+  <!-- AV -->
+  <section id="av">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Aṣṭakavarga</h2><span class="file">api/ashtakavarga.py</span></div>
+    <p class="lede">The classical measure of a transit's potency. Each graha earns bindus (0–8) in each sign; a graha transiting a bindu-rich sign supports, a bindu-poor one afflicts.</p>
+    <p class="prose"><span style="color:var(--ink-2)">The benefic-house tables are fixed Parāśari data, <b>triple-verified</b> (VedAstro, the jyotishganit package, and a 4-agent derivation) and validated bit-for-bit against a golden fixture. Two checksums guard them: per-graha totals <span class="mono">48 · 49 · 39 · 54 · 56 · 52 · 39</span> and the sarva total <b>337</b>.</span></p>
+    <h3 class="sub">Transit potency <span class="chip sloka">śloka</span></h3>
+    <div class="formula">
+      <span class="c"># signed potency ∈ [−1,+1] of a graha transiting a sign</span><br>
+      zb = (bav[graha][sign] − <span class="g">4</span>) / <span class="g">4</span>        <span class="c"># own bindus, centred on 4</span><br>
+      zs = (sav[sign] − <span class="g">28.08</span>) / <span class="g">14.04</span>   <span class="c"># sign's sarva, centred on 337/12</span><br>
+      potency = clamp(−1, 1, <span class="g">0.5</span>·zb + <span class="g">0.5</span>·zs)
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-3)">Tunable: the 0.5/0.5 split between own-bindu and sarva weight, and the ±1 clamp.</span></p>
+  </section>
+
+  <!-- MATRIX -->
+  <section id="matrix">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Natal matrix</h2><span class="file">api/matrix.py · build()</span></div>
+    <p class="lede">The standing verdict — a signed iṣṭa/kaṣṭa balance per bhāva and per life-theme, each a transparent weighted composite of the natal factor web. No new astronomy; it integrates the existing engines.</p>
+    <h3 class="sub">Bhāva verdict <span class="chip sloka">śloka</span></h3>
+    <div class="formula">
+      bhāva_net = <span class="g">.40</span>·lord + <span class="g">.25</span>·occupants + <span class="g">.20</span>·aspects + <span class="g">.15</span>·sthira-kāraka<br>
+      <span class="c"># each contributor = disposition = polarity(functional) × strength(ṣaḍbala) nudged by dignity</span><br>
+      <span class="c"># compose() renormalises over live (non-None) contributors</span>
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)"><b>Theme net</b> blends the theme's bhāvas + sthira/chara kārakas + a signature yoga + the divisional chart (D9/D10/D7…), weights summing to 1.0 per theme (the <code>THEMES</code> catalog). Five bands: thriving ≥ +.40 · supported · mixed · stressed · afflicted ≤ −.40.</span></p>
+    <div class="callout warn"><span class="k">known skew</span>
+      <p>The disposition calc leans on functional-malefic polarity, so some charts sit negative across the board. It's a <em class="term">calibration point, not a bug</em> — the weights and the malefic-polarity magnitude are the first things to tune (see §10, §11).</p>
+    </div>
+  </section>
+
+  <!-- ENSEMBLE -->
+  <section id="ensemble">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Timeline ensemble + bands</h2><span class="file">timeline() · _project_at()</span></div>
+    <p class="lede">The near future is an ensemble of four independent timing clocks, fused into a value + a confidence band whose width is their disagreement.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Clock</th><th>Weight</th><th>Reads</th><th>Tier</th></tr></thead>
+      <tbody>
+        <tr><td><b>Viṁśottarī</b></td><td class="mono">.40</td><td>running lords that are the theme's significators, ×disposition, ×level (.5/.32/.18)</td><td><span class="chip sloka">śloka</span></td></tr>
+        <tr><td><b>Gochara (AV)</b></td><td class="mono">.20</td><td>Jupiter/Saturn over theme houses × aṣṭakavarga potency</td><td><span class="chip sloka">śloka</span></td></tr>
+        <tr><td><b>Chara daśā</b></td><td class="mono">.20</td><td>Jaimini rāśi clock on a theme house → that bhāva's verdict (mahā .6 / antar .4)</td><td><span class="chip jaimini">jaimini</span></td></tr>
+        <tr><td><b>Double-transit</b></td><td class="mono">.20</td><td>Jup <b>and</b> Sat both over the bhāva, its lord <b>and</b> its kāraka — coverage ∈ {0, ⅓, ⅔, 1}, <b>squared</b> so only a near-full transit speaks</td><td><span class="chip synth">synth</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula">
+      central = <span class="k">Σ</span>(wᵢ·clockᵢ)/<span class="k">Σ</span>wᵢ    spread = <span class="k">weighted_std</span>(clockᵢ)<br>
+      conviction = 1 − spread / <span class="g">0.5</span>       <span class="c"># agreement → conviction</span><br>
+      value = clamp(−1, 1, <span class="g">0.5</span>·base + <span class="g">0.5</span>·central)<br>
+      band = [ value − <span class="g">0.5</span>·spread , value + <span class="g">0.5</span>·spread ]
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)">An inactive clock votes 0 (so a lone signal reads as disagreement → low conviction); a clock that can't run (chara with an unknown direction) <em class="term">abstains</em> and is dropped. Chara's sequence direction is set by K.N. Rao's rule — direct iff the 9th sign from lagna is odd-footed (savya), verified against the canonical 12-lagna list.</span></p>
+    <div class="callout"><span class="k">double-transit — three-target rule &amp; weight tuning · aug 2026</span>
+      <p>The double-transit clock was upgraded from a binary house-only hit to the strict classical <b>three-target</b> rule: both Jupiter <em>and</em> Saturn must occupy or <b>fully</b> aspect the bhāva, its lord, <em>and</em> its kāraka (a full aspect only — Jup 5/7/9, Sat 3/7/10; the Parāśari ¼/½/¾ partials are excluded, else the yoga would "hit" 7+ signs and persist for years). <code>coverage</code> is the fraction of those three targets doubly-hit.</p>
+      <p>Its ensemble weight was then tuned by a <b>judge-panel</b> — four independent lenses (doctrinal fidelity · statistical independence · robustness/overfitting · interpretability) scoring four candidate schemes, then an adversary. A 6-chart sweep proved the raw weight is <b>low-leverage</b> (doubling .15→.30 moves the projection only ~1 point on [−1,1]; conviction stays flat), so the real fix was <em class="term">mechanical</em>:</p>
+      <div class="formula" style="margin:.7rem 0"><span class="c"># muted at partial coverage, decisive only near-full</span><br>c_trig = bhāva_net · <span class="g">coverage²</span>   <span class="c"># ⅓→0.11 · ⅔→0.44 · 1→1.0</span></div>
+      <p>Squaring converts the clock's distribution from <b>frequent-and-weak</b> (active ~30% of months at ~0.16) to <b>rare-and-decisive</b> — a bare ⅓ hit is muted to ~0.11, only a near-full triple-target transit speaks loudly. The weight sits at <b>.20</b> (parity with gochara, rebalanced <em>within</em> the fixed .40 transit budget — daśā stays .60, Viṁśottarī primacy at .40 untouched). The .20 is <em>compensatory</em>, not inflationary: convex muting lowers average firing, so net influence holds near the old .15 while independence <em>improves</em> (squaring lowers trig's correlation with the gochara clock, both of which read the same Jup/Sat pair). The <b>change engine is unaffected</b> — it reads <em>raw</em> coverage (a strict ⅔ rising-edge gate), not the cov² ensemble shaping, so its double-transit event flags don't move.</p>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="events">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Event-typing</h2><span class="file">timeline() windows</span></div>
+    <p class="lede">A window where a theme is timing-driven notable becomes a typed, ranked event.</p>
+    <div class="formula">
+      <span class="c"># a window fires where the timing moved the theme, not just where its base is low</span><br>
+      window: |value| ≥ <span class="g">0.28</span>  AND  |value − base| ≥ <span class="g">0.07</span><br>
+      intensity = |peak| × conviction        rank by intensity<br>
+      <span class="c"># cap 2 per theme, 10 total → variety across life-areas</span>
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)">Each event carries its class (theme), polarity, the driving clock, the daśā lords, and the primary house + lord. The frontend renders the localized label + intensity bar + conviction.</span></p>
+  </section>
+
+  <!-- MC -->
+  <section id="mc">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Monte-Carlo</h2><span class="file">montecarlo() · /montecarlo</span></div>
+    <p class="lede">The dominant real-world error is an imprecise birth time. Perturb it and recompute the whole projection to see what survives.</p>
+    <div class="formula">
+      offset ~ Gaussian(0, minutes/2), clamped ±1.8·minutes   <span class="c"># default minutes = 4, samples = 160</span><br>
+      envelope[t] = p10 / p50 / p90 of overall across samples<br>
+      event.survival = fraction of samples the event re-fires (same theme · polarity · overlap)<br>
+      lagnaStability, charaDirStability = fraction keeping the base value<br>
+      <span class="c"># fixed seed 0x0DE7A5 → a request reproduces</span>
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)">Correctly widens near a lagna cusp (stability drops, envelope doubles) and stays tight for a robust birth. Shown as a second band, <em class="term">separate</em> from the clock-disagreement band.</span></p>
+  </section>
+
+  <!-- BACKTEST -->
+  <section id="backtest">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Calibration backtest</h2><span class="file">backtest() · /backtest</span></div>
+    <p class="lede">Log real events; score what the engine would have shown at those dates. A personal hit-rate — the honest track record.</p>
+    <div class="formula">
+      for each (theme, month, went-well/badly):   v = _project_at(that month)<br>
+      hit = sign(v) == polarity                    <span class="c"># the displayed value</span><br>
+      hitRate, meanDirectional           <span class="c"># on v (base + timing)</span><br>
+      timingHitRate, meanTimingDirectional  <span class="c"># on central (timing only — base bias removed)</span>
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)">Two scores by design: the displayed value (what you see) and the base-independent timing signal — so a theme's standing bias doesn't mask whether the daśā/transit timing actually moved the right way. This is the surface a future auto-tuner would optimise.</span></p>
+  </section>
+
+  <!-- CHANGE -->
+  <section id="change">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Change engine</h2><span class="file">changes() · CHANGE_SIGS</span></div>
+    <p class="lede">Transitions, not levels — where a life-area is about to turn, typed across three motives.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Detector</th><th>Fires when</th></tr></thead>
+      <tbody>
+        <tr><td><b>Daśā junction</b></td><td>a mahā/antar lord that rules/signifies the domain hands over</td></tr>
+        <tr><td><b>Transit ingress</b></td><td>a slow graha (Jup · Sat · Mars · Rāhu · Ketu) changes sign into a domain house</td></tr>
+        <tr><td><b>Sharp swing</b></td><td>|Δtheme| ≥ <span class="mono">0.22</span> over 3 months</td></tr>
+      </tbody>
+    </table></div>
+    <p class="prose" style="margin-top:.9rem"><span style="color:var(--ink-2)">18 <code>CHANGE_SIGS</code> (houses + kārakas + trigger planets + mode) group into <em class="term">health · wealth-career · relationships</em>. Direction comes from the driving significator's disposition; conviction = <span class="mono">0.4 + .12·(nTriggers−1) + .22·|disp|</span>, blended with the theme's conviction, deduped within 3 months, capped 2 per signature.</span></p>
+    <div class="callout warn"><span class="k">responsibility — by design</span>
+      <p>The two sensitive readings — a partner's fidelity (<code>rel.trust</code>), loss of a loved one (<code>rel.tender</code>) — are reframed as <b>care-signals</b> ("nurture trust", "cherish and attend"), tagged <code>care:true</code>, opt-in behind a toggle, marked ♥. Never a verdict about another person, never a date or a death forecast.</p>
+    </div>
+  </section>
+
+  <!-- LIFE -->
+  <section id="life">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Life arc</h2><span class="file">lifearc() · /lifearc</span></div>
+    <p class="lede">The same evaluator walked <em class="term">yearly from birth</em>, blended into six life-facets, with the daśā ribbon and the turning points.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Facet</th><th>Theme blend</th></tr></thead>
+      <tbody>
+        <tr><td><b>Wealth · earned</b></td><td class="mono">career .5 · wealth .5</td></tr>
+        <tr><td><b>Wealth · received</b></td><td class="mono">fortune .5 · home .3 · wealth .2</td></tr>
+        <tr><td><b>Health · physical</b></td><td class="mono">health .5 · self .3 · longevity .2</td></tr>
+        <tr><td><b>Health · mental</b></td><td class="mono">self .5 · home .3 · education .2</td></tr>
+        <tr><td><b>Rel · family</b></td><td class="mono">home .4 · fortune .3 · children .3</td></tr>
+        <tr><td><b>Rel · others</b></td><td class="mono">marriage .5 · enemies .3 · foreign .2</td></tr>
+      </tbody>
+    </table></div>
+    <p class="prose" style="margin-top:.9rem"><span style="color:var(--ink-2)"><b>Turning points</b> are <em class="term">relative</em> — a local peak/trough with prominence ≥ <span class="mono">0.07</span> over ±3 years (so a life can turn up even below its mean) — plus mahāpuruṣa-yoga activations dated to their planet's mahādaśā. The theme→facet blends are the softest part of the whole engine (see §11).</span></p>
+  </section>
+
+  <!-- EXPLAIN -->
+  <section id="explain">
+    <div class="sec-head"><span class="sec-num">09</span><h2>Ask your chart</h2><span class="file">api/explain.py · /api/explain</span></div>
+    <p class="lede">A free-text question — "jupiter in the 2nd house", "gajakesari yoga", "how is September 2026 looking?", "when did I have my children?", "chance of marriage next year?" — routed to a typed intent and answered by <em class="term">composing the layers above</em>. It adds no astronomy of its own; the parser is the only new logic.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Intent</th><th>Query</th><th>Composes</th></tr></thead>
+      <tbody>
+        <tr><td><b>Placement</b></td><td class="mono">jupiter · jupiter in the 2nd · saturn in taurus · jupiter in 2027</td><td>cited concordance reading (graha×house|sign) + the bhāva verdict + the graha's daśā windows over life — and, for a bare graha, its <em>full context</em>: dṛṣṭi · gochara · role (see below). A graha + a year shows its transit <em>then</em>, not just now.</td></tr>
+        <tr><td><b>Yoga</b></td><td class="mono">gajakesari yoga · hamsa</td><td>the yoga's cited BPHS effect (<code>yoga_rules.YOGAS</code>) + present-in-chart (+ forming grahas / strength) + those grahas' daśā windows</td></tr>
+        <tr><td><b>Theme</b></td><td class="mono">my career · wealth · marriage</td><td>the standing verdict + cited ledger + significator houses/kārakas + near-future events + the theme's life-facet</td></tr>
+        <tr><td><b>House</b></td><td class="mono">10th house · 2nd house in 2027</td><td>the bhāva verdict + every occupant's cited planet-in-house reading + the house's life-facet (+ a window verdict when a year is asked)</td></tr>
+        <tr><td><b>Period</b></td><td class="mono">how is September 2026? · next year · 2027</td><td>per-theme projection over the window (<code>_project_at</code> mid-months) + running daśā + events/changes falling in it + Jup/Sat/Sun transits with AV tone <b>and the cited ch.26 gochara judgment + per-house phala</b> (see below) + the chart-tailored <b>pañcāṅga auspicious-day counts</b> (≤2-month windows). Pre-birth windows are refused.</td></tr>
+        <tr><td><b>When</b></td><td class="mono">when did I have my children? · chance of marriage next year?</td><td><em>past</em>: yearly walk, windows <b>relative</b> to the axis's own life average, each with its daśā lord, age and delta. <em>future</em>: the 36-mo curve's relative windows + the theme's typed change events + a focus verdict for the asked window. Each window quotes its <b>fired BPHS antardaśā result</b> (ch.52-60, chart-gated; theme-matched "BPHS" or honestly-general "BPHS · this period"; the corpus's own cross-references resolved, never invented) and the theme's <b>standing yoga indications</b> with their fructification daśās.</td></tr>
+        <tr><td><b>Daśā</b></td><td class="mono">when will my Saturn period end?</td><td>the graha's actual Viṁśottarī mahādaśā spans (<code>build_vimshottari</code>) + the running mahā/antar and their end dates</td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula">
+      <span class="c"># parse: free text → one typed intent (diacritic-folded aliases), in this order</span><br>
+      <span class="g">die/death token → the care refusal, before anything else can outrank it</span><br>
+      graha + period/daśā word → <span class="k">daśā</span>    graha (+ house|sign|year) → <span class="k">placement</span>    yoga name → <span class="k">yoga</span><br>
+      when-verbs + theme → <span class="k">when</span> (past|future)    "Nth house" (+ year) → <span class="k">house</span><br>
+      theme + window → <span class="k">when</span> (direction from the window's tense)    bare window → <span class="k">period</span>    theme word → <span class="k">theme</span><br>
+      <span class="c"># graha ← vedic.GRAHAS · rāśi ← RASIS · yoga ← the 74-entry catalog · theme words curated</span><br>
+      <span class="c"># windows: month names ("may" needs a year — it is also a modal verb) · 19|20\d\d · next/this year/month</span>
+    </div>
+    <p class="prose" style="margin-top:.8rem"><span style="color:var(--ink-2)">Aliases fold diacritics (<em class="term">Guru = jupiter</em>, <em class="term">Meṣa = Mesha = Aries</em>), and theme words are stop-listed out of the yoga aliases so "wealth" resolves to the wealth <em>theme</em>, never a raja yoga. An <b>"Ask this chart" box on the chart-view controls row</b> (beside Pañcāṅga) feeds the same panel, which scrolls itself into view with a brief highlight so the answer — rendered below the chart — announces itself. One new primitive underlies the reading: <code>classical.readings_for(graha, house=|sign=)</code>, the per-cell concordance reader.</span></p>
+
+    <h3 class="sub">The full graha context <span class="chip synth">api/explain._graha_facets</span></h3>
+    <p class="prose"><span style="color:var(--ink-2)">A bare-graha query ("jupiter") returns not just a placement but everything the chart says about that graha, in three cited facets — composed, again, from engines that already exist:</span></p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Facet</th><th>How it is read</th></tr></thead>
+      <tbody>
+        <tr><td><b>Dṛṣṭi</b> — aspects</td><td>the houses it casts a <em class="term">full</em> aspect on (<code>drishti.graha_drishti ≥ 1.0</code> — Jupiter 5/7/9, Saturn 3/7/10, every graha's 7th) + the grahas it aspects and is aspected by (<code>m_out.edges.aspects</code>, strength ≥ ½)</td></tr>
+        <tr><td><b>Gochara</b> — transit now</td><td>where it transits <em class="term">today</em>: <code>_transit_sign(julday(utcnow), swe_id)</code> → the sign, its house from the lagna and from the Moon, an aṣṭakavarga tone from its bindus in that sign (<span class="mono">≥5</span> supportive · <span class="mono">≤3</span> straining), <b>and the cited Phaladīpikā ch.26 judgment + per-house phala</b> (below)</td></tr>
+        <tr><td><b>Role</b> — in the chart</td><td>its house lordships, the houses it is natural kāraka of (<code>_BHAVA_KARAKA</code>), its chara-kāraka role (Ātmakāraka…), its dispositor (<code>rāśi lord</code>), conjunctions, dignity, and the yogas it forms</td></tr>
+      </tbody>
+    </table></div>
+    <p class="prose" style="margin-top:.7rem"><span style="color:var(--ink-3)">Cited to BPHS ch.26 (graha dṛṣṭi) + aṣṭakavarga. The transit reads the server's current date, so it is honestly "now"; Ketu, having no Swiss-Ephemeris body, transits at Rāhu + 6 signs and carries no bhinna bindu.</span></p>
+
+    <h3 class="sub">The gochara layer — Phaladīpikā ch.26, complete <span class="chip synth">api/gochara_rules.py</span></h3>
+    <p class="prose"><span style="color:var(--ink-2)">Every transit line carries the book's own judgment, from the <b>complete 9×12 grid</b> of Phaladīpikā's transit chapter: each graha's <b>favourable houses from the Moon sign</b> (śl.2), each favourable house's <b>vedha (obstruction) house</b> (śl.3-8), and the <b>per-house effect text</b> for all nine grahas in all twelve houses (śl.9-28). The vedha check is <em class="term">live</em>: the engine computes where all nine grahas transit and voids a favourable transit when another planet stands in its vedha house — honouring the text's two father-son exemptions (<em class="term">Sun ↔ Saturn, Moon ↔ Mercury</em>) and counting from the Moon sign (Nārada's method, as the commentary adopts). Rāhu/Ketu carry favourable houses but no vedha pairs — because the text gives none.</span></p>
+    <div class="formula">
+      <span class="c"># transit_judgment(graha, house_from_moon, occupants_from_moon)</span><br>
+      house ∈ favourable[graha] ?  →  vedha house occupied by a non-exempt planet ?<br>
+      &nbsp;&nbsp;yes+clear → <span class="k">favourable</span>    yes+occupied → <span class="k">obstructed</span> (blockers named)    no → <span class="k">not-favourable</span><br>
+      + <span class="g">phala[graha][house]</span> — the text's effect for that station, quoted in the viewer's language
+    </div>
+    <div class="callout"><span class="k">provenance — the 1946 hindi original</span>
+      <p>The source is the <b>original Hindi edition</b> — <em class="term">Phaladīpikā (Bhāvārtha Bodhinī)</em>, Paṇḍit Gopesh Kumar Ojha's vyākhyā, Motilal Banarsidass, 1st ed. 1946 (a complete library scan; the 2008 English edition on hand is a preview PDF missing ~80% of the chapter — its one surviving Sun page independently <em class="term">corroborates</em> the Hindi table). Extraction ran the same pipeline as the concordance: page-by-page rendering, per-graha extraction from <b>Ojha's Hindi artha</b> (the Sanskrit ślokas are never self-translated), then adversarial verification — <b>108 of 108 cells confirmed</b>, cited to śloka + printed page. Each cell is bilingual: the Hindi gist condenses Ojha's own wording (native provenance for the Hindi locale); the English gist is a labelled site rendering <em>of the Hindi</em>, §5-adapted. The module is <em class="term">generated programmatically</em> from the verified extraction JSON — no manual transcription sits between the verifier and the shipped table.</p>
+    </div>
+
+    <h3 class="sub">Time questions — relative windows &amp; the sensible-age rule <span class="chip synth">_explain_when · _explain_period</span></h3>
+    <p class="prose"><span style="color:var(--ink-2)">Timing windows are <b>relative</b>, never absolute: a window is a stretch where the theme ran clearly above <em class="term">its own</em> average — threshold <span class="mono">μ + max(0.07, 0.5σ)</span> over the sensible span — so a strained axis (a children theme standing at −0.10) still shows when it was most activated, and each window reports its <span class="mono">delta</span>. Past answers are framed as <em class="term">activation, not a record</em>; future percentages are the clocks' <em class="term">agreement (conviction), never a probability</em>.</span></p>
+    <div class="tblwrap"><table>
+      <thead><tr><th colspan="8">Age floors — timing windows below the floor are not shown, and the floor is <em>stated in the answer</em>, never applied silently</th></tr></thead>
+      <tbody>
+        <tr><td><b>children</b> <span class="mono">20</span></td><td><b>marriage</b> <span class="mono">18</span></td><td><b>career</b> <span class="mono">16</span></td><td><b>wealth</b> <span class="mono">16</span></td><td><b>home</b> <span class="mono">16</span></td><td><b>enemies</b> <span class="mono">14</span></td><td><b>foreign</b> <span class="mono">5</span></td><td><b>education</b> <span class="mono">3</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="prose" style="margin-top:.7rem"><span style="color:var(--ink-3)">The math can show a life-event axis "activated" at age 2 (a daśā favouring the 5th house) — but nobody has children at 2, so the yearly walk <em>starts</em> at the floor and the relative mean is computed over the sensible span only (childhood years cannot bias it). The same floor prunes future windows and change events, so a child's chart asked about marriage gets an honest <em class="term">empty</em>. Both directions of the mortality question — "when will/did … die", about anyone — are answered with the care refusal, checked <em>first</em> in the parser so no other keyword can outrank it.</span></p>
+
+    <h3 class="sub">The chart answers on hover — bhāva cards <span class="chip synth">RasiChart.jsx · SkyWheel.jsx · BhavaHoverCard · useBhavaHover</span></h3>
+    <p class="prose"><span style="color:var(--ink-2)">Hovering any house on the South, North <em>or Sky-wheel</em> chart — on <b>every varga, D1 through D60</b> — raises a cited card. <b>Touch works too, with real tap semantics</b>: a tap <em class="term">pins</em> the card (with a "tap again — or anywhere outside — to close" hint), the same-house tap toggles it off, and a tap outside the chart dismisses it; on desktop, mouse hover previews transiently and a click pins. The one non-obvious rule: <em class="term">touch pointers are barred from the transient hover path</em> — on touch, <code>pointerenter</code> fires on tap but <code>pointerleave</code> fires the instant the finger lifts, so a hover-only card would flash and vanish on phones. The <code>useBhavaHover</code> hook guards the enter handler to mouse/pen and routes taps through the pin/toggle path with a document-level outside-tap dismiss.</span></p>
+    <p class="prose" style="margin-top:.6rem"><span style="color:var(--ink-2)">The card itself: Everywhere it shows the bhāva's <b>BPHS ch.11 significations</b> (house-generic, bilingual), its kendra/trikoṇa/duḥsthāna nature, the varga's own <em class="term">read-for</em> line, and the house <b>lord located in the same varga</b>. No backend was touched: the significations, the concordance readings and the server-computed aspects-per-sign were already riding unused in the <code>/api/chart</code> payload.</span></p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Frame</th><th>What the card additionally shows — and why the split</th></tr></thead>
+      <tbody>
+        <tr><td><b>D1</b> (rāśi)</td><td>each occupant's <b>dignity</b> + its cited classical planet-in-house reading, and the <b>server-computed ch.26 dṛṣṭi</b> on the house (<code>analysis.drishti.graha.received.signs</code>) — these are rāśi-chart facts; Sārāvalī's "Moon in the 12th" speaks of the birth chart, so its words stay there</td></tr>
+        <tr><td><b>Vargas</b> (D2–D60)</td><td>occupants plainly (no D1 dignity leaking into the wrong frame), and dṛṣṭi <b>recomputed sign-to-sign within the varga's own frame</b> (the same ch.26 graded table — 7th + specials full, 4/8 ¾, 5/9 ½, 3/10 ¼; seven casters, no nodes) — labelled openly <em class="term">"an engine extension, not stated by the text"</em>. The D1 aspect data is never shown against a varga sign: same index, wrong frame.</td></tr>
+        <tr><td><b>Sky wheel</b></td><td>the wheel plots real D1 ecliptic longitudes, so it gets the <b>full D1 card</b> — plus a wheel-only <b>"Transiting here now"</b> line naming the transit grahas standing in the hovered sign. Names and ℞ only: the ch.26 <em>gochara judgments</em> are Moon-frame facts and stay in the Ask layer rather than decorate a lagna-frame house card. Hit areas are invisible full-sector wedges laid <em class="term">under</em> every painted layer, so empty wheel space raises the card without disturbing the wheel's own glyph, transit-pin and aspect-line interactions.</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout"><span class="k">cite or refuse, everywhere</span>
+      <p>Each layer keeps its provenance. Concordance readings are cited &amp; dated <span class="chip synth">classical</span> and simply <em class="term">absent</em> when no source covers a cell; yoga effects are cited BPHS ślokas <span class="chip sloka">śloka</span>, never paraphrased into a meaning; the bhāva/theme verdict opens its weighted ledger; the life arc stays a broad shape. Time answers refuse what cannot be sensible: pre-birth windows, sub-floor ages, and any dating of a death. The hover cards keep rāśi-chart facts on the rāśi chart and label every varga-frame extension. The layer surfaces what the engines below can source — and refuses the rest.</p>
+    </div>
+  </section>
+
+  <!-- TUNING -->
+  <section id="tuning">
+    <div class="sec-head"><span class="sec-num">10</span><h2>The tuning surface</h2></div>
+    <p class="lede">Every knob, its current value, and what it controls. All in <code>api/matrix.py</code> unless noted — all <span class="chip synth">synth</span>-tier (a curated heuristic, not scripture), so all fair game.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Knob</th><th>Now</th><th>Controls</th></tr></thead>
+      <tbody>
+        <tr><td><code>BHAVA_WEIGHTS</code></td><td class="mono">.40/.25/.20/.15</td><td>lord vs occupants vs aspects vs kāraka in a bhāva verdict</td></tr>
+        <tr><td><code>THEMES[].weights</code></td><td class="mono">sum 1.0</td><td>how each theme blends bhāvas/kārakas/yoga/varga</td></tr>
+        <tr><td><code>_CLOCK_W</code></td><td class="mono">.40/.20/.20/.20</td><td>Viṁśottarī / gochara / chara / double-transit (last is convex in coverage — see §03)</td></tr>
+        <tr><td><code>_LEVEL_W</code></td><td class="mono">.5/.32/.18</td><td>mahā / antar / pratyantar strength in the daśā clock</td></tr>
+        <tr><td><code>_CHARA_LVL</code></td><td class="mono">.6/.4</td><td>mahā vs antar inside the chara clock</td></tr>
+        <tr><td><code>_SPREAD_FULL</code></td><td class="mono">0.5</td><td>disagreement at which conviction hits 0</td></tr>
+        <tr><td>base↔central blend</td><td class="mono">0.5 / 0.5</td><td>standing verdict vs timing in the shown value</td></tr>
+        <tr><td>band half-width</td><td class="mono">0.5·spread</td><td>how wide the confidence band draws</td></tr>
+        <tr><td>event thresholds</td><td class="mono">|v|≥.28, Δ≥.07</td><td>what counts as a projected event; cap 2/theme, 10 total</td></tr>
+        <tr><td>potency split (AV)</td><td class="mono">.5 own / .5 sarva</td><td>bindu weighting of a transit</td></tr>
+        <tr><td><code>_SWING_THRESH</code></td><td class="mono">0.22</td><td>how sharp a swing must be to flag a change</td></tr>
+        <tr><td>change conviction</td><td class="mono">.4 +.12·n +.22·|d|</td><td>how confident a change reads</td></tr>
+        <tr><td>MC <code>minutes</code>/<code>samples</code></td><td class="mono">4 / 160</td><td>birth-time spread &amp; Monte-Carlo depth</td></tr>
+        <tr><td>life-arc facet blends</td><td class="mono">_FACETS</td><td>how the 12 themes map to the 6 facets</td></tr>
+        <tr><td>turning prominence</td><td class="mono">0.07 / ±3y</td><td>sensitivity of life-arc turning points</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- LIMITS -->
+  <section id="limits">
+    <div class="sec-head"><span class="sec-num">11</span><h2>Limits &amp; how to improve</h2></div>
+    <p class="lede">The honest weak spots, roughly in order of leverage — the best places to put your attention.</p>
+    <div class="improve">
+      <div class="imp"><span class="n">1</span><span><b>Nothing is calibrated yet.</b> Every weight is a sensible starting value, not a fitted one. The whole engine is uncalibrated until real events tell it what's right.
+        <span class="how">Improve: log your own dated events, run the backtest, and let the hit-rate (esp. the base-independent <em>timing</em> score) drive the weights. An auto-tuner over <code>_CLOCK_W</code> + <code>BHAVA_WEIGHTS</code> is the single highest-value next build.</span></span></div>
+      <div class="imp"><span class="n">2</span><span><b>The base skews negative on some charts.</b> The disposition = polarity × strength calc lets functional malefics dominate, so a chart can read gloomy across the board.
+        <span class="how">Improve: soften the malefic-polarity magnitude / dignity nudges, or normalise each chart so its themes centre near 0 — the shape matters more than the offset.</span></span></div>
+      <div class="imp"><span class="n">3</span><span><b>Life-arc facets are fuzzy.</b> The 6 facets are blends of the 12 themes (e.g. "received wealth" = fortune + home + wealth) — interpretable but not rigorous; some houses double up.
+        <span class="how">Improve: compute each facet directly from its own houses + kārakas via the ensemble, rather than blending finished themes.</span></span></div>
+      <div class="imp"><span class="n">4</span><span><b>Only the change engine uses fast transits.</b> The main timeline still runs on Jupiter &amp; Saturn only; Mars and the nodes are in the change detectors but not the near-future curve.
+        <span class="how">Improve: add Mars/Rāhu/Ketu to the gochara clock, aṣṭakavarga-gated, for finer near-term texture.</span></span></div>
+      <div class="imp"><span class="n">5</span><span><b>Resolution is coarse.</b> The near future is monthly; the life arc is yearly. Fine events (a specific week) and per-daśā-period life detail are averaged away.
+        <span class="how">Improve: adaptive resolution — daily near-term, per-antar over life — once a curve view can carry it.</span></span></div>
+      <div class="imp"><span class="n">6</span><span><b>The event vocabulary is tight.</b> ~12 event classes and 18 change-signatures cover the common questions but miss the long tail (litigation, relocation abroad, specific health systems).
+        <span class="how">Improve: expand the catalogs after calibration shows which classes actually land.</span></span></div>
+      <div class="imp"><span class="n">7</span><span><b>Yoga turning points are partial.</b> Only mahāpuruṣa yogas (which name a planet) get dated to a daśā; raja/dhana/nābhasa yogas colour the whole life but aren't placed in time.
+        <span class="how">Improve: map every detected yoga to its constituent planets' daśās (needs the yoga detector to expose its grahas).</span></span></div>
+    </div>
+  </section>
+
+  <!-- ETHOS -->
+  <section id="ethos">
+    <div class="sec-head"><span class="sec-num">12</span><h2>Provenance &amp; ethics</h2></div>
+    <p class="lede">Two rules hold the whole thing together.</p>
+    <p class="prose"><strong>Cite or refuse.</strong> Tiers stay separated — <span class="chip sloka">śloka</span> (BPHS), <span class="chip jaimini">jaimini</span> (Chara daśā, K.N. Rao), <span class="chip synth">synth</span> (the weights) — never blended into scripture. Where a classical rule isn't in the source (the chara sequence direction), it's sourced explicitly, never guessed. Every number opens to a cited, weighted ledger.</p>
+    <p class="prose"><strong>Indication, not fate.</strong> A window and a direction, never a fated event or a date. The two most sensitive readings are reframed as care and agency by design — offered, opt-in, never asserted.</p>
+    <footer>
+      This is the system as built and live. The design intent behind it lives in the two sign-off specs — the projection engine (🔭) and the change engine (🧭). If you want to improve it, §10 is the dial-set and §11 is where the leverage is; tell me which knob to turn or which limit to close, and I'll build it.
+    </footer>
+  </section>
+</div>
+
+</body></html>

@@ -1801,6 +1801,160 @@ footer a:hover { color: var(--accent); }
   .pj-av { grid-template-columns: repeat(6, 1fr); }
 }
 
+/* ── Daśā navigator, second pass ───────────────────────────────────────────
+   Nine graha hues, fixed across every theme so the eye learns them once. They
+   are never used raw: each band mixes its hue INTO the theme's panel for the
+   fill and into the ink for text, so the same nine read correctly on paper
+   and on a dark ground. The verdict keeps the band's foot (v-* rules above);
+   the hue and the verdict never share a channel. */
+:root {
+  --gr-sun: #f0a24a;
+  --gr-moon: #6fb2e4;
+  --gr-mars: #e0616f;
+  --gr-rahu: #9a8bd0;
+  --gr-jupiter: #e8c247;
+  --gr-saturn: #5a7fc6;
+  --gr-mercury: #5cb87c;
+  --gr-ketu: #e9905e;
+  --gr-venus: #e37aa9;
+}
+
+.dt-head { display: flex; flex-wrap: wrap; gap: .8rem 1.2rem; align-items: flex-start; margin-bottom: 1.1rem; }
+.dt-title h4 { margin: 0; font-size: 1.45rem; letter-spacing: 0; text-transform: none; color: var(--ink); font-weight: var(--strong-weight); line-height: 1.1; }
+.dt-title-sub { font-size: .8rem; color: var(--dim); }
+.dt-head .dt-chips { margin: 0; }
+.dt-chain-lord { display: inline-flex; align-items: center; gap: .3rem; color: color-mix(in oklab, var(--g) 62%, var(--ink)); }
+.dt-chain-v .dt-sep { color: var(--dim); }
+
+/* the track: taller, unclipped so the TODAY pill can sit above it */
+.dasha-timeline .dt-track {
+  height: 84px; overflow: visible; border: 0; background: transparent; border-radius: 0;
+  margin-top: 1.25rem;
+}
+/* the band: a rounded tile in its graha's own tint, glyph / name / duration */
+.dasha-timeline .dt-band {
+  top: 0; bottom: 0;
+  left: calc(var(--l, 0%) + 0px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 6px 3px 8px; margin: 0;
+  border-right: 0; border-radius: 10px;
+  border-bottom-width: 5px; border-bottom-style: solid;   /* colour comes from the v-* verdict rules */
+  box-sizing: border-box;
+  background: var(--sunken);
+  background: color-mix(in oklab, var(--g) 26%, var(--panel));
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--g) 35%, var(--line));
+  overflow: hidden;
+  /* leave a hairline between neighbours without changing the proportional maths */
+  clip-path: inset(0 1.5px 0 1.5px round 10px);
+}
+.dasha-timeline .dt-band:hover { background: color-mix(in oklab, var(--g) 38%, var(--panel)); }
+.dasha-timeline .dt-band.past { opacity: .72; }
+.dasha-timeline .dt-band.selected { box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--g) 70%, var(--ink)); }
+.dasha-timeline .dt-band.running {
+  box-shadow: inset 0 0 0 2px var(--accent), 0 0 0 3px var(--accent-soft);
+  background: color-mix(in oklab, var(--g) 40%, var(--panel));
+}
+.dasha-timeline .dt-band .dt-band-glyph { color: color-mix(in oklab, var(--g) 72%, var(--ink)); }
+.dasha-timeline .dt-band .dt-band-lord {
+  display: block; font-size: .78rem; font-weight: var(--strong-weight); line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: clip; max-width: 100%;
+}
+.dasha-timeline .dt-band .dt-band-dur { display: block; font-size: .66rem; color: var(--dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* a band under ~5% of the rail keeps glyph + name and gives up the duration
+   (the tooltip still carries it); the name itself never disappears */
+.dasha-timeline .dt-band.tight .dt-band-dur { display: none; }
+.dasha-timeline .dt-band.tight .dt-band-lord { font-size: .68rem; }
+.dasha-timeline .dt-band.tight { padding-left: 1px; padding-right: 1px; }
+.dt-cond { position: absolute; top: 3px; right: 5px; margin: 0; }
+
+/* today: pill above, dashed line through */
+.dasha-timeline .dt-now { position: absolute; top: -1.15rem; bottom: 0; width: 0; z-index: 4; }
+.dasha-timeline .dt-now::before {
+  content: ''; position: absolute; top: 1.15rem; bottom: -.15rem; left: -1px;
+  width: 0; border-left: 2px dashed var(--accent); background: none;
+}
+.dasha-timeline .dt-now-label {
+  position: absolute; top: 0; left: 0; transform: translateX(-50%);
+  font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; font-weight: var(--strong-weight);
+  color: var(--on-accent); background: var(--accent); padding: .1rem .45rem; border-radius: 6px;
+  white-space: nowrap;
+}
+.dasha-timeline .dt-axis { height: 1.2rem; margin-top: .35rem; border-top: 1px solid var(--line); }
+.dasha-timeline .dt-tick { top: .2rem; font-size: .66rem; }
+
+/* funnel washed in the expanded graha's colour */
+.dasha-timeline .dt-funnel { height: 1.6rem; }
+.dasha-timeline .dt-funnel polygon { fill: color-mix(in oklab, var(--g) 22%, transparent); }
+.dasha-timeline .dt-funnel-label { font-size: .68rem; }
+
+/* sidebar, larger */
+.dasha-timeline .dt-card h4 { font-size: .82rem; letter-spacing: .02em; text-transform: none; color: var(--ink); }
+.dasha-timeline .dt-now-row { border: 0; padding: .55rem .6rem; margin: 0; border-radius: 10px; background: color-mix(in oklab, var(--g) 18%, var(--panel)); }
+.dasha-timeline .dt-now-row .dt-glyph { color: color-mix(in oklab, var(--g) 70%, var(--ink)); margin-top: 0; }
+.dasha-timeline .dt-now-lord { font-size: 1.12rem; }
+.dasha-timeline .dt-now-lvl { font-size: .74rem; }
+.dasha-timeline .dt-now-dates { font-size: .76rem; color: var(--ink); }
+.dt-now-dur { font-size: .72rem; color: var(--dim); }
+.dt-arrow { text-align: center; color: var(--dim); font-size: .9rem; line-height: 1.3; }
+.dasha-timeline .dt-rem-row { font-size: .8rem; padding: .3rem 0; border-bottom: 1px solid var(--line); }
+.dasha-timeline .dt-rem-row:last-child { border-bottom: 0; }
+.dasha-timeline .dt-rem-v { font-size: .86rem; }
+
+/* the strip of all mahādaśās under the rails */
+.dt-strip { margin-top: 1.1rem; }
+.dt-strip-title { font-size: .95rem; font-weight: var(--strong-weight); color: var(--ink); margin-bottom: .45rem; }
+.dt-strip-title span { font-size: .74rem; color: var(--dim); font-weight: var(--text-weight); }
+.dt-strip-t { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: .76rem; }
+.dt-strip-t th { padding: .4rem .3rem .3rem; text-align: center; border-radius: 8px;
+  background: color-mix(in oklab, var(--g) 26%, var(--panel)); color: var(--ink); font-weight: var(--strong-weight); }
+.dt-strip-t th .dt-glyph { display: block; margin: 0 auto .15rem; color: color-mix(in oklab, var(--g) 72%, var(--ink)); }
+.dt-strip-t th:first-child, .dt-strip-t td:first-child { text-align: left; background: transparent; color: var(--dim); font-weight: var(--label-weight); white-space: nowrap; }
+.dt-strip-t th.running { box-shadow: inset 0 0 0 2px var(--accent); }
+.dt-strip-t td { text-align: center; padding: .3rem .25rem; background: var(--sunken); border-radius: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.dt-table tr td.dt-tbl-lord .dt-glyph { color: color-mix(in oklab, var(--g) 72%, var(--ink)); }
+/* a tight band (under ~5% of its rail, or any band under 34px) turns its name
+   vertical instead of clipping it: glyph on top, the name read downward, the
+   duration left to the tooltip. The name never disappears. */
+.dasha-timeline .dt-band.tight .dt-band-lord,
+.dasha-timeline .dt-band.tight .dt-band-dur { display: none; }
+.dasha-timeline .dt-band.tight .dt-band-vert {
+  display: block; writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: .68rem; font-weight: var(--strong-weight); line-height: 1; letter-spacing: .02em;
+  max-height: 62px; overflow: hidden; white-space: nowrap;
+}
+.dasha-timeline .dt-band .dt-band-vert { display: none; }
+/* The band is a size container (see the older rules above), so the vertical
+   fallback can key off the band's OWN width with no JS and no re-measuring
+   after a resize: under 50px of content box, glyph on top and the name read
+   downward; the duration is left to the tooltip. */
+@container (max-width: 50px) {
+  .dasha-timeline .dt-band .dt-band-lord,
+  .dasha-timeline .dt-band .dt-band-dur { display: none; }
+  .dasha-timeline .dt-band .dt-band-vert {
+    display: block; writing-mode: vertical-rl; text-orientation: mixed;
+    font-size: .66rem; font-weight: var(--strong-weight); line-height: 1; letter-spacing: .02em;
+    max-height: 56px; overflow: hidden; white-space: nowrap;
+  }
+  .dasha-timeline .dt-band { padding-left: 1px; padding-right: 1px; padding-top: 4px; gap: 1px; }
+}
+
+@media (max-width: 780px) {
+  /* on a phone the life rail is ~360px: a 6-year band is 18px, so every band
+     under 34px goes vertical regardless of its share of the rail */
+  .dasha-timeline .dt-band.tight .dt-band-vert { max-height: 52px; font-size: .62rem; }
+  .dasha-timeline .dt-band.tight { padding-top: 4px; padding-bottom: 6px; gap: 1px; }
+}
+
+
+@media (max-width: 780px) {
+  /* the track keeps its full height on a phone: a vertical 7-letter name
+     needs the room, and a shorter tile only buys 12px of page */
+  .dasha-timeline .dt-band .dt-band-lord { font-size: .68rem; }
+}
+
+
 
 /* ── Daśā navigator: chips, rails, funnel, sidebar, table ─────────────────
    Every colour here is a variable. The band FILL stays the verdict's alone
@@ -1858,12 +2012,6 @@ footer a:hover { color: var(--accent); }
 .dt-rail-span { margin-left: auto; }
 .dt-rail-dur { color: var(--dim); }
 
-/* a band too narrow for its words keeps the glyph and drops the text, rather
-   than overflowing into its neighbour */
-.dt-band.narrow .dt-band-lord,
-.dt-band.narrow .dt-band-dur,
-.dt-band.narrow .dt-cond { display: none; }
-.dt-band.narrow { padding-left: 2px; padding-right: 2px; justify-content: center; }
 
 /* funnel between rails */
 .dt-funnel { position: relative; height: 1.5rem; margin: .1rem 0 .15rem; }

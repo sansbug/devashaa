@@ -1955,6 +1955,50 @@ export const CHROME = {
     "en": "daśā",
     "hi": "दशा"
   },
+  "dtl.title": {
+    "en": "Daśā navigator",
+    "hi": "दशा-नेविगेटर"
+  },
+  "dtl.strip.title": {
+    "en": "All mahādaśās",
+    "hi": "सभी महादशाएँ"
+  },
+  "dtl.strip.yearcycle": {
+    "en": "year cycle",
+    "hi": "वर्षीय चक्र"
+  },
+  "dtl.side.in": {
+    "en": "In",
+    "hi": "में"
+  },
+  "dtl.long.year": {
+    "en": "year",
+    "hi": "वर्ष"
+  },
+  "dtl.long.years": {
+    "en": "years",
+    "hi": "वर्ष"
+  },
+  "dtl.long.month": {
+    "en": "month",
+    "hi": "माह"
+  },
+  "dtl.long.months": {
+    "en": "months",
+    "hi": "माह"
+  },
+  "dtl.long.day": {
+    "en": "day",
+    "hi": "दिन"
+  },
+  "dtl.long.days": {
+    "en": "days",
+    "hi": "दिन"
+  },
+  "dtl.age.birth": {
+    "en": "birth",
+    "hi": "जन्म"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

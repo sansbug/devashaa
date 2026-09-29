@@ -26,6 +26,13 @@ export const THEMES = [
     swatch: 'radial-gradient(120% 110% at 50% -10%,#fff6e3 0%,#fbe6f1 48%,#dff3f2 100%)',
   },
   {
+    key: 'tulasi',
+    label: 'Tulasi',
+    bg: '#f6f5f0',
+    accent: '#2f5d4a',
+    swatch: 'radial-gradient(120% 110% at 50% -10%,#fffdf3 0%,#e3efe2 52%,#f8e9dc 100%)',
+  },
+  {
     key: 'blossom',
     label: 'Blossom',
     bg: '#f7e6ea',

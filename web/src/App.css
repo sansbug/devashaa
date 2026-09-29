@@ -239,6 +239,53 @@
   --ok-line: #2a5038;
 }
 
+/* Tulasī — the herbal ground. A warm paper leaf lit from overhead, sage rising
+   at lower-left and a terracotta warmth at lower-right; forest green carries
+   every action. Ported from the Vidveda palette, with two deliberate
+   departures: Vidveda's hairline (#e3e7e1) is decorative and would vanish under
+   a chart grid, where a rule IS the data — so --line and --ruler-line are
+   re-derived for contrast; and the panel is pure white so it sits above every
+   gradient stop rather than reading as a hole punched in the wash. */
+:root[data-theme='tulasi'] {
+  color-scheme: light;
+  --glow: none;
+  /* Light ground: dark-on-light does not bloom the way light-on-dark does, so
+     every weight steps up, exactly as on Lotus and Blossom. */
+  --text-weight: 600;
+  --label-weight: 700;
+  --strong-weight: 700;
+  --logo-hi: #6aa98a;       /* a lighter tint of the forest accent — never white
+                               on a light theme, it would vanish into the panel */
+  --bg: #f6f5f0;
+  --bg-image:
+    radial-gradient(1100px 700px at 50% -12%, #fffdf3 0%, rgba(255, 253, 243, 0) 62%),
+    radial-gradient(900px 620px at 8% 106%, #e3efe2 0%, rgba(227, 239, 226, 0) 60%),
+    radial-gradient(820px 560px at 95% 94%, #f8e9dc 0%, rgba(248, 233, 220, 0) 58%),
+    linear-gradient(180deg, #f8f7f1 0%, #f4f4ee 55%, #eef2ea 100%);
+  --panel: #ffffff;
+  --sunken: #eef0e9;
+  --hover: #e4eee3;
+  --line: #829287;        /* 3.28:1 on panel - a chart rule IS data */
+  --dasha-fav: #1f6f52;
+  --dasha-adv: #8f4319;
+  --ruler-line: #68796e;  /* 4.62:1 */
+  --ink: #1f2a25;
+  --dim: #46564d;
+  --accent: #2f5d4a;
+  --on-accent: #f4faf6;
+  --accent-soft: rgba(47, 93, 74, 0.14);
+  --rx: #9a3412;
+  --lagna: #e7edd2;
+  --row-hi: #e9f1e6;
+  --quote-bg: #f0f1ea;
+  --err-bg: #fbeae5;
+  --err-line: #b8664f;
+  --err-ink: #96300f;
+  --ok-ink: #1c6a4d;
+  --ok-line: #3f9c81;
+  --accent-glow: 0 0 16px rgba(47, 93, 74, 0.16);
+}
+
 * { box-sizing: border-box; }
 
 body {

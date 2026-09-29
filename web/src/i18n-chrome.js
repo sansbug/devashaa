@@ -1547,6 +1547,414 @@ export const CHROME = {
     "en": "inside {graha}'s antardaśā",
     "hi": "{graha} की अन्तर्दशा के भीतर"
   },
+  "dtl.chip.balance": {
+    "en": "Birth balance",
+    "hi": "जन्म शेष"
+  },
+  "dtl.chip.current": {
+    "en": "Current daśā",
+    "hi": "वर्तमान दशा"
+  },
+  "dtl.chip.age": {
+    "en": "Age",
+    "hi": "आयु"
+  },
+  "dtl.chip.years": {
+    "en": "years",
+    "hi": "वर्ष"
+  },
+  "dtl.view.label": {
+    "en": "View",
+    "hi": "दृश्य"
+  },
+  "dtl.view.timeline": {
+    "en": "Timeline",
+    "hi": "समयरेखा"
+  },
+  "dtl.view.table": {
+    "en": "Table",
+    "hi": "तालिका"
+  },
+  "dtl.rail.maha.sub": {
+    "en": "The 120-year cycle",
+    "hi": "120-वर्षीय चक्र"
+  },
+  "dtl.rail.antar.sub": {
+    "en": "Sub-periods within {lord}",
+    "hi": "{lord} के भीतर उप-अवधियाँ"
+  },
+  "dtl.rail.pratyantar.sub": {
+    "en": "Sub-sub-periods within {lord}",
+    "hi": "{lord} के भीतर उप-उप-अवधियाँ"
+  },
+  "dtl.funnel.inside": {
+    "en": "expanded from",
+    "hi": "विस्तारित"
+  },
+  "dtl.side.current": {
+    "en": "Where you are now",
+    "hi": "अभी आप कहाँ हैं"
+  },
+  "dtl.side.current_badge": {
+    "en": "running",
+    "hi": "चालू"
+  },
+  "dtl.side.remaining": {
+    "en": "Time remaining",
+    "hi": "शेष समय"
+  },
+  "dtl.side.ages": {
+    "en": "Ages",
+    "hi": "आयु"
+  },
+  "dtl.side.age_now": {
+    "en": "Age now",
+    "hi": "वर्तमान आयु"
+  },
+  "dtl.side.age_start": {
+    "en": "At {lord} start",
+    "hi": "{lord} आरम्भ पर"
+  },
+  "dtl.side.age_end": {
+    "en": "At {lord} end",
+    "hi": "{lord} समाप्ति पर"
+  },
+  "dtl.rem.ended": {
+    "en": "ended",
+    "hi": "समाप्त"
+  },
+  "dtl.unit.y": {
+    "en": "y",
+    "hi": "व"
+  },
+  "dtl.unit.m": {
+    "en": "m",
+    "hi": "मा"
+  },
+  "dtl.unit.d": {
+    "en": "d",
+    "hi": "दि"
+  },
+  "dtl.tbl.planet": {
+    "en": "Graha",
+    "hi": "ग्रह"
+  },
+  "dtl.tbl.period": {
+    "en": "Period",
+    "hi": "अवधि"
+  },
+  "dtl.tbl.start": {
+    "en": "Start",
+    "hi": "आरम्भ"
+  },
+  "dtl.tbl.end": {
+    "en": "End",
+    "hi": "समाप्ति"
+  },
+  "dtl.tbl.age": {
+    "en": "Age",
+    "hi": "आयु"
+  },
+  "dtl.tbl.years": {
+    "en": "years",
+    "hi": "वर्ष"
+  },
+  "pj.tab.overview": {
+    "en": "Overview",
+    "hi": "अवलोकन"
+  },
+  "pj.tab.forecast": {
+    "en": "Forecast",
+    "hi": "पूर्वानुमान"
+  },
+  "pj.tab.lifearc": {
+    "en": "Life arc",
+    "hi": "जीवन-रेखा"
+  },
+  "pj.balance.title": {
+    "en": "Your natal balance",
+    "hi": "आपका जन्म-संतुलन"
+  },
+  "pj.balance.prose": {
+    "en": "The chart shows support for {up}, with pressure around {down}. {near} sit near balance.",
+    "hi": "कुंडली {up} को सहारा देती है, जबकि {down} पर दबाव है। {near} लगभग संतुलन में हैं।"
+  },
+  "pj.balance.prose.nonear": {
+    "en": "The chart shows support for {up}, with pressure around {down}.",
+    "hi": "कुंडली {up} को सहारा देती है, जबकि {down} पर दबाव है।"
+  },
+  "pj.balance.strong": {
+    "en": "Strongest support",
+    "hi": "सबसे मज़बूत सहारा"
+  },
+  "pj.balance.near": {
+    "en": "Near balance",
+    "hi": "लगभग संतुलन"
+  },
+  "pj.balance.weak": {
+    "en": "Most challenged",
+    "hi": "सबसे अधिक चुनौती"
+  },
+  "pj.wheel.title": {
+    "en": "Life wheel",
+    "hi": "जीवन-चक्र"
+  },
+  "pj.wheel.sub": {
+    "en": "Twelve life domains from the natal chart, each a net indication from −1 to +1. Tap a domain to open its ledger.",
+    "hi": "जन्म-कुंडली के बारह जीवन-क्षेत्र, प्रत्येक −1 से +1 तक का शुद्ध संकेत। किसी क्षेत्र पर टैप करें और उसका लेखा देखें।"
+  },
+  "pj.wheel.centre": {
+    "en": "Natal balance",
+    "hi": "जन्म-संतुलन"
+  },
+  "pj.wheel.centre.note": {
+    "en": "mean of the twelve",
+    "hi": "बारह का माध्य"
+  },
+  "pj.detail.hint": {
+    "en": "Select a domain on the wheel to see how its number is built.",
+    "hi": "चक्र पर कोई क्षेत्र चुनें और देखें कि उसका अंक कैसे बनता है।"
+  },
+  "pj.detail.breakdown": {
+    "en": "Breakdown",
+    "hi": "विश्लेषण"
+  },
+  "pj.detail.sources": {
+    "en": "Classical basis",
+    "hi": "शास्त्रीय आधार"
+  },
+  "pj.detail.factor": {
+    "en": "Factor",
+    "hi": "कारक"
+  },
+  "pj.detail.contrib": {
+    "en": "Contribution",
+    "hi": "योगदान"
+  },
+  "pj.detail.weight": {
+    "en": "Weight",
+    "hi": "भार"
+  },
+  "pj.detail.net": {
+    "en": "Net indication",
+    "hi": "शुद्ध संकेत"
+  },
+  "pj.detail.net.sub": {
+    "en": "weighted composite",
+    "hi": "भारित समग्र"
+  },
+  "pj.detail.close": {
+    "en": "Close",
+    "hi": "बंद करें"
+  },
+  "pj.bhava.title": {
+    "en": "Bhāva decomposition",
+    "hi": "भाव-विश्लेषण"
+  },
+  "pj.bhava.sub": {
+    "en": "Each house from its four cited contributors, −1 to +1. Weights are the starting synthesis values.",
+    "hi": "प्रत्येक भाव उसके चार उद्धृत घटकों से, −1 से +1 तक। भार आरम्भिक संश्लेषण मान हैं।"
+  },
+  "pj.asp.title": {
+    "en": "Planetary aspects",
+    "hi": "ग्रह-दृष्टि"
+  },
+  "pj.asp.sub": {
+    "en": "Rows aspect columns. Tint follows the aspecting graha's benefic or malefic nature; size follows the dṛṣṭi strength.",
+    "hi": "पंक्तियाँ स्तम्भों पर दृष्टि डालती हैं। रंग दृष्टि डालने वाले ग्रह की शुभ/अशुभ प्रकृति से, आकार दृष्टि-बल से।"
+  },
+  "pj.asp.benefic": {
+    "en": "Benefic dṛṣṭi",
+    "hi": "शुभ दृष्टि"
+  },
+  "pj.asp.malefic": {
+    "en": "Malefic dṛṣṭi",
+    "hi": "अशुभ दृष्टि"
+  },
+  "pj.asp.none": {
+    "en": "No aspect",
+    "hi": "दृष्टि नहीं"
+  },
+  "pj.asp.self": {
+    "en": "Self",
+    "hi": "स्वयं"
+  },
+  "pj.fc.range": {
+    "en": "Time range",
+    "hi": "समयावधि"
+  },
+  "pj.fc.refine": {
+    "en": "Refine birth time",
+    "hi": "जन्म-समय परिष्कृत करें"
+  },
+  "pj.fc.current": {
+    "en": "Current daśā",
+    "hi": "वर्तमान दशा"
+  },
+  "pj.fc.next": {
+    "en": "Next daśā",
+    "hi": "अगली दशा"
+  },
+  "pj.fc.next.antar": {
+    "en": "Next antardaśā",
+    "hi": "अगली अन्तर्दशा"
+  },
+  "pj.fc.tone": {
+    "en": "Overall tone",
+    "hi": "समग्र भाव"
+  },
+  "pj.fc.tone.supportive": {
+    "en": "Supportive",
+    "hi": "सहायक"
+  },
+  "pj.fc.tone.mixed": {
+    "en": "Mixed · watchful",
+    "hi": "मिश्रित · सतर्क"
+  },
+  "pj.fc.tone.challenging": {
+    "en": "Challenging",
+    "hi": "चुनौतीपूर्ण"
+  },
+  "pj.fc.tone.note": {
+    "en": "mean of the monthly overall reading",
+    "hi": "मासिक समग्र पाठ का माध्य"
+  },
+  "pj.heat.title": {
+    "en": "Monthly forecast",
+    "hi": "मासिक पूर्वानुमान"
+  },
+  "pj.heat.sub": {
+    "en": "Relative strength across the domains, month by month. Deeper green supports, deeper red presses; a paler cell means the clocks disagree.",
+    "hi": "क्षेत्रों में मास-दर-मास सापेक्ष बल। गहरा हरा सहायक, गहरा लाल दबाव; हल्का रंग यानी घड़ियों में असहमति।"
+  },
+  "pj.heat.supportive": {
+    "en": "Supportive",
+    "hi": "सहायक"
+  },
+  "pj.heat.neutral": {
+    "en": "Neutral",
+    "hi": "तटस्थ"
+  },
+  "pj.heat.challenging": {
+    "en": "Challenging",
+    "hi": "चुनौतीपूर्ण"
+  },
+  "pj.heat.domain": {
+    "en": "Life domain",
+    "hi": "जीवन-क्षेत्र"
+  },
+  "pj.watch.title": {
+    "en": "Key watch windows",
+    "hi": "मुख्य ध्यान-अवधियाँ"
+  },
+  "pj.watch.sub": {
+    "en": "The strongest windows in the projection — indications, not appointments.",
+    "hi": "प्रक्षेपण की सबसे प्रबल अवधियाँ — संकेत, नियत घटनाएँ नहीं।"
+  },
+  "pj.events.title": {
+    "en": "Projected events",
+    "hi": "प्रक्षेपित घटनाएँ"
+  },
+  "pj.events.sub": {
+    "en": "Where a domain crests or dips. Confidence is the clocks' agreement.",
+    "hi": "जहाँ कोई क्षेत्र शिखर या गर्त छूता है। विश्वास = घड़ियों की सहमति।"
+  },
+  "pj.events.conf.high": {
+    "en": "High confidence",
+    "hi": "उच्च विश्वास"
+  },
+  "pj.events.conf.mod": {
+    "en": "Moderate",
+    "hi": "मध्यम"
+  },
+  "pj.events.conf.low": {
+    "en": "Low",
+    "hi": "निम्न"
+  },
+  "pj.events.source": {
+    "en": "Source",
+    "hi": "स्रोत"
+  },
+  "pj.la.strong": {
+    "en": "Strongest themes",
+    "hi": "सबसे प्रबल विषय"
+  },
+  "pj.la.strong.sub": {
+    "en": "sustained support across the arc",
+    "hi": "जीवन-रेखा में निरन्तर सहारा"
+  },
+  "pj.la.period": {
+    "en": "Current period",
+    "hi": "वर्तमान अवधि"
+  },
+  "pj.la.period.age": {
+    "en": "age {a}–{b}",
+    "hi": "आयु {a}–{b}"
+  },
+  "pj.la.watch": {
+    "en": "Near-future watch",
+    "hi": "निकट-भविष्य पर ध्यान"
+  },
+  "pj.la.watch.sub": {
+    "en": "domains under most pressure",
+    "hi": "सबसे अधिक दबाव वाले क्षेत्र"
+  },
+  "pj.la.title": {
+    "en": "Life arc",
+    "hi": "जीवन-रेखा"
+  },
+  "pj.la.sub": {
+    "en": "The trajectory across wealth, health and relationships from birth onward, as the daśā and transits move over the chart.",
+    "hi": "जन्म से आगे धन, स्वास्थ्य और सम्बन्धों की दिशा, जैसे-जैसे दशा और गोचर कुंडली पर चलते हैं।"
+  },
+  "pj.la.today": {
+    "en": "Today",
+    "hi": "आज"
+  },
+  "pj.la.turning": {
+    "en": "Key turning points",
+    "hi": "मुख्य मोड़"
+  },
+  "pj.la.turning.sub": {
+    "en": "Where the arc bends. Indications, not a record of events.",
+    "hi": "जहाँ रेखा मुड़ती है। संकेत, घटनाओं का अभिलेख नहीं।"
+  },
+  "pj.la.transit": {
+    "en": "Near future · transit strength",
+    "hi": "निकट भविष्य · गोचर-बल"
+  },
+  "pj.la.transit.sub": {
+    "en": "Sarvāṣṭakavarga bindus per sign (0–56). A graha transiting a bindu-rich sign supports; a bindu-poor one presses.",
+    "hi": "प्रति राशि सर्वाष्टकवर्ग बिन्दु (0–56)। बिन्दु-समृद्ध राशि में गोचर सहायक; बिन्दु-न्यून में दबाव।"
+  },
+  "pj.la.more.challenging": {
+    "en": "More challenging",
+    "hi": "अधिक चुनौती"
+  },
+  "pj.la.more.supportive": {
+    "en": "More supportive",
+    "hi": "अधिक सहारा"
+  },
+  "pj.la.conf": {
+    "en": "Projection confidence",
+    "hi": "प्रक्षेपण-विश्वास"
+  },
+  "pj.la.conf.sub": {
+    "en": "The overall projection with its birth-time band. A window and a direction, not a fated event.",
+    "hi": "समग्र प्रक्षेपण और उसका जन्म-समय दायरा। एक अवधि और दिशा, नियत घटना नहीं।"
+  },
+  "pj.la.conf.run": {
+    "en": "Compute band",
+    "hi": "दायरा निकालें"
+  },
+  "pj.la.conf.running": {
+    "en": "Computing…",
+    "hi": "गणना हो रही है…"
+  },
+  "pj.la.dasha": {
+    "en": "daśā",
+    "hi": "दशा"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

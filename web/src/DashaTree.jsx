@@ -176,27 +176,8 @@ export default function DashaTree({
         </button>
       </div>
 
-      <div className="dasha-head">
-        <div>
-          <span className="d-label">{t('dt.head.system')}</span>
-          {tree.system} · {tree.total_years}-year cycle
-        </div>
-        <div>
-          <span className="d-label">{t('dt.head.balance_at_birth')}</span>
-          {nameOf(tree.starting_lord) || tree.starting_lord_name} — {tree.balance_at_birth}
-        </div>
-        <div className="running">
-          <span className="d-label">{t('dt.head.running_now')}</span>
-          {chain.length
-            ? chain.map((c, i) => (
-                <span key={i}>
-                  {i > 0 && <span className="sep"> › </span>}
-                  {nameOf(c.lord) || c.lord_name}
-                </span>
-              ))
-            : '—'}
-        </div>
-      </div>
+      {/* The system / balance / running-now summary that used to sit here is
+          now carried by the timeline's own chips (DashaTimeline), once. */}
       {tree.applicability && (
         <p className="dasha-applies">
           <strong>{t('dt.applies.label')}</strong> {tree.applicability}
@@ -208,6 +189,10 @@ export default function DashaTree({
         verdictOf={verdicts ? (lord) => verdicts[lord] : undefined}
         conditionsOf={antarCells ? (lord) => antarCells[lord] : undefined}
         onMahaChange={setAntarMaha}
+        /* Birth instant, for age. JD(UT) -> epoch ms. Deliberately NOT derived
+           from mahadashas[0].start, which is the NOTIONAL daśā start and
+           precedes birth by the elapsed part of the janma nakṣatra. */
+        birthMs={chartMeta?.jd_ut ? (chartMeta.jd_ut - 2440587.5) * 86400000 : undefined}
         legend={verdicts ? <DashaLegend /> : null}
       />
 

@@ -1656,22 +1656,27 @@ footer a:hover { color: var(--accent); }
 .pj-kpi-row b { font-variant-numeric: tabular-nums; font-weight: var(--strong-weight); }
 
 /* wheel + detail */
-.pj-wheel-row { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 1fr); gap: .8rem; margin-bottom: .8rem; }
+.pj-wheel-row { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(16rem, 1fr); gap: .8rem; margin-bottom: .8rem; }
 .pj-wheel { width: 100%; height: auto; display: block; }
-.pj-wheel .ring { fill: none; stroke: var(--line); stroke-opacity: .55; stroke-width: .6; }
-.pj-wheel .ring.zero { stroke: var(--dim); stroke-opacity: .8; stroke-width: 1; }
-.pj-wheel .spoke { stroke: var(--line); stroke-opacity: .45; stroke-width: .6; }
+.pj-wheel .rim { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; }
+.pj-wheel .ring { fill: none; stroke: var(--line); stroke-opacity: .6; stroke-width: 1; }
+.pj-wheel .ring.zero { stroke: var(--dim); stroke-opacity: .9; stroke-width: 1.4; }
+.pj-wheel .spoke { stroke: var(--line); stroke-opacity: .7; stroke-width: 1; }
 .pj-wheel .sector { cursor: pointer; }
-.pj-wheel .sector.on .bar { stroke: var(--ink); stroke-width: 1.4; }
+.pj-wheel .sector.on .bar { stroke: var(--ink); stroke-width: 2.2; }
+.pj-wheel .sector.on .lbl-numc { fill: var(--accent); stroke: var(--accent); }
+.pj-wheel .sector.on .lbl-num { fill: var(--on-accent); }
 .pj-wheel .sector:hover .bar { filter: brightness(1.08); }
-.pj-wheel .ringlbl { font-size: 7px; fill: var(--dim); }
-.pj-wheel .hub { fill: var(--panel); stroke: var(--line); }
-.pj-wheel .hub-t { font-size: 9px; fill: var(--ink); font-weight: 600; }
-.pj-wheel .hub-n { font-size: 6.5px; fill: var(--dim); }
-.pj-wheel .lbl-num { font-size: 7px; fill: var(--dim); }
-.pj-wheel .lbl-numc { fill: var(--panel); stroke: var(--line); }
-.pj-wheel .lbl-name { font-size: 7.4px; fill: var(--ink); font-weight: 600; }
-.pj-wheel .lbl-val { font-size: 7.6px; font-weight: 700; }
+.pj-wheel .ringlbl { font-size: 11px; fill: var(--dim); }
+.pj-wheel .hub { fill: var(--panel); stroke: var(--line); stroke-width: 1.4; }
+.pj-wheel .hub-t { font-size: 15px; fill: var(--ink); font-weight: 700; }
+.pj-wheel .hub-v { font-size: 15px; font-weight: 700; }
+.pj-wheel .hub-n { font-size: 10.5px; fill: var(--dim); }
+.pj-wheel .lbl-num { font-size: 12px; fill: var(--ink); font-weight: 600; }
+.pj-wheel .lbl-numc { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; }
+.pj-wheel .lbl-name { font-size: 14px; fill: var(--ink); font-weight: 600; }
+.pj-wheel .lbl-name2 { font-size: 11px; fill: var(--dim); }
+.pj-wheel .lbl-val { font-size: 15px; font-weight: 700; }
 .pj-wheel .lbl-ico { color: var(--dim); }
 .pj-wheel-legend { display: flex; flex-wrap: wrap; gap: .3rem .9rem; font-size: .68rem; color: var(--dim); margin-top: .4rem; }
 .pj-wheel-legend i { display: inline-block; width: .6rem; height: .6rem; border-radius: 50%; margin-right: .3rem; vertical-align: -.05em; }

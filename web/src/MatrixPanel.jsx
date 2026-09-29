@@ -64,9 +64,19 @@ function BphsQuote({ b, t }) {
 
 /** Twelve domains on a wheel. Bars rise from the −1 ring, so a value of 0 is
  *  the middle ring and +1 the rim; the fill is the band, the same tint the
- *  ledger uses. Sector order is house order, clockwise from the top. */
+ *  ledger uses. Sector order is house order, clockwise from the top. The
+ *  geometry fills the card: the wheel is the picture, the labels sit just
+ *  outside the rim, and the number badges ride on the rim itself. */
+const WHEEL_C = { thriving: '#1f8a5f', supported: '#6dbb8c', mixed: '#d9a83c', stressed: '#e0806a', afflicted: '#c23f36' }
+const wheelSign = (v) => (v == null ? '#8a8f99' : v > 0.02 ? WHEEL_C.thriving : v < -0.02 ? WHEEL_C.afflicted : WHEEL_C.mixed)
+
 function LifeWheel({ themes, open, onOpen, t }) {
-  const CX = 260, CY = 222, R0 = 54, R1 = 146, RH = 40
+  const W = 880, H = 704, CX = 440, CY = 344
+  const RH = 72          // hub
+  const R0 = 88          // the −1 ring, where every bar starts
+  const R1 = 232         // the +1 ring
+  const RR = 244         // the rim the number badges ride on
+  const RL = 268         // where the labels begin
   const N = themes.length
   const arc = 360 / N
   const rad = (deg) => (deg * Math.PI) / 180
@@ -80,56 +90,64 @@ function LifeWheel({ themes, open, onOpen, t }) {
          + `L${x2.toFixed(1)},${y2.toFixed(1)} A${r0},${r0} 0 ${large} 0 ${x3.toFixed(1)},${y3.toFixed(1)} Z`
   }
   const mean = themes.reduce((s, th) => s + (th.net || 0), 0) / N
+  // ring labels sit on the spoke between sectors 1 and 2, clear of any bar
+  const ringA = -90 + arc / 2
   return (
-    <svg viewBox="0 0 520 444" className="pj-wheel" role="img" aria-label={t('pj.wheel.title', 'Life wheel')}>
-      {/* sector washes, faintly by sign, so the eye reads the halves before the bars */}
+    <svg viewBox={`0 0 ${W} ${H}`} className="pj-wheel" role="img" aria-label={t('pj.wheel.title', 'Life wheel')}>
+      {/* rim + sector washes: the halves read before any bar does */}
+      <circle cx={CX} cy={CY} r={RR} className="rim" />
       {themes.map((th, i) => {
         const a0 = -90 - arc / 2 + i * arc, a1 = a0 + arc
-        return <path key={'w' + i} d={wedge(R0, R1, a0, a1)} fill={signColor(th.net)} fillOpacity="0.07" />
+        return <path key={'w' + i} d={wedge(R0, RR, a0, a1)} fill={wheelSign(th.net)} fillOpacity="0.09" />
       })}
       {[-1, 0, 0.5, 1].map((v) => (
         <circle key={v} cx={CX} cy={CY} r={rOf(v)} className={'ring' + (v === 0 ? ' zero' : '')} />
       ))}
-      {[-1, 0, 0.5, 1].map((v) => (
-        <text key={'l' + v} x={CX + 3} y={CY - rOf(v) + (v === -1 ? 9 : -2)} className="ringlbl">
-          {v > 0 ? '+' : ''}{v.toFixed(1)}
-        </text>
-      ))}
       {themes.map((_, i) => {
         const a = -90 - arc / 2 + i * arc
-        const [x0, y0] = pt(R0, a), [x1, y1] = pt(R1, a)
+        const [x0, y0] = pt(R0, a), [x1, y1] = pt(RR, a)
         return <line key={'s' + i} x1={x0} y1={y0} x2={x1} y2={y1} className="spoke" />
+      })}
+      {[-1, 0, 0.5, 1].map((v) => {
+        const [x, y] = pt(rOf(v) + (v === 1 ? -9 : 7), ringA)
+        return <text key={'l' + v} x={x + 4} y={y + 4} className="ringlbl">{v > 0 ? '+' : ''}{v.toFixed(1)}</text>
       })}
       {themes.map((th, i) => {
         const mid = -90 + i * arc
-        const a0 = mid - arc * 0.3, a1 = mid + arc * 0.3
+        const a0 = mid - arc * 0.32, a1 = mid + arc * 0.32
         const on = open === th.key
-        const [nx, ny] = pt(R1 + 13, mid)
-        const [lx, ly] = pt(R1 + 40, mid)
-        const c = Math.cos(rad(mid))
-        const anchor = c > 0.35 ? 'start' : c < -0.35 ? 'end' : 'middle'
-        const ix = anchor === 'start' ? lx - 2 : anchor === 'end' ? lx + 2 : lx
+        const c = Math.cos(rad(mid)), sn = Math.sin(rad(mid))
+        const anchor = c > 0.3 ? 'start' : c < -0.3 ? 'end' : 'middle'
+        const [nx, ny] = pt(RR, mid)
+        const [lx, ly] = pt(RL, mid)
+        // three stacked lines: icon, name, value — nudged so top/bottom labels
+        // stack away from the rim and side labels centre on the spoke
+        const dy = sn < -0.3 ? -64 : sn > 0.3 ? 6 : -20
+        const ix = anchor === 'start' ? lx : anchor === 'end' ? lx - 18 : lx - 9
         return (
           <g key={th.key} className={'sector' + (on ? ' on' : '')} onClick={() => onOpen(on ? null : th.key)}
              role="button" tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpen(on ? null : th.key)}>
             <title>{th.name} · {sv(th.net)}</title>
-            <path d={wedge(R0, R1, mid - arc / 2, mid + arc / 2)} fill="transparent" />
-            <path className="bar" d={wedge(R0 + 1, rOf(th.net), a0, a1)} fill={BAND_C[th.band] || netColor(th.net)} />
-            <circle cx={nx} cy={ny} r="7.5" className="lbl-numc" />
-            <text x={nx} y={ny + 2.6} textAnchor="middle" className="lbl-num">{i + 1}</text>
-            <g transform={`translate(${(anchor === 'middle' ? lx - 8 : anchor === 'start' ? lx - 4 : lx - 12).toFixed(1)},${(ly - 20).toFixed(1)})`} className="lbl-ico">
-              <DomainIcon k={th.key} size={16} />
+            <path d={wedge(R0, RR, mid - arc / 2, mid + arc / 2)} fill="transparent" />
+            <path className="bar" d={wedge(R0 + 2, rOf(th.net), a0, a1)} fill={WHEEL_C[th.band] || wheelSign(th.net)} />
+            <circle cx={nx} cy={ny} r="13" className="lbl-numc" />
+            <text x={nx} y={ny + 4} textAnchor="middle" className="lbl-num">{i + 1}</text>
+            <g transform={`translate(${ix.toFixed(1)},${(ly + dy).toFixed(1)})`} className="lbl-ico">
+              <DomainIcon k={th.key} size={18} />
             </g>
-            <text x={ix} y={ly + 4} textAnchor={anchor} className="lbl-name">{th.name}</text>
-            <text x={ix} y={ly + 14} textAnchor={anchor} className="lbl-val" fill={signColor(th.net)}>{sv(th.net)}</text>
+            <text x={lx} y={ly + dy + 34} textAnchor={anchor} className="lbl-name">{th.name.split(' · ')[0]}</text>
+            {th.name.includes(' · ') && (
+              <text x={lx} y={ly + dy + 48} textAnchor={anchor} className="lbl-name2">{th.name.split(' · ').slice(1).join(' · ')}</text>
+            )}
+            <text x={lx} y={ly + dy + (th.name.includes(' · ') ? 66 : 52)} textAnchor={anchor} className="lbl-val" fill={wheelSign(th.net)}>{sv(th.net)}</text>
           </g>
         )
       })}
       <circle cx={CX} cy={CY} r={RH} className="hub" />
-      <text x={CX} y={CY - 6} textAnchor="middle" className="hub-t">{t('pj.wheel.centre', 'Natal balance')}</text>
-      <rect x={CX - 20} y={CY + 1} width="40" height="14" rx="4" fill={signColor(mean)} />
-      <text x={CX} y={CY + 11} textAnchor="middle" className="hub-t" fill="#fff">{sv(mean)}</text>
-      <text x={CX} y={CY + 26} textAnchor="middle" className="hub-n">{t('pj.wheel.centre.note', 'mean of the twelve')}</text>
+      <text x={CX} y={CY - 10} textAnchor="middle" className="hub-t">{t('pj.wheel.centre', 'Natal balance')}</text>
+      <rect x={CX - 30} y={CY + 2} width="60" height="24" rx="7" fill={wheelSign(mean)} />
+      <text x={CX} y={CY + 19} textAnchor="middle" className="hub-v" fill="#fff">{sv(mean)}</text>
+      <text x={CX} y={CY + 44} textAnchor="middle" className="hub-n">{t('pj.wheel.centre.note', 'mean of the twelve')}</text>
     </svg>
   )
 }
@@ -309,6 +327,9 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
     .replace('{up}', names(strong)).replace('{down}', names(weak))
     .replace('{near}', nearNames.join(', ').replace(/^./, (c) => c.toUpperCase()))
   const openTheme = themes.find((x) => x.key === open)
+  // open on the most challenged domain: an empty detail panel next to a wheel
+  // answers a question nobody asked
+  useEffect(() => { if (open == null && weak.length) setOpen(weak[0].key) }, [])  // eslint-disable-line react-hooks/exhaustive-deps
   const Kpi = ({ title, glyph, color, list }) => (
     <div className="pj-card pj-kpi">
       <h5><span className="pj-kpi-dot" style={{ background: color }}>{glyph}</span>{title}</h5>
@@ -327,9 +348,9 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
           <h4>{t('pj.balance.title', 'Your natal balance')}</h4>
           {prose}
         </div>
-        <Kpi title={t('pj.balance.strong', 'Strongest support')} glyph="↑" color={BAND_C.thriving} list={strong} />
-        <Kpi title={t('pj.balance.near', 'Near balance')} glyph="≈" color={BAND_C.mixed} list={near} />
-        <Kpi title={t('pj.balance.weak', 'Most challenged')} glyph="↓" color={BAND_C.afflicted} list={weak} />
+        <Kpi title={t('pj.balance.strong', 'Strongest support')} glyph="↑" color={WHEEL_C.thriving} list={strong} />
+        <Kpi title={t('pj.balance.near', 'Near balance')} glyph="≈" color={WHEEL_C.mixed} list={near} />
+        <Kpi title={t('pj.balance.weak', 'Most challenged')} glyph="↓" color={WHEEL_C.afflicted} list={weak} />
       </div>
 
       <div className="pj-wheel-row">
@@ -339,7 +360,7 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
           <LifeWheel themes={themes} open={open} onOpen={setOpen} t={t} />
           <div className="pj-wheel-legend">
             {['thriving', 'supported', 'mixed', 'stressed', 'afflicted'].map((bd) => (
-              <span key={bd}><i style={{ background: BAND_C[bd] }} />{bandLbl(bd)}</span>
+              <span key={bd}><i style={{ background: WHEEL_C[bd] }} />{bandLbl(bd)}</span>
             ))}
           </div>
         </div>

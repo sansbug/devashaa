@@ -1936,6 +1936,50 @@ footer a:hover { color: var(--accent); }
 .vp-ov { font-weight: var(--strong-weight); font-variant-numeric: tabular-nums; }
 .vp-th { font-size: .74rem; white-space: nowrap; }
 @media (max-width: 780px) { .vp-body { grid-template-columns: 1fr; } }
+/* Varṣaphala — the Tājika layer */
+.vp-card { margin-bottom: .8rem; }
+.vp-card > h4 { font-size: .95rem; letter-spacing: 0; text-transform: none; color: var(--ink); margin-bottom: .2rem; }
+.vp-sub { margin: 0 0 .55rem; font-size: .74rem; color: var(--dim); line-height: 1.45; }
+.vp-cite { margin-top: .5rem; }
+.vp-grid2 { display: grid; grid-template-columns: 1fr; gap: .8rem; }   /* nine-column table: one per row */
+.vp-t { font-size: .78rem; }
+.vp-t th { white-space: nowrap; }
+.vp-num td { font-variant-numeric: tabular-nums; text-align: right; }
+.vp-num td.dt-tbl-lord, .vp-num td:first-child { text-align: left; }
+.vp-steps { margin: .5rem 0 0; padding-left: 1.1rem; font-size: .74rem; color: var(--ink); line-height: 1.45; }
+.vp-refused-list { list-style: none; margin: 0; padding: 0; }
+.vp-refused-list li { padding: .3rem 0; border-bottom: 1px solid var(--line); font-size: .74rem; }
+.vp-refused-list li:last-child { border-bottom: 0; }
+.vp-refused-list li b { display: block; color: var(--ink); }
+.vp-refused-list li span { color: var(--dim); }
+.vp-chip-lord .dt-chip-v { color: color-mix(in oklab, var(--g) 62%, var(--ink)); }
+.vp-cat { font-size: .62rem; letter-spacing: .05em; text-transform: uppercase; padding: .1rem .35rem; border-radius: 5px; background: var(--sunken); color: var(--ink); font-weight: var(--label-weight); }
+.vp-cat-parakrami, .vp-cat-purna, .vp-sv-strong { background: var(--accent-soft); color: var(--ok-ink); }
+.vp-cat-alpa, .vp-cat-nirbala, .vp-sv-weak { background: var(--err-bg); color: var(--err-ink); }
+.vp-drishti td { text-align: center; }
+.vp-drishti td.vp-self { color: var(--dim); }
+.vp-asp-friend { color: var(--ok-ink); font-weight: var(--strong-weight); }
+.vp-asp-enemy { color: var(--err-ink); font-weight: var(--strong-weight); }
+.vp-asp-none { color: var(--dim); }
+.vp-yoga-global { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .5rem; }
+.vp-yoga { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; padding: .16rem .5rem; border-radius: 6px; border: 1px solid var(--line); background: var(--sunken); color: var(--ink); }
+.vp-yoga.good { border-color: var(--ok-line); color: var(--ok-ink); background: var(--accent-soft); }
+.vp-yoga.bad { border-color: var(--err-line); color: var(--err-ink); background: var(--err-bg); }
+.vp-yoga.help { border-color: var(--line); color: var(--ink); background: var(--row-hi); }
+.vp-yoga.off { color: var(--dim); }
+.vp-chips-cell { display: flex; flex-wrap: wrap; gap: .3rem; white-space: normal; }
+.vp-yogat td { white-space: normal; vertical-align: top; }
+.vp-details { margin-top: .5rem; }
+.vp-details > summary { cursor: pointer; font-size: .76rem; color: var(--accent); }
+.vp-pairs { list-style: none; margin: .4rem 0 0; padding: 0; font-size: .76rem; }
+.vp-pairs li { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding: .3rem 0; border-bottom: 1px solid var(--line); }
+.vp-sahams td { white-space: normal; }
+.vp-sahams td:first-child { min-width: 11rem; }
+.vp-more { font: inherit; font-size: .76rem; margin-top: .5rem; padding: .3rem .7rem; border: 1px solid var(--line); border-radius: 7px; background: var(--sunken); color: var(--ink); cursor: pointer; }
+.vp-mudda-head { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin: .8rem 0 .2rem; }
+.vp-mudda-head .dt-view-btns button { font-size: .74rem; }
+@media (max-width: 900px) { .vp-grid2 { grid-template-columns: 1fr; } }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

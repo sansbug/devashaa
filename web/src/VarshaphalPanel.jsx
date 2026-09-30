@@ -1,13 +1,12 @@
 /**
- * Varṣaphala — the Tājika annual chart, calculation layer only.
+ * Varṣaphala — the Tājika annual chart.
  *
- * What is shown is geometry: the moment the Sun returns to its natal place,
- * the chart cast for it, the Muntha, and the nine Mudda periods laid over the
- * year. What is NOT shown is listed on the panel itself, with the reason —
- * the year-lord, the sahams, the Tājika yogas and every line of phala wait on
- * a registered source (Tājika-Nīlakaṇṭhī). The readings beside each Mudda
- * period are this site's own projection, labelled synthesis, never a Tājika
- * verdict. See api/varshaphal.py.
+ * Everything shown is geometry with its rule and its page: the praveśa, the
+ * year chart, Muntha, the office-bearers and the year-lord, the pañcavargīya
+ * and harṣa strengths, the Tājika aspects, the sixteen yogas, the fifty
+ * sahams, and the Mudda periods. No phala sentence ships; the readings beside
+ * a Mudda period are this site's own projection, labelled synthesis.
+ * See api/varshaphal.py and api/tajika.py.
  */
 import { useEffect, useState } from 'react'
 import { API } from './config.js'
@@ -15,10 +14,19 @@ import { useLang } from './LangContext.jsx'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import Glyph from './DashaGlyphs.jsx'
 
+const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 const fmtD = (s) => (s || '').slice(0, 10)
 const sv = (v) => (v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(2))
+const n1 = (v) => (v == null ? '—' : Number(v).toFixed(1))
+const n2 = (v) => (v == null ? '—' : Number(v).toFixed(2))
+const dms = (deg) => { const d = Math.floor(deg); const m = Math.round((deg - d) * 60); return `${d}°${String(m).padStart(2, '0')}′` }
 
-/** Nine Mudda periods on one proportional rail, in the daśā navigator's idiom. */
+const YOGA_TONE = {
+  itthasala: 'good', isarapha: 'bad', nakta: 'help', yamaya: 'help', manau: 'bad', kambula: 'good',
+  gairi_kambula: 'good', khallasara: 'bad', rudda: 'bad', duphalikuttha: 'good', dutthottha: 'help',
+  tambira: 'help', kuttha: 'good', durpha: 'bad',
+}
+
 function MuddaRail({ mudda, namer, t }) {
   const ps = mudda.periods
   const t0 = ps[0].start_jd, t1 = ps[ps.length - 1].end_jd
@@ -43,7 +51,7 @@ function MuddaRail({ mudda, namer, t }) {
               <button type="button" key={i}
                       className={`dt-band${p.is_current ? ' running' : ''}${p.end_jd < nowJd ? ' past' : ''}${w < 5 ? ' tight' : ''}`}
                       style={{ left: `${pct(p.start_jd)}%`, width: `${w}%`, '--g': `var(--gr-${p.lord})` }}
-                      title={`${namer.grahaKey(p.lord)} — ${fmtD(p.start)} → ${fmtD(p.end)} (${p.days} d)`}>
+                      title={`${namer.grahaKey(p.lord)} — ${fmtD(p.start)} → ${fmtD(p.end)} (${p.days} d${p.kind !== 'full' ? ', ' + p.kind : ''})`}>
                 <Glyph lord={p.lord} size={18} className="dt-band-glyph" />
                 <span className="dt-band-lord">{namer.grahaKey(p.lord)}</span>
                 <span className="dt-band-vert" aria-hidden="true">{namer.grahaKey(p.lord)}</span>
@@ -51,24 +59,16 @@ function MuddaRail({ mudda, namer, t }) {
               </button>
             )
           })}
-          {nowIn && (
-            <span className="dt-now" style={{ left: `${pct(nowJd)}%` }}>
-              <span className="dt-now-label">{t('dtl.now')}</span>
-            </span>
-          )}
+          {nowIn && <span className="dt-now" style={{ left: `${pct(nowJd)}%` }}><span className="dt-now-label">{t('dtl.now')}</span></span>}
         </div>
         <div className="dt-axis">
-          {ps.map((p, i) => i % 2 === 0 && (
-            <span key={i} className="dt-tick" style={{ left: `${pct(p.start_jd)}%` }}>{fmtD(p.start).slice(0, 7)}</span>
-          ))}
+          {ps.map((p, i) => i % 2 === 0 && <span key={i} className="dt-tick" style={{ left: `${pct(p.start_jd)}%` }}>{fmtD(p.start).slice(0, 7)}</span>)}
         </div>
       </div>
     </div>
   )
 }
 
-/** The site's own reading for a span: mean overall + best/worst theme over the
- *  monthly steps that fall inside it (or the nearest step for a short period). */
 function readingFor(p, proj) {
   const steps = proj?.steps || []
   if (!steps.length) return null
@@ -84,15 +84,28 @@ function readingFor(p, proj) {
   const mean = Object.fromEntries(keys.map((k) => [k, inside.reduce((a, s) => a + (s.themes[k] || 0), 0) / n]))
   const best = keys.reduce((a, b) => (mean[b] > mean[a] ? b : a))
   const worst = keys.reduce((a, b) => (mean[b] < mean[a] ? b : a))
-  return { overall, best, bestV: mean[best], worst, worstV: mean[worst], n }
+  return { overall, best, bestV: mean[best], worst, worstV: mean[worst] }
+}
+
+function Card({ title, sub, cite, children, className = '' }) {
+  return (
+    <div className={`dt-card vp-card ${className}`}>
+      <h4>{title}</h4>
+      {sub && <p className="vp-sub">{sub}</p>}
+      {children}
+      {cite && <p className="mx-prov vp-cite">{cite}</p>}
+    </div>
+  )
 }
 
 export default function VarshaphalPanel({ date, time, place, namer, chartStyle = 'north' }) {
   const { t } = useLang()
-  const [year, setYear] = useState(null)          // null = the varṣa running now
+  const [year, setYear] = useState(null)
   const [data, setData] = useState(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  const [muddaVar, setMuddaVar] = useState('prorated')
+  const [allSahams, setAllSahams] = useState(false)
 
   useEffect(() => {
     if (!date || !time || !place) return
@@ -100,30 +113,39 @@ export default function VarshaphalPanel({ date, time, place, namer, chartStyle =
     setBusy(true); setErr('')
     fetch(`${API}/api/varshaphal`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude,
-                             timezone: place.timezone, year }),
+      body: JSON.stringify({ date, time, latitude: place.latitude, longitude: place.longitude, timezone: place.timezone, year }),
     })
       .then((r) => r.json())
-      .then((j) => { if (!alive) return; if (j.error) setErr(j.error); else setData(j) })
+      .then((j) => { if (!alive) return; if (j.error) setErr(j.error); else { setData(j); setMuddaVar(j.mudda?.default || 'prorated') } })
       .catch((e) => alive && setErr(String(e)))
       .finally(() => alive && setBusy(false))
     return () => { alive = false }
   }, [date, time, place, year])
 
   if (!date || !time || !place) return null
-  const nm = (k) => namer.grahaKey(k)
+  const nm = (k) => (k ? namer.grahaKey(k) : '—')
+  const rs = (i) => (namer.rasi ? namer.rasi(i) : i + 1)
   const Chart = chartStyle === 'south' ? SouthIndianChart : NorthIndianChart
   const themeName = (k) => t('matrix.theme.' + k, (data?.projection?.themeNames?.[k] || k).split(' · ')[0])
+  const G = ({ k, s = 14 }) => <><Glyph lord={k} size={s} /> {nm(k)}</>
+
+  const mudda = data?.mudda?.variants?.[muddaVar]
+  const pv = data?.pancha_vargiya?.grahas
+  const ha = data?.harsha?.grahas
+  const vl = data?.varshesha
+  const yg = data?.yogas
+  const CORE = new Set(['punya', 'vidya', 'yasha', 'mitra', 'mahatmya', 'samarthya', 'bhratri', 'gaurava', 'rajya', 'pitri', 'matri', 'putra', 'jiva', 'karma', 'roga', 'vivaha', 'mrityu', 'dhana', 'vyapara', 'karyasiddhi', 'pardesha', 'santapa', 'shatru', 'bandhana'])
 
   return (
     <section className="table-panel vp-panel" id="rg-varshaphal">
       <h3>{t('vp.title', 'Varṣaphala — the annual chart')}</h3>
-      <p className="rc-note">{t('vp.sub', 'The Tājika year: the chart cast for the moment the Sun returns to its natal place, the Muntha, and the nine Mudda periods. Calculation only — what is not shown, and why, is listed below.')}</p>
+      <p className="rc-note">{t('vp.sub2', 'The Tājika year, calculated from the texts on hand: the praveśa, the year chart, Muntha, the office-bearers and year-lord, the five-fold and harṣa strengths, the aspects, the sixteen yogas, the fifty sahams and the Mudda periods. Rules and pages travel with every figure; no prediction sentence ships.')}</p>
       {busy && <p className="rc-note">{t('vp.loading', 'Casting the year…')}</p>}
       {err && <p className="rc-note pc-err">{err}</p>}
 
       {data && (
         <>
+          {/* ── chips ─────────────────────────────────────────────────────── */}
           <div className="dt-chips vp-chips">
             <div className="dt-chip">
               <span className="dt-chip-k">{t('vp.chip.year', 'Varṣa')}</span>
@@ -136,83 +158,262 @@ export default function VarshaphalPanel({ date, time, place, namer, chartStyle =
             </div>
             <div className="dt-chip">
               <span className="dt-chip-k">{t('vp.chip.pravesha', 'Varṣa-praveśa')}</span>
-              <span className="dt-chip-v">{data.pravesha.local} <span className="dt-rail-dur">({data.pravesha.timezone})</span></span>
+              <span className="dt-chip-v">{data.pravesha.local} <span className="dt-rail-dur">· {data.is_day ? t('vp.day', 'day') : t('vp.night', 'night')}</span></span>
             </div>
             <div className="dt-chip">
               <span className="dt-chip-k">{t('vp.chip.lagna', 'Varṣa lagna')}</span>
-              <span className="dt-chip-v">{namer.rasi ? namer.rasi(data.varsha_lagna.sign) : data.varsha_lagna.sign + 1} <span className="dt-rail-dur">· {t('vp.lord', 'lord')} {nm(data.varsha_lagna.lord)}</span></span>
+              <span className="dt-chip-v">{rs(data.varsha_lagna.sign)} <span className="dt-rail-dur">· {t('vp.lord', 'lord')} {nm(data.varsha_lagna.lord)}</span></span>
             </div>
             <div className="dt-chip">
               <span className="dt-chip-k">{t('vp.chip.muntha', 'Muntha')}</span>
-              <span className="dt-chip-v">{namer.rasi ? namer.rasi(data.muntha.sign) : data.muntha.sign + 1} <span className="dt-rail-dur">· {t('vp.bhava', 'bhāva')} {data.muntha.house_from_varsha_lagna} · {t('vp.lord', 'lord')} {nm(data.muntha.lord)}</span></span>
+              <span className="dt-chip-v">{rs(data.muntha.sign)} <span className="dt-rail-dur">· {t('vp.bhava', 'bhāva')} {data.muntha.house_from_varsha_lagna} · {nm(data.muntha.lord)}</span></span>
             </div>
+            {vl && (
+              <div className="dt-chip vp-chip-lord" style={{ '--g': `var(--gr-${vl.lord})` }}>
+                <span className="dt-chip-k">{t('vp.chip.varshesha', 'Year-lord (varṣeśa)')}</span>
+                <span className="dt-chip-v"><G k={vl.lord} s={16} /></span>
+              </div>
+            )}
           </div>
 
+          {/* ── chart + year-lord ─────────────────────────────────────────── */}
           <div className="vp-body">
             <div className="vp-chart">
               <h4>{t('vp.chart.title', 'Varṣa kuṇḍalī')}</h4>
               <p className="rc-note">{t('vp.chart.sub', 'Cast for the praveśa instant at the birth place.')} {data.pravesha.utc} UTC</p>
-              <Chart grahas={data.chart.grahas} lagnaRasi={data.chart.lagna_rasi} vargaKey="D1"
-                     lagnaLongitude={data.chart.lagna_longitude} namer={namer} />
+              <Chart grahas={data.chart.grahas} lagnaRasi={data.chart.lagna_rasi} vargaKey="D1" lagnaLongitude={data.chart.lagna_longitude} namer={namer} />
             </div>
             <aside className="dt-side">
-              <div className="dt-card">
-                <h4>{t('vp.adhikari.title', 'Office-bearers (pañcādhikārī)')}</h4>
-                {[['muntha_lord', t('vp.adhikari.muntha', 'Muntha lord')],
-                  ['varsha_lagna_lord', t('vp.adhikari.vlagna', 'Varṣa-lagna lord')],
-                  ['janma_lagna_lord', t('vp.adhikari.jlagna', 'Janma-lagna lord')],
-                  ['trirasi_lord', t('vp.adhikari.trirasi', 'Tri-rāśi lord')],
-                  ['dinaratri_lord', t('vp.adhikari.dinaratri', 'Dina-rātri lord')]].map(([k, l]) => (
-                  <div key={k} className="dt-rem-row">
-                    <span className="dt-rem-k">{l}</span>
-                    <span className="dt-rem-v">{data.panchadhikari[k] ? <><Glyph lord={data.panchadhikari[k]} size={14} /> {nm(data.panchadhikari[k])}</> : <span className="vp-refused">{t('vp.refused.short', 'not computed')}</span>}</span>
-                  </div>
-                ))}
-                <p className="dt-now-lvl" style={{ marginTop: '.4rem' }}>{t('vp.adhikari.note', 'The year-lord (varṣeśa) is chosen among these five by the pañcavargīya bala — which needs the text. It is not chosen here.')}</p>
-              </div>
-              <div className="dt-card vp-refused-card">
-                <h4>{t('vp.refused.title', 'Not shown — and why')}</h4>
-                <ul>
-                  {data.refused.map((r, i) => <li key={i}><b>{r.what}</b><span>{r.why}</span></li>)}
-                </ul>
-              </div>
+              <Card title={t('vp.varshesha.title', 'The five office-bearers → the year-lord')} cite={vl?.rule}>
+                <div className="dt-table-wrap">
+                <table className="dt-table vp-t">
+                  <thead><tr><th>{t('vp.varshesha.role', 'Office')}</th><th>{t('vp.varshesha.planet', 'Graha')}</th><th>{t('vp.varshesha.vb', 'Viśva-bala')}</th><th>{t('vp.varshesha.aspects', 'Aspects lagna')}</th></tr></thead>
+                  <tbody>
+                    {[['muntha', t('vp.adhikari.muntha', 'Muntha lord')], ['janma_lagna', t('vp.adhikari.jlagna', 'Janma-lagna lord')],
+                      ['varsha_lagna', t('vp.adhikari.vlagna', 'Varṣa-lagna lord')], ['trirasi', t('vp.adhikari.trirasi', 'Tri-rāśi lord')],
+                      ['dinaratri', t('vp.adhikari.dinaratri', 'Dina-rātri lord')]].map(([role, label]) => {
+                      const p = data.panchadhikari[role + '_lord']
+                      const c = vl?.contenders.find((x) => x.planet === p)
+                      const win = vl?.lord === p
+                      return (
+                        <tr key={role} className={win ? 'running' : ''} style={{ '--g': `var(--gr-${p})` }}>
+                          <td>{label}</td>
+                          <td className="dt-tbl-lord"><G k={p} /> {win && <span className="dt-badge">{t('vp.varshesha.winner', 'year-lord')}</span>}</td>
+                          <td>{c ? n2(c.vishwa_bala) : '—'}</td>
+                          <td title={c ? `${t('vp.varshesha.lagnain', 'lagna is its')} ${c.aspect_house}${t('vp.th', 'th')} · ${c.aspect_kind || t('vp.drishti.none', 'no aspect')} · ${c.aspect_value}` : ''}>{c ? (c.aspects_lagna ? `✓ ${c.aspect_house}` : `✗ ${c.aspect_house}`) : '—'}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                </div>
+                <ul className="vp-steps">{vl?.steps.map((s, i) => <li key={i}>{s}</li>)}{vl?.moon_note && <li>{vl.moon_note}</li>}</ul>
+              </Card>
+              <Card title={t('vp.refused.title', 'Not shown — and why')}>
+                <ul className="vp-refused-list">{data.refused.map((r, i) => <li key={i}><b>{r.what}</b><span>{r.why}</span></li>)}</ul>
+              </Card>
             </aside>
           </div>
 
-          <MuddaRail mudda={data.mudda} namer={namer} t={t} />
+          {/* ── strengths ─────────────────────────────────────────────────── */}
+          {pv && ha && (<div className="vp-grid2">
+            <Card title={t('vp.pv.title', 'Pañcavargīya bala — the five-fold strength')}
+                  sub={t('vp.pv.sub', 'Units by the graha’s relation to the lord of its sign, hadda, drekkāṇa and navāṁśa (own 30/15/10/5 · friend ¾ · neutral ½ · enemy ¼), plus the distance from debilitation ÷ 9. Viśva-bala = total ÷ 4.')}
+                  cite={data.pancha_vargiya.rule}>
+              <div className="dt-table-wrap">
+                <table className="dt-table vp-t vp-num">
+                  <thead><tr><th>{t('vp.graha', 'Graha')}</th><th>Kṣetra</th><th>Uccha</th><th>Hadda</th><th>Drekkāṇa</th><th>Navāṁśa</th><th>{t('vp.total', 'Total')}</th><th>VB</th><th>{t('vp.pv.cat', 'Class')}</th></tr></thead>
+                  <tbody>
+                    {SEVEN.map((p) => {
+                      const r = pv[p]
+                      const cell = (c) => <td title={`${t('vp.lordof', 'lord')} ${nm(r[c].lord)} · ${r[c].relation}`}>{n2(r[c].units)}</td>
+                      return (
+                        <tr key={p} style={{ '--g': `var(--gr-${p})` }}>
+                          <td className="dt-tbl-lord"><G k={p} /></td>
+                          {cell('kshetra')}<td title={`${t('vp.pv.deb', 'debilitation at')} ${dms(r.uchcha.debilitation_point % 30)} · ${t('vp.pv.dist', 'distance')} ${n1(r.uchcha.distance)}°`}>{n2(r.uchcha.units)}</td>
+                          {cell('hadda')}{cell('drekkana')}{cell('navamsa')}
+                          <td><b>{n2(r.total)}</b></td><td><b>{n2(r.vishwa_bala)}</b></td>
+                          <td><span className={`vp-cat vp-cat-${r.category}`}>{t('vp.pv.' + r.category, r.category)}</span></td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+            <Card title={t('vp.harsha.title', 'Harṣa bala — the four joys')}
+                  sub={t('vp.harsha.sub', 'Five units each: the graha’s own house of joy; exaltation or own sign; a house of its own sex (female 1-2-3, 7-8-9; male 4-5-6, 10-11-12); male by day, female by night.')}
+                  cite={data.harsha.rule}>
+              <div className="dt-table-wrap">
+                <table className="dt-table vp-t vp-num">
+                  <thead><tr><th>{t('vp.graha', 'Graha')}</th><th>{t('vp.harsha.sthana', 'Joy-house')}</th><th>{t('vp.harsha.uccha', 'Exalt./own')}</th><th>{t('vp.harsha.sex', 'Sex')}</th><th>{t('vp.harsha.dn', 'Day/night')}</th><th>{t('vp.total', 'Total')}</th></tr></thead>
+                  <tbody>
+                    {SEVEN.map((p) => {
+                      const r = ha[p]
+                      return (
+                        <tr key={p} style={{ '--g': `var(--gr-${p})` }}>
+                          <td className="dt-tbl-lord"><G k={p} /> <span className="dt-rail-dur">({data.harsha.sthana[p]})</span></td>
+                          <td>{r.sthana}</td><td>{r.uchcha_swakshetra}</td><td>{r.stri_purusha}</td><td>{r.dina_ratri}</td>
+                          <td><b>{r.total}</b> <span className={`vp-cat vp-cat-${r.category}`}>{t('vp.harsha.' + r.category, r.category)}</span></td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>)}
 
-          <div className="dt-table-wrap">
-            <table className="dt-table vp-table">
-              <thead>
-                <tr>
-                  <th>{t('vp.tbl.period', 'Mudda period')}</th>
-                  <th>{t('vp.tbl.from', 'From')}</th><th>{t('vp.tbl.to', 'To')}</th><th>{t('vp.tbl.days', 'Days')}</th>
-                  <th>{t('vp.tbl.reading', 'This site’s reading (synthesis)')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.mudda.periods.map((p, i) => {
-                  const r = readingFor(p, data.projection)
-                  return (
-                    <tr key={i} className={p.is_current ? 'running' : ''} style={{ '--g': `var(--gr-${p.lord})` }}>
-                      <td className="dt-tbl-lord"><Glyph lord={p.lord} size={16} />{nm(p.lord)}{p.is_current && <span className="dt-badge">{t('dtl.side.current_badge')}</span>}</td>
-                      <td>{fmtD(p.start)}</td><td>{fmtD(p.end)}</td><td>{Math.round(p.days)}</td>
-                      <td className="vp-reading">
-                        {r ? (
-                          <>
-                            <span className="vp-ov" style={{ color: r.overall > 0.02 ? 'var(--ok-ink)' : r.overall < -0.02 ? 'var(--err-ink)' : 'var(--dim)' }}>{sv(r.overall)}</span>
-                            <span className="vp-th up">▲ {themeName(r.best)} {sv(r.bestV)}</span>
-                            <span className="vp-th down">▼ {themeName(r.worst)} {sv(r.worstV)}</span>
-                          </>
-                        ) : '—'}
-                      </td>
+          {/* ── aspects ───────────────────────────────────────────────────── */}
+          {data.drishti && <Card title={t('vp.drishti.title', 'Tājika dṛṣṭi — aspects')}
+                sub={t('vp.drishti.sub', 'Row aspects column. 5th/9th ¾ (45) open friends · 3rd ⅔ (40) and 11th ⅙ (10) secret friends · 4th/10th ¼ (15) secret enemies · same sign and 7th full (60) open enemies · 2/6/8/12 none. Values interpolate by the degrees within the sign.')}
+                cite={data.drishti.rule} className="vp-drishti-card">
+            <div className="dt-table-wrap">
+              <table className="dt-table vp-t vp-num vp-drishti">
+                <thead><tr><th /><th>{t('vp.drishti.orb', 'Orb')}</th>{SEVEN.map((q) => <th key={q}><Glyph lord={q} size={13} /></th>)}</tr></thead>
+                <tbody>
+                  {SEVEN.map((p) => (
+                    <tr key={p} style={{ '--g': `var(--gr-${p})` }}>
+                      <td className="dt-tbl-lord"><G k={p} /></td>
+                      <td className="dt-rail-dur">{data.drishti.deeptamsa[p]}°</td>
+                      {SEVEN.map((q) => {
+                        if (p === q) return <td key={q} className="vp-self">–</td>
+                        const a = data.drishti.matrix[p][q]
+                        const tone = a.value === 0 ? 'none' : (a.kind || '').includes('friend') ? 'friend' : 'enemy'
+                        return <td key={q} className={`vp-asp vp-asp-${tone}`} title={`${nm(p)} → ${nm(q)}: ${a.kind || t('vp.drishti.none', 'no aspect')} (${a.house}${t('vp.th', 'th')})`}>{a.value === 0 ? '·' : n1(a.value)}</td>
+                      })}
                     </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-          <p className="mx-prov">{t('vp.mudda.rule', 'Rule')}: {data.mudda.rule}. {data.mudda.validation}.</p>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>}
+
+          {/* ── yogas ─────────────────────────────────────────────────────── */}
+          {yg && (
+            <Card title={t('vp.yogas.title', 'The sixteen Tājika yogas')}
+                  sub={t('vp.yogas.sub', 'Read between the lagneśa and the lord of each house, as the annual chart allows (Charak p.110). Itthaśāla: the faster graha behind the slower, in mutual aspect, within the mean of their orbs. Every other yoga is a variation or a negation of it.')}
+                  cite={yg.rule}>
+              <div className="vp-yoga-global">
+                <span className={`vp-yoga ${yg.ikkavala.present ? 'good' : 'off'}`}>Ikkavāla {yg.ikkavala.present ? '✓' : '✗'}</span>
+                <span className={`vp-yoga ${yg.induvara.present ? 'bad' : yg.induvara.partial ? 'help' : 'off'}`}>Induvāra {yg.induvara.present ? '✓' : yg.induvara.partial ? t('vp.yogas.partial', 'partial') : '✗'} <span className="dt-rail-dur">({yg.induvara.in_apoklimas}/7 {t('vp.yogas.inapo', 'in apoklimas')})</span></span>
+                <span className="vp-yoga off">{t('vp.yogas.lagnesha', 'lagneśa')} <G k={yg.lagnesha} /></span>
+              </div>
+              <div className="dt-table-wrap">
+                <table className="dt-table vp-t vp-yogat">
+                  <thead><tr><th>{t('vp.bhava', 'bhāva')}</th><th>{t('vp.yogas.karyesha', 'kāryeśa')}</th><th>{t('vp.yogas.found', 'Yogas with the lagneśa')}</th></tr></thead>
+                  <tbody>
+                    {Object.entries(yg.houses).map(([k, h]) => {
+                      const chips = []
+                      if (h.same_lord) chips.push(['same', t('vp.yogas.samelord', 'lagneśa is also kāryeśa'), 'off'])
+                      if (h.itthasala) chips.push(['itthasala', `Itthaśāla · ${h.itthasala.type}${h.itthasala.variant ? ' *' : ''} (${nm(h.itthasala.fast)} ${n1(h.itthasala.gap)}° ${t('vp.yogas.behind', 'behind')} ${nm(h.itthasala.slow)}, ${t('vp.yogas.orb', 'orb')} ${h.itthasala.orb})`, 'good'])
+                      if (h.isarapha) chips.push(['isarapha', `Īśarāpha (${nm(h.isarapha.fast)} ${n1(h.isarapha.separation)}° ${t('vp.yogas.ahead', 'ahead')})`, 'bad'])
+                      if (h.nakta) chips.push(['nakta', `Nakta ${t('vp.yogas.via', 'via')} ${h.nakta.via.map(nm).join(', ')}`, 'help'])
+                      if (h.yamaya) chips.push(['yamaya', `Yamayā ${t('vp.yogas.via', 'via')} ${h.yamaya.via.map(nm).join(', ')}`, 'help'])
+                      if (h.manau) chips.push(['manau', `Manau (${h.manau.map(nm).join(', ')})`, 'bad'])
+                      if (h.kambula) chips.push(['kambula', `Kambūla ${h.kambula.label} (${t('vp.yogas.moonwith', 'Moon with')} ${nm(h.kambula.with)})`, 'good'])
+                      if (h.gairi_kambula) chips.push(['gairi', `Gairi-Kambūla (${h.gairi_kambula.with.map(nm).join(', ')})`, 'good'])
+                      if (h.khallasara) chips.push(['khallasara', 'Khallāsara', 'bad'])
+                      if (h.rudda) chips.push(['rudda', `Rudda (${Object.entries(h.rudda.weak).map(([p, f]) => `${nm(p)}: ${f.join(', ')}`).join('; ')})`, 'bad'])
+                      if (h.duphalikuttha) chips.push(['duphali', `Duphāli-kuttha (${nm(h.duphalikuttha.fast)} ${t('vp.yogas.weaker', 'the weaker')})`, 'good'])
+                      if (h.dutthottha) chips.push(['dutthottha', `Dutthottha-dāvīra ${t('vp.yogas.via', 'via')} ${h.dutthottha.via.map(nm).join(', ')}`, 'help'])
+                      if (h.tambira) chips.push(['tambira', `Tambīra (${h.tambira.with.map(nm).join(', ')})`, 'help'])
+                      if (h.kuttha) chips.push(['kuttha', 'Kuttha', 'good'])
+                      if (h.durpha) chips.push(['durpha', 'Durpha', 'bad'])
+                      return (
+                        <tr key={k}>
+                          <td>{k}</td>
+                          <td className="dt-tbl-lord" style={{ '--g': `var(--gr-${h.karyesha})` }}><G k={h.karyesha} /></td>
+                          <td className="vp-chips-cell">{chips.length ? chips.map(([id, label, tone]) => <span key={id} className={`vp-yoga ${tone}`}>{label}</span>) : <span className="dt-rail-dur">{t('vp.yogas.none', 'none — the two lords are not in aspect, or no yoga forms')}</span>}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {yg.pairs.length > 0 && (
+                <details className="vp-details">
+                  <summary>{t('vp.yogas.allpairs', 'Every itthaśāla / īśarāpha between the seven')}</summary>
+                  <ul className="vp-pairs">
+                    {yg.pairs.map((pr, i) => (
+                      <li key={i}>
+                        <G k={pr.a} /> · <G k={pr.b} />
+                        {pr.itthasala && <span className="vp-yoga good">Itthaśāla {pr.itthasala.type} — {nm(pr.itthasala.fast)} {n1(pr.itthasala.gap)}° {t('vp.yogas.behind', 'behind')} {nm(pr.itthasala.slow)} ({t('vp.yogas.orb', 'orb')} {pr.itthasala.orb}){pr.itthasala.variant ? ` — ${pr.itthasala.variant}` : ''}</span>}
+                        {pr.isarapha && <span className="vp-yoga bad">Īśarāpha — {nm(pr.isarapha.fast)} {n1(pr.isarapha.separation)}° {t('vp.yogas.ahead', 'ahead')}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </Card>
+          )}
+
+          {/* ── sahams ────────────────────────────────────────────────────── */}
+          {Array.isArray(data.sahams) && <Card title={t('vp.sahams.title', 'Sahams — the fifty sensitive points')}
+                sub={t('vp.sahams.sub', 'Each is a − b + c on the year’s longitudes, +30° when c does not lie in the arc from b forward to a; by day or by night as the text states. Strength follows the saham’s lord; timing = (saham − lord) × the rising time of its sign ÷ 300. House cusps are equal houses from the lagna degree (a convention).')}
+                cite="TN p.93-107; Charak ch.XI">
+            <div className="dt-table-wrap">
+              <table className="dt-table vp-t vp-sahams">
+                <thead><tr><th>Saham</th><th>{t('vp.sahams.formula', 'Formula')}</th><th>{t('vp.sahams.point', 'Point')}</th><th>{t('vp.bhava', 'bhāva')}</th><th>{t('vp.lord', 'lord')}</th><th>{t('vp.sahams.strength', 'Strength')}</th><th>{t('vp.sahams.timing', 'Timing')}</th></tr></thead>
+                <tbody>
+                  {data.sahams.filter((s) => allSahams || CORE.has(s.key)).map((s) => (
+                    <tr key={s.key} className={`vp-sah-${s.strength.verdict}`}>
+                      <td><b>{s.key}</b><span className="dt-rail-dur"> · {s.gloss}{s.strength.inverted ? ` · ${t('vp.sahams.inverted', 'better weak')}` : ''}</span></td>
+                      <td className="dt-rail-dur">{s.formula.replace('saham:', '')}</td>
+                      <td>{rs(s.sign)} {dms(s.deg)}</td>
+                      <td>{s.house}</td>
+                      <td className="dt-tbl-lord" style={{ '--g': `var(--gr-${s.lord})` }}><G k={s.lord} /> <span className="dt-rail-dur">{n1(s.lord_vishwa_bala)}</span></td>
+                      <td title={[...s.strength.strong.map((x) => '+ ' + x), ...s.strength.weak.map((x) => '− ' + x)].join('\n')}>
+                        <span className={`vp-cat vp-sv-${s.strength.verdict}`}>{t('vp.sahams.' + s.strength.verdict, s.strength.verdict)}</span>
+                      </td>
+                      <td>{s.timing ? `${Math.round(s.timing.days)} d · ${s.timing.date}` : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button type="button" className="vp-more" onClick={() => setAllSahams((v) => !v)}>
+              {allSahams ? t('vp.sahams.core', 'Show the commonly used ones') : t('vp.sahams.all', 'Show all fifty')}
+            </button>
+          </Card>}
+
+          {/* ── mudda ─────────────────────────────────────────────────────── */}
+          {mudda && (
+            <>
+              <div className="vp-mudda-head">
+                <span className="dt-chip-k">{t('vp.mudda.variant', 'First period')}</span>
+                <div className="dt-view-btns">
+                  <button type="button" className={muddaVar === 'prorated' ? 'on' : ''} onClick={() => setMuddaVar('prorated')}>{t('vp.mudda.prorated', 'prorated by the janma nakṣatra (Charak)')}</button>
+                  <button type="button" className={muddaVar === 'unprorated' ? 'on' : ''} onClick={() => setMuddaVar('unprorated')}>{t('vp.mudda.unprorated', 'unprorated (some software)')}</button>
+                </div>
+              </div>
+              <MuddaRail mudda={mudda} namer={namer} t={t} />
+              <div className="dt-table-wrap">
+                <table className="dt-table vp-table">
+                  <thead><tr><th>{t('vp.tbl.period', 'Mudda period')}</th><th>{t('vp.tbl.from', 'From')}</th><th>{t('vp.tbl.to', 'To')}</th><th>{t('vp.tbl.days', 'Days')}</th><th>{t('vp.tbl.reading', 'This site’s reading (synthesis)')}</th></tr></thead>
+                  <tbody>
+                    {mudda.periods.map((p, i) => {
+                      const r = readingFor(p, data.projection)
+                      return (
+                        <tr key={i} className={p.is_current ? 'running' : ''} style={{ '--g': `var(--gr-${p.lord})` }}>
+                          <td className="dt-tbl-lord"><G k={p.lord} s={16} />{p.kind !== 'full' && <span className="dt-rail-dur"> · {t('vp.mudda.' + p.kind, p.kind)}</span>}{p.is_current && <span className="dt-badge">{t('dtl.side.current_badge')}</span>}</td>
+                          <td>{fmtD(p.start)}</td><td>{fmtD(p.end)}</td><td>{Math.round(p.days)}</td>
+                          <td className="vp-reading">
+                            {r ? (<>
+                              <span className="vp-ov" style={{ color: r.overall > 0.02 ? 'var(--ok-ink)' : r.overall < -0.02 ? 'var(--err-ink)' : 'var(--dim)' }}>{sv(r.overall)}</span>
+                              <span className="vp-th up">▲ {themeName(r.best)} {sv(r.bestV)}</span>
+                              <span className="vp-th down">▼ {themeName(r.worst)} {sv(r.worstV)}</span>
+                            </>) : '—'}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mx-prov">{t('vp.mudda.rule', 'Rule')}: {data.mudda.rule}. {data.mudda.validation}. {data.mudda.note}</p>
+            </>
+          )}
           <p className="mx-prov">{data.note}</p>
         </>
       )}

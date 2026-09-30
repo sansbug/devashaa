@@ -27,6 +27,7 @@ blended** — a reading is shown under exactly one tier, with its source and cit
 | `classical` | **NEW.** A dated primary/near-primary Sanskrit text with a trusted published translation | Sārāvalī, Jātaka Pārijāta, Bṛhat Saṁhitā, Bṛhat Jātaka, Phaladīpikā |
 | `traditional` | Muhūrta/nakṣatra attribute tradition (post-Vedic, multi-witness) | Sunil John, Ram Babu Sao, Komilla Sutton … |
 | `jaimini` | Jaimini-system doctrine | Chara daśā etc. |
+| `tajika` | **NEW.** Annual-chart (Tājika) doctrine — a separate school, never blended with BPHS | Tājika-Nīlakaṇṭhī (root); Charak, Raman (modern) |
 | `modern` | A named modern author's method or pointer | K.N. Rao, Sarajit Poddar … |
 
 **Rule:** the `classical` tier is for the *primary texts themselves*, cited by
@@ -48,6 +49,9 @@ may only cite a registered source.
 | `brihat_samhita` | Bṛhat Saṁhitā | Varāhamihira | ~550 CE | V. Subrahmanya Sastri & Ramakrishna Bhat, 1947 | ch.verse | PDF (scanned) | old tr. | planned (→ nakṣatra) |
 | `phaladipika` | Phaladīpikā | Mantreśvara | ~13–15th c. | *Sanskrit e-text only* (sanskritdocuments.org) | ch.verse | Sanskrit, **no translation** | Skt public domain | **blocked** — needs a trusted translation (Ojha/Kapoor) |
 | `brihat_jataka` | Bṛhat Jātaka | Varāhamihira | ~550 CE | **B. Suryanarain Row, 1919** | ch.verse | PDF (scanned) | **public domain** (pub. 1919, tr. d. 1936) | on hand |
+| `tajika_nilakanthi` | Tājika-Nīlakaṇṭhī | Nīlakaṇṭha Daivajña | 1587 CE | **D.P. Saxena** (Ranjan) | page + śloka (Saṁjñā-tantra) | PDF (scanned; Sanskrit + English) | modern tr. © | **live** (`tajika`) — calculation rules only |
+| `charak_varshaphala` | A Textbook of Varshaphala | K.S. Charak | 1996 | — (modern author) | ch./page/table | PDF (scanned) | © | **live** (`modern`) — its Example Chart is the fixture in `test_tajika.py` |
+| `raman_varshaphal` | Varshaphal or the Hindu Progressed Horoscope | B.V. Raman | 2nd ed. | — (modern author) | Art./page | PDF (scanned) | © | on hand — corroborates the unit table and tri-rāśi lords |
 
 Notes carried by the registry, not to be forgotten:
 - The file first labelled "Brihat Jataka" was **Bṛhat *Saṁhitā*** — a different work. The

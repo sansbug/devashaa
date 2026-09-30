@@ -2235,6 +2235,286 @@ export const CHROME = {
     "en": "This site’s reading (synthesis)",
     "hi": "इस साइट का पाठ (संश्लेषण)"
   },
+  "vp.sub2": {
+    "en": "The Tājika year, calculated from the texts on hand: the praveśa, the year chart, Muntha, the office-bearers and year-lord, the five-fold and harṣa strengths, the aspects, the sixteen yogas, the fifty sahams and the Mudda periods. Rules and pages travel with every figure; no prediction sentence ships.",
+    "hi": "ताजिक वर्ष, उपलब्ध ग्रंथों से गणित: प्रवेश, वर्ष-कुंडली, मुन्था, पंचाधिकारी और वर्षेश, पंचवर्गीय व हर्ष बल, दृष्टियाँ, सोलह योग, पचास सहम और मुद्दा दशाएँ। हर अंक के साथ नियम और पृष्ठ; कोई फलादेश-वाक्य नहीं।"
+  },
+  "vp.day": {
+    "en": "day",
+    "hi": "दिन"
+  },
+  "vp.night": {
+    "en": "night",
+    "hi": "रात्रि"
+  },
+  "vp.chip.varshesha": {
+    "en": "Year-lord (varṣeśa)",
+    "hi": "वर्षेश"
+  },
+  "vp.graha": {
+    "en": "Graha",
+    "hi": "ग्रह"
+  },
+  "vp.total": {
+    "en": "Total",
+    "hi": "योग"
+  },
+  "vp.lordof": {
+    "en": "lord",
+    "hi": "स्वामी"
+  },
+  "vp.th": {
+    "en": "th",
+    "hi": "वाँ"
+  },
+  "vp.varshesha.title": {
+    "en": "The five office-bearers → the year-lord",
+    "hi": "पंचाधिकारी → वर्षेश"
+  },
+  "vp.varshesha.role": {
+    "en": "Office",
+    "hi": "पद"
+  },
+  "vp.varshesha.planet": {
+    "en": "Graha",
+    "hi": "ग्रह"
+  },
+  "vp.varshesha.vb": {
+    "en": "Viśva-bala",
+    "hi": "विश्व-बल"
+  },
+  "vp.varshesha.aspects": {
+    "en": "Aspects lagna",
+    "hi": "लग्न पर दृष्टि"
+  },
+  "vp.varshesha.winner": {
+    "en": "year-lord",
+    "hi": "वर्षेश"
+  },
+  "vp.pv.title": {
+    "en": "Pañcavargīya bala — the five-fold strength",
+    "hi": "पंचवर्गीय बल"
+  },
+  "vp.pv.sub": {
+    "en": "Units by the graha’s relation to the lord of its sign, hadda, drekkāṇa and navāṁśa (own 30/15/10/5 · friend ¾ · neutral ½ · enemy ¼), plus the distance from debilitation ÷ 9. Viśva-bala = total ÷ 4.",
+    "hi": "राशि, हद्दा, द्रेष्काण और नवांश के स्वामी से ग्रह के सम्बन्ध पर इकाइयाँ (स्व 30/15/10/5 · मित्र ¾ · सम ½ · शत्रु ¼), साथ में नीच-बिन्दु से दूरी ÷ 9। विश्व-बल = योग ÷ 4।"
+  },
+  "vp.pv.cat": {
+    "en": "Class",
+    "hi": "श्रेणी"
+  },
+  "vp.pv.deb": {
+    "en": "debilitation at",
+    "hi": "नीच-बिन्दु"
+  },
+  "vp.pv.dist": {
+    "en": "distance",
+    "hi": "दूरी"
+  },
+  "vp.pv.parakrami": {
+    "en": "parākramī",
+    "hi": "पराक्रमी"
+  },
+  "vp.pv.purna": {
+    "en": "pūrṇa",
+    "hi": "पूर्ण"
+  },
+  "vp.pv.madhya": {
+    "en": "madhya",
+    "hi": "मध्य"
+  },
+  "vp.pv.alpa": {
+    "en": "alpa",
+    "hi": "अल्प"
+  },
+  "vp.harsha.title": {
+    "en": "Harṣa bala — the four joys",
+    "hi": "हर्ष बल"
+  },
+  "vp.harsha.sub": {
+    "en": "Five units each: the graha’s own house of joy; exaltation or own sign; a house of its own sex (female 1-2-3, 7-8-9; male 4-5-6, 10-11-12); male by day, female by night.",
+    "hi": "प्रत्येक पाँच इकाई: ग्रह का हर्ष-स्थान; उच्च या स्वराशि; स्वलिंग का भाव (स्त्री 1-2-3, 7-8-9; पुरुष 4-5-6, 10-11-12); दिन में पुरुष, रात्रि में स्त्री।"
+  },
+  "vp.harsha.sthana": {
+    "en": "Joy-house",
+    "hi": "हर्ष-स्थान"
+  },
+  "vp.harsha.uccha": {
+    "en": "Exalt./own",
+    "hi": "उच्च/स्व"
+  },
+  "vp.harsha.sex": {
+    "en": "Sex",
+    "hi": "लिंग"
+  },
+  "vp.harsha.dn": {
+    "en": "Day/night",
+    "hi": "दिन/रात्रि"
+  },
+  "vp.harsha.purna": {
+    "en": "pūrṇa",
+    "hi": "पूर्ण"
+  },
+  "vp.harsha.madhya": {
+    "en": "madhya",
+    "hi": "मध्य"
+  },
+  "vp.harsha.alpa": {
+    "en": "alpa",
+    "hi": "अल्प"
+  },
+  "vp.harsha.nirbala": {
+    "en": "nirbala",
+    "hi": "निर्बल"
+  },
+  "vp.drishti.title": {
+    "en": "Tājika dṛṣṭi — aspects",
+    "hi": "ताजिक दृष्टि"
+  },
+  "vp.drishti.sub": {
+    "en": "Row aspects column. 5th/9th ¾ (45) open friends · 3rd ⅔ (40) and 11th ⅙ (10) secret friends · 4th/10th ¼ (15) secret enemies · same sign and 7th full (60) open enemies · 2/6/8/12 none. Values interpolate by the degrees within the sign.",
+    "hi": "पंक्ति स्तम्भ पर दृष्टि डालती है। 5/9 ¾ (45) प्रत्यक्ष मित्र · 3 ⅔ (40) व 11 ⅙ (10) गुप्त मित्र · 4/10 ¼ (15) गुप्त शत्रु · एकराशि व 7 पूर्ण (60) प्रत्यक्ष शत्रु · 2/6/8/12 शून्य। मान राशि के भीतर अंशों से अनुपातित।"
+  },
+  "vp.drishti.orb": {
+    "en": "Orb",
+    "hi": "दीप्तांश"
+  },
+  "vp.drishti.none": {
+    "en": "no aspect",
+    "hi": "दृष्टि नहीं"
+  },
+  "vp.yogas.title": {
+    "en": "The sixteen Tājika yogas",
+    "hi": "सोलह ताजिक योग"
+  },
+  "vp.yogas.sub": {
+    "en": "Read between the lagneśa and the lord of each house, as the annual chart allows (Charak p.110). Itthaśāla: the faster graha behind the slower, in mutual aspect, within the mean of their orbs. Every other yoga is a variation or a negation of it.",
+    "hi": "लग्नेश और प्रत्येक भाव के स्वामी के बीच, जैसा वर्ष-कुंडली में स्वीकृत है (चरक पृ.110)। इत्थशाल: तेज़ ग्रह धीमे के पीछे, परस्पर दृष्टि में, दीप्तांशों के माध्य के भीतर। शेष योग इसी के रूपान्तर या निषेध हैं।"
+  },
+  "vp.yogas.partial": {
+    "en": "partial",
+    "hi": "आंशिक"
+  },
+  "vp.yogas.inapo": {
+    "en": "in apoklimas",
+    "hi": "आपोक्लिम में"
+  },
+  "vp.yogas.lagnesha": {
+    "en": "lagneśa",
+    "hi": "लग्नेश"
+  },
+  "vp.yogas.karyesha": {
+    "en": "kāryeśa",
+    "hi": "कार्येश"
+  },
+  "vp.yogas.found": {
+    "en": "Yogas with the lagneśa",
+    "hi": "लग्नेश के साथ योग"
+  },
+  "vp.yogas.samelord": {
+    "en": "lagneśa is also kāryeśa",
+    "hi": "लग्नेश ही कार्येश है"
+  },
+  "vp.yogas.behind": {
+    "en": "behind",
+    "hi": "पीछे"
+  },
+  "vp.yogas.ahead": {
+    "en": "ahead",
+    "hi": "आगे"
+  },
+  "vp.yogas.orb": {
+    "en": "orb",
+    "hi": "दीप्तांश"
+  },
+  "vp.yogas.via": {
+    "en": "via",
+    "hi": "द्वारा"
+  },
+  "vp.yogas.moonwith": {
+    "en": "Moon with",
+    "hi": "चन्द्र के साथ"
+  },
+  "vp.yogas.weaker": {
+    "en": "the weaker",
+    "hi": "दुर्बल"
+  },
+  "vp.yogas.none": {
+    "en": "none — the two lords are not in aspect, or no yoga forms",
+    "hi": "कोई नहीं — दोनों स्वामी दृष्टि में नहीं, या कोई योग नहीं बनता"
+  },
+  "vp.yogas.allpairs": {
+    "en": "Every itthaśāla / īśarāpha between the seven",
+    "hi": "सातों ग्रहों के बीच सभी इत्थशाल / ईशराफ"
+  },
+  "vp.sahams.title": {
+    "en": "Sahams — the fifty sensitive points",
+    "hi": "सहम — पचास संवेदनशील बिन्दु"
+  },
+  "vp.sahams.sub": {
+    "en": "Each is a − b + c on the year’s longitudes, +30° when c does not lie in the arc from b forward to a; by day or by night as the text states. Strength follows the saham’s lord; timing = (saham − lord) × the rising time of its sign ÷ 300. House cusps are equal houses from the lagna degree (a convention).",
+    "hi": "प्रत्येक वर्ष-भोगांशों पर a − b + c, +30° जब c, b से a तक के चाप में न हो; दिन या रात्रि जैसा ग्रंथ कहे। बल सहमेश से; काल = (सहम − स्वामी) × राशि का उदय-काल ÷ 300। भाव-संधियाँ लग्नांश से समभाव (एक परिपाटी)।"
+  },
+  "vp.sahams.formula": {
+    "en": "Formula",
+    "hi": "सूत्र"
+  },
+  "vp.sahams.point": {
+    "en": "Point",
+    "hi": "बिन्दु"
+  },
+  "vp.sahams.strength": {
+    "en": "Strength",
+    "hi": "बल"
+  },
+  "vp.sahams.timing": {
+    "en": "Timing",
+    "hi": "काल"
+  },
+  "vp.sahams.inverted": {
+    "en": "better weak",
+    "hi": "दुर्बल ही शुभ"
+  },
+  "vp.sahams.strong": {
+    "en": "strong",
+    "hi": "बली"
+  },
+  "vp.sahams.weak": {
+    "en": "weak",
+    "hi": "दुर्बल"
+  },
+  "vp.sahams.mixed": {
+    "en": "mixed",
+    "hi": "मिश्रित"
+  },
+  "vp.sahams.core": {
+    "en": "Show the commonly used ones",
+    "hi": "प्रचलित सहम दिखाएँ"
+  },
+  "vp.sahams.all": {
+    "en": "Show all fifty",
+    "hi": "सभी पचास दिखाएँ"
+  },
+  "vp.mudda.variant": {
+    "en": "First period",
+    "hi": "प्रथम दशा"
+  },
+  "vp.mudda.prorated": {
+    "en": "prorated by the janma nakṣatra (Charak)",
+    "hi": "जन्म-नक्षत्र से भुक्त-भोग्य (चरक)"
+  },
+  "vp.mudda.unprorated": {
+    "en": "unprorated (some software)",
+    "hi": "बिना भुक्त-भोग्य (कुछ सॉफ़्टवेयर)"
+  },
+  "vp.mudda.balance": {
+    "en": "balance",
+    "hi": "शेष"
+  },
+  "vp.mudda.remainder": {
+    "en": "remainder",
+    "hi": "अवशेष"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

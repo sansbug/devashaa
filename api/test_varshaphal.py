@@ -50,7 +50,7 @@ def test_pravesha_is_the_suns_return():
     diff = ((sun_then - natal_sun + 180.0) % 360.0 - 180.0) * 3600.0
     _ok("Sun at praveśa == natal Sun (arcsec)", abs(diff) < 0.05, f"{diff:+.4f}″")
     _ok("praveśa local 2026-06-26 00:18 (AstroSage 00:17:30)", v["pravesha"]["local"].startswith("2026-06-26 00:18"), v["pravesha"]["local"])
-    _ok("year length ≈ 365.26 d", abs(v["mudda"]["year_days"] - 365.2564) < 0.01, str(v["mudda"]["year_days"]))
+    _ok("year length ≈ 365.26 d", abs(v["mudda"]["variants"]["prorated"]["year_days"] - 365.2564) < 0.01, str(v["mudda"]["variants"]["prorated"]["year_days"]))
 
 
 def test_muntha_definition_and_astrosage_bhava():
@@ -64,24 +64,28 @@ def test_muntha_definition_and_astrosage_bhava():
 
 def test_mudda_boundaries_match_astrosage():
     v = _build()
-    ps = v["mudda"]["periods"]
-    _ok("nine periods", len(ps) == 9)
-    _ok("start lord Mercury, from nakṣatra 18 (Jyeṣṭhā)", ps[0]["lord"] == "mercury" and v["mudda"]["start_nakshatra"] == 18)
+    ps = v["mudda"]["variants"]["unprorated"]["periods"]
+    _ok("nine periods (unprorated)", len(ps) == 9)
+    _ok("start lord Mercury, from nakṣatra 18 (Jyeṣṭhā)", ps[0]["lord"] == "mercury" and v["mudda"]["variants"]["unprorated"]["start_nakshatra"] == 18)
     _ok("Viṁśottarī order from Mercury", [p["lord"] for p in ps] == AS_ORDER, str([p["lord"] for p in ps]))
     for i, p in enumerate(ps):
         got = dt.date.fromisoformat(p["start"][:10]); want = dt.date.fromisoformat(AS_BOUNDARIES[i])
         _ok(f"{p['lord']:8s} starts {AS_BOUNDARIES[i]}", abs((got - want).days) <= 1, f"got {got}")
     end = dt.date.fromisoformat(ps[-1]["end"][:10])
     _ok("year ends at next praveśa 2027-06-26", abs((end - dt.date.fromisoformat(AS_BOUNDARIES[-1])).days) <= 1, str(end))
-    _ok("periods sum to the year (days)", abs(sum(p["days"] for p in ps) - v["mudda"]["year_days"]) < 0.05)
+    _ok("periods sum to the year (days)", abs(sum(p["days"] for p in ps) - v["mudda"]["variants"]["unprorated"]["year_days"]) < 0.05)
+    pro = v["mudda"]["variants"]["prorated"]["periods"]
+    _ok("prorated: Mercury opens with the balance (48% of 51.7 d ≈ 24.8) and closes the year", pro[0]["kind"] == "balance" and abs(pro[0]["days"] - 24.8) < 0.5 and pro[-1]["lord"] == "mercury" and pro[-1]["kind"] == "remainder", f"{pro[0]}, {pro[-1]['lord']}")
 
 
 def test_refusals_are_explicit():
     v = _build()
     what = " ".join(r["what"] for r in v["refused"])
-    for must in ("varṣeśa", "sahams", "yogas", "phala"):
+    for must in ("phala", "Patyāyinī", "dvādaśavargīya"):
         _ok(f"refused lists {must}", must in what)
-    _ok("no year-lord is chosen", "varshesha" not in v and v["panchadhikari"]["trirasi_lord"] is None)
+    _ok("year-lord IS chosen now (night praveśa)", v["varshesha"]["lord"] in ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn") and v["is_day"] is False)
+    _ok("all five office-bearers named", all(v["panchadhikari"][k] for k in ("muntha_lord", "janma_lagna_lord", "varsha_lagna_lord", "trirasi_lord", "dinaratri_lord")))
+    _ok("fifty sahams, sixteen-yoga table for 11 houses", len(v["sahams"]) == 50 and len(v["yogas"]["houses"]) == 11)
 
 
 def test_default_year_is_the_running_varsha():

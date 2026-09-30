@@ -2115,6 +2115,126 @@ export const CHROME = {
     "en": "Every formula is pinned to Raman’s worked Standard Horoscope (api/test_shadbala.py) and the assembled chart to JPL Horizons and an independent implementation (api/test_reference_chart.py).",
     "hi": "हर सूत्र रमन की उदाहरण-कुंडली (api/test_shadbala.py) से और पूरी कुंडली JPL Horizons तथा एक स्वतंत्र कार्यान्वयन (api/test_reference_chart.py) से बँधी है।"
   },
+  "sec.varsha": {
+    "en": "Varṣaphala",
+    "hi": "वर्षफल"
+  },
+  "vp.title": {
+    "en": "Varṣaphala — the annual chart",
+    "hi": "वर्षफल — वार्षिक कुंडली"
+  },
+  "vp.sub": {
+    "en": "The Tājika year: the chart cast for the moment the Sun returns to its natal place, the Muntha, and the nine Mudda periods. Calculation only — what is not shown, and why, is listed below.",
+    "hi": "ताजिक वर्ष: सूर्य के जन्म-स्थान पर लौटने के क्षण की कुंडली, मुन्था और नौ मुद्दा दशाएँ। केवल गणना — जो नहीं दिखाया गया और क्यों, नीचे सूचीबद्ध है।"
+  },
+  "vp.loading": {
+    "en": "Casting the year…",
+    "hi": "वर्ष-कुंडली बन रही है…"
+  },
+  "vp.chip.year": {
+    "en": "Varṣa",
+    "hi": "वर्ष"
+  },
+  "vp.chip.age": {
+    "en": "age",
+    "hi": "आयु"
+  },
+  "vp.chip.pravesha": {
+    "en": "Varṣa-praveśa",
+    "hi": "वर्ष-प्रवेश"
+  },
+  "vp.chip.lagna": {
+    "en": "Varṣa lagna",
+    "hi": "वर्ष-लग्न"
+  },
+  "vp.chip.muntha": {
+    "en": "Muntha",
+    "hi": "मुन्था"
+  },
+  "vp.lord": {
+    "en": "lord",
+    "hi": "स्वामी"
+  },
+  "vp.bhava": {
+    "en": "bhāva",
+    "hi": "भाव"
+  },
+  "vp.chart.title": {
+    "en": "Varṣa kuṇḍalī",
+    "hi": "वर्ष-कुंडली"
+  },
+  "vp.chart.sub": {
+    "en": "Cast for the praveśa instant at the birth place.",
+    "hi": "जन्म-स्थान पर प्रवेश-क्षण के लिए बनाई गई।"
+  },
+  "vp.adhikari.title": {
+    "en": "Office-bearers (pañcādhikārī)",
+    "hi": "पंचाधिकारी"
+  },
+  "vp.adhikari.muntha": {
+    "en": "Muntha lord",
+    "hi": "मुन्थेश"
+  },
+  "vp.adhikari.vlagna": {
+    "en": "Varṣa-lagna lord",
+    "hi": "वर्ष-लग्नेश"
+  },
+  "vp.adhikari.jlagna": {
+    "en": "Janma-lagna lord",
+    "hi": "जन्म-लग्नेश"
+  },
+  "vp.adhikari.trirasi": {
+    "en": "Tri-rāśi lord",
+    "hi": "त्रिराशीश"
+  },
+  "vp.adhikari.dinaratri": {
+    "en": "Dina-rātri lord",
+    "hi": "दिनरात्रीश"
+  },
+  "vp.adhikari.note": {
+    "en": "The year-lord (varṣeśa) is chosen among these five by the pañcavargīya bala — which needs the text. It is not chosen here.",
+    "hi": "वर्षेश इन पाँच में से पंचवर्गीय बल से चुना जाता है — जिसके लिए मूल ग्रंथ चाहिए। यहाँ नहीं चुना गया।"
+  },
+  "vp.refused.title": {
+    "en": "Not shown — and why",
+    "hi": "नहीं दिखाया गया — और क्यों"
+  },
+  "vp.refused.short": {
+    "en": "not computed",
+    "hi": "गणना नहीं"
+  },
+  "vp.mudda.title": {
+    "en": "Mudda daśā",
+    "hi": "मुद्दा दशा"
+  },
+  "vp.mudda.sub": {
+    "en": "Viṁśottarī proportions over the solar year",
+    "hi": "सौर वर्ष पर विंशोत्तरी अनुपात"
+  },
+  "vp.mudda.rule": {
+    "en": "Rule",
+    "hi": "नियम"
+  },
+  "vp.tbl.period": {
+    "en": "Mudda period",
+    "hi": "मुद्दा दशा"
+  },
+  "vp.tbl.from": {
+    "en": "From",
+    "hi": "से"
+  },
+  "vp.tbl.to": {
+    "en": "To",
+    "hi": "तक"
+  },
+  "vp.tbl.days": {
+    "en": "Days",
+    "hi": "दिन"
+  },
+  "vp.tbl.reading": {
+    "en": "This site’s reading (synthesis)",
+    "hi": "इस साइट का पाठ (संश्लेषण)"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

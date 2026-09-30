@@ -1919,6 +1919,24 @@ footer a:hover { color: var(--accent); }
 .dt-strip-t td { text-align: center; padding: .3rem .25rem; background: var(--sunken); border-radius: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .dt-table tr td.dt-tbl-lord .dt-glyph { color: color-mix(in oklab, var(--g) 72%, var(--ink)); }
+/* Varṣaphala panel — reuses the daśā navigator idiom */
+.vp-chips { margin-bottom: 1rem; }
+.vp-year { display: inline-flex; align-items: center; gap: .35rem; }
+.vp-year button { font: inherit; border: 1px solid var(--line); background: var(--sunken); color: var(--ink); border-radius: 6px; width: 1.5rem; height: 1.5rem; line-height: 1; cursor: pointer; }
+.vp-body { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 1fr); gap: .8rem; margin-bottom: 1rem; align-items: start; }
+.vp-chart h4 { margin: 0 0 .2rem; font-size: .95rem; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.vp-refused-card ul { list-style: none; margin: 0; padding: 0; }
+.vp-refused-card li { padding: .35rem 0; border-bottom: 1px solid var(--line); font-size: .76rem; }
+.vp-refused-card li:last-child { border-bottom: 0; }
+.vp-refused-card li b { display: block; color: var(--ink); }
+.vp-refused-card li span { color: var(--dim); }
+.vp-refused { color: var(--dim); font-style: italic; font-weight: var(--text-weight); }
+.vp-rail { margin-top: .4rem; }
+.vp-reading { display: flex; flex-wrap: wrap; gap: .3rem .8rem; align-items: center; white-space: normal; }
+.vp-ov { font-weight: var(--strong-weight); font-variant-numeric: tabular-nums; }
+.vp-th { font-size: .74rem; white-space: nowrap; }
+@media (max-width: 780px) { .vp-body { grid-template-columns: 1fr; } }
+
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }
 .sb-ledger > summary { cursor: pointer; font-size: .8rem; color: var(--accent); font-weight: var(--label-weight); }

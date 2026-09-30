@@ -12,6 +12,7 @@ import MatrixPanel from './MatrixPanel.jsx'
 import ExplainPanel from './ExplainPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
+import VarshaphalPanel from './VarshaphalPanel.jsx'
 import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
@@ -835,6 +836,7 @@ export default function App() {
               ['strength', t('sec.strength', 'Strength')],
               ['bhava', t('sec.bhava', 'Bhāvas & Yogas')],
               ['dasha', t('sec.dasha', 'Daśā')],
+              ['varsha', t('sec.varsha', 'Varṣaphala')],
               ['classical', t('sec.classical', 'Classical')],
               ['reference', t('sec.reference', 'Reference')]].map(([id, label]) => (
               <button type="button" key={id} role="tab" aria-selected={section === id}
@@ -886,6 +888,10 @@ export default function App() {
           {section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
 
           {section === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
+
+          {section === 'varsha' && (
+            <VarshaphalPanel date={date} time={time} place={place} namer={namer} chartStyle={style} />
+          )}
 
           {section === 'dasha' && (
           <section className="table-panel" id="rg-dasha">

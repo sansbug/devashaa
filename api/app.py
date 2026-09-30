@@ -30,6 +30,7 @@ from analysis import analyse
 from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
+import varshaphal
 import gochara
 import motion as motion_mod
 import nakshatra_attrs
@@ -863,6 +864,46 @@ def dasha():
                               moon_longitude, tz_name, _now_jd())
     except Exception as e:  # noqa: BLE001
         return jsonify({"error": f"Daśā calculation failed: {e}"}), 500
+    return jsonify(out)
+
+
+
+@app.post("/api/varshaphal")
+def varshaphal_route():
+    """Tājika annual chart — calculation layer only (see varshaphal.py). Body:
+    the birth fields, optional `year`, and optional `place_*` overrides for the
+    place of residence (the text casts the varṣa chart where the native IS)."""
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("date", "time", "latitude", "longitude") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+        local_dt = datetime.strptime(f"{body['date']} {body['time']}", "%Y-%m-%d %H:%M")
+        year = int(body["year"]) if body.get("year") not in (None, "") else None
+    except (TypeError, ValueError):
+        return jsonify({"error": "bad latitude/longitude/date/time/year"}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    p_lat = float(body.get("place_latitude") or lat)
+    p_lon = float(body.get("place_longitude") or lon)
+    p_tz = body.get("place_timezone") or tz_name
+    try:
+        natal = compute_chart(local_dt=local_dt, latitude=lat, longitude=lon, tz_name=tz_name, name="")
+        out = varshaphal.build(natal, year, p_lat, p_lon, p_tz, _now_jd(), local_dt)
+        # the site's own month-by-month reading over this varṣa, for the panel to
+        # lay beside the Mudda periods — synthesis tier, labelled as such
+        try:
+            m = matrix.build(natal)
+            start = datetime.strptime(out["pravesha"]["local"][:10], "%Y-%m-%d").date()
+            tl = matrix.timeline(natal, m, start, 12)
+            out["projection"] = {"steps": [{"date": st["date"], "overall": st["overall"], "themes": st["themes"],
+                                            "maha": st["maha"], "antar": st["antar"]} for st in tl["steps"]],
+                                 "themeNames": {t["key"]: t["name"] for t in m["themes"]},
+                                 "tier": "synthesis", "note": tl.get("note")}
+        except Exception as e:  # noqa: BLE001
+            out["projection"] = {"error": f"projection unavailable: {e}"}
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Varṣaphala failed: {e}"}), 500
     return jsonify(out)
 
 

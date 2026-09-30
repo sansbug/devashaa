@@ -2515,6 +2515,10 @@ export const CHROME = {
     "en": "remainder",
     "hi": "अवशेष"
   },
+  "vp.varshesha.lagnain": {
+    "en": "lagna is its",
+    "hi": "लग्न इसके भाव"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

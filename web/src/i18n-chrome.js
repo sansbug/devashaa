@@ -1999,6 +1999,122 @@ export const CHROME = {
     "en": "birth",
     "hi": "जन्म"
   },
+  "shadbala.ledger.summary": {
+    "en": "Show the arithmetic — every component, every graha",
+    "hi": "गणना दिखाएँ — हर घटक, हर ग्रह"
+  },
+  "shadbala.ledger.component": {
+    "en": "Component",
+    "hi": "घटक"
+  },
+  "shadbala.ledger.singles": {
+    "en": "Single components",
+    "hi": "एकल घटक"
+  },
+  "shadbala.part.ochcha": {
+    "en": "Uccha (exaltation)",
+    "hi": "उच्च बल"
+  },
+  "shadbala.part.saptavargaja": {
+    "en": "Saptavargaja (seven vargas)",
+    "hi": "सप्तवर्गज बल"
+  },
+  "shadbala.part.ojayugma": {
+    "en": "Ojāyugma (odd/even)",
+    "hi": "ओजयुग्म बल"
+  },
+  "shadbala.part.kendra": {
+    "en": "Kendra",
+    "hi": "केन्द्र बल"
+  },
+  "shadbala.part.drekkana": {
+    "en": "Drekkāṇa",
+    "hi": "द्रेष्काण बल"
+  },
+  "shadbala.part.nathonnatha": {
+    "en": "Natonnata (day / night)",
+    "hi": "नतोन्नत बल"
+  },
+  "shadbala.part.paksha": {
+    "en": "Pakṣa (lunar fortnight)",
+    "hi": "पक्ष बल"
+  },
+  "shadbala.part.thribhaga": {
+    "en": "Tribhāga (thirds of day/night)",
+    "hi": "त्रिभाग बल"
+  },
+  "shadbala.part.abda": {
+    "en": "Abda (year-lord)",
+    "hi": "अब्द बल"
+  },
+  "shadbala.part.masa": {
+    "en": "Māsa (month-lord)",
+    "hi": "मास बल"
+  },
+  "shadbala.part.vara": {
+    "en": "Vāra (weekday-lord)",
+    "hi": "वार बल"
+  },
+  "shadbala.part.hora": {
+    "en": "Horā (hour-lord)",
+    "hi": "होरा बल"
+  },
+  "shadbala.part.ayana": {
+    "en": "Ayana (declination)",
+    "hi": "अयन बल"
+  },
+  "shadbala.part.yuddha": {
+    "en": "Yuddha (planetary war)",
+    "hi": "युद्ध बल"
+  },
+  "shadbala.conv.title": {
+    "en": "Conventions this engine uses — where other software can legitimately differ",
+    "hi": "इस इंजन की परिपाटियाँ — जहाँ अन्य सॉफ़्टवेयर वैध रूप से भिन्न हो सकता है"
+  },
+  "shadbala.conv.hora.k": {
+    "en": "Horā bala",
+    "hi": "होरा बल"
+  },
+  "shadbala.conv.hora.v": {
+    "en": "the hour-lord is counted in equal 24ths of the day from sunrise (Raman, Art. 68–70). Software that divides day and night into twelve unequal parts each can hand the 60 virūpa to a different graha at the same birth.",
+    "hi": "होरा-स्वामी सूर्योदय से दिन के 24 समान भागों में गिना जाता है (रमन, अनु. 68–70)। जो सॉफ़्टवेयर दिन और रात को बारह-बारह असमान भागों में बाँटता है, वह उसी जन्म पर 60 विरूप किसी अन्य ग्रह को दे सकता है।"
+  },
+  "shadbala.conv.drik.k": {
+    "en": "Dṛk bala",
+    "hi": "दृक् बल"
+  },
+  "shadbala.conv.drik.v": {
+    "en": "signed per Art. 120: benefic aspects add, malefic aspects subtract. Other conventions net the aspects differently and can return the opposite sign.",
+    "hi": "अनु. 120 के अनुसार सचिह्न: शुभ दृष्टियाँ जोड़ती हैं, अशुभ घटाती हैं। अन्य परिपाटियाँ दृष्टियों को भिन्न ढंग से जोड़ती हैं और विपरीत चिह्न दे सकती हैं।"
+  },
+  "shadbala.conv.cheshta.k": {
+    "en": "Cheṣṭā bala",
+    "hi": "चेष्टा बल"
+  },
+  "shadbala.conv.cheshta.v": {
+    "en": "modern secular mean longitudes, not the classical tables.",
+    "hi": "आधुनिक माध्य भोगांश, शास्त्रीय सारणियाँ नहीं।"
+  },
+  "shadbala.conv.ayana.k": {
+    "en": "Ayana bala",
+    "hi": "अयन बल"
+  },
+  "shadbala.conv.ayana.v": {
+    "en": "declination from tropical longitude with β = 0 and 24° obliquity (Raman).",
+    "hi": "सायन भोगांश से क्रान्ति, β = 0 और 24° तिर्यकता (रमन)।"
+  },
+  "shadbala.conv.ayanamsa.k": {
+    "en": "Ayanāṁśa",
+    "hi": "अयनांश"
+  },
+  "shadbala.conv.ayanamsa.v": {
+    "en": "the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller; the planets agree either way.",
+    "hi": "कुंडली सत्य लाहिरी मान (माध्य + नति) छापती है, जो स्थितियों से ठीक मेल खाता है। माध्य मान छापने वाला सॉफ़्टवेयर लगभग 15″ छोटा अंक दिखाता है; ग्रह दोनों में मेल खाते हैं।"
+  },
+  "shadbala.conv.note": {
+    "en": "Every formula is pinned to Raman’s worked Standard Horoscope (api/test_shadbala.py) and the assembled chart to JPL Horizons and an independent implementation (api/test_reference_chart.py).",
+    "hi": "हर सूत्र रमन की उदाहरण-कुंडली (api/test_shadbala.py) से और पूरी कुंडली JPL Horizons तथा एक स्वतंत्र कार्यान्वयन (api/test_reference_chart.py) से बँधी है।"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

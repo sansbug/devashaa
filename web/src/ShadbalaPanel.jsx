@@ -198,6 +198,57 @@ export default function ShadbalaPanel({ data, namer }) {
           </tbody>
         </table>
       </div>
+      {/* The arithmetic, in the open. A total nobody can re-add is a black box
+          with a citation stapled to it; every virūpa here is a row. */}
+      <details className="sb-ledger">
+        <summary>{t('shadbala.ledger.summary', 'Show the arithmetic — every component, every graha')}</summary>
+        <div className="sb-scroll">
+          <table className="sb-table sb-ledger-t">
+            <thead>
+              <tr><th>{t('shadbala.ledger.component', 'Component')}</th>
+                {order.filter((k) => grahas[k]).map((k) => <th key={k} className="num">{CODE[k]}</th>)}</tr>
+            </thead>
+            <tbody>
+              <tr className="sb-ledger-h"><td colSpan={8}>Sthāna · {t('shadbala.gloss.positional', 'positional')}</td></tr>
+              {STHANA_PARTS.map((p) => (
+                <tr key={p}><td>{t('shadbala.part.' + p, p)}</td>
+                  {order.filter((k) => grahas[k]).map((k) => <td key={k} className="num">{v1(sc?.[k]?.[p])}</td>)}</tr>
+              ))}
+              <tr className="sb-ledger-sum"><td>= Sthāna</td>
+                {order.filter((k) => grahas[k]).map((k) => <td key={k} className="num">{v1(grahas[k].sthana)}</td>)}</tr>
+              <tr className="sb-ledger-h"><td colSpan={8}>Kāla · {t('shadbala.gloss.temporal', 'temporal')}</td></tr>
+              {KALA_PARTS.map((p) => (
+                <tr key={p}><td>{t('shadbala.part.' + p, p)}</td>
+                  {order.filter((k) => grahas[k]).map((k) => <td key={k} className="num">{v1(kc?.[p]?.[k])}</td>)}</tr>
+              ))}
+              <tr className="sb-ledger-sum"><td>= Kāla</td>
+                {order.filter((k) => grahas[k]).map((k) => <td key={k} className="num">{v1(grahas[k].kala)}</td>)}</tr>
+              <tr className="sb-ledger-h"><td colSpan={8}>{t('shadbala.ledger.singles', 'Single components')}</td></tr>
+              {[['dik', 'Dik'], ['cheshta', 'Cheṣṭā'], ['naisargika', 'Naisargika'], ['drik', 'Dṛk']].map(([p, l]) => (
+                <tr key={p}><td>{l}</td>
+                  {order.filter((k) => grahas[k]).map((k) => {
+                    const v = grahas[k][p]
+                    return <td key={k} className={'num' + (p === 'drik' ? (v < 0 ? ' sb-drik neg' : ' sb-drik pos') : '')}>{v == null ? '—' : (p === 'drik' && v >= 0 ? '+' : '') + v1(v)}</td>
+                  })}</tr>
+              ))}
+              <tr className="sb-ledger-sum sb-ledger-total"><td>{t('shadbala.th.total', 'Total')} (virūpa)</td>
+                {order.filter((k) => grahas[k]).map((k) => <td key={k} className="num">{v1(grahas[k].total_virupa)}</td>)}</tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="sb-conv">
+          <h5>{t('shadbala.conv.title', 'Conventions this engine uses — where other software can legitimately differ')}</h5>
+          <ul>
+            <li><b>{t('shadbala.conv.hora.k', 'Horā bala')}</b> — {t('shadbala.conv.hora.v', 'the hour-lord is counted in equal 24ths of the day from sunrise (Raman, Art. 68–70). Software that divides day and night into twelve unequal parts each can hand the 60 virūpa to a different graha at the same birth.')}</li>
+            <li><b>{t('shadbala.conv.drik.k', 'Dṛk bala')}</b> — {t('shadbala.conv.drik.v', 'signed per Art. 120: benefic aspects add, malefic aspects subtract. Other conventions net the aspects differently and can return the opposite sign.')}</li>
+            <li><b>{t('shadbala.conv.cheshta.k', 'Cheṣṭā bala')}</b> — {method?.cheshta_note || t('shadbala.conv.cheshta.v', 'modern secular mean longitudes, not the classical tables.')}</li>
+            <li><b>{t('shadbala.conv.ayana.k', 'Ayana bala')}</b> — {method?.ayana_note || t('shadbala.conv.ayana.v', 'declination from tropical longitude with β = 0 and 24° obliquity (Raman).')}</li>
+            <li><b>{t('shadbala.conv.ayanamsa.k', 'Ayanāṁśa')}</b> — {t('shadbala.conv.ayanamsa.v', 'the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller; the planets agree either way.')}</li>
+          </ul>
+          <p className="sb-conv-note">{t('shadbala.conv.note', 'Every formula is pinned to Raman’s worked Standard Horoscope (api/test_shadbala.py) and the assembled chart to JPL Horizons and an independent implementation (api/test_reference_chart.py).')}</p>
+        </div>
+      </details>
+
       <p className="sb-foot">
         {t('shadbala.foot.lead')}{' '}
         <Cite className="src" detail={method?.cheshta_note}>{t('shadbala.foot.cite1')}</Cite>{' '}

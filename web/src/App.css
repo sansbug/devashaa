@@ -1919,6 +1919,21 @@ footer a:hover { color: var(--accent); }
 .dt-strip-t td { text-align: center; padding: .3rem .25rem; background: var(--sunken); border-radius: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .dt-table tr td.dt-tbl-lord .dt-glyph { color: color-mix(in oklab, var(--g) 72%, var(--ink)); }
+/* ṣaḍbala: the arithmetic ledger + the conventions block */
+.sb-ledger { margin: .8rem 0 .4rem; }
+.sb-ledger > summary { cursor: pointer; font-size: .8rem; color: var(--accent); font-weight: var(--label-weight); }
+.sb-ledger-t { margin-top: .5rem; font-size: .74rem; }
+.sb-ledger-t td:first-child { color: var(--dim); white-space: nowrap; }
+.sb-ledger-h td { padding-top: .5rem; font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); font-weight: var(--label-weight); border-bottom: 1px solid var(--line); }
+.sb-ledger-sum td { font-weight: var(--strong-weight); color: var(--ink); border-top: 1px solid var(--line); }
+.sb-ledger-sum td:first-child { color: var(--ink); }
+.sb-ledger-total td { background: var(--row-hi); }
+.sb-conv { margin-top: .8rem; padding: .7rem .85rem; background: var(--sunken); border-radius: 10px; }
+.sb-conv h5 { margin: 0 0 .4rem; font-size: .76rem; color: var(--ink); font-weight: var(--strong-weight); }
+.sb-conv ul { margin: 0; padding-left: 1.1rem; font-size: .74rem; line-height: 1.5; color: var(--ink); }
+.sb-conv li { margin-bottom: .3rem; }
+.sb-conv-note { margin: .5rem 0 0; font-size: .7rem; color: var(--dim); }
+
 /* a tight band (under ~5% of its rail, or any band under 34px) turns its name
    vertical instead of clipping it: glyph on top, the name read downward, the
    duration left to the tooltip. The name never disappears. */

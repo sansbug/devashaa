@@ -4,9 +4,11 @@
  * Everything shown is geometry with its rule and its page: the praveśa, the
  * year chart, Muntha, the office-bearers and the year-lord, the pañcavargīya
  * and harṣa strengths, the Tājika aspects, the sixteen yogas, the fifty
- * sahams, and the Mudda periods. No phala sentence ships; the readings beside
- * a Mudda period are this site's own projection, labelled synthesis.
- * See api/varshaphal.py and api/tajika.py.
+ * sahams, and the Mudda periods. Beside each Mudda period stand two things,
+ * never blended: this site's own projection (synthesis) and what K.S. Charak
+ * (1996) STATES for the period lord's house and strength in the year chart —
+ * cited gists, adapted per docs/classical-sources-policy.md §5 (modern tier).
+ * See api/varshaphal.py, api/tajika.py, api/charak_annual_rules.py.
  */
 import { useEffect, useState } from 'react'
 import { API } from './config.js'
@@ -21,6 +23,7 @@ const n1 = (v) => (v == null ? '—' : Number(v).toFixed(1))
 const n2 = (v) => (v == null ? '—' : Number(v).toFixed(2))
 const dms = (deg) => { const d = Math.floor(deg); const m = Math.round((deg - d) * 60); return `${d}°${String(m).padStart(2, '0')}′` }
 
+const ITH_TYPE = { vartamana: 'vartamāna', purna: 'pūrṇa', bhavishyat: 'bhaviṣyat' }
 const YOGA_TONE = {
   itthasala: 'good', isarapha: 'bad', nakta: 'help', yamaya: 'help', manau: 'bad', kambula: 'good',
   gairi_kambula: 'good', khallasara: 'bad', rudda: 'bad', duphalikuttha: 'good', dutthottha: 'help',
@@ -85,6 +88,107 @@ function readingFor(p, proj) {
   const best = keys.reduce((a, b) => (mean[b] > mean[a] ? b : a))
   const worst = keys.reduce((a, b) => (mean[b] < mean[a] ? b : a))
   return { overall, best, bestV: mean[best], worst, worstV: mean[worst] }
+}
+
+/** A §5 handling badge: which content classes the gist touched and how. */
+function Adapted({ a, t }) {
+  const cls = (a?.classes || []).filter(Boolean)
+  if (!cls.length) return null
+  return (
+    <span className="cl-hist vp-ph-adapt" title={`${a.action}. ${a.note}`}>
+      ⧗ {t('vp.phala.handled', 'handled')} — {cls.map((c) => t('vp.phala.cls.' + c, c)).join(' · ')}
+    </span>
+  )
+}
+
+/** One cited line of what the text states. Attribution first, then the gist. */
+function Stated({ e, lead, t }) {
+  if (!e) return null
+  return (
+    <div className="vp-ph-block">
+      <div className="vp-ph-src"><span className="cl-tier">modern</span> <b>{e.citation}</b>{lead && <span> — {lead}</span>}</div>
+      <p className="vp-ph-gist">{e.gist}</p>
+      <Adapted a={e.adaptation} t={t} />
+    </div>
+  )
+}
+
+/** The per-period readings: the lord's house and strength in the year chart,
+ *  Charak's stated results for both, the hints that apply as flags, the yogas
+ *  it takes part in, and — separately labelled — this site's own projection. */
+function MuddaReadings({ mudda, phala, projection, nm, rs, G, themeName, t }) {
+  const lag = phala.lagna
+  return (
+    <Card
+      className="vp-ph"
+      title={t('vp.phala.title', 'Period readings — what the text states')}
+      sub={t('vp.phala.sub', 'For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with K.S. Charak’s stated results for that placement (A Textbook of Varshaphala, 1996 — ch. IX, pp. 93–106; pp. 73–75). Cited gists in this site’s words, adapted per the sources policy; never a verdict, never blended with this site’s own reading.')}
+      cite={`${phala.source.text} — ${phala.source.author} (${phala.source.date}). ${phala.caveat.citation}: ${phala.caveat.gist} ${phala.source.verification}.`}
+    >
+      {lag && (
+        <p className="vp-ph-lagna">
+          <b>{t('vp.phala.lagna', 'The year’s lagna')}</b> — <span className={`vp-cat vp-cat-${lag.lord_category}`}>{t('vp.phala.band.' + lag.band, lag.band)}</span>
+          <span className="vp-ph-src"> · {t('vp.phala.lagnaby', 'read through its lord’s band')} ({t('vp.pv.' + lag.lord_category, lag.lord_category)}) · <b>{lag.citation}</b>:</span> {lag.gist} <Adapted a={lag.adaptation} t={t} />
+        </p>
+      )}
+      {mudda.periods.map((p, i) => {
+        const r = p.reading
+        if (!r) return null
+        const syn = readingFor(p, projection)
+        return (
+          <details key={i} className={`vp-ph-period ${p.is_current ? 'running' : ''}`} open={p.is_current} style={{ '--g': `var(--gr-${p.lord})` }}>
+            <summary>
+              <span className="vp-ph-lord"><G k={p.lord} s={16} /></span>
+              <span className="vp-ph-dates">{fmtD(p.start)} → {fmtD(p.end)} · {Math.round(p.days)} {t('vp.phala.days', 'd')}</span>
+              {p.kind !== 'full' && <span className="dt-rail-dur">{t('vp.mudda.' + p.kind, p.kind)}</span>}
+              {p.is_current && <span className="dt-badge">{t('dtl.side.current_badge')}</span>}
+              <span className="vp-ph-place">{t('vp.phala.inhouse', 'in the')} {r.house_ordinal} · {rs(r.sign)}</span>
+              {r.band && <span className={`vp-cat vp-cat-${r.category}`}>{t('vp.pv.' + r.category, r.category)} · VB {n1(r.vishwa_bala)}</span>}
+              {r.house_flag && <span className={`vp-ph-flag ${r.house_flag}`}>{t('vp.phala.' + r.house_flag, r.house_flag === 'favourable' ? 'a house the text calls favourable for it' : 'a house the text calls adverse for it')}</span>}
+            </summary>
+            <Stated e={r.in_house} lead={`${nm(p.lord)} ${t('vp.phala.inhouse', 'in the')} ${r.house_ordinal}`} t={t} />
+            {r.by_strength
+              ? <Stated e={r.by_strength} lead={`${t('vp.phala.bystrength', 'by strength')}: ${t('vp.pv.' + r.category, r.category)} (VB ${n1(r.vishwa_bala)})`} t={t} />
+              : <Stated e={r.strength_note} lead={t('vp.phala.nostrength', 'no strength result for the nodes')} t={t} />}
+            {r.modifiers.length > 0 && (
+              <div className="vp-ph-mods">
+                <span className="vp-ph-src">{t('vp.phala.hints', 'Charak’s hints that apply here')}:</span>
+                {r.modifiers.map((m) => (
+                  <span key={m.hint} className="vp-yoga help" title={`${m.citation}: ${m.gist}`}>
+                    §{m.hint} {t('vp.phala.flag.' + m.hint, m.flag)}{m.bodies?.length ? ` — ${m.bodies.map(nm).join(', ')}` : ''}
+                  </span>
+                ))}
+              </div>
+            )}
+            {r.yogas.length > 0 && (
+              <div className="vp-ph-mods">
+                <span className="vp-ph-src">{t('vp.phala.yogas', 'yogas this lord takes part in')}:</span>
+                {r.yogas.map((y, j) => (
+                  <span key={j} className={`vp-yoga ${YOGA_TONE[y.yoga] || 'help'}`} title={r.fructification ? `${r.fructification.citation}: ${r.fructification.gist}` : ''}>
+                    {y.yoga === 'itthasala' ? 'Itthaśāla' : 'Īśarāpha'}{y.type ? ` ${ITH_TYPE[y.type] || y.type}` : ''} · {nm(y.with)}
+                  </span>
+                ))}
+              </div>
+            )}
+            {syn && (
+              <p className="vp-ph-syn">
+                <span className="cl-tier vp-tier-syn">synthesis</span> {t('vp.phala.synth', 'this site’s own projection for the period')}:{' '}
+                <span className="vp-ov" style={{ color: syn.overall > 0.02 ? 'var(--ok-ink)' : syn.overall < -0.02 ? 'var(--err-ink)' : 'var(--dim)' }}>{sv(syn.overall)}</span>{' '}
+                <span className="vp-th up">▲ {themeName(syn.best)} {sv(syn.bestV)}</span>{' '}
+                <span className="vp-th down">▼ {themeName(syn.worst)} {sv(syn.worstV)}</span>
+              </p>
+            )}
+          </details>
+        )
+      })}
+      <details className="vp-details">
+        <summary>{t('vp.phala.allhints', 'The eight hints, pp. 106–107')}</summary>
+        <ol className="vp-ph-hints">
+          {Object.entries(phala.hints).map(([k, h]) => <li key={k}><span className="vp-ph-src">{h.citation}</span> {h.gist}</li>)}
+        </ol>
+      </details>
+    </Card>
+  )
 }
 
 function Card({ title, sub, cite, children, className = '' }) {
@@ -412,6 +516,9 @@ export default function VarshaphalPanel({ date, time, place, namer, chartStyle =
                 </table>
               </div>
               <p className="mx-prov">{t('vp.mudda.rule', 'Rule')}: {data.mudda.rule}. {data.mudda.validation}. {data.mudda.note}</p>
+              {data.phala && mudda.periods[0]?.reading && (
+                <MuddaReadings mudda={mudda} phala={data.phala} projection={data.projection} nm={nm} rs={rs} G={G} themeName={themeName} t={t} />
+              )}
             </>
           )}
           <p className="mx-prov">{data.note}</p>

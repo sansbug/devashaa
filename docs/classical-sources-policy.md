@@ -50,7 +50,7 @@ may only cite a registered source.
 | `phaladipika` | Phaladīpikā | Mantreśvara | ~13–15th c. | *Sanskrit e-text only* (sanskritdocuments.org) | ch.verse | Sanskrit, **no translation** | Skt public domain | **blocked** — needs a trusted translation (Ojha/Kapoor) |
 | `brihat_jataka` | Bṛhat Jātaka | Varāhamihira | ~550 CE | **B. Suryanarain Row, 1919** | ch.verse | PDF (scanned) | **public domain** (pub. 1919, tr. d. 1936) | on hand |
 | `tajika_nilakanthi` | Tājika-Nīlakaṇṭhī | Nīlakaṇṭha Daivajña | 1587 CE | **D.P. Saxena** (Ranjan) | page + śloka (Saṁjñā-tantra) | PDF (scanned; Sanskrit + English) | modern tr. © | **live** (`tajika`) — calculation rules only |
-| `charak_varshaphala` | A Textbook of Varshaphala | K.S. Charak | 1996 | — (modern author) | ch./page/table | PDF (scanned) | © | **live** (`modern`) — its Example Chart is the fixture in `test_tajika.py` |
+| `charak_varshaphala` | A Textbook of Varshaphala | K.S. Charak | 1996 | — (modern author) | ch./page/table | PDF (scanned) | © | **live** (`modern`) — its Example Chart is the fixture in `test_tajika.py`; ch. IX (pp. 93-106) and pp. 73-75, 106-107 extracted as cited §5-classified gists in `charak_annual_rules.py` (2026-09-29; §7.5 independent pass pending) |
 | `raman_varshaphal` | Varshaphal or the Hindu Progressed Horoscope | B.V. Raman | 2nd ed. | — (modern author) | Art./page | PDF (scanned) | © | on hand — corroborates the unit table and tri-rāśi lords |
 
 Notes carried by the registry, not to be forgotten:

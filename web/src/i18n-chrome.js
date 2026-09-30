@@ -2519,6 +2519,130 @@ export const CHROME = {
     "en": "lagna is its",
     "hi": "लग्न इसके भाव"
   },
+  "vp.phala.title": {
+    "en": "Period readings — what the text states",
+    "hi": "अवधि-फल — ग्रन्थ क्या कहता है"
+  },
+  "vp.phala.sub": {
+    "en": "For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with K.S. Charak’s stated results for that placement (A Textbook of Varshaphala, 1996 — ch. IX, pp. 93–106; pp. 73–75). Cited gists in this site’s words, adapted per the sources policy; never a verdict, never blended with this site’s own reading.",
+    "hi": "हर मुद्दा-अवधि के लिए: वर्ष-कुण्डली में उसके स्वामी का भाव और उसका पञ्चवर्गीय बल, और उस स्थिति के लिए के.एस. चरक के कथित फल (A Textbook of Varshaphala, 1996 — अध्याय IX, पृ. 93–106; पृ. 73–75)। पृष्ठ-सन्दर्भित सार इस साइट के अपने शब्दों में, स्रोत-नीति के अनुसार अनुकूलित; कभी निर्णय नहीं, इस साइट के अपने पठन से कभी मिश्रित नहीं।"
+  },
+  "vp.phala.lagna": {
+    "en": "The year’s lagna",
+    "hi": "वर्ष-लग्न"
+  },
+  "vp.phala.lagnaby": {
+    "en": "read through its lord’s band",
+    "hi": "अपने स्वामी के बल-वर्ग से पढ़ा गया"
+  },
+  "vp.phala.band.strong": {
+    "en": "strong",
+    "hi": "बलवान"
+  },
+  "vp.phala.band.medium": {
+    "en": "of medium strength",
+    "hi": "मध्यम बल"
+  },
+  "vp.phala.band.weak": {
+    "en": "weak",
+    "hi": "निर्बल"
+  },
+  "vp.phala.days": {
+    "en": "d",
+    "hi": "दिन"
+  },
+  "vp.phala.inhouse": {
+    "en": "in the",
+    "hi": "भाव"
+  },
+  "vp.phala.favourable": {
+    "en": "a house the text calls favourable for it",
+    "hi": "ग्रन्थ इस भाव को इसके लिए अनुकूल कहता है"
+  },
+  "vp.phala.adverse": {
+    "en": "a house the text calls adverse for it",
+    "hi": "ग्रन्थ इस भाव को इसके लिए प्रतिकूल कहता है"
+  },
+  "vp.phala.bystrength": {
+    "en": "by strength",
+    "hi": "बल के अनुसार"
+  },
+  "vp.phala.nostrength": {
+    "en": "no strength result for the nodes",
+    "hi": "राहु-केतु के लिए बल-फल नहीं"
+  },
+  "vp.phala.hints": {
+    "en": "Charak’s hints that apply here",
+    "hi": "यहाँ लागू चरक के संकेत"
+  },
+  "vp.phala.yogas": {
+    "en": "yogas this lord takes part in",
+    "hi": "योग जिनमें यह स्वामी सम्मिलित है"
+  },
+  "vp.phala.synth": {
+    "en": "this site’s own projection for the period",
+    "hi": "इस अवधि के लिए इस साइट का अपना प्रक्षेपण"
+  },
+  "vp.phala.allhints": {
+    "en": "The eight hints, pp. 106–107",
+    "hi": "आठ संकेत, पृ. 106–107"
+  },
+  "vp.phala.handled": {
+    "en": "handled",
+    "hi": "सँभाला गया"
+  },
+  "vp.phala.cls.gender": {
+    "en": "partner-neutral wording",
+    "hi": "साथी-निरपेक्ष शब्दावली"
+  },
+  "vp.phala.cls.health": {
+    "en": "illness as stated, not medical advice",
+    "hi": "रोग जैसा कहा गया, चिकित्सा-परामर्श नहीं"
+  },
+  "vp.phala.cls.archaic": {
+    "en": "dated referent glossed",
+    "hi": "पुराने सन्दर्भ की व्याख्या"
+  },
+  "vp.phala.cls.death": {
+    "en": "death clause omitted",
+    "hi": "मृत्यु-वाक्य हटाया गया"
+  },
+  "vp.phala.cls.moral": {
+    "en": "value-laden clause omitted",
+    "hi": "मूल्य-निर्णय वाक्य हटाया गया"
+  },
+  "vp.phala.flag.1": {
+    "en": "malefic association or aspect",
+    "hi": "पाप-ग्रह की युति या दृष्टि"
+  },
+  "vp.phala.flag.2": {
+    "en": "benefic association or aspect",
+    "hi": "शुभ-ग्रह की युति या दृष्टि"
+  },
+  "vp.phala.flag.3": {
+    "en": "in the eleventh",
+    "hi": "एकादश भाव में"
+  },
+  "vp.phala.flag.4": {
+    "en": "in the twelfth",
+    "hi": "द्वादश भाव में"
+  },
+  "vp.phala.flag.5": {
+    "en": "in the eighth",
+    "hi": "अष्टम भाव में"
+  },
+  "vp.phala.flag.6": {
+    "en": "a natural benefic in 6, 8 or 12",
+    "hi": "6, 8 या 12 में नैसर्गिक शुभ ग्रह"
+  },
+  "vp.phala.flag.7": {
+    "en": "a natural malefic in 3, 6 or 11 (the Sun: 10)",
+    "hi": "3, 6 या 11 में नैसर्गिक पाप ग्रह (सूर्य: 10)"
+  },
+  "vp.phala.flag.8": {
+    "en": "dignity or motion",
+    "hi": "उच्च-नीच, वक्रता या अस्त"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

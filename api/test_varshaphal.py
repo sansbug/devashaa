@@ -14,6 +14,7 @@ otherwise, and if it does, this test is where that change lands.
 Run:  PYTHONUTF8=1 PYTHONIOENCODING=utf-8 python test_varshaphal.py
 """
 import datetime as dt
+import re
 
 import swisseph as swe
 
@@ -81,7 +82,7 @@ def test_mudda_boundaries_match_astrosage():
 def test_refusals_are_explicit():
     v = _build()
     what = " ".join(r["what"] for r in v["refused"])
-    for must in ("phala", "Patyāyinī", "dvādaśavargīya"):
+    for must in ("verdict", "death", "Patyāyinī", "dvādaśavargīya"):
         _ok(f"refused lists {must}", must in what)
     _ok("year-lord IS chosen now (night praveśa)", v["varshesha"]["lord"] in ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn") and v["is_day"] is False)
     _ok("all five office-bearers named", all(v["panchadhikari"][k] for k in ("muntha_lord", "janma_lagna_lord", "varsha_lagna_lord", "trirasi_lord", "dinaratri_lord")))
@@ -96,6 +97,37 @@ def test_default_year_is_the_running_varsha():
     v1 = varshaphal.build(natal, None, BIRTH["latitude"], BIRTH["longitude"], BIRTH["tz_name"], after, BIRTH["local_dt"])
     _ok("20 Jun 2026 → varṣa 2025", v0["year"] == 2025, str(v0["year"]))
     _ok("1 Jul 2026 → varṣa 2026", v1["year"] == 2026, str(v1["year"]))
+
+
+def test_charak_period_readings():
+    """Each Mudda period carries what Charak states for its lord's house and
+    band — cited, adapted, never blended — and the corpus is whole."""
+    import charak_annual_rules as C
+    _ok("corpus: nine grahas × twelve houses", len(C.IN_HOUSE) == 9 and all(sorted(v) == list(range(1, 13)) for v in C.IN_HOUSE.values()))
+    _ok("corpus: seven grahas × four bands", len(C.BY_STRENGTH) == 7 and all(sorted(v) == sorted(C.BAND_LABEL) for v in C.BY_STRENGTH.values()))
+    ents = [e for g in C.IN_HOUSE.values() for e in g.values()] + [e for g in C.BY_STRENGTH.values() for e in g.values()] \
+        + list(C.HINTS.values()) + list(C.LAGNA_BY_STRENGTH.values()) + [C.NODES_STRENGTH_NOTE, C.CAVEAT, C.FRUCTIFICATION]
+    _ok("every entry cites a page of the edition", all(e["citation"] == f"Charak p.{e['page']}" and (73 <= e["page"] <= 75 or 93 <= e["page"] <= 107 or e["page"] == 144) for e in ents))
+    _ok("every entry is adaptation-classified", all(isinstance(e["adaptation"]["classes"], list) and e["adaptation"]["action"] for e in ents))
+    bad = [e["citation"] for e in ents if re.search(r"\b(wife|women|death|die|dies)\b", e["gist"].split("(the text")[0], re.I)]
+    _ok("no gist carries 'wife'/'women'/'death' outside an attributed aside", not bad, str(bad))
+    _ok("the death clauses are marked omitted where the source has them", all("death" in e["adaptation"]["classes"] for e in (C.BY_STRENGTH["saturn"]["alpa"], C.IN_HOUSE["saturn"][8], C.LAGNA_BY_STRENGTH["weak"])))
+    v = _build()
+    for p in v["mudda"]["variants"]["prorated"]["periods"]:
+        r = p["reading"]
+        _ok(f"{p['lord']:8s} reading: house {r['house']} ({r['house_ordinal']}), band {r['band']}", 1 <= r["house"] <= 12 and r["in_house"]["citation"].startswith("Charak p.") and r["in_house"]["gist"])
+        if p["lord"] in ("rahu", "ketu"):
+            _ok(f"{p['lord']:8s} nodes: no strength band, the p.75 note instead", r["category"] is None and r["by_strength"] is None and r["strength_note"]["page"] == 75)
+        else:
+            _ok(f"{p['lord']:8s} seven: band + VB + p.73-75 gist", r["category"] in C.BAND_LABEL and r["vishwa_bala"] is not None and 73 <= r["by_strength"]["page"] <= 75)
+    by = {p["lord"]: p["reading"] for p in v["mudda"]["variants"]["prorated"]["periods"]}
+    _ok("Mercury in the 5th of the varṣa chart (AstroSage: 'Mercury (5th house)')", by["mercury"]["house"] == 5, str(by["mercury"]["house"]))
+    _ok("Moon in the 8th → hint 5 (eighth) and hint 6 (benefic in 6/8/12) flagged", {5, 6} <= {m["hint"] for m in by["moon"]["modifiers"]}, str([m["hint"] for m in by["moon"]["modifiers"]]))
+    _ok("Mars in the 3rd → favourable house, hint 7", by["mars"]["house_flag"] == "favourable" and 7 in {m["hint"] for m in by["mars"]["modifiers"]})
+    _ok("Rāhu in the 12th → hint 4", by["rahu"]["house"] == 12 and 4 in {m["hint"] for m in by["rahu"]["modifiers"]})
+    _ok("hints 1/2 name the bodies", all(m.get("bodies") for p in by.values() for m in p["modifiers"] if m["hint"] in (1, 2)))
+    _ok("the year's lagna read through its lord (Jupiter, pūrṇa → strong)", v["phala"]["lagna"]["band"] == "strong" and v["phala"]["lagna"]["lord_category"] == "purna", str(v["phala"]["lagna"]))
+    _ok("the verification status is on the payload", "pending" in v["phala"]["source"]["verification"])
 
 
 def main():

@@ -1980,6 +1980,31 @@ footer a:hover { color: var(--accent); }
 .vp-mudda-head .dt-view-btns button { font-size: .74rem; }
 @media (max-width: 900px) { .vp-grid2 { grid-template-columns: 1fr; } }
 
+/* Varṣaphala — the per-period readings (what the text states, per period) */
+.vp-ph-lagna { margin: .2rem 0 .7rem; font-size: .84rem; line-height: 1.6; }
+.vp-ph-period { border: 1px solid var(--line); border-left: 3px solid color-mix(in oklab, var(--g) 70%, var(--panel)); border-radius: 8px; padding: .35rem .7rem; margin-bottom: .45rem; background: var(--panel); }
+.vp-ph-period.running { background: color-mix(in oklab, var(--g) 8%, var(--panel)); }
+.vp-ph-period > summary { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem; cursor: pointer; list-style: none; font-size: .8rem; }
+.vp-ph-period > summary::-webkit-details-marker { display: none; }
+.vp-ph-period > summary::before { content: '▸'; color: var(--dim); font-size: .7rem; }
+.vp-ph-period[open] > summary::before { content: '▾'; }
+.vp-ph-lord { font-weight: var(--strong-weight); color: color-mix(in oklab, var(--g) 62%, var(--ink)); }
+.vp-ph-dates { font-variant-numeric: tabular-nums; color: var(--ink); }
+.vp-ph-place { color: var(--dim); }
+.vp-ph-flag { font-size: .66rem; padding: .1rem .4rem; border-radius: 5px; border: 1px solid var(--line); color: var(--ink); }
+.vp-ph-flag.favourable { border-color: var(--ok-line); color: var(--ok-ink); background: var(--accent-soft); }
+.vp-ph-flag.adverse { border-color: var(--err-line); color: var(--err-ink); background: var(--err-bg); }
+.vp-ph-block { margin: .5rem 0 .2rem; }
+.vp-ph-src { font-size: .7rem; color: var(--dim); }
+.vp-ph-src b { color: var(--ink); font-weight: var(--label-weight); }
+.vp-ph-gist { margin: .15rem 0 .25rem; font-size: .84rem; line-height: 1.6; color: var(--ink); }
+.vp-ph-adapt { margin-bottom: .2rem; }
+.vp-ph-mods { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; margin: .4rem 0; }
+.vp-ph-syn { margin: .5rem 0 .2rem; font-size: .8rem; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; border-top: 1px dashed var(--line); padding-top: .4rem; }
+.vp-tier-syn { background: var(--sunken); color: var(--ink); }
+.vp-ph-hints { margin: .4rem 0 0; padding-left: 1.2rem; font-size: .78rem; line-height: 1.55; }
+.vp-ph-hints li { margin-bottom: .25rem; }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

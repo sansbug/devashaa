@@ -3,7 +3,10 @@
 The root text (Tājika-Nīlakaṇṭhī, Saxena tr.) and two modern treatments
 (Charak; Raman) are on hand and registered; the calculation rules below cite
 them. Nothing interpretive ships: the readings beside a Mudda period come from
-this site's own projection engine and are labelled `synthesis`.
+this site's own projection engine and are labelled `synthesis`; beside them,
+from 2026-09-29, each period carries what K.S. Charak (1996) STATES for its
+lord's house and strength in the varṣa chart — cited gists, adapted per the
+sources policy §5, on the `modern` tier (charak_annual_rules.py). Never blended.
 
   * varṣa-praveśa — the Sun's return to its natal sidereal longitude
   * the varṣa kuṇḍalī, cast for that instant at the place given
@@ -25,6 +28,7 @@ from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
+import charak_annual_rules as charak
 import tajika
 import vedic  # noqa: F401  (ephemeris + sidereal mode)
 from vedic import compute_chart
@@ -149,6 +153,12 @@ def build(natal, year: int | None, latitude: float, longitude: float, tz_name: s
                           janma_moon.nakshatra.fraction, prorate=True)
     mud_un = mudda_dasha(janma_moon.nakshatra.index, age, jd0, jd1, tz_name, now_jd,
                          janma_moon.nakshatra.fraction, prorate=False)
+    readings = {}
+    for m in (mud_pro, mud_un):
+        for p in m["periods"]:
+            if p["lord"] not in readings:
+                readings[p["lord"]] = charak.period_reading(p["lord"], ctx, pv, yog)
+            p["reading"] = readings[p["lord"]]
 
     return {
         "tier": TIER, "citation": CITATION,
@@ -189,11 +199,22 @@ def build(natal, year: int | None, latitude: float, longitude: float, tz_name: s
                            "implementation to the day (test_varshaphal.py)"),
             "note": "Rāhu and Ketu periods are shown; the texts give them no separate strength (Charak p.43, 75).",
         },
+        "phala": {
+            "source": charak.SOURCE, "caveat": charak.CAVEAT,
+            "lagna": charak.lagna_reading(pv[RASI_LORD[v_lagna]]["category"]),
+            "hints": charak.HINTS,
+            "note": ("Beside each Mudda period: what Charak (1996) states for its lord's house in the varṣa chart "
+                     "(ch. IX, pp. 93-106) and for its pañcavargīya band (pp. 73-75), as cited gists in this "
+                     "site's words, adapted per the sources policy §5. Charak's eight hints (pp. 106-107) are "
+                     "applied as flags from the chart's geometry. No composite verdict is drawn."),
+        },
         "refused": [
-            {"what": "any phala (prediction) sentence", "why": "cite-or-refuse: the texts' verdicts are not shipped as the native's fate"},
+            {"what": "a verdict for the year or for a period", "why": "cite-or-refuse: the text's stated results are shown one by one with their page; they are never blended into a prediction, and never shipped as the native's fate"},
+            {"what": "death and lifespan clauses in the source (Charak p.73, 75, 103)", "why": "lifespan is never dated on this site; the clauses are omitted and the omission is marked on the entry"},
             {"what": "Patyāyinī and Yoginī daśās", "why": "stated (Charak ch.V) but not yet built"},
             {"what": "dvādaśavargīya bala", "why": "stated (TN p.42-45) but not yet built; pañcavargīya is the one the year-lord uses"},
         ],
-        "note": ("Calculation only. Every figure carries its rule and its page. The readings beside each Mudda "
-                 "period come from this site's own projection engine (synthesis tier), not from a Tājika text."),
+        "note": ("Every figure carries its rule and its page. Beside each Mudda period stand two things, never "
+                 "blended: this site's own projection (synthesis tier) and what Charak (1996) states for that "
+                 "placement (modern tier, cited, adapted)."),
     }

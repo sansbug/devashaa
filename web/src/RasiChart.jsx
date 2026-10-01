@@ -12,6 +12,7 @@
    selected name style. Nothing here is abbreviated — the cells have room. */
 
 import { useEffect, useRef, useState } from 'react'
+import { SHAPES } from './DashaGlyphs.jsx'
 import CellRuler, { useRulerMode } from './CellRuler'
 import { useLang } from './LangContext.jsx'
 
@@ -364,10 +365,17 @@ export function NorthIndianChart({
         // a busy house grows symmetrically instead of running out of its wedge.
         // LEAD must exceed the 10px font's ~13.7 line box or stacked names crowd.
         const LEAD = 13
-        const lines = occupants.length
+        // The English sub-label ("(Pisces)") is one more line in the stack
+        // whenever the name style is not already English.
+        const enLine = namer.style !== 'english' ? 1 : 0
+        const lines = occupants.length + enLine
         // Clamp: region 2 has cy=35, so five occupants would centre the stack
         // at y=-5 and print the sign label off the top of the viewBox.
         const top = Math.max(10, r.cy - 14 - (lines > 1 ? (lines - 1) * (LEAD / 2) : 0))
+        const rowY0 = top + 15 + enLine * 9
+        // Glyph disc + name + degree are centred as one unit; the text width is
+        // estimated per character (Devanāgarī runs wider), good to a pixel or two.
+        const cw = namer.style === 'devanagari' ? 6.6 : 5.1
 
         // The wedges have a hard ~70-unit horizontal ceiling and text-anchor
         // middle grows BOTH ways across the frame diagonal, so degrees only
@@ -396,18 +404,28 @@ export function NorthIndianChart({
               <tspan className="north-bhava">{sign + 1}</tspan>
               {` · ${namer.rasi(sign)}`}
             </text>
-            {occupants.map((g, k) => (
-              <text
-                key={g.key}
-                x={r.cx}
-                y={top + 15 + k * LEAD}
-                className={`north-graha${g.retrograde ? ' rx' : ''}`}
-              >
-                <title>{`${g.name_en} — ${g.degree}°${pad2(g.minute)}'`}</title>
-                {namer.graha(g)}{g.retrograde ? ' ℞' : ''}
-                {showDeg && <tspan className="north-deg">{` ${g.degree}°`}</tspan>}
-              </text>
-            ))}
+            {enLine > 0 && (
+              <text x={r.cx} y={top + 9.5} className="north-sign-en">({namer.rasiEnglish(sign)})</text>
+            )}
+            {occupants.map((g, k) => {
+              const y = rowY0 + k * LEAD
+              const label = `${namer.graha(g)}${g.retrograde ? ' ℞' : ''}`
+              const w = 17 + label.length * cw + (showDeg ? 16 : 0)
+              const x0 = r.cx - w / 2
+              return (
+                <g key={g.key} className={`north-occ${g.retrograde ? ' rx' : ''}`} style={{ '--g': `var(--gr-${g.key})` }}>
+                  <title>{`${g.name_en} — ${g.degree}°${pad2(g.minute)}'`}</title>
+                  <g transform={`translate(${x0} ${y - 10.2}) scale(0.82)`} className="north-bub">
+                    <circle cx="8" cy="8" r="8.5" className="north-bub-disc" />
+                    <g transform="translate(2.9 2.9) scale(0.64)" className="north-bub-glyph">{SHAPES[g.key]}</g>
+                  </g>
+                  <text x={x0 + 17} y={y} className={`north-graha${g.retrograde ? ' rx' : ''}`} style={{ textAnchor: 'start' }}>
+                    {label}
+                    {showDeg && <tspan className="north-deg">{` ${g.degree}°`}</tspan>}
+                  </text>
+                </g>
+              )
+            })}
           </g>
         )
       })}

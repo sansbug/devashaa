@@ -712,6 +712,7 @@ section.meta, .chart-panel, .table-panel {
 
 /* --- north indian chart --- */
 .north-chart { display: block; max-width: 620px; margin: 0 auto; width: 100%; }
+.chart-panel--deck .north-chart, .chart-panel--deck .south-chart { max-width: 480px; margin: 0 auto; }
 .north-chart .frame { fill: none; stroke: var(--line); stroke-width: 1.5; }
 .north-sign { fill: var(--dim); font-size: 10px; text-anchor: middle; }
 .north-bhava { font-weight: 700; }
@@ -719,6 +720,10 @@ section.meta, .chart-panel, .table-panel {
 .north-graha.rx { fill: var(--rx); }
 .north-deg { fill: var(--dim); font-size: 8.5px; }
 .north-graha.rx .north-deg { fill: var(--rx); }
+.north-sign-en { fill: var(--dim); font-size: 7.5px; text-anchor: middle; }
+.north-bub-disc { fill: color-mix(in oklab, var(--g) 82%, var(--ink)); }
+.north-bub-glyph { color: var(--panel); }
+.north-occ.rx .north-graha { fill: var(--rx); }
 
 /* --- sky wheel: the sky as it stood around the native --- */
 .sky-wheel { display: block; max-width: 580px; width: 100%; margin: 0 auto; overflow: visible; }
@@ -1396,21 +1401,22 @@ footer a:hover { color: var(--accent); }
 .drishti-ledger { margin-top: 1.25rem; min-width: 0; }
 .chart-figure { min-width: 0; }
 
-/* Two columns only when the chart keeps its full 620px. A flexible track would
-   silently absorb any deficit into the chart, so track 1 is fixed:
-   620 + 20 gap + 280 min + 42 panel chrome + 32 page padding = 994. */
+/* The chart deck: chart top-left, the side cards (positions · highlights ·
+   casts) down the right, housewise + aspects under the chart. The chart track
+   is flexible now — the chart itself is capped at 480px inside it. */
 @media (min-width: 1000px) {
   .chart-panel {
-    display: grid; grid-template-columns: 620px minmax(280px, 1fr);
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, 1fr);
     gap: 1.25rem; align-items: start;
   }
   .chart-panel > .controls { grid-column: 1 / -1; margin-bottom: 0; }
-  .chart-figure { grid-column: 1; }
-  .drishti-ledger {
-    grid-column: 2; margin-top: 0;
-    position: sticky; top: 1rem;
-    max-height: calc(100vh - 2rem); overflow-y: auto;
-  }
+  .chart-panel--deck .chart-figure { grid-column: 1; grid-row: 2; }
+  .chart-panel--deck .deck-side { grid-column: 2; grid-row: 2 / 4; }
+  .chart-panel--deck .deck-under { grid-column: 1; grid-row: 3; }
+  .chart-panel:not(.chart-panel--deck) .chart-figure { grid-column: 1 / -1; }
+  .chart-panel:not(.chart-panel--deck) .deck-side { grid-column: 2; }
+  .chart-panel:not(.chart-panel--deck) .deck-under { grid-column: 1; }
+  .chart-panel > .nv-panel, .chart-panel > .nv-nudge { grid-column: 1 / -1; }
 }
 
 .dr-context { margin: 0 0 .6rem; font-size: .78rem; color: var(--ink); }
@@ -2004,6 +2010,78 @@ footer a:hover { color: var(--accent); }
 .vp-tier-syn { background: var(--sunken); color: var(--ink); }
 .vp-ph-hints { margin: .4rem 0 0; padding-left: 1.2rem; font-size: .78rem; line-height: 1.55; }
 .vp-ph-hints li { margin-bottom: .25rem; }
+
+
+/* ── the chart deck ───────────────────────────────────────────────────────── */
+:root { --deck-gold: #d89b26; --deck-gold-soft: #ead6a5; }
+.deck-side { display: grid; gap: 1rem; min-width: 0; }
+.deck-under { display: grid; gap: 1rem; margin-top: 1rem; min-width: 0; }
+@media (min-width: 700px) { .deck-under { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); align-items: start; } }
+.dk-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--glow, 0 6px 22px color-mix(in oklab, var(--ink) 8%, transparent)); min-width: 0; }
+.dk-head {
+  margin: 0; padding: .6rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, var(--ink)), var(--accent));
+  color: var(--on-accent); font-family: Georgia, 'Times New Roman', serif; font-size: 1.05rem; font-weight: 600; letter-spacing: .01em; text-transform: none;
+}
+.dk-head-right { font-family: inherit; font-size: .68rem; font-weight: 500; }
+.dk-body { padding: .35rem .6rem .6rem; overflow-x: auto; }
+.dk-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.dk-table th { font-family: Georgia, 'Times New Roman', serif; text-align: left; font-weight: 600; color: var(--ink); background: var(--sunken); padding: .45rem .6rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.dk-table td { padding: .42rem .6rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.dk-table tr:last-child td { border-bottom: 0; }
+.dk-table tbody tr:hover { background: var(--row-hi); }
+.dk-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dk-en { color: var(--dim); font-size: .72rem; }
+.dk-num.rx, .dk-deg.rx { color: var(--rx); font-weight: var(--strong-weight, 700); }
+.dk-deg { color: var(--dim); font-size: .74rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dk-planet { display: inline-flex; align-items: center; gap: .4rem; white-space: nowrap; }
+.dk-occ { display: flex; flex-wrap: wrap; gap: .3rem .8rem; }
+.dk-housewise th:first-child, .dk-housewise td:first-child { width: 3rem; }
+.dk-housewise td { padding-left: .4rem; padding-right: .4rem; }
+.gbub { display: inline-grid; place-items: center; border-radius: 50%; background: color-mix(in oklab, var(--g) 82%, var(--ink)); color: var(--panel); flex: none; vertical-align: middle; }
+.gbub-s { width: 18px; height: 18px; }
+.gbub-m { width: 24px; height: 24px; }
+.gbub-l { width: 29px; height: 29px; }
+.gbub .dt-glyph { display: block; }
+/* key highlights */
+.dk-hl { display: grid; grid-template-columns: 2.4rem minmax(8rem, 10rem) 1fr; gap: .7rem; align-items: start; padding: .6rem .4rem; }
+.dk-hl + .dk-hl { border-top: 1px solid var(--line); }
+.dk-rbub { display: inline-grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 50%; border: 2px solid var(--deck-gold); color: color-mix(in oklab, var(--deck-gold) 60%, var(--ink)); font-family: Georgia, serif; font-weight: 700; font-size: .95rem; }
+.dk-hl-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; font-size: .88rem; color: var(--ink); padding-top: .35rem; }
+.dk-hl-text { font-size: .84rem; line-height: 1.5; padding-top: .3rem; }
+.dk-hl-text i { display: block; color: var(--dim); font-size: .74rem; }
+/* casts */
+.dk-picker { display: flex; flex-wrap: wrap; gap: .35rem; padding: .4rem .2rem .55rem; }
+.dk-pick { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem .2rem .25rem; border: 1px solid var(--line); border-radius: 9px; background: var(--sunken); color: var(--dim); font: inherit; font-size: .74rem; font-weight: 600; cursor: pointer; }
+.dk-pick:hover { color: var(--ink); border-color: var(--accent); }
+.dk-pick.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.dk-meter { display: inline-flex; gap: 3px; align-items: center; }
+.dk-sb { width: 14px; height: 14px; border-radius: 2px; background: color-mix(in oklab, var(--accent) 18%, var(--panel)); }
+.dk-sb.on { background: var(--accent); }
+.dk-legend { display: inline-flex; flex-wrap: wrap; gap: .3rem .7rem; align-items: center; }
+.dk-legend .dk-sb { width: 9px; height: 9px; background: color-mix(in oklab, var(--on-accent) 28%, transparent); }
+.dk-legend .dk-sb.on { background: var(--on-accent); }
+.dk-strength { display: inline-flex; align-items: center; gap: .5rem; }
+.dk-strength b { font-variant-numeric: tabular-nums; margin-left: auto; }
+.dk-inline { margin-left: .35rem; }
+.dk-inline .dk-sb { width: 10px; height: 10px; }
+.dk-casts td:last-child { white-space: nowrap; }
+/* aspects */
+.dk-asp-row { display: flex; align-items: center; gap: .6rem; padding: .45rem .3rem; font-size: .82rem; }
+.dk-asp-row + .dk-asp-row { border-top: 1px solid var(--line); }
+.dk-asp-text { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem; line-height: 1.6; }
+.dk-chip { display: inline-block; padding: .05rem .5rem; border: 1px solid var(--line); border-radius: 999px; background: var(--sunken); font-size: .76rem; }
+.dk-chip:hover { border-color: var(--accent); }
+.dk-mutual { color: var(--dim); font-size: .72rem; }
+.dk-note { margin: .5rem .3rem .3rem; font-size: .76rem; color: var(--ink); line-height: 1.6; }
+.dk-asym { padding: .7rem .9rem; border-radius: 10px; background: linear-gradient(135deg, color-mix(in oklab, var(--deck-gold-soft) 30%, var(--panel)), color-mix(in oklab, var(--deck-gold-soft) 70%, var(--panel))); color: var(--ink); }
+/* the banner above the chart */
+.dk-banner { max-width: 480px; margin: 0 auto .6rem; padding: .5rem 1rem .55rem; border-radius: 12px; text-align: center; background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, var(--ink)), var(--accent)); color: var(--on-accent); border: 1px solid color-mix(in oklab, var(--deck-gold) 70%, var(--accent)); }
+.dk-banner-title { font-family: Georgia, 'Times New Roman', serif; font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: color-mix(in oklab, var(--deck-gold-soft) 85%, var(--on-accent)); }
+.dk-banner-sub { font-size: .72rem; opacity: .92; margin-top: .1rem; }
+.chart-panel--deck .north-chart .frame, .chart-panel--deck .south-chart .frame { stroke: color-mix(in oklab, var(--deck-gold) 72%, var(--line)); }
+.chart-panel--deck .north-chart { border: 2px solid color-mix(in oklab, var(--deck-gold) 80%, var(--line)); border-radius: 4px; background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 8%, transparent), transparent 55%); }
+@media (max-width: 650px) { .dk-hl { grid-template-columns: 2.2rem 1fr; } .dk-hl-text { grid-column: 2; padding-top: 0; } }
 
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */

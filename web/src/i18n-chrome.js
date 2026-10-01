@@ -2643,6 +2643,110 @@ export const CHROME = {
     "en": "dignity or motion",
     "hi": "उच्च-नीच, वक्रता या अस्त"
   },
+  "deck.positions": {
+    "en": "Planetary Positions",
+    "hi": "ग्रह-स्थिति"
+  },
+  "deck.positions.tip": {
+    "en": "Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna.",
+    "hi": "निरयण (लाहिड़ी) भोगांश; भाव लग्न से राशि-भाव हैं।"
+  },
+  "deck.planet": {
+    "en": "Planet",
+    "hi": "ग्रह"
+  },
+  "deck.sign": {
+    "en": "Sign (Rāśi)",
+    "hi": "राशि"
+  },
+  "deck.degree": {
+    "en": "Degree",
+    "hi": "अंश"
+  },
+  "deck.house": {
+    "en": "House",
+    "hi": "भाव"
+  },
+  "deck.highlights": {
+    "en": "Key Highlights",
+    "hi": "मुख्य बिन्दु"
+  },
+  "deck.ascendant": {
+    "en": "Ascendant (Lagna)",
+    "hi": "लग्न"
+  },
+  "deck.moonsign": {
+    "en": "Moon Sign (Rāśi)",
+    "hi": "चन्द्र-राशि"
+  },
+  "deck.sunsign": {
+    "en": "Sun Sign",
+    "hi": "सूर्य-राशि"
+  },
+  "deck.pada": {
+    "en": "pada",
+    "hi": "पद"
+  },
+  "deck.casts": {
+    "en": "Casts (Strengths)",
+    "hi": "दृष्टि (बल)"
+  },
+  "deck.strength": {
+    "en": "Strength",
+    "hi": "बल"
+  },
+  "deck.special": {
+    "en": "special full aspect on the",
+    "hi": "विशेष पूर्ण दृष्टि"
+  },
+  "deck.returns": {
+    "en": "returns",
+    "hi": "प्रतिदृष्टि"
+  },
+  "deck.nodeNote": {
+    "en": "No graha dṛṣṭi is cast by",
+    "hi": "ग्रह-दृष्टि नहीं डालता:"
+  },
+  "deck.unavailable": {
+    "en": "Dṛṣṭi is counted from the sign a graha actually stands in — switch to D1.",
+    "hi": "दृष्टि उसी राशि से गिनी जाती है जिसमें ग्रह वास्तव में है — D1 चुनें।"
+  },
+  "deck.housewise": {
+    "en": "Housewise Planets",
+    "hi": "भावानुसार ग्रह"
+  },
+  "deck.planets": {
+    "en": "Planet(s)",
+    "hi": "ग्रह"
+  },
+  "deck.aspects": {
+    "en": "Aspects (Drishti)",
+    "hi": "दृष्टियाँ"
+  },
+  "deck.from": {
+    "en": "from",
+    "hi": "से"
+  },
+  "deck.noneReceived": {
+    "en": "No graha aspects",
+    "hi": "कोई ग्रह दृष्टि नहीं डालता:"
+  },
+  "deck.banner.north": {
+    "en": "North Indian style birth chart",
+    "hi": "उत्तर भारतीय शैली की जन्म-कुण्डली"
+  },
+  "deck.banner.south": {
+    "en": "South Indian style birth chart",
+    "hi": "दक्षिण भारतीय शैली की जन्म-कुण्डली"
+  },
+  "deck.banner.sub": {
+    "en": "Planetary positions (°)",
+    "hi": "ग्रह-स्थिति (°)"
+  },
+  "deck.banner.northTip": {
+    "en": "A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.",
+    "hi": "भाव-चित्र: भाव स्थिर हैं, राशियाँ लग्न के साथ घूमती हैं। अंश-ज्यामिति के लिए दक्षिण भारतीय ढाँचा चुनें।"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

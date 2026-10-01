@@ -110,6 +110,8 @@ export function makeNamer(style = 'common') {
                           : pick(g, 'rasi_lord')),
     /** Rāśi by zodiac index 0-11 (charts index by sign, not by graha). */
     rasi: (i) => (RASIS[style] || RASIS.common)[i],
+    /** The plain English name regardless of style — the deck's parenthetical. */
+    rasiEnglish: (i) => RASIS.english[i],
     /** Compact rāśi abbreviation by index — always a rāśi, never Western. */
     rasiAbbr: (i) => (dev ? RASI_ABBR_DEV : RASI_ABBR_LATIN)[i],
     /** Graha by KEY — for the analysis and rāśi endpoints, which cite rules

@@ -14,7 +14,7 @@
 
 const P = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }
 
-const SHAPES = {
+export const SHAPES = {
   // Sūrya — disc with a centre point
   sun: <><circle cx="8" cy="8" r="5.2" {...P} /><circle cx="8" cy="8" r="1.1" fill="currentColor" /></>,
   // Candra — crescent
@@ -54,3 +54,16 @@ export default function Glyph({ lord, size = 16, className = '' }) {
 }
 
 export const HAS_GLYPH = (lord) => Boolean(SHAPES[lord])
+
+/** A filled disc in the graha's own hue with the glyph knocked out of it — the
+ *  chart deck's planet marker. Colour comes from --gr-<key> (fixed hues on
+ *  :root), darkened a step toward the ink so a pale hue still carries a white
+ *  glyph. Sizes: s 18px · m 24px · l 29px. */
+export function Bubble({ lord, size = 'm', className = '' }) {
+  const px = size === 's' ? 18 : size === 'l' ? 29 : 24
+  return (
+    <span className={`gbub gbub-${size} ${className}`} style={{ '--g': `var(--gr-${lord})` }} aria-hidden="true">
+      <Glyph lord={lord} size={Math.round(px * 0.62)} />
+    </span>
+  )
+}

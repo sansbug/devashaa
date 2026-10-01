@@ -30,7 +30,7 @@ import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import NakshatraCard from './NakshatraCard.jsx'
 import ModernNotes from './ModernNotes.jsx'
-import DrishtiLedger from './DrishtiLedger.jsx'
+import ChartDeck from './ChartDeck.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -707,7 +707,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="chart-panel">
+          <section className={`chart-panel${style === 'north' || style === 'south' ? ' chart-panel--deck' : ''}`}>
             <div className="controls">
               <div className="styles">
                 <button type="button" className={style === 'south' ? 'on' : ''}
@@ -752,6 +752,12 @@ export default function App() {
               {style === 'panchang' ? (
                 <PanchangHeatmap date={date} time={time} place={place} />
               ) : (<>
+              {(style === 'north' || style === 'south') && (
+                <div className="dk-banner" title={style === 'north' ? t('deck.banner.northTip', 'A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.') : undefined}>
+                  <div className="dk-banner-title">{t(style === 'north' ? 'deck.banner.north' : 'deck.banner.south', style === 'north' ? 'North Indian style birth chart' : 'South Indian style birth chart')} ({varga})</div>
+                  <div className="dk-banner-sub">{VARGA_LABELS.find(([k]) => k === varga)[1]} — {t('deck.banner.sub', 'Planetary positions (°)')}</div>
+                </div>
+              )}
               <Chart
                 grahas={chart.grahas}
                 lagnaRasi={chart.lagna_rasi}
@@ -781,12 +787,6 @@ export default function App() {
                 transitErr={transitErr}
               />
               {style === 'south' && varga === 'D1' && <RulerLegend />}
-              {style === 'north' && (
-                <p className="frame-note">
-                  The North Indian frame is a <em>bhāva</em> diagram — it discards sign
-                  geometry by design. For degree behaviour, use the South Indian frame.
-                </p>
-              )}
               {style === 'wheel' && (
                 <p className="frame-note">
                   The sky as it stood around the native: the lagna rises on the
@@ -816,9 +816,10 @@ export default function App() {
                 <NavamsaPanel data={chart.navamsa} namer={namer} />
               </>
             )}
-            {chart.analysis && !chart.analysis.error && (
-              <DrishtiLedger
-                drishti={chart.analysis.drishti}
+            {style !== 'panchang' && (
+              <ChartDeck
+                chart={chart}
+                drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 grahas={chart.grahas}
                 namer={namer}
                 varga={varga}

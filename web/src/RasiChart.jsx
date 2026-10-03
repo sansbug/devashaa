@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SHAPES } from './DashaGlyphs.jsx'
 import CellRuler, { useRulerMode } from './CellRuler'
+import LordMark, { lordPlacement } from './LordMark.jsx'
 import { useLang } from './LangContext.jsx'
 
 /**
@@ -287,12 +288,14 @@ export function SouthIndianChart({
             }
             return null
           }
+          const lp = lordPlacement(sign, grahas, vargaKey, lagna)
           return (
             <div
               className={`south-cell${sign === lagna ? ' is-lagna' : ''}`
-                         + (highlightSign === sign ? ' dr-locate' : '')}
+                         + (highlightSign === sign ? ' dr-locate' : '')
+                         + (lp.own ? ' own-lord' : '')}
               key={`${ri}-${ci}`}
-              style={{ gridRow: ri + 1, gridColumn: ci + 1 }}
+              style={{ gridRow: ri + 1, gridColumn: ci + 1, ...(lp.own ? { '--g': `var(--pc-${lp.lord}, var(--gr-${lp.lord}))` } : {}) }}
               onPointerEnter={enter(sign)} onClick={tap(sign)}
             >
               {/* The numeral is the RĀŚI number (Meṣa 1 … Mīna 12), a fixed
@@ -308,6 +311,7 @@ export function SouthIndianChart({
                 {namer.rasi(sign)}
               </div>
               {sign === lagna && <div className="asc-mark">{namer.style === 'devanagari' ? 'लग्न' : 'Lagna'}</div>}
+              <LordMark sign={sign} grahas={grahas} vargaKey={vargaKey} lagna={lagna} namer={namer} size="s" />
               <div className="cell-grahas">
                 {bySign[sign].map((g) => (
                   <GrahaTag g={g} namer={namer} key={g.key}

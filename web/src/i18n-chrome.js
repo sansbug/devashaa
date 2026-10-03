@@ -2747,6 +2747,18 @@ export const CHROME = {
     "en": "A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.",
     "hi": "भाव-चित्र: भाव स्थिर हैं, राशियाँ लग्न के साथ घूमती हैं। अंश-ज्यामिति के लिए दक्षिण भारतीय ढाँचा चुनें।"
   },
+  "deck.swami": {
+    "en": "Swami of",
+    "hi": "स्वामी —"
+  },
+  "deck.own": {
+    "en": "own",
+    "hi": "स्व"
+  },
+  "deck.ownHouse": {
+    "en": "in its own house (svakṣetra)",
+    "hi": "स्वक्षेत्र में"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

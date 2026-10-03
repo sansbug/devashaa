@@ -12,6 +12,7 @@
  */
 import { NORTH_REGIONS, BhavaHoverCard, useBhavaHover } from './RasiChart.jsx'
 import Glyph from './DashaGlyphs.jsx'
+import LordMark, { lordPlacement } from './LordMark.jsx'
 
 /** Per-region block width (% of the square) and a nudge for the side wedges,
  *  whose text anchor sits a little too close to the edge for an HTML block. */
@@ -20,7 +21,6 @@ const BLOCK = [
   { w: 38 }, { w: 30 }, { w: 19, cx: 360 }, { w: 38 }, { w: 19, cx: 360 }, { w: 30 },
 ]
 const RASI_SYMBOL = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
-const RASI_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 
 function groupBySign(grahas, vargaKey) {
   const bySign = Array.from({ length: 12 }, () => [])
@@ -54,8 +54,11 @@ export default function NorthDeckChart({
           <polygon points="200,0 400,200 200,400 0,200" className="chart-line" />
           {NORTH_REGIONS.map((r, i) => {
             const sign = (lagna + i) % 12
+            const lp = lordPlacement(sign, grahas, vargaKey, lagna)
             return (
               <g key={i} onPointerEnter={hoverable ? enter(sign) : undefined} onClick={hoverable ? tap(sign) : undefined}>
+                {/* The lord at home: the wedge takes a wash of the lord's colour. */}
+                {lp.own && <polygon points={r.pts} className="own-fill" style={{ '--g': `var(--pc-${lp.lord})` }} />}
                 <polygon points={r.pts} fill="transparent" pointerEvents="all" />
                 {highlightSign === sign && <polygon points={r.pts} className="north-locate" />}
               </g>
@@ -68,6 +71,7 @@ export default function NorthDeckChart({
           const occupants = bySign[sign]
           const b = BLOCK[i]
           const cx = b.cx ?? r.cx
+          const lp = lordPlacement(sign, grahas, vargaKey, lagna)
           return (
             <div key={i} className={`house h${bhava}${occupants.length ? '' : ' empty'}`}
                  style={{ left: `${cx / 4}%`, top: `${r.cy / 4}%`, width: `${b.w}%` }}
@@ -76,6 +80,7 @@ export default function NorthDeckChart({
                 {sign + 1} · {namer.rasi(sign)}
                 {en && <small>({namer.rasiEnglish(sign)})</small>}
               </div>
+              <LordMark sign={sign} grahas={grahas} vargaKey={vargaKey} lagna={lagna} namer={namer} size="n" />
               {occupants.map((g) => (
                 <div key={g.key} className="planet" style={{ '--g': `var(--pc-${g.key})` }}>
                   <span className="planet-icon"><Glyph lord={g.key} size={16} /></span>
@@ -85,7 +90,7 @@ export default function NorthDeckChart({
                 </div>
               ))}
               {!occupants.length && (
-                <span className="house-glyph" style={{ '--g': `var(--pc-${RASI_LORD[sign]})` }} aria-hidden="true">
+                <span className="house-glyph" style={{ '--g': `var(--pc-${lp.lord})` }} aria-hidden="true">
                   {RASI_SYMBOL[sign]}&#xFE0E;
                 </span>
               )}

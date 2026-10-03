@@ -2176,6 +2176,7 @@ footer a:hover { color: var(--accent); }
 .sc-lagna { position: absolute; top: 0; left: 0; width: 5cqw; height: 5cqw; pointer-events: none;
   background: linear-gradient(135deg, transparent 46%, var(--deck-gold) 46%, var(--deck-gold) 56%, transparent 56%); }
 .sc-lagna-word { position: absolute; top: .5cqw; right: .9cqw; font-size: clamp(6px, 1.35cqw, 11px); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+@container (max-width: 420px) { .sc-lagna-word { display: none; } }
 /* the centre: the varga and the lagna, in the serif */
 .sc-centre { grid-row: 2 / 4; grid-column: 2 / 4; display: grid; place-content: center; text-align: center; gap: .6cqw; padding: 2cqw; }
 .sc-centre-varga { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(16px, 7cqw, 56px); font-weight: 700; color: var(--accent); line-height: 1; }

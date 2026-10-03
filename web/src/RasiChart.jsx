@@ -64,7 +64,7 @@ const SOUTH_CELLS = [
 
 // North Indian: 12 regions of a square cut by its diagonals and inner diamond.
 // Listed as bhāva 1..12 in the conventional arrangement.
-const NORTH_REGIONS = [
+export const NORTH_REGIONS = [
   { pts: '200,0 300,100 200,200 100,100', cx: 200, cy: 100 }, // 1  top diamond
   { pts: '0,0 200,0 100,100', cx: 100, cy: 35 },              // 2
   { pts: '0,0 100,100 0,200', cx: 35, cy: 100 },              // 3

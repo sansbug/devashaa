@@ -2038,7 +2038,7 @@ footer a:hover { color: var(--accent); }
 .dk-occ { display: flex; flex-wrap: wrap; gap: .3rem .8rem; }
 .dk-housewise th:first-child, .dk-housewise td:first-child { width: 3rem; }
 .dk-housewise td { padding-left: .4rem; padding-right: .4rem; }
-.gbub { display: inline-grid; place-items: center; border-radius: 50%; background: color-mix(in oklab, var(--g) 82%, var(--ink)); color: var(--panel); flex: none; vertical-align: middle; }
+.gbub { display: inline-grid; place-items: center; border-radius: 50%; background: var(--g); color: #fff; flex: none; vertical-align: middle; }
 .gbub-s { width: 18px; height: 18px; }
 .gbub-m { width: 24px; height: 24px; }
 .gbub-l { width: 29px; height: 29px; }
@@ -2082,6 +2082,48 @@ footer a:hover { color: var(--accent); }
 .chart-panel--deck .north-chart .frame, .chart-panel--deck .south-chart .frame { stroke: color-mix(in oklab, var(--deck-gold) 72%, var(--line)); }
 .chart-panel--deck .north-chart { border: 2px solid color-mix(in oklab, var(--deck-gold) 80%, var(--line)); border-radius: 4px; background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 8%, transparent), transparent 55%); }
 @media (max-width: 650px) { .dk-hl { grid-template-columns: 2.2rem 1fr; } .dk-hl-text { grid-column: 2; padding-top: 0; } }
+
+
+/* ── the deck's North Indian chart, after the design's own stylesheet ──────── */
+:root {
+  --pc-sun: #f5a623; --pc-moon: #a6aaac; --pc-mars: #d7463c; --pc-mercury: #28a988; --pc-jupiter: #ef9b28;
+  --pc-venus: #316bd9; --pc-saturn: #6537c6; --pc-rahu: #b54b35; --pc-ketu: #9b7142;
+}
+.rc-card { position: relative; container-type: inline-size; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--glow, 0 6px 22px color-mix(in oklab, var(--ink) 8%, transparent)); padding: 0 1rem 1rem; margin-bottom: .2rem; }
+.rc-banner { position: relative; width: fit-content; max-width: 100%; box-sizing: border-box; margin: -1px auto .9rem; padding: .5rem 2.4rem .55rem; border-radius: 0 0 14px 14px; text-align: center; background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, var(--ink)), var(--accent)); color: var(--on-accent); border: 1px solid color-mix(in oklab, var(--deck-gold) 70%, var(--accent)); border-top: 0; }
+.rc-banner::before, .rc-banner::after { content: '◆'; position: absolute; top: 50%; transform: translateY(-50%); font-size: .55rem; color: var(--deck-gold-soft); }
+.rc-banner::before { left: .9rem; } .rc-banner::after { right: .9rem; }
+.rc-banner-title { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(.72rem, 2.45cqw, 1.12rem); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: color-mix(in oklab, var(--deck-gold-soft) 85%, var(--on-accent)); line-height: 1.25; }
+.rc-banner-sub { font-size: .74rem; opacity: .92; margin-top: .1rem; }
+.rasi-chart {
+  position: relative; container-type: inline-size; width: 100%; max-width: 640px; margin: 0 auto; aspect-ratio: 1 / 1;
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 7%, transparent), transparent 55%), var(--panel);
+  border: 2px solid var(--deck-gold); overflow: visible;
+}
+.rasi-chart > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.chart-line { stroke: color-mix(in oklab, var(--deck-gold) 92%, var(--ink)); stroke-width: 1.5; fill: none; }
+.rc-corner { position: absolute; width: 4.5cqw; height: 4.5cqw; pointer-events: none; }
+.rc-corner::before { content: ''; position: absolute; inset: 0; border: 0 solid var(--deck-gold); }
+.rc-corner.tl { top: 1.2cqw; left: 1.2cqw; } .rc-corner.tl::before { border-top-width: 2px; border-left-width: 2px; border-radius: 3px 0 0 0; }
+.rc-corner.tr { top: 1.2cqw; right: 1.2cqw; } .rc-corner.tr::before { border-top-width: 2px; border-right-width: 2px; border-radius: 0 3px 0 0; }
+.rc-corner.bl { bottom: 1.2cqw; left: 1.2cqw; } .rc-corner.bl::before { border-bottom-width: 2px; border-left-width: 2px; border-radius: 0 0 0 3px; }
+.rc-corner.br { bottom: 1.2cqw; right: 1.2cqw; } .rc-corner.br::before { border-bottom-width: 2px; border-right-width: 2px; border-radius: 0 0 3px 0; }
+.rc-corner::after { content: ''; position: absolute; width: 1.1cqw; height: 1.1cqw; border-radius: 50%; background: var(--deck-gold); }
+.rc-corner.tl::after { top: 1.4cqw; left: 1.4cqw; } .rc-corner.tr::after { top: 1.4cqw; right: 1.4cqw; }
+.rc-corner.bl::after { bottom: 1.4cqw; left: 1.4cqw; } .rc-corner.br::after { bottom: 1.4cqw; right: 1.4cqw; }
+.house { position: absolute; transform: translate(-50%, -50%); text-align: center; pointer-events: none; color: var(--ink); }
+.house-sign { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(8px, 2.2cqw, 18px); font-weight: 700; line-height: 1.15; white-space: nowrap; }
+.house-sign small { display: block; font-size: clamp(7px, 1.55cqw, 13px); font-weight: 500; color: var(--dim); }
+.planet { display: flex; justify-content: center; align-items: center; gap: .85cqw; margin-top: .9cqw; font-size: clamp(7.5px, 1.95cqw, 16px); font-weight: 600; line-height: 1.2; white-space: nowrap; }
+.planet-name { color: color-mix(in oklab, var(--g) 60%, var(--ink)); }
+.planet-deg { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.planet-icon { display: inline-grid; place-items: center; width: 3.5cqw; height: 3.5cqw; min-width: 12px; min-height: 12px; border-radius: 50%; background: var(--g); color: #fff; flex: none; }
+.planet-icon svg { width: 62%; height: 62%; display: block; }
+.retrograde { color: var(--rx); font-weight: 700; }
+.house-glyph { display: block; margin-top: .6cqw; font-size: clamp(14px, 5cqw, 40px); line-height: 1; color: color-mix(in oklab, var(--g) 55%, var(--panel)); font-family: 'Segoe UI Symbol', 'Noto Sans Symbols2', 'Noto Sans Symbols', 'Apple Symbols', serif; font-variant-emoji: text; }
+.house.empty .house-sign { margin-bottom: .2cqw; }
+.chart-panel--deck .north-chart { border: 0; background: none; }
+@media (max-width: 480px) { .rc-card { padding: 0 .5rem .6rem; } .rc-banner { padding: .4rem 1.6rem .45rem; } .rc-banner::before, .rc-banner::after { display: none; } }
 
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */

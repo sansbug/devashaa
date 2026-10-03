@@ -97,7 +97,7 @@ export default function ChartDeck({
     <div className="dk-picker" role="tablist" aria-label={t('deck.casts', 'Casts (Strengths)')}>
       {ordered.map((x) => (
         <button type="button" key={x.key} role="tab" aria-selected={subject === x.key}
-                className={`dk-pick${subject === x.key ? ' on' : ''}`} style={{ '--g': `var(--gr-${x.key})` }}
+                className={`dk-pick${subject === x.key ? ' on' : ''}`} style={{ '--g': `var(--pc-${x.key})` }}
                 onClick={() => onPickSubject(x.key)} title={namer.graha(x)}>
           <Bubble lord={x.key} size="m" />
           <span className="dk-pick-name">{namer.graha(x)}</span>

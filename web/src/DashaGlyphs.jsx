@@ -62,7 +62,7 @@ export const HAS_GLYPH = (lord) => Boolean(SHAPES[lord])
 export function Bubble({ lord, size = 'm', className = '' }) {
   const px = size === 's' ? 18 : size === 'l' ? 29 : 24
   return (
-    <span className={`gbub gbub-${size} ${className}`} style={{ '--g': `var(--gr-${lord})` }} aria-hidden="true">
+    <span className={`gbub gbub-${size} ${className}`} style={{ '--g': `var(--pc-${lord}, var(--gr-${lord}))` }} aria-hidden="true">
       <Glyph lord={lord} size={Math.round(px * 0.62)} />
     </span>
   )

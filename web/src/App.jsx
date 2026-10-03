@@ -31,6 +31,7 @@ import RasiCard from './RasiCard.jsx'
 import NakshatraCard from './NakshatraCard.jsx'
 import ModernNotes from './ModernNotes.jsx'
 import ChartDeck from './ChartDeck.jsx'
+import NorthDeckChart from './NorthDeckChart.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -752,12 +753,27 @@ export default function App() {
               {style === 'panchang' ? (
                 <PanchangHeatmap date={date} time={time} place={place} />
               ) : (<>
-              {(style === 'north' || style === 'south') && (
-                <div className="dk-banner" title={style === 'north' ? t('deck.banner.northTip', 'A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.') : undefined}>
-                  <div className="dk-banner-title">{t(style === 'north' ? 'deck.banner.north' : 'deck.banner.south', style === 'north' ? 'North Indian style birth chart' : 'South Indian style birth chart')} ({varga})</div>
+              {style === 'south' && (
+                <div className="dk-banner">
+                  <div className="dk-banner-title">{t('deck.banner.south', 'South Indian style birth chart')} ({varga})</div>
                   <div className="dk-banner-sub">{VARGA_LABELS.find(([k]) => k === varga)[1]} — {t('deck.banner.sub', 'Planetary positions (°)')}</div>
                 </div>
               )}
+              {style === 'north' ? (
+                <NorthDeckChart
+                  grahas={chart.grahas}
+                  lagnaRasi={chart.lagna_rasi}
+                  lagnaVargaSign={chart.lagna_vargas[varga]}
+                  vargaKey={varga}
+                  namer={namer}
+                  highlightSign={rowSign}
+                  analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
+                  vargaSig={VARGA_SIG[varga]}
+                  title={`${t('deck.banner.north', 'North Indian style birth chart')} (${varga})`}
+                  subtitle={`${VARGA_LABELS.find(([k]) => k === varga)[1]} — ${t('deck.banner.sub', 'Planetary positions (°)')}`}
+                  titleTip={t('deck.banner.northTip', 'A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.')}
+                />
+              ) : (
               <Chart
                 grahas={chart.grahas}
                 lagnaRasi={chart.lagna_rasi}
@@ -786,6 +802,7 @@ export default function App() {
                 transitBusy={transitBusy}
                 transitErr={transitErr}
               />
+              )}
               {style === 'south' && varga === 'D1' && <RulerLegend />}
               {style === 'wheel' && (
                 <p className="frame-note">

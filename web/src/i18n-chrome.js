@@ -2759,6 +2759,18 @@ export const CHROME = {
     "en": "in its own house (svakṣetra)",
     "hi": "स्वक्षेत्र में"
   },
+  "deck.houses": {
+    "en": "Houses (Bhāvas)",
+    "hi": "भाव"
+  },
+  "deck.houses.tip": {
+    "en": "BPHS ch.11 significations, the lord’s place, each occupant’s dignity and cited reading, and the dṛṣṭi on the house (ch.26).",
+    "hi": "बृ.पा.हो.शा. अ.11 के भाव-फल, स्वामी का स्थान, प्रत्येक ग्रह की अवस्था और सन्दर्भित पाठ, तथा भाव पर दृष्टि (अ.26)।"
+  },
+  "deck.houses.none": {
+    "en": "The analysis is not available for this chart.",
+    "hi": "इस कुण्डली के लिए विश्लेषण उपलब्ध नहीं है।"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

@@ -24,15 +24,17 @@ export function lordPlacement(sign, grahas, vargaKey, lagna) {
   return { lord, at, bhava: ((at - lagna + 12) % 12) + 1, own: at === sign }
 }
 
-export default function LordMark({ sign, grahas, vargaKey, lagna, namer, size = 'n' }) {
+export default function LordMark({ sign, grahas, vargaKey, lagna, namer, size = 'n', onClick }) {
   const { t } = useLang()
   const p = lordPlacement(sign, grahas, vargaKey, lagna)
   if (p.at == null) return null
   const tip = `${t('deck.swami', 'Swami')} ${namer.rasi(sign)}: ${namer.grahaKey(p.lord)} — ${t(ORD[p.bhava])} (${namer.rasi(p.at)})`
     + (p.own ? ` — ${t('deck.ownHouse', 'own house')}` : '')
   return (
-    <span className={`lord-mark lm-${size}${p.own ? ' own' : ''}`}
-          style={{ '--g': `var(--pc-${p.lord}, var(--gr-${p.lord}))` }} title={tip}>
+    <span className={`lord-mark lm-${size}${p.own ? ' own' : ''}${onClick ? ' pick' : ''}`}
+          style={{ '--g': `var(--pc-${p.lord}, var(--gr-${p.lord}))` }} title={tip}
+          role={onClick ? 'button' : undefined} tabIndex={onClick ? 0 : undefined}
+          onClick={onClick} onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } } : undefined}>
       <span className="lord-icon" aria-hidden="true"><Glyph lord={p.lord} size={10} /></span>
       <span className="lord-to">{p.own ? t('deck.own', 'own') : `→ ${p.bhava}`}</span>
     </span>

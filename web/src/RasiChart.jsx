@@ -258,12 +258,13 @@ function GrahaTag({ g, namer, active, onHover, onPin }) {
 
 export function SouthIndianChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude,
-  gandanta, active, onHover, onPin, highlightSign, analysis, vargaSig,
+  gandanta, active, onHover, onPin, highlightSign, analysis, vargaSig, noHover,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
-  // House hover card on every varga; the card itself gates what is honest per frame.
-  const hoverable = analysis && !analysis.error
+  // House hover card on every varga; the card itself gates what is honest per
+  // frame. The deck turns it off (noHover) and shows the texts in its Houses card.
+  const hoverable = !noHover && analysis && !analysis.error
   const { hovSign, sticky, rootRef, enter, leave, tap } = useBhavaHover(hoverable)
 
   // The ruler measures longitude WITHIN a sign, so it is meaningful only where

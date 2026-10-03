@@ -4,13 +4,15 @@
  * .house / .house-sign / .planet / .planet-icon). Type and icons scale with the
  * chart's width (container query units), so the proportions hold at any size.
  *
- * Same geometry and the same hover card as RasiChart's NorthIndianChart: the
- * SVG wedge polygons are the hit areas (the house blocks let pointer events
- * through), NORTH_REGIONS gives the centres, and a bhāva hover opens the same
- * BhavaHoverCard. The numeral in each house is the RĀŚI number; the bhāva is
- * the region's fixed position.
+ * Same geometry as RasiChart's NorthIndianChart: NORTH_REGIONS gives the
+ * centres, the numeral in each house is the RĀŚI number, the bhāva is the
+ * region's fixed position. No hover card here — the bhāva texts live in the
+ * deck's Houses card, where they can be read without chasing a pointer. A
+ * planet row or a lord mark is clickable and selects that graha in the Casts
+ * card. The lord at home is shown by colour on the type, never by filling the
+ * house.
  */
-import { NORTH_REGIONS, BhavaHoverCard, useBhavaHover } from './RasiChart.jsx'
+import { NORTH_REGIONS } from './RasiChart.jsx'
 import Glyph from './DashaGlyphs.jsx'
 import LordMark, { lordPlacement } from './LordMark.jsx'
 
@@ -29,13 +31,11 @@ function groupBySign(grahas, vargaKey) {
 }
 
 export default function NorthDeckChart({
-  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, analysis, vargaSig,
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, onPick,
   title, subtitle, titleTip,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
-  const hoverable = analysis && !analysis.error
-  const { hovSign, sticky, rootRef, enter, leave, tap } = useBhavaHover(hoverable)
   const en = namer.style !== 'english'
 
   return (
@@ -44,7 +44,7 @@ export default function NorthDeckChart({
         <div className="rc-banner-title">{title}</div>
         {subtitle && <div className="rc-banner-sub">{subtitle}</div>}
       </div>
-      <div className="rasi-chart north-wrap" ref={rootRef} onPointerLeave={leave}>
+      <div className="rasi-chart">
         <span className="rc-corner tl" aria-hidden="true" /><span className="rc-corner tr" aria-hidden="true" />
         <span className="rc-corner bl" aria-hidden="true" /><span className="rc-corner br" aria-hidden="true" />
         <svg viewBox="0 0 400 400" role="img" aria-label="North Indian bhāva chart">
@@ -54,15 +54,7 @@ export default function NorthDeckChart({
           <polygon points="200,0 400,200 200,400 0,200" className="chart-line" />
           {NORTH_REGIONS.map((r, i) => {
             const sign = (lagna + i) % 12
-            const lp = lordPlacement(sign, grahas, vargaKey, lagna)
-            return (
-              <g key={i} onPointerEnter={hoverable ? enter(sign) : undefined} onClick={hoverable ? tap(sign) : undefined}>
-                {/* The lord at home: the wedge takes a wash of the lord's colour. */}
-                {lp.own && <polygon points={r.pts} className="own-fill" style={{ '--g': `var(--pc-${lp.lord})` }} />}
-                <polygon points={r.pts} fill="transparent" pointerEvents="all" />
-                {highlightSign === sign && <polygon points={r.pts} className="north-locate" />}
-              </g>
-            )
+            return highlightSign === sign ? <polygon key={i} points={r.pts} className="north-locate" /> : null
           })}
         </svg>
         {NORTH_REGIONS.map((r, i) => {
@@ -73,16 +65,18 @@ export default function NorthDeckChart({
           const cx = b.cx ?? r.cx
           const lp = lordPlacement(sign, grahas, vargaKey, lagna)
           return (
-            <div key={i} className={`house h${bhava}${occupants.length ? '' : ' empty'}`}
-                 style={{ left: `${cx / 4}%`, top: `${r.cy / 4}%`, width: `${b.w}%` }}
-                 title={`${namer.rasi(sign)} — rāśi ${sign + 1} · bhāva ${bhava}`}>
-              <div className="house-sign">
+            <div key={i} className={`house h${bhava}${occupants.length ? '' : ' empty'}${lp.own ? ' own' : ''}`}
+                 style={{ left: `${cx / 4}%`, top: `${r.cy / 4}%`, width: `${b.w}%`, '--g': `var(--pc-${lp.lord})` }}>
+              <div className="house-sign" title={`${namer.rasi(sign)} — rāśi ${sign + 1} · bhāva ${bhava}`}>
                 {sign + 1} · {namer.rasi(sign)}
                 {en && <small>({namer.rasiEnglish(sign)})</small>}
               </div>
-              <LordMark sign={sign} grahas={grahas} vargaKey={vargaKey} lagna={lagna} namer={namer} size="n" />
+              <LordMark sign={sign} grahas={grahas} vargaKey={vargaKey} lagna={lagna} namer={namer} size="n"
+                        onClick={onPick ? () => onPick(lp.lord) : undefined} />
               {occupants.map((g) => (
-                <div key={g.key} className="planet" style={{ '--g': `var(--pc-${g.key})` }}>
+                <div key={g.key} className={`planet${onPick ? ' pick' : ''}`} style={{ '--g': `var(--pc-${g.key})` }}
+                     title={`${g.name_en} — ${g.degree}°${String(g.minute).padStart(2, '0')}′${g.retrograde ? ' (retrograde)' : ''}`}
+                     onClick={onPick ? () => onPick(g.key) : undefined}>
                   <span className="planet-icon"><Glyph lord={g.key} size={16} /></span>
                   <span className="planet-name">{namer.graha(g)}</span>
                   {g.retrograde && <span className="retrograde">R</span>}
@@ -90,17 +84,11 @@ export default function NorthDeckChart({
                 </div>
               ))}
               {!occupants.length && (
-                <span className="house-glyph" style={{ '--g': `var(--pc-${lp.lord})` }} aria-hidden="true">
-                  {RASI_SYMBOL[sign]}&#xFE0E;
-                </span>
+                <span className="house-glyph" aria-hidden="true">{RASI_SYMBOL[sign]}&#xFE0E;</span>
               )}
             </div>
           )
         })}
-        {hoverable && hovSign != null && (
-          <BhavaHoverCard sign={hovSign} lagna={lagna} grahas={grahas} sticky={sticky}
-                          vargaKey={vargaKey} analysis={analysis} namer={namer} vargaSig={vargaSig} />
-        )}
       </div>
     </div>
   )

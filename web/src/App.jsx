@@ -767,8 +767,7 @@ export default function App() {
                   vargaKey={varga}
                   namer={namer}
                   highlightSign={rowSign}
-                  analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
-                  vargaSig={VARGA_SIG[varga]}
+                  onPick={pinGraha}
                   title={`${t('deck.banner.north', 'North Indian style birth chart')} (${varga})`}
                   subtitle={`${VARGA_LABELS.find(([k]) => k === varga)[1]} — ${t('deck.banner.sub', 'Planetary positions (°)')}`}
                   titleTip={t('deck.banner.northTip', 'A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.')}
@@ -790,6 +789,7 @@ export default function App() {
                 highlightSign={rowSign}
                 analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
                 vargaSig={VARGA_SIG[varga]}
+                noHover={style === 'south'}
                 drishti={chart.analysis && !chart.analysis.error ? chart.analysis.drishti : null}
                 dashaLords={dashaLords}
                 runningDasha={runningDasha}
@@ -843,6 +843,8 @@ export default function App() {
                 subject={subject}
                 onPickSubject={pinGraha}
                 onHoverSign={setRowSign}
+                analysis={chart.analysis && !chart.analysis.error ? chart.analysis : null}
+                vargaSig={VARGA_SIG[varga]}
               />
             )}
           </section>

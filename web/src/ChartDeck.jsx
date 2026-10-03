@@ -13,6 +13,8 @@
  */
 import { useLang } from './LangContext.jsx'
 import { Bubble } from './DashaGlyphs.jsx'
+import { BhavaHoverCard } from './RasiChart.jsx'
+import { lordPlacement } from './LordMark.jsx'
 
 /** Written out, never as ¼ ½ ¾ — the vulgar-fraction glyphs draw their
  *  numerals at half height, and ¼ vs ¾ is the one thing a reader must tell apart. */
@@ -64,10 +66,12 @@ function Planet({ g, namer, deg = false, size = 'm' }) {
 }
 
 export default function ChartDeck({
-  chart, drishti, grahas, namer, subject, onPickSubject, onHoverSign, varga,
+  chart, drishti, grahas, namer, subject, onPickSubject, onHoverSign, varga, analysis, vargaSig,
 }) {
   const { t } = useLang()
   const lagna = chart.lagna_rasi
+  // The frame's own lagna: D1's, or the varga's derived one.
+  const vLagna = varga === 'D1' ? lagna : (chart.lagna_vargas?.[varga] ?? lagna)
   const ordered = [...grahas].sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
   const bySign = {}
   for (const x of grahas) (bySign[x.rasi] ||= []).push(x)
@@ -201,24 +205,28 @@ export default function ChartDeck({
       </div>
 
       <div className="deck-under">
-        {/* ── Housewise planets ─────────────────────────────────── */}
-        <Card title={t('deck.housewise', 'Housewise Planets')}>
-          <table className="dk-table dk-housewise">
-            <thead><tr><th>{t('deck.house', 'House')}</th><th>{t('deck.sign', 'Sign')}</th><th>{t('deck.planets', 'Planet(s)')}</th></tr></thead>
-            <tbody>
-              {Array.from({ length: 12 }, (_, i) => {
-                const sign = (lagna + i) % 12
-                const occ = bySign[sign] ?? []
-                return (
-                  <tr key={i} onPointerEnter={() => onHoverSign?.(sign)} onPointerLeave={() => onHoverSign?.(null)}>
-                    <td className="dk-num">{t(ORDINAL[i + 1])}</td>
-                    <td>{namer.rasi(sign)}{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(sign)})</span>}</td>
-                    <td className="dk-occ">{occ.length ? occ.map((x) => <Planet key={x.key} g={x} namer={namer} deg="whole" size="s" />) : <span className="dk-en">—</span>}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+        {/* ── Houses — the bhāva texts that used to be the chart's hover card ── */}
+        <Card title={t('deck.houses', 'Houses (Bhāvas)')} className="dk-houses"
+              tip={t('deck.houses.tip', 'BPHS ch.11 significations, the lord’s place, each occupant’s dignity and cited reading, and the dṛṣṭi on the house (ch.26).')}>
+          {Array.from({ length: 12 }, (_, i) => {
+            const sign = (vLagna + i) % 12
+            const occ = grahas.filter((x) => x.vargas?.[varga] === sign)
+            const lp = lordPlacement(sign, grahas, varga, vLagna)
+            return (
+              <details key={i} className="dk-house" open={i === 0}
+                       onPointerEnter={() => onHoverSign?.(sign)} onPointerLeave={() => onHoverSign?.(null)}>
+                <summary>
+                  <span className="dk-house-n">{t(ORDINAL[i + 1])}</span>
+                  <b>{namer.rasi(sign)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(sign)})</span>}
+                  <span className="dk-house-occ">{occ.length ? occ.map((x) => <Bubble key={x.key} lord={x.key} size="s" />) : <span className="dk-en">—</span>}</span>
+                  {lp.at != null && <span className="dk-house-lord" style={{ '--g': `var(--pc-${lp.lord})` }}><Bubble lord={lp.lord} size="s" /> {lp.own ? t('deck.own', 'own') : `→ ${lp.bhava}`}</span>}
+                </summary>
+                {analysis ? (
+                  <BhavaHoverCard sign={sign} lagna={vLagna} grahas={grahas} vargaKey={varga} analysis={analysis} namer={namer} vargaSig={vargaSig} sticky={false} />
+                ) : <p className="dk-note">{t('deck.houses.none', 'The analysis is not available for this chart.')}</p>}
+              </details>
+            )
+          })}
         </Card>
 
         {/* ── Aspects — rāśi dṛṣṭi (ch.8, UNGRADED) + what the subject receives ── */}

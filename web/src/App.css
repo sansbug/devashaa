@@ -2135,7 +2135,7 @@ footer a:hover { color: var(--accent); }
 .house .lord-mark { font-size: clamp(6.5px, 1.5cqw, 12px); margin-top: .35cqw; }
 @container (max-width: 380px) { .house .lord-mark { display: none; } }
 .own-fill { fill: color-mix(in oklab, var(--g) 14%, transparent); stroke: color-mix(in oklab, var(--g) 55%, transparent); stroke-width: 1; }
-.south-cell .lord-mark { font-size: .6rem; margin: .1rem 0 .15rem; }
+.south-cell .lord-mark { font-size: .6rem; margin: .1rem 0 .15rem; align-self: flex-start; width: fit-content; }
 .south-cell.own-lord { background: color-mix(in oklab, var(--g) 12%, var(--panel)); box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--g) 45%, transparent); }
 .south-cell.own-lord.is-lagna { background: color-mix(in oklab, var(--g) 12%, var(--lagna)); }
 

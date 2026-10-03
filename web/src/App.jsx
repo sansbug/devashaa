@@ -32,6 +32,7 @@ import NakshatraCard from './NakshatraCard.jsx'
 import ModernNotes from './ModernNotes.jsx'
 import ChartDeck from './ChartDeck.jsx'
 import NorthDeckChart from './NorthDeckChart.jsx'
+import SouthDeckChart from './SouthDeckChart.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
@@ -753,13 +754,25 @@ export default function App() {
               {style === 'panchang' ? (
                 <PanchangHeatmap date={date} time={time} place={place} />
               ) : (<>
-              {style === 'south' && (
-                <div className="dk-banner">
-                  <div className="dk-banner-title">{t('deck.banner.south', 'South Indian style birth chart')} ({varga})</div>
-                  <div className="dk-banner-sub">{VARGA_LABELS.find(([k]) => k === varga)[1]} — {t('deck.banner.sub', 'Planetary positions (°)')}</div>
-                </div>
-              )}
-              {style === 'north' ? (
+              {style === 'south' ? (
+                <SouthDeckChart
+                  grahas={chart.grahas}
+                  lagnaRasi={chart.lagna_rasi}
+                  lagnaVargaSign={chart.lagna_vargas[varga]}
+                  vargaKey={varga}
+                  namer={namer}
+                  landmarks={chart.landmarks}
+                  lagnaLongitude={chart.lagna_longitude}
+                  gandanta={chart.gandanta}
+                  active={marked}
+                  onHover={setHovered}
+                  onPick={pinGraha}
+                  highlightSign={rowSign}
+                  title={`${t('deck.banner.south', 'South Indian style birth chart')} (${varga})`}
+                  subtitle={`${VARGA_LABELS.find(([k]) => k === varga)[1]} — ${t('deck.banner.sub', 'Planetary positions (°)')}`}
+                  titleTip={t('deck.banner.southTip', 'Signs are fixed in this frame — Meṣa top row, second from left, clockwise; the lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.')}
+                />
+              ) : style === 'north' ? (
                 <NorthDeckChart
                   grahas={chart.grahas}
                   lagnaRasi={chart.lagna_rasi}

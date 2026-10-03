@@ -2771,6 +2771,10 @@ export const CHROME = {
     "en": "The analysis is not available for this chart.",
     "hi": "इस कुण्डली के लिए विश्लेषण उपलब्ध नहीं है।"
   },
+  "deck.banner.southTip": {
+    "en": "Signs are fixed in this frame — Meṣa top row, second from left, clockwise; the lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.",
+    "hi": "इस ढाँचे में राशियाँ स्थिर हैं — मेष ऊपरी पंक्ति में बाएँ से दूसरी, दक्षिणावर्त; लग्न-कोष्ठ चिह्नित है। हर कोष्ठ के नीचे की पट्टी राशि का 0°→30° है।"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

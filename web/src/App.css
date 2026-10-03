@@ -2153,6 +2153,35 @@ footer a:hover { color: var(--accent); }
 .dk-house-lord { display: inline-flex; align-items: center; gap: .25rem; margin-left: auto; font-size: .72rem; color: color-mix(in oklab, var(--g) 70%, var(--ink)); font-weight: 600; }
 .dk-houses .bhava-hover-card { position: static; width: auto; pointer-events: auto; background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0 .3rem .6rem 1.3rem; font-size: .78rem; }
 
+/* ── the deck's South Indian chart — same construction, the fixed 4×4 grid ── */
+.sc-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+.sc-grid .rc-corner { width: 3cqw; height: 3cqw; }
+.sc-grid .rc-corner.tl, .sc-grid .rc-corner.tr { top: .7cqw; } .sc-grid .rc-corner.bl, .sc-grid .rc-corner.br { bottom: .7cqw; }
+.sc-grid .rc-corner.tl, .sc-grid .rc-corner.bl { left: .7cqw; } .sc-grid .rc-corner.tr, .sc-grid .rc-corner.br { right: .7cqw; }
+.sc-grid .rc-corner::after { display: none; }
+.sc-grid.rasi-chart { aspect-ratio: 1 / 1; }
+.sc-cell { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: .3cqw; padding: 1.4cqw .8cqw .9cqw; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid color-mix(in oklab, var(--deck-gold) 70%, var(--line)); color: var(--ink); }
+.sc-cell.dr-locate { outline: 2px solid var(--accent); outline-offset: -3px; }
+.sc-cell.own .house-sign { color: var(--g); }
+.sc-cell .house-sign { font-size: clamp(8px, 2.05cqw, 17px); }
+.sc-cell .house-sign small { font-size: clamp(7px, 1.45cqw, 12px); }
+.sc-cell .lord-mark { font-size: clamp(6.5px, 1.5cqw, 12px); margin: .2cqw 0 .3cqw; }
+@container (max-width: 380px) { .sc-cell .lord-mark { display: none; } }
+.sc-planets { display: flex; flex-direction: column; align-items: center; gap: .2cqw; min-height: 0; }
+.sc-cell .planet { margin-top: .5cqw; }
+.sc-cell .planet.active .planet-name { text-decoration: underline; text-underline-offset: 2px; }
+.sc-cell .house-glyph { margin-top: .4cqw; }
+.sc-cell .cell-ruler { margin-top: auto; }
+/* the lagna cell: the traditional corner stroke and a word, no fill */
+.sc-lagna { position: absolute; top: 0; left: 0; width: 5cqw; height: 5cqw; pointer-events: none;
+  background: linear-gradient(135deg, transparent 46%, var(--deck-gold) 46%, var(--deck-gold) 56%, transparent 56%); }
+.sc-lagna-word { position: absolute; top: .5cqw; right: .9cqw; font-size: clamp(6px, 1.35cqw, 11px); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
+/* the centre: the varga and the lagna, in the serif */
+.sc-centre { grid-row: 2 / 4; grid-column: 2 / 4; display: grid; place-content: center; text-align: center; gap: .6cqw; padding: 2cqw; }
+.sc-centre-varga { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(16px, 7cqw, 56px); font-weight: 700; color: var(--accent); line-height: 1; }
+.sc-centre-sub { font-size: clamp(8px, 2cqw, 15px); color: var(--ink); }
+.sc-centre-sub small { color: var(--dim); font-size: .85em; }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

@@ -49,14 +49,14 @@ export function useBhavaHover(hoverable) {
 
 /** Wrapper so the viewport hook lives in its own component and can therefore
     return "no ruler at all" without breaking the rules of hooks. */
-function SignRuler({ occupants, ...rest }) {
+export function SignRuler({ occupants, ...rest }) {
   const mode = useRulerMode(occupants.length)
   if (!mode) return null
   return <CellRuler occupants={occupants} mode={mode} {...rest} />
 }
 
 // South Indian: signs are fixed in this layout, Aries at row0/col1, going clockwise.
-const SOUTH_CELLS = [
+export const SOUTH_CELLS = [
   [11, 0, 1, 2],
   [10, null, null, 3],
   [9, null, null, 4],

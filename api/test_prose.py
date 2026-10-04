@@ -42,6 +42,8 @@ CASES = [
     ("Chamatkara reads a native with the sun in the fifth bhava as sharp and intelligent; the text also states hardship.",
      "A native with the sun in the fifth bhava is sharp and intelligent; the tradition also states hardship."),
     ("A long neck and ears. (the text)", "A long neck and ears."),
+    ("Devoid of wealth (framed as the ~10th-c. reading, not fate). the text adds: e.g. travel.",
+     "Devoid of wealth (framed as the ~10th-c. reading, not fate). E.g. travel."),
     # untouched
     ("Gain of wealth without effort, much comfort to partner and children.",
      "Gain of wealth without effort, much comfort to partner and children."),

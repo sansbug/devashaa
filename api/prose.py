@@ -58,7 +58,8 @@ _VERB = re.compile(
 _TEXTS = re.compile(r"\b[Tt]he texts\b")
 _TEXT_POS = re.compile(r"\b([Tt])he text['’]s\b")
 _TEXT = re.compile(r"\b([Tt])he text\b")
-_SENT_START = re.compile(r"(^|[.!?]\s+|\n\s*)([a-zà-ž])")
+# "c." "ch." "p." "v." "e.g." "i.e." "vs." "etc." end no sentence
+_SENT_START = re.compile(r"(^|(?<!\bc)(?<!\bch)(?<!\bp)(?<!\bpp)(?<!\bv)(?<!\bvv)(?<!\bvs)(?<!\betc)(?<!\be\.g)(?<!\bi\.e)[.!?]\s+|\n\s*)([a-zà-ž])")
 _SPACES = re.compile(r"[ \t]{2,}")
 
 EXCLUDE_KEYS = {

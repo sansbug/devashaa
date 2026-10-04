@@ -34,7 +34,7 @@ const VERB = /\b[Tt]he text (?:states|says|holds|notes|adds|declares|specifies|l
 const TEXTS = /\b[Tt]he texts\b/g
 const TEXT_POS = /\b([Tt])he text['’]s\b/g
 const TEXT = /\b([Tt])he text\b/g
-const SENT_START = /(^|[.!?]\s+|\n\s*)([a-zà-ž])/g
+const SENT_START = /(^|(?<!\bc)(?<!\bch)(?<!\bp)(?<!\bpp)(?<!\bv)(?<!\bvv)(?<!\bvs)(?<!\betc)(?<!\be\.g)(?<!\bi\.e)[.!?]\s+|\n\s*)([a-zà-ž])/g
 
 export function scrubProse(text) {
   if (typeof text !== 'string' || !text || !ANY.test(text)) return text

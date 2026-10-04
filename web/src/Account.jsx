@@ -40,7 +40,7 @@ export default function Account({ profiles, onMerged, onAccount }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const idProblem = userid && !USERID_RE.test(normaliseUserid(userid))
-    ? '3–32 characters: lowercase letters, digits, and . _ - after the first.'
+    ? 'Your email address, or a user id of 3–32 characters: lowercase letters, digits, and . _ - after the first.'
     : null
   const pwProblem = password ? passwordProblem(password) : null
 
@@ -144,7 +144,8 @@ export default function Account({ profiles, onMerged, onAccount }) {
           Optional. Your charts already live in this browser — an account lets
           you reach them from another device. They are encrypted here, before
           they are sent; <strong>the server stores data it has no key for and
-          cannot read.</strong> No email, no name, nothing that identifies you.
+          cannot read.</strong> Your email is only your sign-in name — we never
+          send mail to it, and nothing else about you is stored.
         </p>
 
         <div className="acct-tabs">
@@ -155,13 +156,13 @@ export default function Account({ profiles, onMerged, onAccount }) {
         </div>
 
         <div className="acct-form">
-          <label htmlFor="acct-id">User id</label>
+          <label htmlFor="acct-id">Email (your sign-in id)</label>
           <input id="acct-id" value={userid} autoComplete="username" spellCheck={false}
-                 placeholder="e.g. ravi.k"
+                 placeholder="you@example.com"
                  onChange={(e) => setUserid(e.target.value)} />
           {idProblem && <p className="acct-err">{idProblem}</p>}
           {mode === 'signup' && taken === true && !idProblem && (
-            <p className="acct-err">That user id is taken.</p>
+            <p className="acct-err">That id is already registered — sign in instead.</p>
           )}
           {mode === 'signup' && taken === false && !idProblem && (
             <p className="acct-ok">Available.</p>
@@ -177,7 +178,7 @@ export default function Account({ profiles, onMerged, onAccount }) {
           {/* Said BEFORE the button that creates the account, not after. */}
           {mode === 'signup' && (
             <p className="acct-warn">
-              <strong>There is no password reset.</strong> We hold no email, so
+              <strong>There is no password reset.</strong> We never send mail, so
               if you forget this password nobody can recover your charts —
               not you, and not us. That is the same property that stops us
               reading them. The copies in this browser are unaffected.

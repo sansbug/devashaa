@@ -23,10 +23,11 @@
  */
 
 const HEX64 = /^[0-9a-f]{64}$/
-// Deliberately narrow: lowercase, digits and a separator. No unicode, so two
-// userids cannot look identical while differing in codepoints (homograph
-// confusion is an account-takeover vector, not a cosmetic issue).
-const USERID = /^[a-z0-9][a-z0-9._-]{2,31}$/
+// Deliberately narrow: an email address, or lowercase letters, digits and a
+// separator. No unicode, so two userids cannot look identical while differing
+// in codepoints (homograph confusion is an account-takeover vector, not a
+// cosmetic issue). An email is an id only — nothing is ever sent to it.
+const USERID = /^(?:[a-z0-9][a-z0-9._-]{2,31}|[a-z0-9._%+-]{1,64}@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24})$/
 const MAX_BLOB = 64 * 1024
 const MAX_PROFILES = 200
 
@@ -105,8 +106,8 @@ export default {
       const authId = String(body?.authId || '')
       if (!USERID.test(id)) {
         return json({
-          error: 'A user id is 3–32 characters: lowercase letters, digits, '
-               + 'and . _ - after the first character.',
+          error: 'Use your email address, or a user id of 3–32 characters: '
+               + 'lowercase letters, digits, and . _ - after the first character.',
         }, 400, request)
       }
       if (!HEX64.test(authId)) return json({ error: 'bad authId' }, 400, request)

@@ -1,40 +1,45 @@
 import { profileLabel, profileDetail } from './profiles.js'
+import { useLang } from './LangContext.jsx'
 
 /**
- * The saved-chart chips.
+ * The saved charts, as one pull-down beside the "Save your charts" button.
  *
- * Renders inline beside the "Save your charts" button rather than in a panel of
- * its own: the charts already in this browser are the thing a returning visitor
- * wants first, so they stay one click away while the account controls — which
- * most people will never open — fold away behind the button.
+ * A select rather than a row of chips: a returning visitor with a dozen charts
+ * got a wall of pills that wrapped across three lines. The list is one control
+ * now, the active chart is its value, and the remove button acts on that
+ * chart alone — nothing is deleted from a list you were not looking at.
  */
 export default function Profiles({ profiles, activeId, onPick, onDelete }) {
+  const { t } = useLang()
   if (!profiles.length) return null
+  const active = profiles.find((p) => p.id === activeId) || null
 
   return (
-    <ul className="profile-chips">
+    <div className="profile-select">
+      <select
+        aria-label={t('saved.pick', 'Saved charts')}
+        value={active ? active.id : ''}
+        onChange={(e) => {
+          const p = profiles.find((x) => x.id === e.target.value)
+          if (p) onPick(p)
+        }}
+      >
+        <option value="" disabled>{t('saved.pick', 'Saved charts')} ({profiles.length})</option>
         {profiles.map((p) => (
-          <li key={p.id} className={p.id === activeId ? 'on' : ''}>
-            <button
-              type="button"
-              className="chip"
-              onClick={() => onPick(p)}
-              title={`${profileLabel(p)} — ${profileDetail(p)}`}
-            >
-              <span className="chip-name">{profileLabel(p)}</span>
-              <span className="chip-detail">{profileDetail(p)}</span>
-            </button>
-            <button
-              type="button"
-              className="chip-x"
-              onClick={() => onDelete(p.id)}
-              aria-label={`Delete ${profileLabel(p)}`}
-              title="Remove"
-            >
-              ×
-            </button>
-          </li>
-      ))}
-    </ul>
+          <option key={p.id} value={p.id}>{p.name ? `${p.name} — ${profileDetail(p)}` : profileDetail(p)}</option>
+        ))}
+      </select>
+      {active && (
+        <button
+          type="button"
+          className="profile-x"
+          onClick={() => onDelete(active.id)}
+          aria-label={`${t('saved.remove', 'Remove')} ${profileLabel(active)}`}
+          title={`${t('saved.remove', 'Remove')} ${profileLabel(active)}`}
+        >
+          ×
+        </button>
+      )}
+    </div>
   )
 }

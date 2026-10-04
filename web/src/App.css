@@ -415,8 +415,18 @@ header { text-align: center; margin-bottom: 2rem; }
 .birth-form {
   display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   align-items: end; background: var(--panel); border: 1px solid var(--line);
-  border-radius: 10px; padding: 1.25rem;
+  border-radius: 10px; padding: 1.1rem 1.25rem 1.5rem;
   box-shadow: var(--glow, none);
+}
+/* One line when there is room: name · date · time · place · cast. The place
+   field no longer takes a row of its own, and the picked coordinates hang
+   under it without pushing the row out of line. */
+@media (min-width: 900px) {
+  .birth-form { grid-template-columns: minmax(8rem, 1.1fr) 10rem 10.5rem minmax(13rem, 2fr) auto; gap: .8rem; }
+  .birth-form .field label { white-space: nowrap; }
+  .birth-form .place-field { grid-column: auto; }
+  .birth-form .go { margin: 0; align-self: end; }
+  .place-field .picked { position: absolute; top: 100%; left: 0; margin-top: .25rem; white-space: nowrap; }
 }
 .field { display: flex; flex-direction: column; gap: .35rem; position: relative; }
 .field label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
@@ -2517,8 +2527,13 @@ footer a:hover { color: var(--accent); }
   color: var(--dim); font-size: .68rem; font-weight: var(--text-weight, 400);
   white-space: nowrap;
 }
-/* The chips sit inline with the button rather than in their own panel. */
-.saved-bar .profile-chips { margin: 0; flex: 1 1 12rem; min-width: 0; }
+/* The saved charts: one pull-down beside the button, the remove button acting
+   on the chart it shows. */
+.saved-bar .profile-select { display: inline-flex; align-items: center; gap: .3rem; flex: 0 1 24rem; min-width: 0; }
+.profile-select select { flex: 1 1 auto; min-width: 0; max-width: 100%; font: inherit; font-size: .82rem; color: var(--ink); background: var(--sunken); border: 1px solid var(--line); border-radius: 8px; padding: .42rem .6rem; cursor: pointer; }
+.profile-select select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.profile-x { font: inherit; width: 1.9rem; height: 1.9rem; border: 1px solid var(--line); border-radius: 8px; background: var(--sunken); color: var(--dim); cursor: pointer; line-height: 1; }
+.profile-x:hover { color: var(--rx); border-color: var(--rx); }
 /* The account panel is a drawer under the bar, so it reads as belonging to it. */
 .saved .acct { margin-top: .7rem; margin-bottom: 0; }
 

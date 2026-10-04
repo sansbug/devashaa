@@ -35,6 +35,8 @@ const MANUAL = {
   // ── saved charts / account ────────────────────────────────────────────────
   'saved.title': { en: 'Save your charts', hi: 'अपनी कुंडलियाँ सहेजें' },
   'saved.here': { en: 'in this browser, or to an account', hi: 'इस ब्राउज़र में, या किसी खाते में' },
+  'saved.pick': { en: 'Saved charts', hi: 'सहेजी कुंडलियाँ' },
+  'saved.remove': { en: 'Remove', hi: 'हटाएँ' },
 
   // ── ephemeris status ──────────────────────────────────────────────────────
   'ephem.ok': { en: '● ephemeris verified — reading .se1 (JPL DE431)', hi: '● एफ़ेमेरिस सत्यापित — .se1 (JPL DE431) पढ़ा जा रहा है' },

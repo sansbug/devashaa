@@ -41,7 +41,7 @@ const ITERATIONS = 600_000            // OWASP 2023 floor for PBKDF2-SHA256
 
 /** Mirrors the Worker's USERID regex. Kept in sync deliberately: the client
  *  gives a helpful message, the server is what actually enforces. */
-export const USERID_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/
+export const USERID_RE = /^(?:[a-z0-9][a-z0-9._-]{2,31}|[a-z0-9._%+-]{1,64}@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24})$/
 
 export const API_BASE =
   import.meta.env.VITE_SYNC_URL

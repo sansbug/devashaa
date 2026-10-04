@@ -9,10 +9,8 @@
  * per-browser preference (localStorage "refs"); nothing is sent anywhere.
  */
 import { useEffect, useState } from 'react'
-
-export const REFS_KEY = 'refs'
-export const refsOn = () => { try { return localStorage.getItem(REFS_KEY) === '1' } catch { return false } }
-export const applyRefs = (on) => { document.documentElement.dataset.refs = on ? '1' : '0' }
+import { REFS_KEY, refsOn, applyRefs } from './refs.js'
+export { REFS_KEY, refsOn, applyRefs }
 
 const SOURCES = [
   ['Bṛhat Parāśara Horā Śāstra', 'Parāśara', 'received text', 'R. Santhanam (Ranjan)', 'the backbone — chapter and verse'],

@@ -41,11 +41,13 @@ function HistoricalBadge({ adaptation, date }) {
 
 /** One source's cited, adapted line — shared by the sign and house axes. */
 function SourceLine({ s }) {
+  const { t } = useLang()
   return (
     <div className="cl-source">
       <div className="cl-src-head">
         <span className="cl-tier">{s.source.tier}</span>
         <strong className="cl-src-name">{s.source.text}</strong>
+        <strong className="cl-src-plain">{t('classical.plainName', 'Classical reading')}</strong>
         <span className="cl-src-meta">{s.source.author} · {s.source.date}</span>
         <Cite
           className="src"

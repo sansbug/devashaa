@@ -31,6 +31,7 @@ from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
 import varshaphal
+import prose
 import gochara
 import motion as motion_mod
 import nakshatra_attrs
@@ -53,6 +54,25 @@ app = Flask(__name__)
 # "https://devashaa.com,https://www.devashaa.com". Defaults to * for local dev.
 _origins = os.environ.get("ALLOWED_ORIGINS", "*")
 CORS(app, origins="*" if _origins == "*" else [o.strip() for o in _origins.split(",")])
+
+
+@app.after_request
+def _plain_prose(resp):
+    """References off by default: the sentences go out without the book's
+    name as their subject (prose.py). X-Refs: 1 — the switch on /references —
+    returns them as written. The reference fields themselves are never
+    touched either way."""
+    if request.headers.get("X-Refs") == "1" or resp.mimetype != "application/json":
+        return resp
+    try:
+        raw = resp.get_data(as_text=True)
+        if not prose._ANY.search(raw):
+            return resp
+        import json as _json
+        resp.set_data(_json.dumps(prose.scrub_payload(_json.loads(raw)), ensure_ascii=False))
+    except Exception:  # noqa: BLE001 — never let the scrub break a response
+        pass
+    return resp
 
 # The loaded .se1 files (sepl_18 / semo_18) cover 1800-2399.
 EPHE_YEAR_MIN, EPHE_YEAR_MAX = 1800, 2399

@@ -506,6 +506,10 @@ section.meta, .chart-panel, .table-panel {
 .varga-caption { max-width: 640px; }
 
 /* Compact chart-meta strip (local / zone / UTC / JD / ayanāṁśa / lagna). */
+.meta-table-wrap { margin: .4rem 0 0; overflow-x: auto; }
+.meta-table { font-size: .8rem; }
+.meta-table th { font-size: .66rem; }
+.meta-table td.mc-lagna { color: var(--accent); font-weight: 600; }
 .meta-compact { display: flex; flex-wrap: wrap; gap: .2rem 1rem; margin: .2rem 0 0;
   font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--ink); }
 .mc-item i { font-style: normal; text-transform: uppercase; letter-spacing: .05em;
@@ -2201,8 +2205,10 @@ html:not([data-refs="1"]) :is(
   .src, .cite-pop, .sig-cite, .xp-cite, .xp-lc, .xp-cite-line, .xp-wq-cite, .xp-sources,
   .mx-prov, .mx-bhps-cite, .pj-cites, .nv-cite, .nv-src, .mod-src, .pc-src, .pc-fest-src,
   .bhc-cite, .bhc-foot, .rg-cite, .cl-tier, .cl-src-meta, .cl-hist, .vp-cite, .vp-ph-adapt,
-  .vp-ph-src .cl-tier, .vp-ph-src b, .dt-cite, .sb-cite
+  .vp-ph-src .cl-tier, .vp-ph-src b, .dt-cite, .sb-cite, .rc-note, .cl-coverage, .cl-src-name
 ) { display: none !important; }
+html[data-refs="1"] .cl-src-plain { display: none; }
+.cl-src-plain { font-size: .92rem; }
 .refs-switch { display: flex; align-items: flex-start; gap: .6rem; font-size: .9rem; line-height: 1.6; color: var(--ink); margin: .4rem 0 .8rem; cursor: pointer; }
 .refs-switch input { margin-top: .35rem; width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
 .privacy.references { max-width: 62rem; }

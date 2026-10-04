@@ -20,7 +20,8 @@ import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
-import References, { refsOn, applyRefs } from './References.jsx'
+import References from './References.jsx'
+import { refsOn, applyRefs, scrubProse } from './refs.js'
 import Privacy from './Privacy.jsx'
 import Methodology from './Methodology.jsx'
 import ValidationPage from './ValidationPage.jsx'
@@ -220,6 +221,10 @@ const NAK_NAMES = [
   { name: 'Revati', name_iast: 'Revatī' },
 ]
 
+const VIEWS_KEY = 'profileViews'
+const readViews = () => { try { return JSON.parse(localStorage.getItem(VIEWS_KEY) || '{}') } catch { return {} } }
+const bumpViews = (id) => { try { const v = readViews(); v[id] = (v[id] || 0) + 1; localStorage.setItem(VIEWS_KEY, JSON.stringify(v)) } catch { /* private mode */ } }
+
 export default function App() {
   const [route, setRoute] = useState(
     () => (typeof location !== 'undefined' ? location.pathname : '/'),
@@ -234,9 +239,6 @@ export default function App() {
     setRoute(path)
     window.scrollTo(0, 0)
   }
-  // References (chapter-and-verse, page numbers, provenance chips) are hidden
-  // unless the switch on /references is on. The data keeps every locus.
-  useEffect(() => { applyRefs(refsOn()) }, [])
 
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -259,6 +261,16 @@ export default function App() {
   const [transitErr, setTransitErr] = useState('')
   const [profiles, setProfiles] = useState(() => listProfiles())
   const [activeProfile, setActiveProfile] = useState(null)
+  // The most-viewed saved chart is the one that comes up by default. Views
+  // are counted per profile id in this browser; ties go to the newer chart.
+  const restored = useRef(false)
+  useEffect(() => {
+    if (restored.current || route !== '/' || !profiles.length) return
+    restored.current = true
+    const views = readViews()
+    const best = [...profiles].sort((a, b) => (views[b.id] || 0) - (views[a.id] || 0))[0]
+    if (best) useProfile(best)
+  }, [profiles])  // eslint-disable-line react-hooks/exhaustive-deps
   // Which graha the analysis panel is showing. Sūrya is the conventional
   // first entry, so it is the least surprising default.
   const [picked, setPicked] = useState('sun')
@@ -385,7 +397,15 @@ export default function App() {
                           : cur))
   }
   // Bound translator + shared context value for the UI chrome (Phase-1 i18n).
-  const langValue = useMemo(() => ({ lang, t: (k, f) => tFn(lang, k, f) }), [lang])
+  // References off (the default): the UI's own sentences lose the book as
+  // their subject too, through the same rules the API applies (refs.js).
+  const [refs, setRefs] = useState(refsOn)
+  useEffect(() => { setRefs(refsOn()) }, [route])
+  useEffect(() => { applyRefs(refs) }, [refs])
+  const langValue = useMemo(() => ({
+    lang,
+    t: refs ? (k, f) => tFn(lang, k, f) : (k, f) => scrubProse(tFn(lang, k, f)),
+  }), [lang, refs])
   const { t } = langValue
 
   // Re-cast when the language changes so the generated readings switch too
@@ -407,7 +427,7 @@ export default function App() {
       } catch { /* keep the current chart on a failed re-cast */ }
     })()
     return () => { cancelled = true }
-  }, [lang])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lang, refs])  // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch(`${API}/api/health`)
@@ -465,6 +485,7 @@ export default function App() {
       const saved = saveProfile({ name, date, time, place })
       setProfiles(saved)
       setActiveProfile(saved[0]?.id ?? null)
+      if (saved[0]?.id) bumpViews(saved[0].id)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -474,6 +495,7 @@ export default function App() {
 
   /** Load a saved chart back into the form and cast it straight away. */
   async function useProfile(p) {
+    bumpViews(p.id)
     setName(p.name || ''); setDate(p.date); setTime(p.time); setPlace(p.place)
     setActiveProfile(p.id)
     setError(''); setBusy(true); setChart(null)
@@ -612,7 +634,7 @@ export default function App() {
         <Logo />
         <p className="sub">
           {t('header.sub')}
-          <br />{t('header.after')} <em>Bṛhat Parāśara Horā Śāstra</em>
+          <span className="src"><br />{t('header.after')} <em>Bṛhat Parāśara Horā Śāstra</em></span>
         </p>
         {health && (
           <div className={`health ${health.status}`}>
@@ -704,13 +726,18 @@ export default function App() {
                 )}
               </div>
             </div>
-            <div className="meta-compact">
-              <span className="mc-item mc-lagna"><i>Lagna</i> {namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</span>
-              <span className="mc-item"><i>Local</i> {chart.local_time}</span>
-              <span className="mc-item"><i>Zone</i> {chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</span>
-              <span className="mc-item"><i>UTC</i> {chart.utc}</span>
-              <span className="mc-item"><i>JD</i> {chart.jd_ut.toFixed(4)}</span>
-              <span className="mc-item"><i>Ayanāṁśa</i> {fmtAyan(chart.ayanamsa_value)}</span>
+            <div className="dk-table-wrap meta-table-wrap">
+              <table className="dk-table meta-table">
+                <thead><tr><th>Lagna</th><th>Local</th><th>Zone</th><th>UTC</th><th>JD</th><th>Ayanāṁśa</th></tr></thead>
+                <tbody><tr>
+                  <td className="mc-lagna">{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
+                  <td className="dk-num">{chart.local_time}</td>
+                  <td>{chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</td>
+                  <td className="dk-num">{chart.utc}</td>
+                  <td className="dk-num">{chart.jd_ut.toFixed(4)}</td>
+                  <td className="dk-num">{fmtAyan(chart.ayanamsa_value)}</td>
+                </tr></tbody>
+              </table>
             </div>
           </section>
 

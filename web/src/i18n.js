@@ -60,7 +60,8 @@ const MANUAL = {
   'grahaTable.speed': { en: 'Speed', hi: 'गति' },
 
   // ── classical concordance panel ───────────────────────────────────────────
-  'classical.title': { en: 'Classical sources', hi: 'शास्त्रीय स्रोत' },
+  'classical.plainName': { en: 'Classical reading', hi: 'शास्त्रीय पाठ' },
+  'classical.title': { en: 'Classical readings', hi: 'शास्त्रीय पाठ' },
   'classical.in': { en: 'in', hi: 'में' },
   'classical.houseTitle': { en: 'Planet-in-house (bhāva)', hi: 'भाव में ग्रह (भाव-फल)' },
   'classical.bhava': { en: 'bhāva', hi: 'भाव' },

@@ -19,6 +19,7 @@ import { Fragment, useState, useEffect, useMemo } from 'react'
 import { API } from './config.js'
 import { useLang } from './LangContext.jsx'
 import DomainIcon from './ProjectionIcons.jsx'
+import { RASI_LORD } from './LordMark.jsx'
 import Glyph from './DashaGlyphs.jsx'
 
 const BAND_C = {
@@ -82,7 +83,7 @@ const LD_C = {
 }
 const ldSign = (v) => (v == null ? 'var(--dim)' : v > 0.02 ? 'var(--accent)' : v < -0.02 ? 'var(--rx)' : 'var(--deck-gold)')
 
-function LifeLedger({ themes, open, onOpen, nm, t, bandLbl }) {
+function LifeLedger({ themes, open, onOpen, nm, rs, data, t, bandLbl }) {
   const N = themes.length || 1
   const mean = themes.reduce((s, th) => s + (th.net || 0), 0) / N
   const top = (th) => [...(th.components || [])]
@@ -138,7 +139,7 @@ function LifeLedger({ themes, open, onOpen, nm, t, bandLbl }) {
                     </tr>
                     {on && (
                       <tr className="ld-detail"><td colSpan={6}>
-                        <DomainDetail th={th} nm={nm} t={t} bandLbl={bandLbl} onClose={() => onOpen(null)} />
+                        <DomainDetail th={th} nm={nm} rs={rs} data={data} t={t} bandLbl={bandLbl} onClose={() => onOpen(null)} />
                       </td></tr>
                     )}
                   </Fragment>
@@ -165,22 +166,100 @@ function factorLabel(c, nm, t) {
   }
 }
 
-/** The opened domain: value and band, the weighted ledger as bars, the cites. */
-function DomainDetail({ th, nm, t, bandLbl, onClose }) {
-  const [tab, setTab] = useState('breakdown')
-  if (!th) {
-    return (
-      <div className="pj-card pj-detail">
-        <p className="pj-sub" style={{ margin: 0 }}>{t('pj.detail.hint', 'Select a domain on the wheel to see how its number is built.')}</p>
-      </div>
-    )
+/** The opened domain: value and band, the weighted ledger as bars — and under
+ *  every factor, WHY its number has the sign it has. A house row names the
+ *  house's rāśi and lord and unfolds into the four contributions that built
+ *  it; a graha row says what the graha is for this lagna (functional benefic
+ *  or malefic, from the houses it rules), where it sits, in what dignity, and
+ *  how strong it is — which together are the number. */
+const DIGNITY_KEY = {
+  own: 'pj.why.own', moolatrikona: 'pj.why.mool', exalted: 'pj.why.exalted', debilitated: 'pj.why.debil',
+  friend: 'pj.why.friend', enemy: 'pj.why.enemy', neutral: 'pj.why.neutralSign',
+}
+const DIGNITY_EN = { own: 'own sign', moolatrikona: 'mūlatrikoṇa', exalted: 'exalted', debilitated: 'debilitated',
+                     friend: "friend's sign", enemy: "enemy's sign", neutral: "neutral sign" }
+const FRAC_WORD = { '1.0': 'full', '0.75': '¾', '0.5': '½', '0.25': '¼' }
+
+function useWhy(data, nm, rs, t) {
+  // nodes carry place, dignity, strength and polarity; the functional nature
+  // (benefic / malefic for this lagna) sits beside them in grahaDisposition.
+  const nodes = useMemo(() => {
+    const raw = data?.nodes
+    if (!raw) return {}
+    const base = Array.isArray(raw) ? Object.fromEntries(raw) : raw
+    const disp = data?.grahaDisposition || {}
+    return Object.fromEntries(Object.entries(base).map(([k, n]) => [k, { ...n, nature: n.nature ?? disp[k]?.nature }]))
+  }, [data])
+  const any = Object.values(nodes)[0]
+  const lagna = any ? ((any.rasi - any.bhava + 1) % 12 + 12) % 12 : null
+  const signOf = (h) => (lagna == null ? null : (lagna + h - 1) % 12)
+  const rules = (g) => (lagna == null ? [] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].filter((h) => RASI_LORD[signOf(h)] === g))
+  const natureWord = (n) => (n === 'benefic' ? t('pj.why.benefic', 'functional benefic') : n === 'malefic' ? t('pj.why.malefic', 'functional malefic') : t('pj.why.neutral', 'functionally neutral'))
+  const dignity = (st) => (DIGNITY_KEY[st] ? t(DIGNITY_KEY[st], DIGNITY_EN[st]) : st || '')
+  const pol = (g) => { const n = nodes[g]; return !n ? '' : n.polarity < 0 ? ' (−)' : n.polarity > 0 ? ' (+)' : ' (0)' }
+  /** One sentence: what the graha is for this lagna, where it sits, how strong — hence its sign. */
+  const grahaWhy = (g) => {
+    const n = nodes[g]
+    if (!n) return null
+    const r = rules(g)
+    const strong = (n.strength || 0) >= 1
+    return `${nm(g)} — ${natureWord(n.nature)}${r.length ? ` (${t('pj.why.rules', 'rules')} ${r.join(' & ')})` : ''}; `
+      + `${t('pj.why.sits', 'sits in')} ${t('pj.why.bhava', 'bhāva')} ${n.bhava} (${rs(n.rasi)}, ${dignity(n.state)})`
+      + `${n.retro ? `, ${t('pj.why.retro', 'retrograde')}` : ''}; `
+      + `${t('pj.why.strength', 'strength')} ×${(n.strength || 0).toFixed(2)} — ${strong ? t('pj.why.strong', 'strong') : t('pj.why.weak', 'weak')}, `
+      + `${t('pj.why.so', 'so it')} ${n.polarity < 0 ? t('pj.why.against', 'counts against') : n.polarity > 0 ? t('pj.why.for', 'counts for') : t('pj.why.neither', 'counts neither way')}.`
   }
+  const aspectsWhy = (detail) => (detail || '').split(',').map((x) => x.trim()).filter(Boolean).map((x) => {
+    const [g, f] = x.split('·')
+    return `${nm(g)} ${FRAC_WORD[f] || f}${pol(g)}`
+  }).join(' · ')
+  const occupantsWhy = (grahas) => (grahas && grahas.length ? grahas.map((g) => `${nm(g)}${pol(g)}`).join(' · ') : t('pj.why.none', 'no graha in the house'))
+  return { nodes, lagna, signOf, grahaWhy, aspectsWhy, occupantsWhy, natureWord, dignity }
+}
+
+function DomainDetail({ th, nm, rs, data, t, bandLbl, onClose }) {
+  const [tab, setTab] = useState('breakdown')
+  const W = useWhy(data, nm, rs, t)
+  if (!th) return null
   const cites = []
   const seen = new Set()
   for (const c of th.components) {
     const k = (c.citation || '') + '|' + (c.detail || '')
     if (c.citation && !seen.has(k)) { seen.add(k); cites.push(c) }
   }
+  const houseOf = (h) => (data?.bhavas || []).find((x) => x.house === h)
+  const yogaNames = (slot) => (data?.yogas || []).filter((y) => (y.name || '').toLowerCase().includes(slot) || (y.family || '').toLowerCase().includes(slot)).map((y) => y.name)
+  /** The explanation under a factor. */
+  const why = (c) => {
+    switch (c.factor) {
+      case 'bhava': {
+        const hb = houseOf(c.house)
+        const sign = W.signOf(c.house)
+        return `${sign != null ? rs(sign) : ''}${hb ? ` · ${t('matrix.lord', 'Lord')} ${nm(hb.lord)}` : ''} — ${t('pj.why.houseBuilt', 'built from its lord, occupants, aspects and kāraka below')}`
+      }
+      case 'lord': return W.grahaWhy(c.graha)
+      case 'occupants': return W.occupantsWhy(c.grahas)
+      case 'aspects': return `${t('pj.why.aspects', 'aspected by')} ${W.aspectsWhy(c.detail)}`
+      case 'karaka': case 'sthira_karaka': case 'chara_karaka': return `${t('pj.why.karaka', 'as kāraka of this domain')}: ${W.grahaWhy(c.graha) || ''}`
+      case 'yoga': {
+        const names = yogaNames((c.slot || '').toLowerCase())
+        const present = (c.value || 0) > 0
+        return `${present ? t('pj.why.yogaPresent', 'present in the chart') : t('pj.why.yogaAbsent', 'not present in the chart')}${names.length ? `: ${names.join('; ')}` : ''}`
+      }
+      case 'varga': return `${t('pj.why.varga', 'the divisional chart read for this domain')} — ${(c.detail || '').replace(/^D\d+\s*·\s*/, '').split(',').map((g) => `${nm(g.trim())}${W.nodes[g.trim()] ? '' : ''}`).join(', ')}`
+      default: return c.detail || null
+    }
+  }
+  const Row = ({ c, sub, weightOf }) => (
+    <tr className={sub ? 'pj-sub-row' : ''} title={c.detail || ''}>
+      <td>
+        <div className="pj-factor"><b>{factorLabel(c, nm, t)}</b>{why(c) && <div className="pj-why">{why(c)}</div>}</div>
+      </td>
+      <td className="n" style={{ color: ldSign(c.value) }}>{sv(c.value)}</td>
+      <td><div className="pj-bar"><i style={{ width: `${Math.round(Math.abs(c.value || 0) * 100)}%`, background: ldSign(c.value) }} /></div></td>
+      <td className="n">{pct(weightOf != null ? weightOf : (c.effWeight != null ? c.effWeight : c.weight))}</td>
+    </tr>
+  )
   return (
     <div className="pj-card pj-detail">
       <div className="pj-detail-head">
@@ -189,7 +268,7 @@ function DomainDetail({ th, nm, t, bandLbl, onClose }) {
         <button type="button" className="pj-detail-x" onClick={onClose} aria-label={t('pj.detail.close', 'Close')}>×</button>
       </div>
       <div className="pj-detail-pills">
-        <span className="pj-val" style={{ background: BAND_C[th.band] || netColor(th.net) }}>{sv(th.net)}</span>
+        <span className="pj-val" style={{ background: LD_C[th.band] || ldSign(th.net) }}>{sv(th.net)}</span>
         <span className="pj-bandpill">{bandLbl(th.band)}</span>
       </div>
       <div className="pj-detail-tabs">
@@ -198,24 +277,24 @@ function DomainDetail({ th, nm, t, bandLbl, onClose }) {
       </div>
       {tab === 'breakdown' ? (
         <>
-          <table className="pj-ledger">
+          <p className="pj-why pj-why-lead">{t('pj.why.lead', 'Each factor is signed by what it is for this lagna: a functional benefic counts for the domain, a functional malefic against it, scaled by its strength. A house unfolds into the four things that build it.')}</p>
+          <table className="pj-ledger pj-ledger-why">
             <thead><tr><th>{t('pj.detail.factor', 'Factor')}</th><th>{t('pj.detail.contrib', 'Contribution')}</th><th /><th>{t('pj.detail.weight', 'Weight')}</th></tr></thead>
             <tbody>
-              {th.components.map((c, i) => (
-                <tr key={i} title={c.detail || ''}>
-                  <td>{factorLabel(c, nm, t)}</td>
-                  <td className="n" style={{ color: signColor(c.value) }}>{sv(c.value)}</td>
-                  <td>
-                    <div className="pj-bar"><i style={{ width: `${Math.round(Math.abs(c.value || 0) * 100)}%`, background: signColor(c.value) }} /></div>
-                  </td>
-                  <td className="n">{pct(c.effWeight != null ? c.effWeight : c.weight)}</td>
-                </tr>
-              ))}
+              {th.components.map((c, i) => {
+                const hb = c.factor === 'bhava' ? houseOf(c.house) : null
+                return (
+                  <Fragment key={i}>
+                    <Row c={c} />
+                    {hb && hb.components.map((hc, j) => <Row key={j} c={hc} sub weightOf={hc.effWeight != null ? hc.effWeight : hc.weight} />)}
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
           <div className="pj-net">
             <div><b>{t('pj.detail.net', 'Net indication')}</b><small>{t('pj.detail.net.sub', 'weighted composite')}</small></div>
-            <span className="pj-val" style={{ background: BAND_C[th.band] || netColor(th.net) }}>{sv(th.net)}</span>
+            <span className="pj-val" style={{ background: LD_C[th.band] || ldSign(th.net) }}>{sv(th.net)}</span>
           </div>
         </>
       ) : (
@@ -314,7 +393,7 @@ function AspectMatrix({ edges, nodes, nm, t }) {
   )
 }
 
-function Overview({ data, nm, t, bandLbl, open, setOpen }) {
+function Overview({ data, nm, rs, t, bandLbl, open, setOpen }) {
   const themes = data.themes
   const sorted = [...themes].sort((a, b) => b.net - a.net)
   const strong = sorted.slice(0, 3)
@@ -353,7 +432,7 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
         <Kpi title={t('pj.balance.weak', 'Most challenged')} glyph="↓" color={LD_C.afflicted} list={weak} />
       </div>
 
-      <LifeLedger themes={themes} open={open} onOpen={setOpen} nm={nm} t={t} bandLbl={bandLbl} />
+      <LifeLedger themes={themes} open={open} onOpen={setOpen} nm={nm} rs={rs} data={data} t={t} bandLbl={bandLbl} />
 
       <div className="pj-grid2">
         <BhavaMatrix bhavas={data.bhavas} nm={nm} t={t} bandLbl={bandLbl} />
@@ -955,6 +1034,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
 
   if (!date || !time || !place) return null
   const nm = (k) => (namer && namer.grahaKey ? namer.grahaKey(k) : k)
+  const rs = (i) => (namer && namer.rasi ? namer.rasi(i) : i + 1)
   const bandLbl = (b) => t('matrix.band.' + b, b)
 
   return (
@@ -972,7 +1052,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
             ))}
           </div>
 
-          {view === 'overview' && <Overview data={data} nm={nm} t={t} bandLbl={bandLbl} open={open} setOpen={setOpen} />}
+          {view === 'overview' && <Overview data={data} nm={nm} rs={rs} t={t} bandLbl={bandLbl} open={open} setOpen={setOpen} />}
           {view === 'forecast' && data.timeline && (
             <Forecast data={data} nm={nm} t={t} themeName={themeName} mc={mc} runMc={runMc} mcBusy={mcBusy}
                       mcMin={mcMin} setMcMin={setMcMin} date={date} time={time} place={place} />

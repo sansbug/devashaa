@@ -2779,6 +2779,126 @@ export const CHROME = {
     "en": "Signs are fixed in this frame — Meṣa top row, second from left, clockwise; the lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.",
     "hi": "इस ढाँचे में राशियाँ स्थिर हैं — मेष ऊपरी पंक्ति में बाएँ से दूसरी, दक्षिणावर्त; लग्न-कोष्ठ चिह्नित है। हर कोष्ठ के नीचे की पट्टी राशि का 0°→30° है।"
   },
+  "pj.why.lead": {
+    "en": "Each factor is signed by what it is for this lagna: a functional benefic counts for the domain, a functional malefic against it, scaled by its strength. A house unfolds into the four things that build it.",
+    "hi": "हर कारक का चिह्न इस लग्न के लिए उसकी प्रकृति से तय होता है: कार्यात्मक शुभ ग्रह क्षेत्र के पक्ष में गिना जाता है, कार्यात्मक पाप ग्रह विपक्ष में, उसके बल के अनुपात में। भाव अपने चार घटकों में खुलता है।"
+  },
+  "pj.why.benefic": {
+    "en": "functional benefic for this lagna",
+    "hi": "इस लग्न के लिए कार्यात्मक शुभ"
+  },
+  "pj.why.malefic": {
+    "en": "functional malefic for this lagna",
+    "hi": "इस लग्न के लिए कार्यात्मक पाप"
+  },
+  "pj.why.neutral": {
+    "en": "functionally neutral for this lagna",
+    "hi": "इस लग्न के लिए कार्यात्मक तटस्थ"
+  },
+  "pj.why.rules": {
+    "en": "rules",
+    "hi": "स्वामी —"
+  },
+  "pj.why.sits": {
+    "en": "sits in",
+    "hi": "स्थित"
+  },
+  "pj.why.bhava": {
+    "en": "bhāva",
+    "hi": "भाव"
+  },
+  "pj.why.retro": {
+    "en": "retrograde",
+    "hi": "वक्री"
+  },
+  "pj.why.strength": {
+    "en": "strength",
+    "hi": "बल"
+  },
+  "pj.why.strong": {
+    "en": "strong",
+    "hi": "बलवान"
+  },
+  "pj.why.weak": {
+    "en": "weak",
+    "hi": "निर्बल"
+  },
+  "pj.why.so": {
+    "en": "so it",
+    "hi": "अतः यह"
+  },
+  "pj.why.against": {
+    "en": "counts against",
+    "hi": "विपक्ष में गिना जाता है"
+  },
+  "pj.why.for": {
+    "en": "counts for",
+    "hi": "पक्ष में गिना जाता है"
+  },
+  "pj.why.neither": {
+    "en": "counts neither way",
+    "hi": "किसी ओर नहीं गिना जाता"
+  },
+  "pj.why.own": {
+    "en": "own sign",
+    "hi": "स्वराशि"
+  },
+  "pj.why.mool": {
+    "en": "mūlatrikoṇa",
+    "hi": "मूलत्रिकोण"
+  },
+  "pj.why.exalted": {
+    "en": "exalted",
+    "hi": "उच्च"
+  },
+  "pj.why.debil": {
+    "en": "debilitated",
+    "hi": "नीच"
+  },
+  "pj.why.friend": {
+    "en": "friend’s sign",
+    "hi": "मित्र-राशि"
+  },
+  "pj.why.enemy": {
+    "en": "enemy’s sign",
+    "hi": "शत्रु-राशि"
+  },
+  "pj.why.neutralSign": {
+    "en": "neutral sign",
+    "hi": "सम-राशि"
+  },
+  "pj.why.none": {
+    "en": "no graha in the house",
+    "hi": "भाव में कोई ग्रह नहीं"
+  },
+  "pj.why.aspects": {
+    "en": "aspected by",
+    "hi": "दृष्टि —"
+  },
+  "pj.why.karaka": {
+    "en": "as kāraka of this domain",
+    "hi": "इस क्षेत्र के कारक के रूप में"
+  },
+  "pj.why.houseBuilt": {
+    "en": "built from its lord, occupants, aspects and kāraka below",
+    "hi": "नीचे अपने स्वामी, स्थित ग्रहों, दृष्टियों और कारक से बना"
+  },
+  "pj.why.yogaPresent": {
+    "en": "present in the chart",
+    "hi": "कुण्डली में उपस्थित"
+  },
+  "pj.why.yogaAbsent": {
+    "en": "not present in the chart",
+    "hi": "कुण्डली में अनुपस्थित"
+  },
+  "pj.why.varga": {
+    "en": "the divisional chart read for this domain",
+    "hi": "इस क्षेत्र के लिए पढ़ा गया वर्ग-चक्र"
+  },
+  "matrix.charaKaraka": {
+    "en": "Chara kāraka",
+    "hi": "चर कारक"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

@@ -2248,6 +2248,16 @@ html[data-refs="1"] .cl-src-plain { display: none; }
   .ld-detail > td { padding: .2rem 0 .5rem; }
 }
 
+/* the "why" under every factor of a domain's breakdown */
+.pj-factor b { display: block; }
+.pj-why { font-size: .72rem; color: var(--dim); line-height: 1.45; white-space: normal; margin-top: .1rem; }
+.pj-why-lead { margin: .2rem 0 .5rem; }
+.pj-ledger-why td { vertical-align: top; }
+.pj-ledger-why td:first-child { min-width: 14rem; }
+.pj-sub-row td { background: color-mix(in oklab, var(--sunken) 60%, var(--panel)); font-size: .76rem; }
+.pj-sub-row td:first-child { padding-left: 1.5rem; }
+.pj-sub-row .pj-factor b { font-weight: var(--label-weight, 500); }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

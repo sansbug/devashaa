@@ -122,7 +122,7 @@ function MuddaReadings({ mudda, phala, projection, nm, rs, G, themeName, t }) {
     <Card
       className="vp-ph"
       title={t('vp.phala.title', 'Period readings — what the text states')}
-      sub={t('vp.phala.sub', 'For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with K.S. Charak’s stated results for that placement (A Textbook of Varshaphala, 1996 — ch. IX, pp. 93–106; pp. 73–75). Cited gists in this site’s words, adapted per the sources policy; never a verdict, never blended with this site’s own reading.')}
+      sub={<>{t('vp.phala.sub', 'For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with the stated results for that placement — in this site’s words, never a verdict, never blended with this site’s own reading.')} <span className="src">{t('vp.phala.subref', '')}</span></>}
       cite={`${phala.source.text} — ${phala.source.author} (${phala.source.date}). ${phala.caveat.citation}: ${phala.caveat.gist} ${phala.source.verification}.`}
     >
       {lag && (
@@ -182,7 +182,7 @@ function MuddaReadings({ mudda, phala, projection, nm, rs, G, themeName, t }) {
         )
       })}
       <details className="vp-details">
-        <summary>{t('vp.phala.allhints', 'The eight hints, pp. 106–107')}</summary>
+        <summary>{t('vp.phala.allhints', 'The eight interpretation hints')} <span className="src">pp. 106–107</span></summary>
         <ol className="vp-ph-hints">
           {Object.entries(phala.hints).map(([k, h]) => <li key={k}><span className="vp-ph-src">{h.citation}</span> {h.gist}</li>)}
         </ol>

@@ -20,6 +20,7 @@ import { makeNamer } from './naming.js'
 import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
+import References, { refsOn, applyRefs } from './References.jsx'
 import Privacy from './Privacy.jsx'
 import Methodology from './Methodology.jsx'
 import ValidationPage from './ValidationPage.jsx'
@@ -233,6 +234,9 @@ export default function App() {
     setRoute(path)
     window.scrollTo(0, 0)
   }
+  // References (chapter-and-verse, page numbers, provenance chips) are hidden
+  // unless the switch on /references is on. The data keeps every locus.
+  useEffect(() => { applyRefs(refsOn()) }, [])
 
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -591,6 +595,7 @@ export default function App() {
   })()
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
+  if (route === '/references') return <References lang={lang} onBack={() => go('/')} />
   if (route === '/methodology') return <Methodology lang={lang} setLang={changeLang} onBack={() => go('/')} />
   if (route === '/validation') return <ValidationPage lang={lang} setLang={changeLang} onBack={() => go('/')} />
 
@@ -690,8 +695,8 @@ export default function App() {
                   <div className="rg-nudge" role="note">
                     <button type="button" className="rg-nudge-x" onClick={dismissNudge}
                             aria-label="Dismiss">×</button>
-                    <p>New here? A quick walkthrough reads your chart <em>with</em> you —
-                      cited to BPHS at every step.</p>
+                    <p>New here? A quick walkthrough reads your chart <em>with</em> you,
+                      one step at a time.</p>
                     <button type="button" className="rg-nudge-go" onClick={openGuide}>
                       Start the walkthrough →
                     </button>
@@ -1131,6 +1136,11 @@ export default function App() {
           <a href="/privacy"
              onClick={(e) => { e.preventDefault(); go('/privacy') }}>{t('footer.privacy')}</a>
           {' '}{t('footer.privacyNote')}
+          {'  ·  '}
+          <a href="/references" className="footer-refs"
+             onClick={(e) => { e.preventDefault(); go('/references') }}>
+            {lang === 'hi' ? 'सन्दर्भ' : 'References'}
+          </a>
         </p>
         <p>
           {t('footer.placeFrom')}{' '}

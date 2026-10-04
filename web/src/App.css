@@ -2193,6 +2193,24 @@ footer a:hover { color: var(--accent); }
 .sc-centre-sub { font-size: clamp(8px, 2cqw, 15px); color: var(--ink); }
 .sc-centre-sub small { color: var(--dim); font-size: .85em; }
 
+/* ── references off by default ──────────────────────────────────────────────
+   Every citation, provenance chip and page reference carries one of these
+   classes. They are hidden unless /references has switched them on
+   (html[data-refs="1"]). The data underneath is untouched. */
+html:not([data-refs="1"]) :is(
+  .src, .cite-pop, .sig-cite, .xp-cite, .xp-lc, .xp-cite-line, .xp-wq-cite, .xp-sources,
+  .mx-prov, .mx-bhps-cite, .pj-cites, .nv-cite, .nv-src, .mod-src, .pc-src, .pc-fest-src,
+  .bhc-cite, .bhc-foot, .rg-cite, .cl-tier, .cl-src-meta, .cl-hist, .vp-cite, .vp-ph-adapt,
+  .vp-ph-src .cl-tier, .vp-ph-src b, .dt-cite, .sb-cite
+) { display: none !important; }
+.refs-switch { display: flex; align-items: flex-start; gap: .6rem; font-size: .9rem; line-height: 1.6; color: var(--ink); margin: .4rem 0 .8rem; cursor: pointer; }
+.refs-switch input { margin-top: .35rem; width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+.privacy.references { max-width: 62rem; }
+.refs-table { font-size: .8rem; }
+.refs-table td { vertical-align: top; }
+.references .dk-table-wrap { overflow-x: auto; margin-bottom: .6rem; }
+.footer-refs { opacity: .75; }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

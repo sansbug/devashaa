@@ -2519,13 +2519,17 @@ export const CHROME = {
     "en": "lagna is its",
     "hi": "लग्न इसके भाव"
   },
+  "vp.phala.subref": {
+    "en": "Source: K.S. Charak, A Textbook of Varshaphala (1996) — ch. IX pp. 93–106, pp. 73–75, 106–107; cited gists adapted per the sources policy.",
+    "hi": "स्रोत: के.एस. चरक, A Textbook of Varshaphala (1996) — अध्याय IX पृ. 93–106, पृ. 73–75, 106–107; स्रोत-नीति के अनुसार अनुकूलित सार।"
+  },
   "vp.phala.title": {
-    "en": "Period readings — what the text states",
-    "hi": "अवधि-फल — ग्रन्थ क्या कहता है"
+    "en": "Period readings",
+    "hi": "अवधि-फल"
   },
   "vp.phala.sub": {
-    "en": "For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with K.S. Charak’s stated results for that placement (A Textbook of Varshaphala, 1996 — ch. IX, pp. 93–106; pp. 73–75). Cited gists in this site’s words, adapted per the sources policy; never a verdict, never blended with this site’s own reading.",
-    "hi": "हर मुद्दा-अवधि के लिए: वर्ष-कुण्डली में उसके स्वामी का भाव और उसका पञ्चवर्गीय बल, और उस स्थिति के लिए के.एस. चरक के कथित फल (A Textbook of Varshaphala, 1996 — अध्याय IX, पृ. 93–106; पृ. 73–75)। पृष्ठ-सन्दर्भित सार इस साइट के अपने शब्दों में, स्रोत-नीति के अनुसार अनुकूलित; कभी निर्णय नहीं, इस साइट के अपने पठन से कभी मिश्रित नहीं।"
+    "en": "For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with the stated results for that placement — in this site’s words, never a verdict, never blended with this site’s own reading.",
+    "hi": "हर मुद्दा-अवधि के लिए: वर्ष-कुण्डली में उसके स्वामी का भाव और उसका पञ्चवर्गीय बल, और उस स्थिति के कथित फल — इस साइट के अपने शब्दों में; कभी निर्णय नहीं, इस साइट के अपने पठन से कभी मिश्रित नहीं।"
   },
   "vp.phala.lagna": {
     "en": "The year’s lagna",
@@ -2572,8 +2576,8 @@ export const CHROME = {
     "hi": "राहु-केतु के लिए बल-फल नहीं"
   },
   "vp.phala.hints": {
-    "en": "Charak’s hints that apply here",
-    "hi": "यहाँ लागू चरक के संकेत"
+    "en": "hints that apply here",
+    "hi": "यहाँ लागू संकेत"
   },
   "vp.phala.yogas": {
     "en": "yogas this lord takes part in",
@@ -2584,8 +2588,8 @@ export const CHROME = {
     "hi": "इस अवधि के लिए इस साइट का अपना प्रक्षेपण"
   },
   "vp.phala.allhints": {
-    "en": "The eight hints, pp. 106–107",
-    "hi": "आठ संकेत, पृ. 106–107"
+    "en": "The eight interpretation hints",
+    "hi": "आठ संकेत"
   },
   "vp.phala.handled": {
     "en": "handled",

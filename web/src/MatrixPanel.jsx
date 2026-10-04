@@ -15,7 +15,7 @@
  * not a fated verdict. The graphics changed in this revision; the numbers, the
  * citations and the refusals did not.
  */
-import { useState, useEffect, useMemo } from 'react'
+import { Fragment, useState, useEffect, useMemo } from 'react'
 import { API } from './config.js'
 import { useLang } from './LangContext.jsx'
 import DomainIcon from './ProjectionIcons.jsx'
@@ -70,85 +70,85 @@ function BphsQuote({ b, t }) {
 const WHEEL_C = { thriving: '#1f8a5f', supported: '#6dbb8c', mixed: '#d9a83c', stressed: '#e0806a', afflicted: '#c23f36' }
 const wheelSign = (v) => (v == null ? '#8a8f99' : v > 0.02 ? WHEEL_C.thriving : v < -0.02 ? WHEEL_C.afflicted : WHEEL_C.mixed)
 
-function LifeWheel({ themes, open, onOpen, t }) {
-  const W = 880, H = 704, CX = 440, CY = 344
-  const RH = 72          // hub
-  const R0 = 88          // the −1 ring, where every bar starts
-  const R1 = 232         // the +1 ring
-  const RR = 244         // the rim the number badges ride on
-  const RL = 268         // where the labels begin
-  const N = themes.length
-  const arc = 360 / N
-  const rad = (deg) => (deg * Math.PI) / 180
-  const rOf = (v) => R0 + ((Math.max(-1, Math.min(1, v)) + 1) / 2) * (R1 - R0)
-  const pt = (r, deg) => [CX + r * Math.cos(rad(deg)), CY + r * Math.sin(rad(deg))]
-  const wedge = (r0, r1, a0, a1) => {
-    const [x0, y0] = pt(r1, a0), [x1, y1] = pt(r1, a1)
-    const [x2, y2] = pt(r0, a1), [x3, y3] = pt(r0, a0)
-    const large = a1 - a0 > 180 ? 1 : 0
-    return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r1},${r1} 0 ${large} 1 ${x1.toFixed(1)},${y1.toFixed(1)} `
-         + `L${x2.toFixed(1)},${y2.toFixed(1)} A${r0},${r0} 0 ${large} 0 ${x3.toFixed(1)},${y3.toFixed(1)} Z`
-  }
+/** The twelve domains as a ledger, one row per house: the indication as a
+ *  diverging bar from −1 to +1 in the deck's own colours, the band in words,
+ *  and the two factors that move the number most. A row opens to the full
+ *  weighted breakdown and its classical basis. The wheel this replaces drew
+ *  the same twelve numbers as sectors; a reader of this site thinks in houses
+ *  and lords, and a ledger keeps that chain visible. */
+const LD_C = {
+  thriving: 'var(--accent)', supported: 'color-mix(in oklab, var(--accent) 62%, var(--panel))',
+  mixed: 'var(--deck-gold)', stressed: 'color-mix(in oklab, var(--rx) 62%, var(--panel))', afflicted: 'var(--rx)',
+}
+const ldSign = (v) => (v == null ? 'var(--dim)' : v > 0.02 ? 'var(--accent)' : v < -0.02 ? 'var(--rx)' : 'var(--deck-gold)')
+
+function LifeLedger({ themes, open, onOpen, nm, t, bandLbl }) {
+  const N = themes.length || 1
   const mean = themes.reduce((s, th) => s + (th.net || 0), 0) / N
-  // ring labels sit on the spoke between sectors 1 and 2, clear of any bar
-  const ringA = -90 + arc / 2
+  const top = (th) => [...(th.components || [])]
+    .filter((c) => c.value != null)
+    .sort((x, y) => Math.abs((y.value || 0) * (y.effWeight ?? y.weight ?? 1)) - Math.abs((x.value || 0) * (x.effWeight ?? x.weight ?? 1)))
+    .slice(0, 2)
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="pj-wheel" role="img" aria-label={t('pj.wheel.title', 'Life wheel')}>
-      {/* rim + sector washes: the halves read before any bar does */}
-      <circle cx={CX} cy={CY} r={RR} className="rim" />
-      {themes.map((th, i) => {
-        const a0 = -90 - arc / 2 + i * arc, a1 = a0 + arc
-        return <path key={'w' + i} d={wedge(R0, RR, a0, a1)} fill={wheelSign(th.net)} fillOpacity="0.09" />
-      })}
-      {[-1, 0, 0.5, 1].map((v) => (
-        <circle key={v} cx={CX} cy={CY} r={rOf(v)} className={'ring' + (v === 0 ? ' zero' : '')} />
-      ))}
-      {themes.map((_, i) => {
-        const a = -90 - arc / 2 + i * arc
-        const [x0, y0] = pt(R0, a), [x1, y1] = pt(RR, a)
-        return <line key={'s' + i} x1={x0} y1={y0} x2={x1} y2={y1} className="spoke" />
-      })}
-      {[-1, 0, 0.5, 1].map((v) => {
-        const [x, y] = pt(rOf(v) + (v === 1 ? -9 : 7), ringA)
-        return <text key={'l' + v} x={x + 4} y={y + 4} className="ringlbl">{v > 0 ? '+' : ''}{v.toFixed(1)}</text>
-      })}
-      {themes.map((th, i) => {
-        const mid = -90 + i * arc
-        const a0 = mid - arc * 0.32, a1 = mid + arc * 0.32
-        const on = open === th.key
-        const c = Math.cos(rad(mid)), sn = Math.sin(rad(mid))
-        const anchor = c > 0.3 ? 'start' : c < -0.3 ? 'end' : 'middle'
-        const [nx, ny] = pt(RR, mid)
-        const [lx, ly] = pt(RL, mid)
-        // three stacked lines: icon, name, value — nudged so top/bottom labels
-        // stack away from the rim and side labels centre on the spoke
-        const dy = sn < -0.3 ? -64 : sn > 0.3 ? 6 : -20
-        const ix = anchor === 'start' ? lx : anchor === 'end' ? lx - 18 : lx - 9
-        return (
-          <g key={th.key} className={'sector' + (on ? ' on' : '')} onClick={() => onOpen(on ? null : th.key)}
-             role="button" tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpen(on ? null : th.key)}>
-            <title>{th.name} · {sv(th.net)}</title>
-            <path d={wedge(R0, RR, mid - arc / 2, mid + arc / 2)} fill="transparent" />
-            <path className="bar" d={wedge(R0 + 2, rOf(th.net), a0, a1)} fill={WHEEL_C[th.band] || wheelSign(th.net)} />
-            <circle cx={nx} cy={ny} r="13" className="lbl-numc" />
-            <text x={nx} y={ny + 4} textAnchor="middle" className="lbl-num">{i + 1}</text>
-            <g transform={`translate(${ix.toFixed(1)},${(ly + dy).toFixed(1)})`} className="lbl-ico">
-              <DomainIcon k={th.key} size={18} />
-            </g>
-            <text x={lx} y={ly + dy + 34} textAnchor={anchor} className="lbl-name">{th.name.split(' · ')[0]}</text>
-            {th.name.includes(' · ') && (
-              <text x={lx} y={ly + dy + 48} textAnchor={anchor} className="lbl-name2">{th.name.split(' · ').slice(1).join(' · ')}</text>
-            )}
-            <text x={lx} y={ly + dy + (th.name.includes(' · ') ? 66 : 52)} textAnchor={anchor} className="lbl-val" fill={wheelSign(th.net)}>{sv(th.net)}</text>
-          </g>
-        )
-      })}
-      <circle cx={CX} cy={CY} r={RH} className="hub" />
-      <text x={CX} y={CY - 10} textAnchor="middle" className="hub-t">{t('pj.wheel.centre', 'Natal balance')}</text>
-      <rect x={CX - 30} y={CY + 2} width="60" height="24" rx="7" fill={wheelSign(mean)} />
-      <text x={CX} y={CY + 19} textAnchor="middle" className="hub-v" fill="#fff">{sv(mean)}</text>
-      <text x={CX} y={CY + 44} textAnchor="middle" className="hub-n">{t('pj.wheel.centre.note', 'mean of the twelve')}</text>
-    </svg>
+    <section className="dk-card ld-card">
+      <h4 className="dk-head">
+        <span>{t('pj.wheel.title', 'Life domains')}</span>
+        <span className="dk-head-right ld-mean">
+          <span>{t('pj.wheel.centre', 'Natal balance')}</span>
+          <b>{sv(mean)}</b>
+          <i>{t('pj.wheel.centre.note', 'mean of the twelve')}</i>
+        </span>
+      </h4>
+      <div className="dk-body">
+        <p className="vp-sub">{t('pj.wheel.sub', 'Twelve life domains from the natal chart, each a net indication from −1 to +1. Open a row to see how its number is built.')}</p>
+        <div className="dk-table-wrap">
+          <table className="dk-table ld-table">
+            <thead>
+              <tr>
+                <th>{t('matrix.hcol', 'House')}</th>
+                <th>{t('pj.ld.domain', 'Domain')}</th>
+                <th className="ld-th-bar"><span>−1</span><span>0</span><span>+1</span></th>
+                <th>{t('pj.ld.value', 'Value')}</th>
+                <th>{t('pj.ld.state', 'State')}</th>
+                <th className="ld-th-top">{t('pj.ld.built', 'Moved most by')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {themes.map((th, i) => {
+                const on = open === th.key
+                const [name, ...subs] = String(th.name || th.key).split(' · ')
+                const col = LD_C[th.band] || ldSign(th.net)
+                const v = Math.max(-1, Math.min(1, th.net || 0))
+                const toggle = () => onOpen(on ? null : th.key)
+                return (
+                  <Fragment key={th.key}>
+                    <tr className={`ld-row${on ? ' on' : ''}`} onClick={toggle} role="button" tabIndex={0} aria-expanded={on}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle() } }}>
+                      <td><span className="dk-rbub">{i + 1}</span></td>
+                      <td className="ld-dom"><DomainIcon k={th.key} size={16} /><span><b>{name}</b>{subs.length > 0 && <span className="dk-en">{subs.join(' · ')}</span>}</span></td>
+                      <td className="ld-barcell">
+                        <div className="ld-bar" aria-hidden="true">
+                          <span className="ld-zero" />
+                          <i style={{ left: v < 0 ? `${50 + v * 50}%` : '50%', width: `${Math.abs(v) * 50}%`, background: col }} />
+                        </div>
+                      </td>
+                      <td className="dk-num ld-val" style={{ color: ldSign(th.net) }}>{sv(th.net)}</td>
+                      <td><span className="ld-band" style={{ '--c': col }}>{bandLbl(th.band)}</span></td>
+                      <td className="ld-top">{top(th).map((c, j) => <span key={j}>{factorLabel(c, nm, t)} <b style={{ color: ldSign(c.value) }}>{sv(c.value)}</b></span>)}</td>
+                    </tr>
+                    {on && (
+                      <tr className="ld-detail"><td colSpan={6}>
+                        <DomainDetail th={th} nm={nm} t={t} bandLbl={bandLbl} onClose={() => onOpen(null)} />
+                      </td></tr>
+                    )}
+                  </Fragment>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -160,6 +160,7 @@ function factorLabel(c, nm, t) {
     case 'aspects': return t('matrix.asp', 'Aspects')
     case 'karaka':
     case 'sthira_karaka': return t('matrix.karaka', 'Kāraka') + (c.graha ? ` · ${nm(c.graha)}` : '')
+    case 'chara_karaka': return t('matrix.charaKaraka', 'Chara kāraka') + (c.graha ? ` · ${nm(c.graha)}` : '')
     default: return c.factor
   }
 }
@@ -326,8 +327,7 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
     : t('pj.balance.prose.nonear', 'The chart shows support for {up}, with pressure around {down}.'))
     .replace('{up}', names(strong)).replace('{down}', names(weak))
     .replace('{near}', nearNames.join(', ').replace(/^./, (c) => c.toUpperCase()))
-  const openTheme = themes.find((x) => x.key === open)
-  // open on the most challenged domain: an empty detail panel next to a wheel
+    // open on the most challenged domain: an empty detail panel next to a wheel
   // answers a question nobody asked
   useEffect(() => { if (open == null && weak.length) setOpen(weak[0].key) }, [])  // eslint-disable-line react-hooks/exhaustive-deps
   const Kpi = ({ title, glyph, color, list }) => (
@@ -348,24 +348,12 @@ function Overview({ data, nm, t, bandLbl, open, setOpen }) {
           <h4>{t('pj.balance.title', 'Your natal balance')}</h4>
           {prose}
         </div>
-        <Kpi title={t('pj.balance.strong', 'Strongest support')} glyph="↑" color={WHEEL_C.thriving} list={strong} />
-        <Kpi title={t('pj.balance.near', 'Near balance')} glyph="≈" color={WHEEL_C.mixed} list={near} />
-        <Kpi title={t('pj.balance.weak', 'Most challenged')} glyph="↓" color={WHEEL_C.afflicted} list={weak} />
+        <Kpi title={t('pj.balance.strong', 'Strongest support')} glyph="↑" color={LD_C.thriving} list={strong} />
+        <Kpi title={t('pj.balance.near', 'Near balance')} glyph="≈" color={LD_C.mixed} list={near} />
+        <Kpi title={t('pj.balance.weak', 'Most challenged')} glyph="↓" color={LD_C.afflicted} list={weak} />
       </div>
 
-      <div className="pj-wheel-row">
-        <div className="pj-card">
-          <h4>{t('pj.wheel.title', 'Life wheel')}</h4>
-          <p className="pj-sub">{t('pj.wheel.sub', 'Twelve life domains from the natal chart. Tap a domain to open its ledger.')}</p>
-          <LifeWheel themes={themes} open={open} onOpen={setOpen} t={t} />
-          <div className="pj-wheel-legend">
-            {['thriving', 'supported', 'mixed', 'stressed', 'afflicted'].map((bd) => (
-              <span key={bd}><i style={{ background: WHEEL_C[bd] }} />{bandLbl(bd)}</span>
-            ))}
-          </div>
-        </div>
-        <DomainDetail th={openTheme} nm={nm} t={t} bandLbl={bandLbl} onClose={() => setOpen(null)} />
-      </div>
+      <LifeLedger themes={themes} open={open} onOpen={setOpen} nm={nm} t={t} bandLbl={bandLbl} />
 
       <div className="pj-grid2">
         <BhavaMatrix bhavas={data.bhavas} nm={nm} t={t} bandLbl={bandLbl} />

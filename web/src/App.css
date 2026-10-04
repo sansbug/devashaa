@@ -2217,6 +2217,37 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .references .dk-table-wrap { overflow-x: auto; margin-bottom: .6rem; }
 .footer-refs { opacity: .75; }
 
+/* ── the life ledger (replaces the wheel) ─────────────────────────────────── */
+.ld-card { margin-bottom: .8rem; }
+.ld-mean { display: inline-flex; align-items: baseline; gap: .4rem; font-size: .72rem; }
+.ld-mean b { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.ld-mean i { font-style: normal; opacity: .8; }
+.ld-table { font-size: .8rem; }
+.ld-row { cursor: pointer; }
+.ld-row.on td { background: var(--row-hi); }
+.ld-dom { display: flex; align-items: center; gap: .45rem; min-width: 10rem; }
+.ld-dom .dk-en { display: block; margin-top: .05rem; }
+.ld-th-bar { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.ld-barcell { width: 24%; min-width: 9rem; }
+.ld-bar { position: relative; height: .95rem; background: var(--sunken); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.ld-zero { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--dim); }
+.ld-bar i { position: absolute; top: 2px; bottom: 2px; border-radius: 3px; min-width: 2px; }
+.ld-val { font-weight: 700; }
+.ld-band { font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; padding: .12rem .45rem; border-radius: 5px; border: 1px solid var(--c); color: var(--c); white-space: nowrap; }
+.ld-top { font-size: .72rem; color: var(--dim); }
+.ld-top span { display: block; white-space: nowrap; }
+.ld-top b { font-variant-numeric: tabular-nums; }
+.ld-detail > td { padding: .3rem .3rem .7rem; background: var(--sunken); }
+.ld-detail .pj-detail { border: 0; box-shadow: none; background: transparent; }
+@media (max-width: 760px) {
+  .ld-top, .ld-th-top, .ld-table td:first-child, .ld-table th:first-child, .ld-dom .dk-en { display: none; }
+  .ld-table td, .ld-table th { padding-left: .3rem; padding-right: .3rem; }
+  .ld-dom { min-width: 0; gap: .3rem; }
+  .ld-barcell { min-width: 5.5rem; width: 30%; }
+  .ld-band { font-size: .56rem; padding: .1rem .3rem; }
+  .ld-detail > td { padding: .2rem 0 .5rem; }
+}
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

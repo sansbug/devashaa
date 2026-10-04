@@ -1696,12 +1696,12 @@ export const CHROME = {
     "hi": "सबसे अधिक चुनौती"
   },
   "pj.wheel.title": {
-    "en": "Life wheel",
-    "hi": "जीवन-चक्र"
+    "en": "Life domains",
+    "hi": "जीवन-क्षेत्र"
   },
   "pj.wheel.sub": {
-    "en": "Twelve life domains from the natal chart, each a net indication from −1 to +1. Tap a domain to open its ledger.",
-    "hi": "जन्म-कुंडली के बारह जीवन-क्षेत्र, प्रत्येक −1 से +1 तक का शुद्ध संकेत। किसी क्षेत्र पर टैप करें और उसका लेखा देखें।"
+    "en": "Twelve life domains from the natal chart, each a net indication from −1 to +1. Open a row to see how its number is built.",
+    "hi": "जन्म-कुंडली के बारह जीवन-क्षेत्र, प्रत्येक −1 से +1 तक का शुद्ध संकेत। किसी पंक्ति को खोलें और देखें कि उसका अंक कैसे बना।"
   },
   "pj.wheel.centre": {
     "en": "Natal balance",

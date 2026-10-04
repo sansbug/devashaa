@@ -157,6 +157,8 @@ def scrub(text: str) -> str:
     s = re.sub(r"\b(and|or|but|yet),\s*,?\s*(?=[—–]|[a-zà-ž])", r"\1 ", s)
     s = re.sub(r"\b(states|says|adds|holds|notes|assigns|gives|calls|reads|makes|is|are),\s+(?=[a-zà-ž])", r"\1 ", s)
     s = re.sub(r",\s*[—–]\s*", " — ", s)
+    s = re.sub(r"([;,])\s*(?:and|or|but|yet)\s*[—–]\s*", r"\1 ", s)
+    s = re.sub(r"(?:^|(?<=[.!?]\s))(?:Stated|Shown|Presented|Framed|Given|Kept|Cited)\.\s*", "", s)
     s = re.sub(r"^[\s,;:—–-]+", "", s)
     s = re.sub(r"\.\s*\.", ".", s)
     s = re.sub(r"\s+([,;.:])", r"\1", s)

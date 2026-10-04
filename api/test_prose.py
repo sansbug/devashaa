@@ -69,6 +69,10 @@ CASES = [
      "Though bereft of co-born (siblings)."),
     ("Agitated, and poor (its dated view, not fate); any word on offspring is kept only as strain in the progeny sphere, no count asserted.",
      "Agitated, and poor."),
+    ("Having many foes, easily startled, and mean; and — as the text's dated stated-effect — devoid of wealth (framed as the ~10th-c. reading, not fate).",
+     "Having many foes, easily startled, and mean; devoid of wealth."),
+    ("Wanting for progeny, wealth and happiness. Stated as the classical view, not a prediction and not medical advice.",
+     "Wanting for progeny, wealth and happiness."),
     # untouched
     ("Gain of wealth without effort, much comfort to partner and children.",
      "Gain of wealth without effort, much comfort to partner and children."),

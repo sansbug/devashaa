@@ -76,6 +76,7 @@ export function scrubProse(text) {
   s = s.replace(/[ \t]{2,}/g, ' ').replace(/\s+([,;.:])/g, '$1').replace(/\(\s+/g, '(').replace(/\(\s*\)/g, '').replace(/,\s*,/g, ',')
   s = s.replace(/,\s*([.;])/g, '$1').replace(/\.\s*,\s*/g, '. ').replace(/\s+(?:and|or|but)\s*([.;])/g, '$1').replace(/[—–]\s*([.;,])/g, '$1').replace(/[;,]\s*$/, '.')
   s = s.replace(/\b(and|or|but|yet),\s*,?\s*(?=[—–]|[a-zà-ž])/g, '$1 ').replace(/,\s*[—–]\s*/g, ' — ')
+  s = s.replace(/([;,])\s*(?:and|or|but|yet)\s*[—–]\s*/g, '$1 ').replace(/(?:^|(?<=[.!?]\s))(?:Stated|Shown|Presented|Framed|Given|Kept|Cited)\.\s*/g, '')
   s = s.replace(/\b(states|says|adds|holds|notes|assigns|gives|calls|reads|makes|is|are),\s+(?=[a-zà-ž])/g, '$1 ').replace(/\s+([,;.:])/g, '$1')
   s = s.replace(/^[\s,;:—–-]+/, '').replace(/\.\s*\./g, '.').replace(/\s{2,}/g, ' ')
   s = s.replace(SENT_START, (m, lead, c) => lead + c.toUpperCase())

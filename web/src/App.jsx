@@ -768,9 +768,6 @@ export default function App() {
                   onHover={setHovered}
                   onPick={pinGraha}
                   highlightSign={rowSign}
-                  title={`${t('deck.banner.south', 'South Indian style birth chart')} (${varga})`}
-                  subtitle={`${VARGA_LABELS.find(([k]) => k === varga)[1]} — ${t('deck.banner.sub', 'Planetary positions (°)')}`}
-                  titleTip={t('deck.banner.southTip', 'Signs are fixed in this frame — Meṣa top row, second from left, clockwise; the lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.')}
                 />
               ) : style === 'north' ? (
                 <NorthDeckChart
@@ -781,9 +778,6 @@ export default function App() {
                   namer={namer}
                   highlightSign={rowSign}
                   onPick={pinGraha}
-                  title={`${t('deck.banner.north', 'North Indian style birth chart')} (${varga})`}
-                  subtitle={`${VARGA_LABELS.find(([k]) => k === varga)[1]} — ${t('deck.banner.sub', 'Planetary positions (°)')}`}
-                  titleTip={t('deck.banner.northTip', 'A bhāva diagram: houses are fixed, the signs rotate with the lagna. For degree geometry use the South Indian frame.')}
                 />
               ) : (
               <Chart

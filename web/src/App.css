@@ -2089,7 +2089,7 @@ footer a:hover { color: var(--accent); }
   --pc-sun: #f5a623; --pc-moon: #a6aaac; --pc-mars: #d7463c; --pc-mercury: #28a988; --pc-jupiter: #ef9b28;
   --pc-venus: #316bd9; --pc-saturn: #6537c6; --pc-rahu: #b54b35; --pc-ketu: #9b7142;
 }
-.rc-card { position: relative; container-type: inline-size; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--glow, 0 6px 22px color-mix(in oklab, var(--ink) 8%, transparent)); padding: 0 1rem 1rem; margin-bottom: .2rem; }
+.rc-card { position: relative; container-type: inline-size; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--glow, 0 6px 22px color-mix(in oklab, var(--ink) 8%, transparent)); padding: 1rem; margin-bottom: .2rem; }
 .rc-banner { position: relative; width: fit-content; max-width: 100%; box-sizing: border-box; margin: -1px auto .9rem; padding: .5rem 2.4rem .55rem; border-radius: 0 0 14px 14px; text-align: center; background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 78%, var(--ink)), var(--accent)); color: var(--on-accent); border: 1px solid color-mix(in oklab, var(--deck-gold) 70%, var(--accent)); border-top: 0; }
 .rc-banner::before, .rc-banner::after { content: '◆'; position: absolute; top: 50%; transform: translateY(-50%); font-size: .55rem; color: var(--deck-gold-soft); }
 .rc-banner::before { left: .9rem; } .rc-banner::after { right: .9rem; }
@@ -2124,7 +2124,7 @@ footer a:hover { color: var(--accent); }
 .house-glyph { display: block; margin-top: .6cqw; font-size: clamp(14px, 5cqw, 40px); line-height: 1; color: color-mix(in oklab, var(--g) 55%, var(--panel)); font-family: 'Segoe UI Symbol', 'Noto Sans Symbols2', 'Noto Sans Symbols', 'Apple Symbols', serif; font-variant-emoji: text; }
 .house.empty .house-sign { margin-bottom: .2cqw; }
 .chart-panel--deck .north-chart { border: 0; background: none; }
-@media (max-width: 480px) { .rc-card { padding: 0 .5rem .6rem; } .rc-banner { padding: .4rem 1.6rem .45rem; } .rc-banner::before, .rc-banner::after { display: none; } }
+@media (max-width: 480px) { .rc-card { padding: .6rem .5rem; } .rc-banner { padding: .4rem 1.6rem .45rem; } .rc-banner::before, .rc-banner::after { display: none; } }
 
 /* the rāśi lord's mark — "→ 3" (its bhāva), or "own" with the house tinted */
 .lord-mark { display: inline-flex; align-items: center; gap: .3em; color: color-mix(in oklab, var(--g) 70%, var(--ink)); font-weight: 600; line-height: 1.3; white-space: nowrap; pointer-events: auto; cursor: default; }

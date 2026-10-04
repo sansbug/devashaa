@@ -24,7 +24,7 @@ function groupBySign(grahas, vargaKey) {
 
 export default function SouthDeckChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude, gandanta,
-  active, onHover, onPick, highlightSign, title, subtitle, titleTip,
+  active, onHover, onPick, highlightSign,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
@@ -34,10 +34,6 @@ export default function SouthDeckChart({
 
   return (
     <div className="rc-card">
-      <div className="rc-banner" title={titleTip}>
-        <div className="rc-banner-title">{title}</div>
-        {subtitle && <div className="rc-banner-sub">{subtitle}</div>}
-      </div>
       <div className="sc-grid rasi-chart" role="img" aria-label="South Indian rāśi chart">
         <span className="rc-corner tl" aria-hidden="true" /><span className="rc-corner tr" aria-hidden="true" />
         <span className="rc-corner bl" aria-hidden="true" /><span className="rc-corner br" aria-hidden="true" />

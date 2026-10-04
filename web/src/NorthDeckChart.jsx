@@ -32,7 +32,6 @@ function groupBySign(grahas, vargaKey) {
 
 export default function NorthDeckChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, onPick,
-  title, subtitle, titleTip,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
@@ -40,10 +39,6 @@ export default function NorthDeckChart({
 
   return (
     <div className="rc-card">
-      <div className="rc-banner" title={titleTip}>
-        <div className="rc-banner-title">{title}</div>
-        {subtitle && <div className="rc-banner-sub">{subtitle}</div>}
-      </div>
       <div className="rasi-chart">
         <span className="rc-corner tl" aria-hidden="true" /><span className="rc-corner tr" aria-hidden="true" />
         <span className="rc-corner bl" aria-hidden="true" /><span className="rc-corner br" aria-hidden="true" />

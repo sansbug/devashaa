@@ -40,6 +40,26 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 CREATE INDEX IF NOT EXISTS profiles_by_user ON profiles(userid);
 
+-- Devashaa Pūjā (created by the Worker on first use — pooja-worker.js ensure()).
+-- Unlike the chart store these are readable by design: a pandit's profile is
+-- public, and a booking carries a name and a contact so the pandit can reach
+-- the family (shown only to the assigned pandit and to admins).
+CREATE TABLE IF NOT EXISTS pooja_roles (userid TEXT PRIMARY KEY, role TEXT NOT NULL, created_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS pooja_priests (
+  userid TEXT PRIMARY KEY, name TEXT NOT NULL, city TEXT, country TEXT, languages TEXT, traditions TEXT,
+  rituals TEXT, years INTEGER, bio TEXT, contact TEXT,
+  status TEXT NOT NULL,            -- pending | approved | rejected
+  vetted_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS pooja_bookings (
+  id TEXT PRIMARY KEY,             -- 16 random bytes, hex; the id IS the family's key to the booking and the room
+  ritual TEXT NOT NULL, starts_at TEXT NOT NULL, tz TEXT, priest TEXT,
+  name TEXT NOT NULL, contact TEXT NOT NULL, city TEXT, family INTEGER, notes TEXT, lang TEXT,
+  status TEXT NOT NULL,            -- requested | confirmed | completed | cancelled | self (a family gathering, no pandit)
+  created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS pooja_bookings_priest ON pooja_bookings(priest, status);
+
 -- A chart shared by link: AES-GCM ciphertext made in the sender's browser;
 -- the key lives only in the link's fragment. Created by the Worker on first
 -- use (worker.js ensureShares) — kept here so the schema is in one place.

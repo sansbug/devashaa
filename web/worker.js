@@ -22,6 +22,11 @@
  * written there is destroyed on the next deploy.
  */
 
+import { handlePooja, PoojaRoom } from './pooja-worker.js'
+
+// The live-room Durable Object class must be exported from the entry module.
+export { PoojaRoom }
+
 const HEX64 = /^[0-9a-f]{64}$/
 // Deliberately narrow: an email address, or lowercase letters, digits and a
 // separator. No unicode, so two userids cannot look identical while differing
@@ -93,9 +98,12 @@ async function ensureShares(db) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url)
     const path = url.pathname
+
+    // Devashaa Pūjā is its own service on this Worker — see pooja-worker.js.
+    if (path.startsWith('/api/pooja')) return handlePooja(request, env, ctx, authorise)
 
     if (!path.startsWith('/api/account') && !path.startsWith('/api/share')) return env.ASSETS.fetch(request)
     if (request.method === 'OPTIONS') {

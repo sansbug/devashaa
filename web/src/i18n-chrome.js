@@ -3067,6 +3067,18 @@ export const CHROME = {
     "en": "Why charts differ between apps",
     "hi": "ऐप-ऐप में कुंडली क्यों भिन्न"
   },
+  "site.sections": {
+    "en": "Sections of the site",
+    "hi": "साइट के अनुभाग"
+  },
+  "site.jyotisha": {
+    "en": "Jyotiṣa charts",
+    "hi": "ज्योतिष कुंडली"
+  },
+  "site.pooja": {
+    "en": "Pūjā & Havan",
+    "hi": "पूजा एवं हवन"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

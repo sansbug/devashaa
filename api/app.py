@@ -31,6 +31,7 @@ from dasha_effects import verdicts_for_chart, frames_for_chart
 import antardasa
 import charadasha
 import varshaphal
+import muhurta as muhurta_mod
 import prose
 import gochara
 import motion as motion_mod
@@ -785,6 +786,84 @@ def panchang_day():
     for _k in ("_moon_sign", "_jd_rise", "_jd_set", "_jd_next", "_jd_moonrise"):
         pan.pop(_k, None)
     return jsonify(pan)
+
+
+@app.post("/api/muhurta")
+def muhurta_for_day():
+    """The time-windows of one day at one place, for a ceremony: the five limbs
+    at sunrise, the windows the almanac avoids, the clear windows, the kāla a
+    given ceremony is traditionally kept in, and the day's cautions. No birth
+    chart. `latitude`, `longitude`, `date` (YYYY-MM-DD); optional `timezone`,
+    `ritual` (a catalogue key)."""
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("latitude", "longitude", "date") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+        d = datetime.strptime(str(body["date"]), "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude/longitude must be numbers and date YYYY-MM-DD"}), 400
+    if not EPHE_YEAR_MIN <= d.year <= EPHE_YEAR_MAX:
+        return jsonify({"error": f"year outside ephemeris range ({EPHE_YEAR_MIN}-{EPHE_YEAR_MAX})."}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    try:
+        out = muhurta_mod.day_muhurta(d, lat, lon, tz_name, (body.get("ritual") or None))
+        masa = panchang_masa.amanta_masa(d, tz_name)
+        sank = panchang_masa.sankranti_on(d, tz_name)
+        pan = panchang.panchanga(d, lat, lon, tz_name)
+        out["festivals"] = festivals_mod.festivals_for_day(pan, masa, sank, tz_name)
+        out["masa"] = {"name": masa["name"], "name_hi": masa["name_hi"], "adhika": bool(masa.get("adhika"))}
+        # The same fortnight by the pūrṇimānta reckoning of the north: its dark half carries the next month's name.
+        if out["panchang"]["tithi"]["paksha"] != "śukla" and not masa.get("adhika"):
+            nxt_i = (masa["index"] + 1) % 12
+            out["masa"]["purnimanta"] = panchang_masa.AMANTA_MONTHS[nxt_i]
+            out["masa"]["purnimanta_hi"] = panchang_masa.AMANTA_MONTHS_HI[nxt_i]
+    except shadbala_context.ShadbalaUnavailable as e:
+        return jsonify({"error": f"The Sun does not rise or set there on that date: {e}"}), 422
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Muhūrta failed: {e}"}), 500
+    return jsonify(out)
+
+
+@app.post("/api/panchang/observances")
+def panchang_observances():
+    """A month of the religious calendar for a PLACE — no birth chart involved:
+    each day's tithi, nakṣatra, vāra and māsa at sunrise, the festivals and
+    recurring observances that fall on it, and the day's muhūrta windows.
+    `latitude`, `longitude`, `year`, `month`; `timezone` optional."""
+    import calendar as _calmod
+    body = request.get_json(silent=True) or {}
+    missing = [f for f in ("latitude", "longitude", "year", "month") if body.get(f) in (None, "")]
+    if missing:
+        return jsonify({"error": f"Missing required field(s): {', '.join(missing)}"}), 400
+    try:
+        lat, lon = float(body["latitude"]), float(body["longitude"])
+        year, month = int(body["year"]), int(body["month"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "latitude/longitude/year/month must be numbers"}), 400
+    if not 1 <= month <= 12 or not EPHE_YEAR_MIN <= year <= EPHE_YEAR_MAX:
+        return jsonify({"error": "month must be 1-12 and the year inside the ephemeris range"}), 400
+    tz_name = body.get("timezone") or timezone_at(lat, lon)
+    days = []
+    for dd in range(1, _calmod.monthrange(year, month)[1] + 1):
+        d = datetime(year, month, dd).date()
+        try:
+            pan = panchang.panchanga(d, lat, lon, tz_name)
+            masa = panchang_masa.amanta_masa(d, tz_name)
+            sank = panchang_masa.sankranti_on(d, tz_name)
+            fests = festivals_mod.festivals_for_day(pan, masa, sank, tz_name)
+        except Exception:  # noqa: BLE001
+            continue
+        days.append({"date": d.isoformat(),
+                     "tithi": pan["tithi"]["name"], "tithi_hi": pan["tithi"]["name_hi"],
+                     "tithi_end": pan["tithi"]["end"], "paksha": pan["tithi"]["paksha"],
+                     "nakshatra": pan["nakshatra"]["name"], "nakshatra_hi": pan["nakshatra"]["name_hi"],
+                     "vara": pan["vara"]["name"], "vara_hi": pan["vara"]["name_hi"],
+                     "masa": masa["name"], "masa_hi": masa["name_hi"],
+                     "festivals": fests, "windows": pan["windows"]})
+    return jsonify({"year": year, "month": month, "timezone": tz_name, "days": days,
+                    "festival_note": festivals_mod.CONVENTION})
 
 
 @app.post("/api/panchang/calendar")

@@ -3132,3 +3132,9 @@ html[data-refs="1"] .cl-src-plain { display: none; }
   border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
 .pc-fl-date { flex: 0 0 1.5rem; text-align: right; font-weight: 700; opacity: .7; font-variant-numeric: tabular-nums; }
 .pc-fl-names { flex: 1; display: flex; flex-wrap: wrap; gap: .25rem; align-items: baseline; }
+
+/* The two sections of the site: the chart reference, and Pūjā & Havan. */
+.site-tabs { display: flex; justify-content: center; gap: .35rem; margin: 0 0 .9rem; }
+.site-tabs a { font-size: .8rem; color: var(--ink); text-decoration: none; padding: .32rem .95rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+.site-tabs a:hover { border-color: var(--accent); color: var(--accent); }
+.site-tabs a.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }

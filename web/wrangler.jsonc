@@ -24,12 +24,18 @@
     // the Worker never runs and every sync call returns the HTML page with a
     // 200. It behaves correctly under `wrangler dev` and fails only once
     // deployed, so it has to be caught against the real thing.
-    "run_worker_first": ["/api/account/*", "/api/account", "/api/share/*", "/api/share"]
+    "run_worker_first": ["/api/account/*", "/api/account", "/api/share/*", "/api/share", "/api/pooja/*", "/api/pooja"]
   },
   // Accounts and encrypted profile blobs. D1 rather than KV because a unique
   // userid needs a real PRIMARY KEY: KV has no atomic check-and-set, so two
   // simultaneous registrations could both observe "free" and both write.
   // The Worker stores ciphertext it has no key for — see web/src/account.js.
+  // Devashaa Pūjā: one Durable Object per live room (it relays the WebRTC
+  // handshake; media is peer to peer), and an R2 bucket for the recordings
+  // the pandit's browser uploads so the family can watch later.
+  "durable_objects": { "bindings": [{ "name": "ROOMS", "class_name": "PoojaRoom" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PoojaRoom"] }],
+  "r2_buckets": [{ "binding": "REC", "bucket_name": "devashaa-recordings" }],
   "d1_databases": [
     {
       "binding": "DB",

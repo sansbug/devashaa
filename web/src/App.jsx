@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react'
 import { SouthIndianChart, NorthIndianChart } from './RasiChart.jsx'
 import SkyWheelChart from './SkyWheel.jsx'
 import NavamsaPanel from './NavamsaPanel.jsx'
@@ -42,6 +42,9 @@ import SouthDeckChart from './SouthDeckChart.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
 import { API } from './config.js'
 import './App.css'
+
+// Pūjā & Havan is its own section with its own bundle — nothing of it loads with a chart.
+const PoojaApp = lazy(() => import('./pooja/PoojaApp.jsx'))
 
 const VARGA_LABELS = [
   ['D1', 'Rāśi'], ['D2', 'Horā'], ['D3', 'Drekkāṇa'], ['D4', 'Chaturthāṁśa'],
@@ -634,6 +637,9 @@ export default function App() {
     return Object.keys(out).length ? out : null
   })()
 
+  if (route === '/pooja' || route.startsWith('/pooja/') || route.startsWith('/pooja?')) {
+    return <Suspense fallback={<div className="page"><p className="sub">…</p></div>}><PoojaApp route={route} go={go} lang={lang} setLang={changeLang} /></Suspense>
+  }
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
   if (route === '/references') return <References lang={lang} onBack={() => go('/')} />
   if (route === '/support') return <Support lang={lang} onBack={() => go('/')} />
@@ -649,6 +655,10 @@ export default function App() {
         nameStyle={nameStyle} setNameStyle={setNameStyle}
         lang={lang} setLang={changeLang}
       />
+      <nav className="site-tabs" aria-label={t('site.sections', 'Sections of the site')}>
+        <a className="on" href="/" aria-current="page">{t('site.jyotisha', 'Jyotiṣa charts')}</a>
+        <a href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}><span aria-hidden="true">🪔</span> {t('site.pooja', 'Pūjā & Havan')}</a>
+      </nav>
       <header>
         <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>
         <Logo />

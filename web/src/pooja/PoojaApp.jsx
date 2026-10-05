@@ -27,11 +27,12 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { passwordProblem, USERID_RE, normaliseUserid } from '../account.js'
-import { api, getSession, onSession, signIn, signOut, loadPlace } from './papi.js'
+import { api, getSession, onSession, signIn, signOut } from './papi.js'
 import { RITUALS, KIND_LABEL, ritualByKey, ritualsFor, samagriFor, durationLabel } from './rituals.js'
-import { ABOUT, HERO_SHLOKA, MANTRA_STEPS, scriptFor, plainRoman } from './guide.js'
+import { ABOUT, HERO_SHLOKA, scriptFor, plainRoman } from './guide.js'
 import Guide from './Guide.jsx'
-import Muhurta, { PlacePicker } from './Muhurta.jsx'
+import Muhurta, { PlacePicker, usePlace } from './Muhurta.jsx'
+import VoiceStudio from './Chants.jsx'
 import Room from './Room.jsx'
 import './pooja.css'
 
@@ -178,7 +179,7 @@ function ObservanceList({ days, lang, L, go, limit, fromToday = true }) {
 }
 
 function Home({ lang, L, go }) {
-  const [place, setPlace] = useState(loadPlace)
+  const [place, setPlace] = usePlace()
   const { days, err } = useObservances(place, 2)
   const featured = ['satyanarayan', 'ganesh', 'rudrabhishek', 'griha-pravesh', 'durga', 'gayatri-havan'].map(ritualByKey)
   const link = (path) => ({ href: path, onClick: (e) => { e.preventDefault(); go(path) } })
@@ -219,7 +220,7 @@ function Home({ lang, L, go }) {
       </Card>
       <Card title={L('Coming up in the calendar', 'पंचांग में आगे')} right={<a {...link('/pooja/calendar')}>{L('full calendar →', 'पूरा पंचांग →')}</a>}>
         <PlacePicker place={place} setPlace={setPlace} L={L} />
-        {err ? <p className="pu-err">{err}</p> : <ObservanceList days={days} lang={lang} L={L} go={go} limit={8} />}
+        {err ? <p className="pu-err">{err}</p> : <ObservanceList days={days} lang={lang} L={L} go={go} limit={5} />}
       </Card>
       <Card title={L('What this section stands on', 'यह सेवा किस पर टिकी है')}>
         <ul className="pu-points">
@@ -301,7 +302,7 @@ function Keep({ r, lang, L, go, when, place }) {
             <label>{L('Pandit', 'पंडित जी')}
               <select value={f.priest} onChange={set('priest')}>
                 <option value="">{L('Any available pandit', 'कोई भी उपलब्ध पंडित जी')}</option>
-                {priests.map((p) => <option key={p.userid} value={p.userid}>{p.name}{p.city ? ` — ${p.city}` : ''}{p.languages ? ` · ${p.languages}` : ''}</option>)}
+                {priests.map((p) => <option key={p.id} value={p.id}>{p.name}{p.city ? ` — ${p.city}` : ''}{p.languages ? ` · ${p.languages}` : ''}</option>)}
               </select></label>
             <label>{L('Homes joining', 'कितने घर जुड़ेंगे')}<input type="number" min="1" max="50" value={f.family} onChange={set('family')} /></label>
           </div>
@@ -321,7 +322,7 @@ function Keep({ r, lang, L, go, when, place }) {
 
 function RitualDetail({ rkey, lang, L, go, query }) {
   const r = ritualByKey(rkey)
-  const [place, setPlace] = useState(loadPlace)
+  const [place, setPlace] = usePlace()
   const [date, setDate] = useState(query.get('date') || '')
   const [time, setTime] = useState('')
   const hourRef = useRef(null)
@@ -383,7 +384,7 @@ function GuidePage({ rkey, lang, L, go }) {
 }
 
 function Calendar({ lang, L, go }) {
-  const [place, setPlace] = useState(loadPlace)
+  const [place, setPlace] = usePlace()
   const { days, err } = useObservances(place, 3)
   return (
     <Card title={L('The religious calendar — next three months', 'धार्मिक पंचांग — अगले तीन माह')}>
@@ -404,9 +405,10 @@ function Pandits({ L, go }) {
       ) : (
         <div className="pu-pandits">
           {list.map((p) => (
-            <div key={p.userid} className="pu-pandit">
+            <div key={p.id} className="pu-pandit">
               <b>{p.name}</b>
               <span className="dk-en">{[p.city, p.country].filter(Boolean).join(', ')}{p.years ? ` · ${p.years} ${L('years', 'वर्ष')}` : ''}</span>
+              {p.voice && <span><i>{L('Voice', 'स्वर')}:</i> {p.voice === 'f' ? L('female', 'स्त्री') : L('male', 'पुरुष')}</span>}
               {p.languages && <span><i>{L('Languages', 'भाषाएँ')}:</i> {p.languages}</span>}
               {p.traditions && <span><i>{L('Tradition', 'परंपरा')}:</i> {p.traditions}</span>}
               {p.rituals && <span><i>{L('Ceremonies', 'अनुष्ठान')}:</i> {p.rituals}</span>}
@@ -423,7 +425,7 @@ function Pandits({ L, go }) {
 function Join({ L }) {
   const s = useSession()
   const [me, setMe] = useState(null)
-  const [f, setF] = useState({ name: '', city: '', country: '', languages: '', traditions: '', rituals: '', years: '', bio: '', contact: '' })
+  const [f, setF] = useState({ name: '', voice: '', city: '', country: '', languages: '', traditions: '', rituals: '', years: '', bio: '', contact: '' })
   const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
   useEffect(() => {
@@ -450,6 +452,12 @@ function Join({ L }) {
             <label>{L('Languages', 'भाषाएँ')}<input value={f.languages} onChange={set('languages')} placeholder="Hindi, Sanskrit, English" /></label>
             <label>{L('Tradition / śākhā', 'परंपरा / शाखा')}<input value={f.traditions} onChange={set('traditions')} /></label>
             <label>{L('Years of practice', 'अनुभव (वर्ष)')}<input type="number" min="0" max="90" value={f.years} onChange={set('years')} /></label>
+            <label>{L('Your voice (families choose a male or a female voice)', 'आपकी आवाज़ (परिवार पुरुष या स्त्री स्वर चुनते हैं)')}
+              <select value={f.voice} onChange={set('voice')} required>
+                <option value="">{L('choose…', 'चुनें…')}</option>
+                <option value="m">{L('Male', 'पुरुष')}</option>
+                <option value="f">{L('Female', 'स्त्री')}</option>
+              </select></label>
           </div>
           <label>{L('Ceremonies you lead', 'आप कौन-से अनुष्ठान कराते हैं')}<input value={f.rituals} onChange={set('rituals')} placeholder="Satyanārāyaṇa, Rudrābhiṣeka, Gṛha praveśa…" /></label>
           <label>{L('About you (training, guru, where you have served)', 'आपके बारे में (शिक्षा, गुरु, सेवा-स्थान)')}<textarea rows="4" value={f.bio} onChange={set('bio')} /></label>
@@ -473,7 +481,7 @@ function BookingPage({ id, lang, L, go }) {
   if (!b) return <Card title={L('Booking', 'बुकिंग')}><p className="pu-note">{L('loading…', 'लोड हो रहा है…')}</p></Card>
   const r = ritualByKey(b.ritual)
   const here = `${location.origin}/pooja/b/${b.id}`
-  const mine = s && b.priest && b.priest.userid === s.userid
+  const mine = !!(s && b.mine)
   const self = b.status === 'self'
   const STATUS = { self: L('Family gathering — self-guided', 'परिवार की सभा — स्वयं, मार्गदर्शन के साथ'), requested: L('Requested — waiting for a pandit', 'अनुरोध भेजा गया — पंडित जी की प्रतीक्षा'), confirmed: L('Confirmed', 'पुष्टि हो गई'), completed: L('Completed', 'संपन्न'), cancelled: L('Cancelled', 'रद्द') }
   const act = (fn) => async () => { try { await fn(b.id); await load() } catch (e) { setErr(e.message || String(e)) } }
@@ -529,7 +537,7 @@ function RoomGate({ id, lang, L, go }) {
   useEffect(() => { api.booking(id).then(setB).catch((e) => setErr(e.message || String(e))) }, [id, s])
   if (err) return <Card title={L('The room', 'कक्ष')}><p className="pu-err">{err}</p></Card>
   if (!b) return <Card title={L('The room', 'कक्ष')}><p className="pu-note">{L('loading…', 'लोड हो रहा है…')}</p></Card>
-  const isPriest = !!(s && b.priest && b.priest.userid === s.userid)
+  const isPriest = !!(s && b.mine)
   const r = ritualByKey(b.ritual)
   const selfLed = b.status === 'self'
   if (inRoom) return <Room bookingId={id} name={name.trim() || (isPriest ? b.priest.name : L('Family', 'परिवार'))} role={isPriest ? 'priest' : 'family'} canRecord={isPriest} ritual={r} selfLed={selfLed} lang={lang} L={L} onLeave={() => { setInRoom(false); go(`/pooja/b/${id}`) }} />
@@ -543,60 +551,6 @@ function RoomGate({ id, lang, L, go }) {
           ? L('Your browser will ask for the camera and microphone. The steps of the ceremony are beside the video; whoever moves the step moves it for everyone.', 'ब्राउज़र कैमरा और माइक की अनुमति माँगेगा। अनुष्ठान के चरण वीडियो के साथ दिखते हैं; जो भी चरण बढ़ाता है, वह सबके लिए बढ़ता है।')
           : L('Your browser will ask for the camera and microphone. The pandit may record the ceremony; you will see when it is on. Beside the video, each step is explained in the language you choose.', 'ब्राउज़र कैमरा और माइक की अनुमति माँगेगा। पंडित जी अनुष्ठान रिकॉर्ड कर सकते हैं; चालू होने पर आपको दिखेगा। वीडियो के साथ हर चरण आपकी चुनी भाषा में समझाया जाता है।')}</p>
         {!isPriest && !s && !selfLed && <p className="pu-note">{L('Leading this ceremony?', 'क्या आप यह अनुष्ठान करा रहे हैं?')} <a href="/pooja/desk" onClick={(e) => { e.preventDefault(); go('/pooja/desk') }}>{L('Sign in as the pandit', 'पंडित के रूप में साइन इन')}</a></p>}
-      </div>
-    </Card>
-  )
-}
-
-/** A pandit records each mantra once, in his own voice; the guided ceremony then plays his chant. */
-function ChantLibrary({ lang, L }) {
-  const [have, setHave] = useState({})
-  const [rec, setRec] = useState(null)        // { id, recorder }
-  const [busy, setBusy] = useState('')
-  const [err, setErr] = useState('')
-  const load = () => api.chants().then(setHave)
-  useEffect(() => { load() }, [])
-  const start = async (id) => {
-    setErr('')
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } })
-      const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find((m) => window.MediaRecorder && MediaRecorder.isTypeSupported(m))
-      const r = new MediaRecorder(stream, mime ? { mimeType: mime, audioBitsPerSecond: 96000 } : undefined)
-      const parts = []
-      r.ondataavailable = (e) => { if (e.data && e.data.size) parts.push(e.data) }
-      r.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop())
-        setRec(null); setBusy(id)
-        try { await api.putChant(id, new Blob(parts, { type: r.mimeType || 'audio/webm' })); await load() } catch (e) { setErr(e.message || String(e)) } finally { setBusy('') }
-      }
-      r.start()
-      setRec({ id, recorder: r })
-    } catch (e) { setErr(e.message || String(e)) }
-  }
-  const play = (id) => fetch(api.chantUrl(id)).then((r) => r.blob()).then((b) => new Audio(URL.createObjectURL(b)).play()).catch((e) => setErr(e.message || String(e)))
-  const remove = async (id) => { setErr(''); try { await api.delChant(id); await load() } catch (e) { setErr(e.message || String(e)) } }
-  return (
-    <Card title={`${L('The chant library', 'मंत्र-संग्रह')} (${Object.keys(have).length} / ${MANTRA_STEPS.length})`}>
-      <p className="pu-lead">{L('Record each mantra once, in your own voice. A family keeping the ceremony on its own then hears your chant, with your name, in place of the device voice.', 'हर मंत्र एक बार अपनी आवाज़ में रिकॉर्ड कीजिए। जो परिवार स्वयं अनुष्ठान करता है, वह उपकरण की आवाज़ की जगह आपका मंत्रोच्चार, आपके नाम के साथ, सुनता है।')}</p>
-      {err && <p className="pu-err">{err}</p>}
-      <div className="dk-table-wrap">
-        <table className="dk-table pu-chants">
-          <tbody>
-            {MANTRA_STEPS.map((s) => (
-              <tr key={s.id}>
-                <td><b>{s.title[lang] || s.title.en}</b><div className="pu-chant-dev" lang="sa">{s.mantra.dev}</div></td>
-                <td className="dk-en">{have[s.id] ? `♪ ${have[s.id].by || ''}` : '—'}</td>
-                <td className="pu-desk-btns">
-                  {rec && rec.id === s.id
-                    ? <button type="button" className="go" onClick={() => rec.recorder.stop()}>■ {L('Stop and save', 'रोकें और सहेजें')}</button>
-                    : <button type="button" className="pu-ghost" disabled={!!rec || busy === s.id} onClick={() => start(s.id)}>{busy === s.id ? L('saving…', 'सहेजा जा रहा है…') : `● ${have[s.id] ? L('Record again', 'फिर रिकॉर्ड करें') : L('Record', 'रिकॉर्ड करें')}`}</button>}
-                  {have[s.id] && <button type="button" className="pu-ghost" onClick={() => play(s.id)}>▶ {L('Hear', 'सुनें')}</button>}
-                  {have[s.id] && <button type="button" className="pu-ghost danger" onClick={() => remove(s.id)}>{L('Remove', 'हटाएँ')}</button>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </Card>
   )
@@ -631,12 +585,12 @@ function Desk({ lang, L, go }) {
         <>
           <Card title={`${L('Applications to vet', 'परखने हेतु आवेदन')} (${d.applicants.length})`}>
             {!d.applicants.length ? <p className="pu-note">{L('None waiting.', 'कोई प्रतीक्षा में नहीं।')}</p> : d.applicants.map((p) => (
-              <div key={p.userid} className="pu-applicant">
-                <div><b>{p.name}</b> <span className="dk-en">{p.userid} · {[p.city, p.country].filter(Boolean).join(', ')}{p.years ? ` · ${p.years}y` : ''}</span>
+              <div key={p.id} className="pu-applicant">
+                <div><b>{p.name}</b> <span className="dk-en">{[p.city, p.country].filter(Boolean).join(', ')}{p.years ? ` · ${p.years}y` : ''}{p.voice === 'f' ? ` · ${L('female voice', 'स्त्री स्वर')}` : p.voice === 'm' ? ` · ${L('male voice', 'पुरुष स्वर')}` : ''}</span>
                   <p>{[p.languages, p.traditions, p.rituals].filter(Boolean).join(' · ')}</p>{p.bio && <p>{p.bio}</p>}{p.contact && <p className="dk-en">{p.contact}</p>}</div>
                 <div className="pu-applicant-btns">
-                  <button type="button" className="go" onClick={act(api.vet, p.userid, 'approve')}>{L('Approve', 'स्वीकृत')}</button>
-                  <button type="button" className="pu-ghost danger" onClick={act(api.vet, p.userid, 'reject')}>{L('Decline', 'अस्वीकृत')}</button>
+                  <button type="button" className="go" onClick={act(api.vet, p.id, 'approve')}>{L('Approve', 'स्वीकृत')}</button>
+                  <button type="button" className="pu-ghost danger" onClick={act(api.vet, p.id, 'reject')}>{L('Decline', 'अस्वीकृत')}</button>
                 </div>
               </div>
             ))}
@@ -653,8 +607,8 @@ function Desk({ lang, L, go }) {
                         <tr key={b.id}>
                           <td className="dk-num">{String(b.starts_at).replace('T', ' ')}<span className="dk-en"> {b.tz}</span></td>
                           <td>{r ? (r.name[lang] || r.name.en) : b.ritual}</td>
-                          <td>{b.name}<span className="dk-en"> · {b.contact}{b.city ? ` · ${b.city}` : ''}</span>{b.notes && <div className="dk-en">{b.notes}</div>}</td>
-                          <td><span className={`pu-status s-${b.status}`}>{b.status}</span>{b.priest && b.priest !== s.userid && <span className="dk-en"> {b.priest}</span>}</td>
+                          <td>{b.name}<span className="dk-en">{b.contact ? ` · ${b.contact}` : ''}{b.city ? ` · ${b.city}` : ''}</span>{b.notes && <div className="dk-en">{b.notes}</div>}</td>
+                          <td><span className={`pu-status s-${b.status}`}>{b.status}</span>{b.priest_name && !b.mine && <span className="dk-en"> {b.priest_name}</span>}</td>
                           <td className="pu-desk-btns">
                             {b.status === 'requested' && <button type="button" className="go" onClick={act(api.accept, b.id)}>{L('Accept', 'स्वीकार')}</button>}
                             {b.status === 'confirmed' && <button type="button" className="pu-ghost" onClick={act(api.complete, b.id)}>{L('Completed', 'संपन्न')}</button>}
@@ -668,7 +622,7 @@ function Desk({ lang, L, go }) {
               </div>
             )}
           </Card>
-          <ChantLibrary lang={lang} L={L} />
+          <VoiceStudio lang={lang} L={L} me={d} go={go} />
         </>
       )}
     </>

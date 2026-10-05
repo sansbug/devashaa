@@ -42,7 +42,7 @@ async function call(path, { method = 'GET', body, blob, type } = {}) {
 export const api = {
   priests: () => call('/priests'),
   apply: (profile) => call('/priests/apply', { method: 'POST', body: profile }),
-  vet: (userid, decision) => call(`/priests/${encodeURIComponent(userid)}/vet`, { method: 'POST', body: { decision } }),
+  vet: (id, decision) => call(`/priests/${id}/vet`, { method: 'POST', body: { decision } }),
   me: () => call('/me'),
   claim: (code) => call('/admin/claim', { method: 'POST', body: { code } }),
   desk: () => call('/desk'),
@@ -54,11 +54,15 @@ export const api = {
   recInfo: (id) => call(`/rec/${id}`),
   putChunk: (id, seq, blob) => call(`/rec/${id}/${seq}`, { method: 'PUT', blob }),
   playUrl: (id) => `${BASE}/rec/${id}/play`,
-  /** The chant library: which mantras a pandit has recorded, and their audio. */
-  chants: () => call('/chants').then((j) => j.chants || {}).catch(() => ({})),
-  chantUrl: (step) => `${BASE}/chant/${step}`,
-  putChant: (step, blob) => call(`/chant/${step}`, { method: 'PUT', blob, type: (blob.type || 'audio/webm').split(';')[0] }),
-  delChant: (step) => call(`/chant/${step}`, { method: 'DELETE' }),
+  /** The voice library: which clips are recorded, by whom and in which voice — and their audio. */
+  chants: () => call('/chants').then((j) => j.clips || {}).catch(() => ({})),
+  chantUrl: (clip, pid, at) => `${BASE}/chant/${clip}/${pid}${at ? `?v=${at}` : ''}`,
+  putChant: (clip, blob) => call(`/chant/${clip}`, { method: 'PUT', blob, type: 'audio/wav' }),
+  delChant: (clip, pid) => call(`/chant/${clip}/${pid}`, { method: 'DELETE' }),
+  /** STUN, and a short-lived TURN relay credential when the service has one, for this room. */
+  ice: (id) => call(`/room/${id}/ice`),
+  /** Roughly where this browser is — the city, from the edge. Nothing is stored. */
+  where: () => call('/where').catch(() => ({})),
   wsUrl: (id, peer, name, role) => {
     const origin = API_BASE || (typeof location !== 'undefined' ? location.origin : 'https://devashaa.com')
     return `${origin.replace(/^http/, 'ws')}/api/pooja/room/${id}/ws?peer=${peer}&name=${encodeURIComponent(name)}&role=${role}`
@@ -91,5 +95,5 @@ export const api = {
 }
 
 export const DEFAULT_PLACE = { name: 'New Delhi, Delhi, India', latitude: 28.6139, longitude: 77.209, timezone: 'Asia/Kolkata' }
-export const loadPlace = () => { try { return JSON.parse(localStorage.getItem('pooja.place')) || DEFAULT_PLACE } catch { return DEFAULT_PLACE } }
+export const loadPlace = () => { try { const p = JSON.parse(localStorage.getItem('pooja.place')); return p && Number.isFinite(p.latitude) && p.timezone ? p : DEFAULT_PLACE } catch { return DEFAULT_PLACE } }
 export const savePlace = (p) => { try { localStorage.setItem('pooja.place', JSON.stringify(p)) } catch { /* private mode */ } }

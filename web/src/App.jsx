@@ -17,7 +17,7 @@ import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
-import { validTheme, DEFAULT_THEME } from './themes.js'
+import { validTheme, DEFAULT_THEME, OLD_DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
 import References from './References.jsx'
@@ -371,9 +371,17 @@ export default function App() {
 
   // Appearance, remembered across visits. validTheme guards a stale saved key
   // (e.g. the retired "parchment") from leaving the page themeless.
-  const [theme, setTheme] = useState(
-    () => validTheme(localStorage.getItem('theme') ?? DEFAULT_THEME),
-  )
+  const [theme, setTheme] = useState(() => {
+    const stored = localStorage.getItem('theme')
+    // One-time move to the new default. The theme has always been written back
+    // on load, so a browser holding the OLD default may simply never have been
+    // asked. Move it once; any pick made after this (Midnight included) stays.
+    if (!localStorage.getItem('themeDefault_v2')) {
+      localStorage.setItem('themeDefault_v2', '1')
+      if (stored === OLD_DEFAULT_THEME) return DEFAULT_THEME
+    }
+    return validTheme(stored ?? DEFAULT_THEME)
+  })
   const [nameStyle, setNameStyle] = useState(() => {
     const stored = localStorage.getItem('nameStyle')
     // One-time migration: Devanāgarī is the natural default name style for the

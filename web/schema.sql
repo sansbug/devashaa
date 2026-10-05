@@ -46,7 +46,10 @@ CREATE INDEX IF NOT EXISTS profiles_by_user ON profiles(userid);
 -- the family (shown only to the assigned pandit and to admins).
 CREATE TABLE IF NOT EXISTS pooja_roles (userid TEXT PRIMARY KEY, role TEXT NOT NULL, created_at INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS pooja_priests (
-  userid TEXT PRIMARY KEY, name TEXT NOT NULL, city TEXT, country TEXT, languages TEXT, traditions TEXT,
+  userid TEXT PRIMARY KEY,         -- the sign-in id (may be an email): never sent to the public
+  pid TEXT,                        -- the public name of this pandit: 16 random hex (unique index below)
+  voice TEXT,                      -- m | f — families choose a male or a female voice
+  name TEXT NOT NULL, city TEXT, country TEXT, languages TEXT, traditions TEXT,
   rituals TEXT, years INTEGER, bio TEXT, contact TEXT,
   status TEXT NOT NULL,            -- pending | approved | rejected
   vetted_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
@@ -59,6 +62,7 @@ CREATE TABLE IF NOT EXISTS pooja_bookings (
   created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS pooja_bookings_priest ON pooja_bookings(priest, status);
+CREATE UNIQUE INDEX IF NOT EXISTS pooja_priests_pid ON pooja_priests(pid);
 
 -- A chart shared by link: AES-GCM ciphertext made in the sender's browser;
 -- the key lives only in the link's fragment. Created by the Worker on first

@@ -1,102 +1,22 @@
 /* ============================================================================
    Themes. Every colour in this file is a variable so a theme swap is complete —
    a single hardcoded hex would survive into the light theme and break it.
-   Applied via data-theme on <html>; "ember" is the default.
+   Applied via data-theme on <html>; "tulasi" is the default.
    ========================================================================== */
 
-/* NOTE: bare :root carries Aarti (see above), so any property a theme does not
-   redefine LEAKS in from it. Every theme below therefore restates the full
-   contract, including switching the glow back off. */
-:root[data-theme='ember'] {
-  color-scheme: dark;
-  --glow: none;
-  --accent-glow: none;
-  --bg-image: none;
-  --logo-hi: #ffeeb8;
-  --bg: #12100e;
-  --panel: #1b1815;
-  --sunken: #100e0c;          /* inputs, buttons, dropdowns */
-  --hover: #1f1b17;
-  --line: #3a332c;
-  --dasha-fav: #7fd8c6;
-  --dasha-adv: #8f4fa3;
-  --ruler-line: #8a7d6d;   /* 4.41:1 on panel — see note at .cell-ruler */
-  --ink: #efe7db;
-  --dim: #a2968a;
-  --accent: #c9a227;
-  --on-accent: #1a1408;       /* text on an accent-filled surface */
-  --accent-soft: rgba(201, 162, 39, 0.09);
-  /* rx sits on BOTH --panel and the --lagna cell. Against the original green it
-     measured 3.10:1, and the lagna cell is exactly where retrograde grahas often
-     land. Brightened the red and deepened the green to clear AA on both. */
-  --rx: #f08a76;              /* retrograde */
-  --lagna: #22392e;           /* highlighted lagna cell */
-  --row-hi: #191f1c;
-  --quote-bg: #14120f;
-  --err-bg: #2a1512;
-  --err-line: #5a2f28;
-  --err-ink: #f0a08e;
-  --ok-ink: #7fb069;
-  --ok-line: #2f4a2a;
-}
-
-/* Aarti — a temple ghee lamp. The saffron core rises from BELOW the fold so it
-   reads as a light source rather than a spotlight, and a deep indigo bloom sits
-   opposite it: warm-vs-cool hue opposition is what the eye decodes as *emitted*
-   light, where a single amber hue would just read as sepia pigment.
-   --panel deliberately sits ABOVE both the ground and every gradient stop, so
-   cards catch the light instead of punching holes in it.
-   --rx is a cool sky-blue, not a salmon: salmon against saffron is ~19° apart
-   and collapses under protan/deutan colour-blindness at glyph size.
-   Glow comes from luminance (--accent is a ~129x jump over the ground), never
-   from blur or lowered contrast — the data must stay crisp. */
-/* Bare :root carries Aarti too — it is the default, and without this the page
-   would paint the fallback palette for one frame before React sets data-theme. */
-:root,
-:root[data-theme='aarti'] {
-  color-scheme: dark;
-  /* Text weight is theme-driven: light grounds need more mass than dark ones.
-     On a dark theme light-on-dark already blooms optically, so 400 is right;
-     on a light theme the same weight reads thin and washed out. */
-  --text-weight: 400;
-  --label-weight: 500;
-  --strong-weight: 600;   /* one step above body, for mahadasa rows */
-  /* Lit limb of the logo crescent. On dark themes this is a near-white so the
-     moon looks illuminated; on LIGHT themes white would disappear into the
-     panel, so those use a lighter tint of the accent instead. */
-  --logo-hi: #fff3d6;
-  --bg: #0b0810;
-  --bg-image:
-    radial-gradient(150% 105% at 50% 106%, #3f2409 0%, #201510 36%, rgba(11, 8, 16, 0) 70%),
-    radial-gradient(95% 65% at 8% -10%, rgba(96, 86, 205, 0.18) 0%, rgba(96, 86, 205, 0) 60%);
-  --panel: #281f17;
-  --sunken: #150f0b;
-  --hover: #3b2c1e;
-  --line: #86694a;          /* 3.18:1 on panel — grid rules ARE the data here */
-  --dasha-fav: #8ee0cf;
-  --dasha-adv: #a862b5;
-  --ruler-line: #a08256;    /* 4.48:1 */
-  --ink: #fbf1e4;
-  --dim: #cbb598;
-  --accent: #ffb547;
-  --on-accent: #2a1600;
-  --accent-soft: rgba(255, 181, 71, 0.14);
-  --rx: #8fd8ff;
-  --lagna: #4b3620;
-  --row-hi: #3a2b1b;
-  --quote-bg: #191212;
-  --err-bg: #331113;
-  --err-line: #b8514a;
-  --err-ink: #ffb3a7;
-  --ok-ink: #7fe3a8;
-  --ok-line: #3d9668;
-  --accent-glow: 0 0 18px rgba(255, 181, 71, 0.28);
-}
+/* NOTE: bare :root carries Tulasi (the default — see its block), so any property a
+   theme does not redefine LEAKS in from it. Every theme below therefore restates the
+   full contract. Four themes: Midnight (dark), Lotus, Tulasi and Blossom (light).
+   Aarti, Ember and Slate were retired; a browser still holding one of them falls
+   back to the default (themes.js validTheme). */
 
 /* Lotus — sun on still water. A light theme glows by tint direction rather than
    by being brighter than the paper: a gold sunbloom overhead, aqua rising off
    the water at lower-left, a magenta lotus at lower-right. */
 :root[data-theme='lotus'] {
+  /* Lotus keeps the soft card shadow: `initial` un-sets the fallback theme's `--glow: none`,
+     so every var(--glow, …) falls through to its own default. */
+  --glow: initial;
   color-scheme: light;
   --bg: #f3edf7;
   --bg-image:
@@ -136,6 +56,10 @@
 }
 
 :root[data-theme='midnight'] {
+  /* Stated here, not inherited: the bare-:root fallback is a light theme now. */
+  --text-weight: 400;
+  --label-weight: 500;
+  --strong-weight: 600;
   color-scheme: dark;
   --glow: none;
   --accent-glow: none;
@@ -209,35 +133,6 @@
   --ok-line: #a8cbb4;
 }
 
-:root[data-theme='slate'] {
-  color-scheme: dark;
-  --glow: none;
-  --accent-glow: none;
-  --bg-image: none;
-  --logo-hi: #d8fffa;
-  --bg: #11151a;
-  --panel: #1a1f27;
-  --sunken: #0d1116;
-  --hover: #212833;
-  --line: #2f3742;
-  --dasha-fav: #7fd4c4;
-  --dasha-adv: #8257b8;
-  --ruler-line: #78889c;    /* 4.57:1 */
-  --ink: #e6ebf2;
-  --dim: #94a1b2;
-  --accent: #4fd1c5;
-  --on-accent: #0a1416;
-  --accent-soft: rgba(79, 209, 197, 0.10);
-  --rx: #ff8072;
-  --lagna: #1d3a39;
-  --row-hi: #17262a;
-  --quote-bg: #141a20;
-  --err-bg: #2a1618;
-  --err-line: #5a2e30;
-  --err-ink: #ffb0a8;
-  --ok-ink: #6fd08c;
-  --ok-line: #2a5038;
-}
 
 /* Tulasī — the herbal ground. A warm paper leaf lit from overhead, sage rising
    at lower-left and a terracotta warmth at lower-right; forest green carries
@@ -246,6 +141,7 @@
    a chart grid, where a rule IS the data — so --line and --ruler-line are
    re-derived for contrast; and the panel is pure white so it sits above every
    gradient stop rather than reading as a hole punched in the wash. */
+:root,
 :root[data-theme='tulasi'] {
   color-scheme: light;
   --glow: none;
@@ -2381,7 +2277,6 @@ html[data-refs="1"] .cl-src-plain { display: none; }
      needs the room, and a shorter tile only buys 12px of page */
   .dasha-timeline .dt-band .dt-band-lord { font-size: .68rem; }
 }
-
 
 
 /* ── Daśā navigator: chips, rails, funnel, sidebar, table ─────────────────

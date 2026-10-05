@@ -402,3 +402,34 @@ export const HERO_SHLOKA = {
   dev: ['त्वमेव माता च पिता त्वमेव', 'त्वमेव बन्धुश्च सखा त्वमेव ।', 'त्वमेव विद्या द्रविणं त्वमेव', 'त्वमेव सर्वं मम देवदेव ॥'],
   iast: 'tvam eva mātā ca pitā tvam eva · tvam eva bandhuś ca sakhā tvam eva · tvam eva vidyā draviṇaṁ tvam eva · tvam eva sarvaṁ mama deva-deva',
 }
+
+/** Every step of every ceremony, once — the explanations a pandit can record. */
+export const ALL_STEPS = Object.keys(S).map((id) => ({ id, ...S[id] }))
+
+// ── the voice library ────────────────────────────────────────────────────────
+// A recording is filed under what it is AND a fingerprint of the exact text it
+// was read from. If a mantra or an explanation is ever corrected, its old
+// recording simply stops matching and is no longer played — a voice is never
+// laid over words it did not say.
+
+/** FNV-1a (32-bit) of a text, as six hex characters. */
+export function textHash(s) {
+  let h = 0x811c9dc5
+  const t = String(s)
+  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) }
+  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 6)
+}
+
+/** What is read aloud to explain a step — or, with no step, the purpose of the ceremony. */
+export function narration(ritual, step, mode, lang) {
+  if (mode === 'none') return ''
+  const g = (o) => (o ? (o[lang] || o.en) : '')
+  if (!step) return (mode === 'detailed' ? g(ABOUT[ritual.key]) : '') || g(ritual.purpose)
+  return `${g(step.title)}. ${explain(step, mode, lang).map((p) => `${p.label}: ${p.text}`).join(' ')}`
+}
+
+export const mantraClip = (step) => `m.${step.id}.${textHash(step.mantra.dev)}`
+export const explainClip = (ritual, step, mode, lang) => {
+  const h = textHash(narration(ritual, step, mode, lang))
+  return step ? `x.${step.id}.${lang}.${mode}.${h}` : `p.${ritual.key}.${lang}.${mode}.${h}`
+}

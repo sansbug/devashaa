@@ -22,7 +22,7 @@
  * written there is destroyed on the next deploy.
  */
 
-import { handlePooja, PoojaRoom } from './pooja-worker.js'
+import { handlePooja, forgetPandit, PoojaRoom } from './pooja-worker.js'
 
 // The live-room Durable Object class must be exported from the entry module.
 export { PoojaRoom }
@@ -184,6 +184,10 @@ export default {
         db.prepare('DELETE FROM profiles WHERE userid = ?').bind(userid),
         db.prepare('DELETE FROM users WHERE userid = ?').bind(userid),
       ])
+      // "Everything" includes what a pandit left in the Pūjā service: his roster
+      // entry, his voice recordings, and his name on bookings. Best-effort and
+      // after the account itself, so nothing here can stop the deletion.
+      try { await forgetPandit(env, userid) } catch { /* the account is gone regardless */ }
       return json({ ok: true }, 200, request)
     }
 

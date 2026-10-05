@@ -8,16 +8,7 @@
  * Ordered dark-first, then light.
  */
 export const THEMES = [
-  {
-    key: 'aarti',
-    label: 'Aarti',
-    bg: '#0b0810',
-    accent: '#ffb547',
-    swatch: 'radial-gradient(125% 100% at 50% 112%,#ffb547 0%,#3f2409 40%,#0b0810 80%)',
-  },
-  { key: 'ember', label: 'Ember', bg: '#12100e', accent: '#c9a227' },
   { key: 'midnight', label: 'Midnight', bg: '#0a0f1e', accent: '#e8c46a' },
-  { key: 'slate', label: 'Slate', bg: '#11151a', accent: '#4fd1c5' },
   {
     key: 'lotus',
     label: 'Lotus',
@@ -41,8 +32,11 @@ export const THEMES = [
   },
 ]
 
-/** New visitors land on Midnight (the 3rd swatch). */
-export const DEFAULT_THEME = 'midnight'
+/** New visitors land on Tulasi. Keep in step with the first-paint script in index.html. */
+export const DEFAULT_THEME = 'tulasi'
+
+/** The default before Tulasi. A browser still holding it was never asked — see App.jsx. */
+export const OLD_DEFAULT_THEME = 'midnight'
 
 const KEYS = new Set(THEMES.map((t) => t.key))
 

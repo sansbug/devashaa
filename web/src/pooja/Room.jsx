@@ -17,24 +17,29 @@
  * gathering anyone — moves the step, and every screen follows; each person
  * reads what the step is and why in the language and depth they choose.
  *
- * Networks: STUN only for now. Two households both behind strict (symmetric)
- * NAT will not connect until a TURN relay is added — the room says so when a
- * connection fails rather than showing a silent black tile.
+ * Networks: the room asks the service for its ICE servers before it calls
+ * anyone — STUN, and a TURN relay (a short-lived credential minted for this
+ * room) so that two homes behind strict NATs or a firewall still connect. If
+ * the service has no relay the room is STUN-only, and says so when a
+ * connection fails rather than showing a silent black tile. A connection that
+ * fails is tried once more with a fresh ICE gathering.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from './papi.js'
 import Guide from './Guide.jsx'
 
-const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }]
+const STUN = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun.cloudflare.com:3478'] }]
 const newPeerId = () => [...crypto.getRandomValues(new Uint8Array(10))].map((b) => (b % 36).toString(36)).join('')
 
-function Tile({ stream, name, role, me, state, L }) {
+function Tile({ stream, name, role, me, state, relay, L }) {
   const ref = useRef(null)
   useEffect(() => { if (ref.current && ref.current.srcObject !== stream) ref.current.srcObject = stream || null }, [stream])
   return (
     <div className={`pu-tile${role === 'priest' ? ' priest' : ''}`}>
       <video ref={ref} autoPlay playsInline muted={me} data-name={name} />
-      {!stream && <div className="pu-tile-wait">{state === 'failed' ? L('Could not connect — a relay is needed for this network', 'जुड़ नहीं सका — इस नेटवर्क के लिए रिले चाहिए') : L('connecting…', 'जुड़ रहा है…')}</div>}
+      {!stream && <div className="pu-tile-wait">{state === 'failed'
+        ? (relay ? L('Could not connect — check the connection, then leave and join again', 'जुड़ नहीं सका — कनेक्शन जाँचें, फिर कक्ष छोड़कर दोबारा जुड़ें') : L('Could not connect — this network needs the relay, which is not switched on yet', 'जुड़ नहीं सका — इस नेटवर्क को रिले चाहिए, जो अभी चालू नहीं है'))
+        : L('connecting…', 'जुड़ रहा है…')}</div>}
       <div className="pu-tile-name">{role === 'priest' && <b>{L('Pandit', 'पंडित जी')} · </b>}{name}{me ? ` (${L('you', 'आप')})` : ''}</div>
     </div>
   )
@@ -45,6 +50,10 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
   const [step, setStep] = useState(null)         // the step the leader is on, for everyone
   const stepRef = useRef(null)
   const recWire = useRef(null)                   // while recording: wires a late joiner's voice into the mix
+  const ice = useRef(STUN)                        // replaced by the room's own servers (with the relay) before any call
+  const [relay, setRelay] = useState(false)
+  const called = useRef(new Set())               // peers this side made the offer to
+  const retried = useRef(new Set())
   const [local, setLocal] = useState(null)
   const [peers, setPeers] = useState({})          // id -> { name, role, stream, state }
   const [micOn, setMicOn] = useState(true)
@@ -71,7 +80,7 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
 
   const makePc = useCallback((id, info) => {
     if (pcs.current[id]) return pcs.current[id]
-    const pc = new RTCPeerConnection({ iceServers: ICE })
+    const pc = new RTCPeerConnection({ iceServers: ice.current })
     pcs.current[id] = pc
     patchPeer(id, { name: info?.name || 'Guest', role: info?.role || 'family', state: 'new' })
     if (localRef.current) localRef.current.getTracks().forEach((tr) => pc.addTrack(tr, localRef.current))
@@ -81,6 +90,17 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
     pc.onconnectionstatechange = () => {
       patchPeer(id, { state: pc.connectionState })
       if (pc.connectionState === 'closed') dropPeer(id)
+      // One fresh attempt, from the side that made the call, before the tile says it failed for good.
+      if (pc.connectionState === 'failed' && called.current.has(id) && !retried.current.has(id)) {
+        retried.current.add(id)
+        ;(async () => {
+          try {
+            const offer = await pc.createOffer({ iceRestart: true })
+            await pc.setLocalDescription(offer)
+            send({ t: 'offer', to: id, sdp: pc.localDescription, name, role })
+          } catch { /* it stays failed, and the tile says so */ }
+        })()
+      }
     }
     return pc
   }, [dropPeer])
@@ -97,6 +117,11 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
       if (dead) { stream && stream.getTracks().forEach((tr) => tr.stop()); return }
       localRef.current = stream
       setLocal(stream)
+      try {
+        const j = await api.ice(bookingId)
+        if (j && Array.isArray(j.iceServers) && j.iceServers.length) { ice.current = j.iceServers; setRelay(!!j.turn) }
+      } catch { /* STUN only */ }
+      if (dead) return
       const sock = new WebSocket(api.wsUrl(bookingId, me.current, name, role))
       ws.current = sock
       sock.onopen = () => setStatus('joined')
@@ -110,6 +135,7 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
             // The newcomer calls everyone already here.
             for (const p of m.peers || []) {
               const pc = makePc(p.peer, p)
+              called.current.add(p.peer)
               const offer = await pc.createOffer()
               await pc.setLocalDescription(offer)
               send({ t: 'offer', to: p.peer, sdp: pc.localDescription, name, role })
@@ -233,13 +259,14 @@ export default function Room({ bookingId, name, role, canRecord, ritual, selfLed
       <div className="pu-room-bar">
         <span className={`pu-live ${status}`}>{status === 'joined' ? L('In the room', 'कक्ष में') : status === 'closed' ? L('Disconnected', 'संपर्क टूटा') : L('Joining…', 'जुड़ रहे हैं…')}</span>
         <span className="pu-room-count">{ids.length + 1} {L('here', 'उपस्थित')}</span>
+        {relay && <span className="pu-room-count" title={L('Homes that cannot reach each other directly are connected through a relay.', 'जो घर सीधे नहीं जुड़ पाते, वे रिले से जुड़ते हैं।')}>· {L('relay ready', 'रिले तैयार')}</span>}
         {recSeen && <span className="pu-rec"><i /> {L('Recording', 'रिकॉर्डिंग चालू')}{rec.on ? ` · ${rec.chunks} ${L('saved', 'सुरक्षित')}${rec.failed ? ` · ${rec.failed} ${L('failed', 'विफल')}` : ''}` : ''}</span>}
       </div>
       {err && <p className="pu-err">{err}</p>}
       <div className={`pu-room-body${ritual ? ' with-guide' : ''}`}>
         <div className={`pu-grid n${Math.min(6, ids.length + 1)}`}>
           <Tile stream={local} name={name} role={role} me L={L} />
-          {ids.map((id) => <Tile key={id} stream={peers[id].stream} name={peers[id].name} role={peers[id].role} state={peers[id].state} L={L} />)}
+          {ids.map((id) => <Tile key={id} stream={peers[id].stream} name={peers[id].name} role={peers[id].role} state={peers[id].state} relay={relay} L={L} />)}
         </div>
         {ritual && (
           <aside className="pu-room-guide" aria-label={L('The steps of the ceremony', 'अनुष्ठान के चरण')}>

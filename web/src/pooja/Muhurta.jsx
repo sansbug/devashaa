@@ -9,31 +9,78 @@
  * Almanac practice — never a judgement from anyone's horoscope.
  */
 import { useEffect, useState } from 'react'
-import { api, savePlace } from './papi.js'
+import { api, loadPlace, savePlace } from './papi.js'
 
 const mins = (hhmm) => { const [h, m] = String(hhmm).split(':'); return (+h) * 60 + (+m) }
 const inside = (t, w) => w && !w.next_day && mins(t) >= mins(w.start) && mins(t) < mins(w.end)
 export const todayIso = () => { const d = new Date(), p = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}` }
 
-export function PlacePicker({ place, setPlace, L, label }) {
+/**
+ * The place everything is computed for. A city the family chose is kept; until
+ * they choose one, it is wherever the browser is — the city its address
+ * resolves to at the edge, asked once per visit and stored nowhere but here.
+ */
+export function usePlace() {
+  const [place, set] = useState(loadPlace)
+  useEffect(() => {
+    if (place.chosen) return undefined
+    let dead = false
+    api.where().then((w) => {
+      if (dead || !w || !Number.isFinite(w.latitude) || !Number.isFinite(w.longitude) || !w.timezone) return
+      const p = { name: w.name, latitude: w.latitude, longitude: w.longitude, timezone: w.timezone, auto: true }
+      savePlace(p); set(p)
+    })
+    return () => { dead = true }
+  }, [])  // eslint-disable-line react-hooks/exhaustive-deps
+  const setPlace = (p) => { const q = { name: p.name, latitude: p.latitude, longitude: p.longitude, timezone: p.timezone, chosen: true }; savePlace(q); set(q) }
+  return [place, setPlace]
+}
+
+/** One small line: the city in use, and a way to choose another. */
+export function PlacePicker({ place, setPlace, L }) {
+  const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [hits, setHits] = useState([])
+  const [note, setNote] = useState('')
   useEffect(() => {
     if (q.trim().length < 2) { setHits([]); return undefined }
     const h = setTimeout(() => api.places(q).then(setHits).catch(() => setHits([])), 200)
     return () => clearTimeout(h)
   }, [q])
+  const close = () => { setOpen(false); setQ(''); setHits([]); setNote('') }
+  const exact = () => {
+    if (!navigator.geolocation) { setNote(L('This browser cannot give its location.', 'यह ब्राउज़र स्थान नहीं बता सकता।')); return }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        let tz = place.timezone
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz } catch { /* keep the one in use */ }
+        setPlace({ name: L('My location', 'मेरा स्थान'), latitude: +pos.coords.latitude.toFixed(4), longitude: +pos.coords.longitude.toFixed(4), timezone: tz })
+        close()
+      },
+      () => setNote(L('The browser did not share its location — choose a city instead.', 'ब्राउज़र ने स्थान साझा नहीं किया — शहर चुन लें।')),
+      { maximumAge: 600000, timeout: 10000 },
+    )
+  }
   return (
-    <div className="pu-place">
-      <span className="pu-place-cur">{label || L('Calendar for', 'पंचांग स्थान')}: <b>{place.name.split(',')[0]}</b></span>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={L('change city…', 'शहर बदलें…')} aria-label={L('City', 'शहर')} />
-      {hits.length > 0 && (
-        <ul className="hits">
-          {hits.slice(0, 6).map((p, i) => (
-            <li key={i}><button type="button" onClick={() => { setPlace(p); savePlace(p); setQ(''); setHits([]) }}><strong>{p.name.split(',')[0]}</strong><span>{p.name.split(',').slice(1).join(',').trim()}</span></button></li>
-          ))}
-        </ul>
-      )}
+    <div className={`pu-place${open ? ' open' : ''}`}>
+      <span className="pu-place-cur"><span aria-hidden="true">📍</span> <b>{place.name.split(',')[0]}</b></span>
+      {!open
+        ? <button type="button" className="pu-link" onClick={() => setOpen(true)}>{L('choose city', 'शहर चुनें')}</button>
+        : (
+          <>
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={L('type a city…', 'शहर लिखें…')} aria-label={L('City', 'शहर')} onKeyDown={(e) => e.key === 'Escape' && close()} />
+            <button type="button" className="pu-link" onClick={exact}>{L('use my exact location', 'मेरा सटीक स्थान')}</button>
+            <button type="button" className="pu-link" onClick={close} aria-label={L('Close', 'बंद करें')}>×</button>
+            {note && <span className="pu-place-note">{note}</span>}
+            {hits.length > 0 && (
+              <ul className="hits">
+                {hits.slice(0, 6).map((p, i) => (
+                  <li key={i}><button type="button" onClick={() => { setPlace(p); close() }}><strong>{p.name.split(',')[0]}</strong><span>{p.name.split(',').slice(1).join(',').trim()}</span></button></li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
     </div>
   )
 }
@@ -78,7 +125,7 @@ export default function Muhurta({ ritual, place, setPlace, date, setDate, time, 
   return (
     <div className="pm">
       <div className="pm-pick">
-        <PlacePicker place={place} setPlace={setPlace} L={L} label={L('Computed for', 'गणना का स्थान')} />
+        <PlacePicker place={place} setPlace={setPlace} L={L} />
         <label>{L('Date', 'दिनांक')}<input type="date" min={todayIso()} value={date} onChange={(e) => setDate(e.target.value)} /></label>
         <label>{L('Time', 'समय')}<input type="time" value={time} onChange={(e) => setTime(e.target.value)} /></label>
       </div>

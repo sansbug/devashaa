@@ -60,6 +60,28 @@ for m in (T, A):
 print('ok')"
 ```
 
+## Pūjā & Havan (`/pooja`)
+
+A separate section: guided ceremonies, muhūrta, family rooms, a pandit roster.
+Frontend `web/src/pooja/`, Worker `web/pooja-worker.js` (D1 + a Durable Object
+per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
+
+- **Voice is human.** Mantras (and explanations) are played from the voice
+  library a pandit records at `/pooja/desk`; the device voice never reads a
+  mantra unless the family switches the "pronunciation aid" on. A clip id
+  carries a hash of its text (`guide.js clipId`), so editing a mantra or an
+  explanation orphans its recording — it must be re-recorded, by design.
+- **The explanations are not translations** (rule above): they say what a step
+  is and why it is done.
+- **A pandit is public by `pid`, never by `userid`** (which may be an email).
+- **TURN relay**: on when the Worker has secrets `TURN_KEY_ID` and
+  `TURN_KEY_API_TOKEN` (Cloudflare Realtime TURN key); STUN-only otherwise.
+- Tests: `node web/test_pooja.mjs` (relay, audio clean-up, clip ids, service
+  worker) and, against a local Worker, `node web/test_pooja_worker.mjs` (see
+  its header). `api/test_muhurta.py` for the engine.
+- ⚠ `public/sw.js` must never answer for `/api/*` — a cache is keyed by URL,
+  not by who is signed in.
+
 ## Deploying
 
 - **Backend → Render**: `git push origin main`. Render redeploys automatically

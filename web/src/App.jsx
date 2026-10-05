@@ -22,6 +22,7 @@ import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
 import References from './References.jsx'
 import Support from './Support.jsx'
+import ComparePage from './ComparePage.jsx'
 import ShareCard from './ShareCard.jsx'
 import { SHARE_ID_RE, openShare } from './share.js'
 import { refsOn, applyRefs, scrubProse } from './refs.js'
@@ -636,6 +637,7 @@ export default function App() {
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
   if (route === '/references') return <References lang={lang} onBack={() => go('/')} />
   if (route === '/support') return <Support lang={lang} onBack={() => go('/')} />
+  if (route === '/compare') return <ComparePage lang={lang} onBack={() => go('/')} />
   if (route === '/methodology') return <Methodology lang={lang} setLang={changeLang} onBack={() => go('/')} />
   if (route === '/validation') return <ValidationPage lang={lang} setLang={changeLang} onBack={() => go('/')} />
 
@@ -715,6 +717,13 @@ export default function App() {
         </button>
       </form>
 
+      <nav className="trust" aria-label={t('trust.aria', 'What this site stands on')}>
+        <a href="/validation" onClick={(e) => { e.preventDefault(); go('/validation') }}><i>✓</i>{t('trust.verified', 'Positions verified against JPL')}</a>
+        <a href="/references" onClick={(e) => { e.preventDefault(); go('/references') }}><i>§</i>{t('trust.cited', 'Every reading cited to its text')}</a>
+        <a href="/methodology" onClick={(e) => { e.preventDefault(); go('/methodology') }}><i>∅</i>{t('trust.nothingSold', 'No remedies · no fear · nothing sold')}</a>
+        <a href={import.meta.env.VITE_SOURCE_URL || 'https://github.com/sansbug/devashaa'} target="_blank" rel="noreferrer"><i>{'</>'}</i>{t('trust.open', 'Open source')}</a>
+        <a href="/compare" onClick={(e) => { e.preventDefault(); go('/compare') }}><i>≠</i>{t('trust.compare', 'Why charts differ between apps')}</a>
+      </nav>
       {error && <div className="error">{error}</div>}
       {sharedIn && chart && (
         <div className="shared-note" role="note">
@@ -1189,6 +1198,11 @@ export default function App() {
           <a href="/validation"
              onClick={(e) => { e.preventDefault(); go('/validation') }}>
             {lang === 'hi' ? 'हम गणित की जाँच कैसे करते हैं' : 'How we check the math'}
+          </a>
+          {'  ·  '}
+          <a href="/compare"
+             onClick={(e) => { e.preventDefault(); go('/compare') }}>
+            {lang === 'hi' ? 'ऐप-ऐप में कुंडली क्यों भिन्न' : 'Why charts differ between apps'}
           </a>
         </p>
         <p>

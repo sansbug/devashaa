@@ -3043,6 +3043,30 @@ export const CHROME = {
     "en": "Thank you — every contribution, big or small, genuinely keeps this going.",
     "hi": "धन्यवाद — छोटा या बड़ा, हर योगदान सचमुच इसे चलाए रखता है।"
   },
+  "trust.aria": {
+    "en": "What this site stands on",
+    "hi": "यह साइट किस पर टिकी है"
+  },
+  "trust.verified": {
+    "en": "Positions verified against JPL",
+    "hi": "ग्रह-स्थितियाँ JPL से सत्यापित"
+  },
+  "trust.cited": {
+    "en": "Every reading cited to its text",
+    "hi": "हर पठन अपने ग्रन्थ से सन्दर्भित"
+  },
+  "trust.nothingSold": {
+    "en": "No remedies · no fear · nothing sold",
+    "hi": "न उपाय · न भय · न बिक्री"
+  },
+  "trust.open": {
+    "en": "Open source",
+    "hi": "ओपन सोर्स"
+  },
+  "trust.compare": {
+    "en": "Why charts differ between apps",
+    "hi": "ऐप-ऐप में कुंडली क्यों भिन्न"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

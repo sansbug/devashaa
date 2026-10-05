@@ -14,6 +14,13 @@
       "after": { "en": "in brief, after the Gita Press Hindi translation", "hi": "संक्षेप में — गीताप्रेस के हिन्दी अनुवाद के आधार पर" },
       "pages": "volume and PDF page of the e-book (it carries no printed page numbers)",
       "checked": "GRETIL e-text (Ulrich Stiehl) against the Gita Press e-book"
+    },
+    "mahatmya": {
+      "name": { "en": "Bhāgavata Māhātmya (Padma Purāṇa)", "hi": "श्रीमद्भागवत-माहात्म्य (पद्मपुराण)" },
+      "edition": "Gita Press, Gorakhpur — printed at the head of its Śrīmad Bhāgavata (e-book)",
+      "after": { "en": "in brief, after the Gita Press Hindi translation", "hi": "संक्षेप में — गीताप्रेस के हिन्दी अनुवाद के आधार पर" },
+      "pages": "volume and PDF page of the e-book",
+      "checked": "sanskritdocuments.org (Śrīmad Bhāgavata Māhātmya, Devanāgarī) against the Gita Press e-book"
     }
   },
   "verses": {
@@ -89,6 +96,29 @@
         "hi": "श्रीकृष्ण कहते हैं — वैदिक छन्दों में वे गायत्री हैं।"
       }
     },
+    "gita:15.14": {
+      "checked": "2026-10-05 a35750",
+      "book": "gita", "ref": "15.14", "page": 366,
+      "variant": "Narasingha's transliteration spells pacāmy as “pachāmy” (the verse's other c, in catur-vidham, it writes as c); sanskritdocuments.org reads पचाम्यन्नं.",
+      "dev": "अहं वैश्वानरो भूत्वा प्राणिनां देहमाश्रितः ।\nप्राणापानसमायुक्तः पचाम्यन्नं चतुर्विधम् ॥",
+      "gist": {
+        "en": "Kṛṣṇa says he is the fire of digestion within every living being; joined with the breath that comes in and the breath that goes out, he digests every kind of food.",
+        "hi": "श्रीकृष्ण कहते हैं कि सब प्राणियों के भीतर पाचन की अग्नि वे ही हैं; भीतर आने और बाहर जाने वाले प्राणों से मिलकर वे हर प्रकार का अन्न पचाते हैं।"
+      }
+    },
+    "gita:17.8": {
+      "checked": "2026-10-05 7c7fe1",
+      "book": "gita", "ref": "17.8", "page": 396,
+      "note": {
+        "en": "The books do not describe annaprāśana itself. These are Kṛṣṇa's words in the Gītā on food.",
+        "hi": "इन ग्रंथों में अन्नप्राशन संस्कार का वर्णन नहीं है। ये गीता में आहार पर श्रीकृष्ण के वचन हैं।"
+      },
+      "dev": "आयुःसत्त्वबलारोग्यसुखप्रीतिविवर्धनाः ।\nरस्याः स्निग्धाः स्थिरा हृद्या आहाराः सात्त्विकप्रियाः ॥",
+      "gist": {
+        "en": "Kṛṣṇa says that the food dear to those in goodness is food that adds to life, energy, strength, health, happiness and contentment — juicy, rich, nourishing and pleasing.",
+        "hi": "श्रीकृष्ण कहते हैं कि सत्त्वगुणी लोगों को वह आहार प्रिय है जो आयु, ऊर्जा, बल, आरोग्य, सुख और संतोष बढ़ाए — रसीला, स्निग्ध, पौष्टिक और मन को भाने वाला।"
+      }
+    },
     "gita:17.20": {
       "checked": "2026-10-05 3b295b",
       "book": "gita", "ref": "17.20", "page": 404,
@@ -114,6 +144,84 @@
       "gist": {
         "en": "An offering, a gift, an austerity or any act done without faith is called asat — it bears no good fruit, in this world or the next.",
         "hi": "श्रद्धा के बिना किया गया यज्ञ, दान, तप या कोई भी कर्म ‘असत्’ कहलाता है — उसका न इस लोक में शुभ फल होता है, न परलोक में।"
+      }
+    },
+    "mahatmya:6.23": {
+      "checked": "2026-10-05 66d81e",
+      "book": "mahatmya", "ref": "6.23", "vol": 1, "page": 141,
+      "note": {
+        "en": "The books do not describe a child's muṇḍana. The nearest they come is this rule, where a shave is part of making ready to take up a sacred vow.",
+        "hi": "इन ग्रंथों में शिशु के मुंडन का वर्णन नहीं है। उसके सबसे निकट यह नियम है, जिसमें क्षौर किसी पवित्र व्रत को ग्रहण करने की तैयारी का अंग है।"
+      },
+      "dev": "वक्त्रा क्षौरं प्रकर्तव्यं दिनादर्वाग्व्रताप्तये ।\nअरुणोदयेऽसौ निर्वर्त्य शौचं स्नानं समाचरेत् ॥",
+      "gist": {
+        "en": "In the Māhātmya's rules for a recitation of the Bhāgavata: the day before it begins, the one who is to recite should have a shave (kṣaura), to take up the vow; at dawn he finishes his ablutions and bathes well.",
+        "hi": "माहात्म्य में भागवत-कथा के नियमों में: कथा आरंभ होने से एक दिन पहले, व्रत ग्रहण करने के लिए वक्ता क्षौर करा ले; और अरुणोदय के समय शौच से निवृत्त होकर भली-भाँति स्नान करे।"
+      }
+    },
+    "mahatmya:6.24": {
+      "checked": "2026-10-05 db9a25",
+      "book": "mahatmya", "ref": "6.24", "vol": 1, "page": 141,
+      "dev": "नित्यं संक्षेपतः कृत्वा संध्याद्यं स्वं प्रयत्नतः ।\nकथाविघ्नविघाताय गणनाथं प्रपूजयेत् ॥",
+      "gist": {
+        "en": "In the Māhātmya's rules for a recitation of the Bhāgavata: having briefly finished one's daily rites such as the sandhyā, one should worship Gaṇeśa, so that no obstacle comes in the way of the recitation.",
+        "hi": "माहात्म्य में भागवत-कथा के नियमों में: संध्या आदि अपने नित्यकर्म संक्षेप में पूरे करके, कथा में कोई विघ्न न आए इसके लिए गणेश जी का पूजन करना चाहिए।"
+      }
+    },
+    "bhagavata:1.2.4": {
+      "checked": "2026-10-05 e02ab8",
+      "book": "bhagavata", "ref": "1.2.4", "vol": 1, "page": 161,
+      "dev": "नारायणं नमस्कृत्य नरं चैव नरोत्तमम् ।\nदेवीं सरस्वतीं व्यासं ततो जयमुदीरयेत् ॥",
+      "gist": {
+        "en": "Sūta, as he begins: one should first bow to the sages Nara and Nārāyaṇa — the Lord's own form, best among men — to the goddess Sarasvatī and to Vyāsa, and only then recite the Bhāgavata, which brings victory over every disorder of the world and of the heart.",
+        "hi": "सूत जी कथा आरंभ करते हुए: पहले भगवान के अवतार, नरोत्तम नर-नारायण ऋषियों को, देवी सरस्वती को और व्यास जी को नमस्कार करना चाहिए, और तब श्रीमद्भागवत का पाठ — जो संसार और अन्तःकरण के सब विकारों पर विजय दिलाता है।"
+      }
+    },
+    "bhagavata:1.11.13-15": {
+      "checked": "2026-10-05 aba6fd",
+      "book": "bhagavata", "ref": "1.11.13–15", "vol": 1, "page": 236,
+      "numbering": "GRETIL numbers these verses 1.11.14–16",
+      "note": {
+        "en": "The books do not prescribe the gṛha-praveśa rite. This is how Dvārakā readied its doors to welcome Kṛṣṇa home.",
+        "hi": "इन ग्रंथों में गृहप्रवेश की विधि नहीं दी गई है। यह वर्णन है कि द्वारका ने श्रीकृष्ण के घर लौटने पर उनके स्वागत के लिए अपने द्वार कैसे सजाए।"
+      },
+      "dev": "गोपुरद्वारमार्गेषु कृतकौतुकतोरणाम् ।\nचित्रध्वजपताकाग्रैरन्तः प्रतिहतातपाम् ॥\nसम्मार्जितमहामार्गरथ्यापणकचत्वराम् ।\nसिक्तां गन्धजलैरुप्तां फलपुष्पाक्षताङ्कुरैः ॥\nद्वारि द्वारि गृहाणां च दध्यक्षतफलेक्षुभिः ।\nअलङ्कृतां पूर्णकुम्भैर्बलिभिर्धूपदीपकैः ॥",
+      "gist": {
+        "en": "When Kṛṣṇa returned to Dvārakā, the city was made ready to receive him: arches of welcome (toraṇa) at its gates, doors and roads, and bright flags and banners; its streets, markets and squares swept and sprinkled with scented water and strewn with fruit, flowers, akṣata and sprouts; and at the door of every house, curd, akṣata, fruit and sugarcane, pots filled with water, offerings, incense and lamps.",
+        "hi": "जब श्रीकृष्ण द्वारका लौटे, तो नगर उनके स्वागत के लिए सजाया गया: फाटकों, द्वारों और मार्गों पर बंदनवारें, और रंग-बिरंगी ध्वजा-पताकाएँ; सड़कें, बाज़ार और चौक झाड़-बुहारकर सुगन्धित जल से सींचे गए, और फल-फूल, अक्षत और अंकुर बिखेरे गए; और हर घर के द्वार पर दही, अक्षत, फल, ईख, जल से भरे कलश, उपहार, धूप और दीप सजाए गए।"
+      }
+    },
+    "bhagavata:1.11.18": {
+      "checked": "2026-10-05 54426d",
+      "book": "bhagavata", "ref": "1.11.18", "vol": 1, "page": 237,
+      "numbering": "GRETIL numbers this verse 1.11.19",
+      "note": {
+        "en": "The books describe no rite for a vehicle. The nearest is this setting-out in chariots, made auspicious with an elephant going ahead, brāhmaṇas, conches and Vedic chant.",
+        "hi": "इन ग्रंथों में वाहन-पूजा की कोई विधि नहीं है। उसके सबसे निकट यह है: रथों से यात्रा का आरंभ, जिसे आगे चलते गजराज, ब्राह्मणों, शंखों और वेदध्वनि से मंगलमय बनाया गया।"
+      },
+      "dev": "वारणेन्द्रं पुरस्कृत्य ब्राह्मणैः ससुमङ्गलैः ।\nशङ्खतूर्यनिनादेन ब्रह्मघोषेण चादृताः ।\nप्रत्युज्जग्मू रथैर्हृष्टाः प्रणयागतसाध्वसाः ॥",
+      "gist": {
+        "en": "Hearing that their beloved Kṛṣṇa was coming home, Vasudeva, Akrūra, Ugrasena, Balarāma and the others left their beds, seats and meals and went out joyfully in chariots to meet him — an elephant going before them for good omen, brāhmaṇas bearing auspicious things, conches and trumpets sounding, and the Veda being chanted.",
+        "hi": "यह सुनकर कि प्रियतम श्रीकृष्ण आ रहे हैं, वसुदेव, अक्रूर, उग्रसेन, बलराम और अन्य सब सोना, बैठना और भोजन छोड़कर हर्ष से रथों पर सवार हो उनकी अगवानी को चले — मंगल-शकुन के लिए आगे एक गजराज, साथ में मांगलिक सामग्री लिए ब्राह्मण, शंख और तुरही का नाद, और वेदध्वनि।"
+      }
+    },
+    "bhagavata:2.4.22": {
+      "checked": "2026-10-05 aed48e",
+      "book": "bhagavata", "ref": "2.4.22", "vol": 1, "page": 343,
+      "dev": "प्रचोदिता येन पुरा सरस्वती\nवितन्वताजस्य सतीं स्मृतिं हृदि ।\nस्वलक्षणा प्रादुरभूत् किलास्यतः\nस मे ऋषीणामृषभः प्रसीदताम् ॥",
+      "gist": {
+        "en": "Śukadeva prays for the grace of the Lord who, at the beginning of creation, moved Sarasvatī — the goddess who presides over knowledge — to awaken in Brahmā's heart the memory of the kalpa before; and she came forth from Brahmā's mouth as the Veda, with all its limbs.",
+        "hi": "शुकदेव जी उन भगवान की कृपा माँगते हैं जिन्होंने सृष्टि के समय ब्रह्मा के हृदय में पूर्वकल्प की स्मृति जगाने के लिए ज्ञान की अधिष्ठात्री देवी सरस्वती को प्रेरित किया — और वे अपने अंगों सहित वेद के रूप में ब्रह्मा के मुख से प्रकट हुईं।"
+      }
+    },
+    "bhagavata:4.4.14": {
+      "checked": "2026-10-05 b0c1c4",
+      "book": "bhagavata", "ref": "4.4.14", "vol": 1, "page": 695,
+      "corrected": "The Gita Press e-book prints द्वयक्षरं; द्व्यक्षरं (dvy-akṣaraṁ, 'of two syllables') is the reading of GRETIL and of the sense.",
+      "dev": "यद् द्व्यक्षरं नाम गिरेरितं नृणां\nसकृत्प्रसंगादघमाशु हन्ति तत् ।\nपवित्रकीर्तिं तमलङ्घ्यशासनं\nभवानहो द्वेष्टि शिवं शिवेतरः ॥",
+      "gist": {
+        "en": "Satī, rebuking her father Dakṣa: the two-syllable name ‘Śiva’, spoken even once and only in passing, at once destroys a person's sins; his command none can overstep, his fame is pure — and it is he whom you hate.",
+        "hi": "सती जी अपने पिता दक्ष को फटकारती हैं: ‘शिव’ — यह दो अक्षरों का नाम प्रसंगवश एक बार भी मुख से निकल जाए तो मनुष्य के सब पाप तत्काल नष्ट कर देता है; जिनकी आज्ञा कोई लाँघ नहीं सकता, जिनकी कीर्ति पवित्र है — आप उन्हीं से द्वेष करते हैं।"
       }
     },
     "bhagavata:5.19.1-2": {
@@ -143,6 +251,16 @@
       "gist": {
         "en": "Nārada tells Yudhiṣṭhira that one who has the means should, as far as those means allow, offer the Mahālaya śrāddha for their parents and their parents' kin in the dark fortnight of the month — Āśvina, as the Gita Press translation reckons it (the verse names the month Proṣṭhapada).",
         "hi": "नारद जी युधिष्ठिर से कहते हैं कि जिसके पास साधन हों, वह अपनी सामर्थ्य के अनुसार माता-पिता और उनके बन्धुओं के लिए मास के कृष्णपक्ष में महालय श्राद्ध करे — गीताप्रेस के अनुवाद की गणना से आश्विन मास में (श्लोक मास का नाम प्रौष्ठपद देता है)।"
+      }
+    },
+    "bhagavata:8.7.42-43": {
+      "checked": "2026-10-05 1c614a",
+      "book": "bhagavata", "ref": "8.7.42–43", "vol": 1, "page": 1482,
+      "numbering": "GRETIL numbers these verses 8.7.43–44",
+      "dev": "ततः करतलीकृत्य व्यापि हालाहलं विषम् ।\nअभक्षयन्महादेवः कृपया भूतभावनः ॥\nतस्यापि दर्शयामास स्ववीर्यं जलकल्मषः ।\nयच्चकार गले नीलं तच्च साधोर्विभूषणम् ॥",
+      "gist": {
+        "en": "At the churning of the ocean, Śiva — full of compassion, the one by whose power all beings live — took the fierce hālāhala poison into his palm and drank it. It showed its force even on him and turned his throat blue; but for Śiva, who works the good of all creatures, that mark became an ornament.",
+        "hi": "समुद्र-मन्थन के समय परम कृपालु भगवान शंकर ने — जिनकी शक्ति से सब प्राणी जीते हैं — तीक्ष्ण हालाहल विष को हथेली पर उठाया और पी गए। विष ने उन पर भी अपना प्रभाव दिखाया और उनका कण्ठ नीला पड़ गया; पर प्रजा का कल्याण करने वाले शंकर के लिए वह भूषण बन गया।"
       }
     },
     "bhagavata:8.8.8": {
@@ -192,6 +310,15 @@
         "hi": "शरीर, वाणी, मन, इन्द्रियों या बुद्धि से, या अपने स्वभाववश, मनुष्य जो कुछ भी करे — वह सब ‘नारायण के लिए’ इस भाव से नारायण को समर्पित कर दे।"
       }
     },
+    "bhagavata:12.10.36": {
+      "checked": "2026-10-05 5e0c83",
+      "book": "bhagavata", "ref": "12.10.36", "vol": 2, "page": 1395,
+      "dev": "कामो महर्षे सर्वोऽयं भक्तिमांस्त्वमधोक्षजे ।\nआकल्पान्ताद् यशः पुण्यमजरामरता तथा ॥",
+      "gist": {
+        "en": "Pleased by the sage Mārkaṇḍeya's worship and praise, Śiva — at Pārvatī's prompting — tells him: may all your wishes be fulfilled; may your devotion to the Lord beyond the senses stay unbroken; may your pure fame spread until the end of the kalpa; and may you be free of age and death.",
+        "hi": "मार्कण्डेय मुनि की स्तुति और पूजा से प्रसन्न होकर भगवान शंकर, पार्वती जी की प्रेरणा से, उनसे कहते हैं: तुम्हारी सब कामनाएँ पूर्ण हों; इन्द्रियातीत परमात्मा में तुम्हारी अनन्य भक्ति सदा बनी रहे; कल्प के अंत तक तुम्हारा पवित्र यश फैले; और तुम अजर-अमर हो जाओ।"
+      }
+    },
     "bhagavata:12.13.23": {
       "checked": "2026-10-05 c11176",
       "book": "bhagavata", "ref": "12.13.23", "vol": 2, "page": 1423,
@@ -219,7 +346,14 @@
     "kshama": ["bhagavata:11.2.36", "gita:9.27"],
     "prasada": ["gita:3.13", "gita:17.20"],
     "naming": ["bhagavata:10.8.11"],
-    "tarpana": ["bhagavata:7.14.19"]
+    "tarpana": ["bhagavata:7.14.19"],
+    "ganesha": ["mahatmya:6.24"],
+    "shiva": ["bhagavata:4.4.14"],
+    "saraswati": ["bhagavata:1.2.4"],
+    "dvara": ["bhagavata:1.11.13-15"],
+    "firstFood": ["gita:17.8"],
+    "tonsure": ["mahatmya:6.23"],
+    "vehicle": ["bhagavata:1.11.18"]
   },
   "rituals": {
     "janmadin": ["bhagavata:10.7.4"],
@@ -230,6 +364,14 @@
     "sundarkand": ["bhagavata:5.19.1-2"],
     "hanuman-chalisa": ["bhagavata:5.19.1-2"],
     "gayatri-havan": ["gita:10.35", "gita:3.14"],
-    "satyanarayan": ["gita:9.26", "bhagavata:7.5.23"]
+    "satyanarayan": ["gita:9.26", "bhagavata:7.5.23"],
+    "ganesh": ["mahatmya:6.24"],
+    "rudrabhishek": ["bhagavata:8.7.42-43", "bhagavata:4.4.14"],
+    "mahamrityunjaya": ["bhagavata:12.10.36"],
+    "griha-pravesh": ["bhagavata:1.11.13-15"],
+    "saraswati": ["bhagavata:2.4.22", "bhagavata:1.2.4"],
+    "annaprashan": ["gita:17.8", "gita:15.14"],
+    "mundan": ["mahatmya:6.23"],
+    "vahan": ["bhagavata:1.11.18"]
   }
 }

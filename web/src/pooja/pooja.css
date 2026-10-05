@@ -349,5 +349,6 @@
 .sh-ref { font-family: Georgia, serif; font-size: .86rem; font-weight: 600; color: var(--ink); }
 .sh-gist { font-size: .88rem; line-height: 1.6; }
 .sh-gist i { font-style: normal; color: var(--dim); }
+.sh-note { font-size: .8rem; line-height: 1.5; font-style: italic; color: var(--dim); }
 .sh-ed { font-size: .7rem; color: var(--dim); }
 .pu-about + .sh { margin-top: .8rem; }

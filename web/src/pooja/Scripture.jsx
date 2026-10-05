@@ -6,6 +6,10 @@
  * it letter by letter, and IN BRIEF what the named edition's translation says,
  * in our own words. The brief is never our translation of the Sanskrit.
  *
+ * Where the books do not describe a ceremony itself, its verse carries a
+ * 'note' that says so plainly and says what the verse is instead — the
+ * nearest the books come, never presented as the rite's own authority.
+ *
  * The scripture and verse are always named. Which edition and translator the
  * brief follows, and its page, are listed on /references — and shown here too
  * when references are switched on there, as everywhere else on the site.
@@ -34,10 +38,11 @@ export default function Scripture({ verses, lang = 'en', L, className = '' }) {
             <p className={`sh-roman${long ? ' long' : ''}`}>{plainRoman(devToIast(v.dev))}</p>
             <figcaption>
               <b className="sh-ref">{book.name[lang] || book.name.en} {v.ref}</b>
+              {v.note && <span className="sh-note">{v.note[lang] || v.note.en}</span>}
               <span className="sh-gist"><i>{L('In brief', 'संक्षेप में')}:</i> {v.gist[lang] || v.gist.en}</span>
               {on && (
                 <span className="sh-ed">
-                  {book.after[lang] || book.after.en} — {book.edition}, {v.book === 'bhagavata' ? `vol ${v.vol}, PDF p.${v.page}` : `p.${v.page}`}
+                  {book.after[lang] || book.after.en} — {book.edition}, {v.vol ? `vol ${v.vol}, PDF p.${v.page}` : `p.${v.page}`}
                 </span>
               )}
             </figcaption>

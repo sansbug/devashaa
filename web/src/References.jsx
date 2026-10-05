@@ -106,7 +106,7 @@ function PoojaSources({ hi }) {
                 <tr key={id}>
                   <td>{title(b.name)} {v.ref}</td>
                   <td>{[...new Set(used[id] || [])].join(' · ')}</td>
-                  <td>{b.edition}, {v.book === 'bhagavata' ? `vol ${v.vol}, PDF p.${v.page}` : `p.${v.page}`}</td>
+                  <td>{b.edition}, {v.vol ? `vol ${v.vol}, PDF p.${v.page}` : `p.${v.page}`}</td>
                   <td>{b.checked}{v.variant ? ` — ${v.variant}` : ''}{v.corrected ? ` — ${v.corrected}` : ''}</td>
                 </tr>
               )

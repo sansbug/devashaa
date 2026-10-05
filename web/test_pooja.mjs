@@ -154,7 +154,10 @@ console.log('\nthe scripture behind the explanations (sources.json)')
   ok('every verse is the text that was checked — change a letter and this fails until it is checked again (refs_verify.py)',
     vs.every(([, v]) => v.checked && v.checked.endsWith(' ' + textHash(v.dev))), vs.filter(([, v]) => !(v.checked || '').endsWith(' ' + textHash(v.dev))).map(([id]) => id).join(' '))
   ok('no footnote digit or Latin letter has crept into a verse', vs.every(([, v]) => !/[ऀ-ॿ][०-९]/.test(v.dev)))
-  ok('the Bhāgavata verses carry a volume', vs.every(([, v]) => v.book !== 'bhagavata' || [1, 2].includes(v.vol)))
+  ok('the Bhāgavata and Māhātmya verses carry a volume', vs.every(([, v]) => v.book === 'gita' || [1, 2].includes(v.vol)))
+  ok('every ceremony has a verse behind it', RITUALS.every((r) => (src.rituals[r.key] || []).length), RITUALS.filter((r) => !(src.rituals[r.key] || []).length).map((r) => r.key).join(' '))
+  ok('where the books do not describe a ceremony, its verse says so plainly — in English and Hindi',
+    vs.filter(([, v]) => v.note).every(([, v]) => /^The books (do not|describe no)/.test(v.note.en) && /^इन ग्रंथों में/.test(v.note.hi)), `${vs.filter(([, v]) => v.note).length} notes`)
   const stepIds = new Set(ALL_STEPS.map((s) => s.id))
   ok('every step that cites a verse is a real step, and every verse it cites exists',
     Object.entries(src.steps).every(([k, ids]) => stepIds.has(k) && ids.every((id) => src.verses[id])), Object.keys(src.steps).filter((k) => !stepIds.has(k)).join(' '))

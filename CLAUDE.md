@@ -82,6 +82,10 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   independent text (`C:\proj\_reading\sanatan\tools\refs_verify.py`, GRETIL /
   sanskritdocuments.org); its `checked` fingerprint makes the test fail if the
   text is later edited without re-checking. The Gita Press e-book has typos.
+  Every ceremony has at least one verse (the test checks it). Where the books do
+  not describe a ceremony (annaprāśana, muṇḍana, gṛha-praveśa, a vehicle pūjā),
+  its verse carries a `note` saying so plainly and what the verse is instead —
+  never presented as the rite's own authority.
 - **A pandit is public by `pid`, never by `userid`** (which may be an email).
 - **TURN relay**: on when the Worker has secrets `TURN_KEY_ID` and
   `TURN_KEY_API_TOKEN` (Cloudflare Realtime TURN key); STUN-only otherwise.

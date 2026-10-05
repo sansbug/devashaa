@@ -2258,6 +2258,53 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .pj-sub-row td:first-child { padding-left: 1.5rem; }
 .pj-sub-row .pj-factor b { font-weight: var(--label-weight, 500); }
 
+/* ── share card ─────────────────────────────────────────────────────────── */
+.sh-backdrop { position: fixed; inset: 0; background: color-mix(in oklab, var(--ink) 45%, transparent); display: grid; place-items: center; z-index: 50; padding: 1rem; }
+.sh-modal { width: min(34rem, 100%); max-height: 92vh; overflow: auto; }
+.sh-x { margin-left: auto; font: inherit; font-size: 1.3rem; line-height: 1; background: none; border: 0; color: var(--on-accent); cursor: pointer; }
+.sh-card { border: 2px solid var(--deck-gold); border-radius: 12px; padding: .8rem 1rem; margin: .3rem 0 .8rem;
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 8%, transparent), transparent 60%), var(--panel); }
+.sh-card-head { display: flex; flex-direction: column; gap: .1rem; margin-bottom: .5rem; }
+.sh-card-brand { font-family: Georgia, 'Times New Roman', serif; letter-spacing: .14em; text-transform: uppercase; font-size: .64rem; color: var(--accent); }
+.sh-card-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.sh-card-when { font-size: .74rem; color: var(--dim); }
+.sh-card-rows > div { display: grid; grid-template-columns: 2.3rem minmax(7rem, 10rem) 1fr; gap: .5rem; align-items: center; padding: .4rem 0; border-top: 1px solid var(--line); font-size: .84rem; }
+.sh-card-rows b { font-family: Georgia, 'Times New Roman', serif; }
+.sh-card-foot { margin-top: .6rem; font-size: .64rem; letter-spacing: .07em; text-transform: uppercase; color: var(--dim); text-align: center; }
+.sh-linklabel { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+.sh-linkrow { display: flex; gap: .4rem; margin: .25rem 0 .6rem; }
+.sh-linkrow input { flex: 1; min-width: 0; font: inherit; font-size: .78rem; padding: .5rem .6rem; border: 1px solid var(--line); border-radius: 6px; background: var(--sunken); color: var(--ink); }
+.sh-copy { padding: .5rem .9rem; }
+.sh-send { display: flex; flex-wrap: wrap; gap: .4rem; }
+.sh-btn { font: inherit; font-size: .8rem; padding: .4rem .85rem; border: 1px solid var(--line); border-radius: 8px; background: var(--sunken); color: var(--ink); text-decoration: none; cursor: pointer; }
+.sh-btn:hover { border-color: var(--accent); }
+.sh-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+.sh-note { margin: .7rem 0 0; font-size: .72rem; color: var(--dim); line-height: 1.55; }
+.rg-open-wrap { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.shared-note { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 1rem; padding: .55rem .8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--sunken); font-size: .82rem; }
+.sh-save { width: auto; height: auto; padding: .3rem .7rem; font-size: .78rem; color: var(--ink); }
+.sh-save:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ── support page ───────────────────────────────────────────────────────── */
+.privacy.support { max-width: 56rem; }
+.sup-hero { text-align: center; }
+.sup-hero .dk-body { padding: 1.6rem 1.2rem 1.4rem; }
+.sup-badge { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--rx); border: 1px solid color-mix(in oklab, var(--rx) 50%, var(--line)); border-radius: 999px; padding: .2rem .7rem; margin-bottom: .8rem; }
+.support h1 { margin: 0 0 .6rem; }
+.sup-lead { max-width: 40rem; margin: 0 auto 1.2rem; font-size: .92rem; line-height: 1.65; }
+.sup-btn { display: inline-block; font: inherit; font-size: 1rem; font-weight: 700; color: #fff; text-decoration: none; background: var(--rx); border: 0; border-radius: 10px; padding: .7rem 1.5rem; box-shadow: 0 6px 20px color-mix(in oklab, var(--rx) 35%, transparent); cursor: pointer; }
+.sup-btn:hover { transform: translateY(-1px); }
+.sup-btn-off { background: var(--sunken); color: var(--dim); box-shadow: none; border: 1px solid var(--line); cursor: not-allowed; }
+.sup-btn-off:hover { transform: none; }
+.sup-sec { font-size: .74rem; color: var(--dim); max-width: 32rem; margin: 1rem auto 0; line-height: 1.5; }
+.sup-what { margin-top: 1rem; }
+.sup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .7rem; padding: .3rem 0 .2rem; }
+.sup-card { border: 1px solid var(--line); border-radius: 10px; padding: .8rem .9rem; display: flex; flex-direction: column; gap: .3rem; background: var(--sunken); }
+.sup-ic { font-size: 1.4rem; }
+.sup-card b { font-family: Georgia, 'Times New Roman', serif; font-size: .9rem; color: var(--ink); }
+.sup-card span:last-child { font-size: .76rem; color: var(--dim); line-height: 1.45; }
+.sup-thanks { text-align: center; font-size: .84rem; margin-top: 1.2rem; }
+
 
 /* ṣaḍbala: the arithmetic ledger + the conventions block */
 .sb-ledger { margin: .8rem 0 .4rem; }

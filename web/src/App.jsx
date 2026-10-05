@@ -21,6 +21,9 @@ import { validTheme, DEFAULT_THEME } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
 import References from './References.jsx'
+import Support from './Support.jsx'
+import ShareCard from './ShareCard.jsx'
+import { SHARE_ID_RE, openShare } from './share.js'
 import { refsOn, applyRefs, scrubProse } from './refs.js'
 import Privacy from './Privacy.jsx'
 import Methodology from './Methodology.jsx'
@@ -239,6 +242,18 @@ export default function App() {
     setRoute(path)
     window.scrollTo(0, 0)
   }
+  // A share link: /c/<id>#<key>. Fetch the blob, decrypt it with the key from
+  // the fragment, load the form and cast — then offer to keep the chart.
+  useEffect(() => {
+    const m = SHARE_ID_RE.exec(location.pathname)
+    const key = location.hash.slice(1)
+    if (!m || !key) return
+    let dead = false
+    openShare(m[1], key)
+      .then((p) => { if (!dead) { setSharedIn(true); useProfile(p) } })
+      .catch((e) => { if (!dead) setError(`${t('share.openErr', 'This shared chart could not be opened:')} ${e.message || e}`) })
+    return () => { dead = true }
+  }, [])  // eslint-disable-line react-hooks/exhaustive-deps
 
   const [name, setName] = useState('')
   const [date, setDate] = useState('')
@@ -261,6 +276,8 @@ export default function App() {
   const [transitErr, setTransitErr] = useState('')
   const [profiles, setProfiles] = useState(() => listProfiles())
   const [activeProfile, setActiveProfile] = useState(null)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [sharedIn, setSharedIn] = useState(false)   // this chart arrived by a share link
   // The most-viewed saved chart is the one that comes up by default. Views
   // are counted per profile id in this browser; ties go to the newer chart.
   const restored = useRef(false)
@@ -495,7 +512,7 @@ export default function App() {
 
   /** Load a saved chart back into the form and cast it straight away. */
   async function useProfile(p) {
-    bumpViews(p.id)
+    if (p.id) bumpViews(p.id)
     setName(p.name || ''); setDate(p.date); setTime(p.time); setPlace(p.place)
     setActiveProfile(p.id)
     setError(''); setBusy(true); setChart(null)
@@ -618,6 +635,7 @@ export default function App() {
 
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
   if (route === '/references') return <References lang={lang} onBack={() => go('/')} />
+  if (route === '/support') return <Support lang={lang} onBack={() => go('/')} />
   if (route === '/methodology') return <Methodology lang={lang} setLang={changeLang} onBack={() => go('/')} />
   if (route === '/validation') return <ValidationPage lang={lang} setLang={changeLang} onBack={() => go('/')} />
 
@@ -698,6 +716,17 @@ export default function App() {
       </form>
 
       {error && <div className="error">{error}</div>}
+      {sharedIn && chart && (
+        <div className="shared-note" role="note">
+          <span>↗ {t('share.shared', 'A chart shared with you')}{chart.name ? ` — ${chart.name}` : ''}.</span>
+          <button type="button" className="profile-x sh-save" onClick={() => {
+            const saved = saveProfile({ name, date, time, place }); setProfiles(saved); setActiveProfile(saved[0]?.id ?? null); setSharedIn(false)
+          }}>{t('share.save', 'Save to my charts')}</button>
+        </div>
+      )}
+      {shareOpen && chart && place && (
+        <ShareCard chart={chart} name={name} date={date} time={time} place={place} namer={namer} onClose={() => setShareOpen(false)} />
+      )}
 
       {chart && (
         <main className="result">
@@ -710,6 +739,9 @@ export default function App() {
             <div className="meta-head">
               <h2>{chart.name || 'Chart'}</h2>
               <div className="rg-open-wrap">
+                <button type="button" className="rg-open sh-open" onClick={() => setShareOpen(true)}>
+                  ↗ {t('share.open', 'Share')}
+                </button>
                 <button type="button" className="rg-open" onClick={openGuide}>
                   How to read this chart →
                 </button>
@@ -1163,6 +1195,11 @@ export default function App() {
           <a href="/privacy"
              onClick={(e) => { e.preventDefault(); go('/privacy') }}>{t('footer.privacy')}</a>
           {' '}{t('footer.privacyNote')}
+          {'  ·  '}
+          <a href="/support" className="footer-support"
+             onClick={(e) => { e.preventDefault(); go('/support') }}>
+            ♥ {t('support.badge', 'Support us')}
+          </a>
           {'  ·  '}
           <a href="/references" className="footer-refs"
              onClick={(e) => { e.preventDefault(); go('/references') }}>

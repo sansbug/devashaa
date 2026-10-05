@@ -30,6 +30,8 @@ const HEX64 = /^[0-9a-f]{64}$/
 const USERID = /^(?:[a-z0-9][a-z0-9._-]{2,31}|[a-z0-9._%+-]{1,64}@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24})$/
 const MAX_BLOB = 64 * 1024
 const MAX_PROFILES = 200
+const MAX_SHARE = 8 * 1024
+const SHARE_ID = /^[0-9a-f]{32}$/
 
 function corsHeaders(request) {
   const origin = request.headers.get('Origin') || ''
@@ -39,7 +41,7 @@ function corsHeaders(request) {
     ? {
         'Access-Control-Allow-Origin': origin,
         'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type,X-Auth',
+        'Access-Control-Allow-Headers': 'Content-Type,X-Auth,X-Refs',
         'Access-Control-Max-Age': '86400',
         Vary: 'Origin',
       }
@@ -81,12 +83,21 @@ async function authorise(db, userid, request) {
   return timingSafeEqual(row.auth_hash, await sha256Hex(authId))
 }
 
+/** The shares table is created by the Worker itself on first use — the DB
+ *  binding has the right; the deploy token does not have D1's query scope. */
+let sharesReady = false
+async function ensureShares(db) {
+  if (sharesReady) return
+  await db.exec('CREATE TABLE IF NOT EXISTS shares (id TEXT PRIMARY KEY, blob TEXT NOT NULL, created_at INTEGER NOT NULL)')
+  sharesReady = true
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
     const path = url.pathname
 
-    if (!path.startsWith('/api/account')) return env.ASSETS.fetch(request)
+    if (!path.startsWith('/api/account') && !path.startsWith('/api/share')) return env.ASSETS.fetch(request)
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders(request) })
     }
@@ -99,6 +110,27 @@ export default {
     const body = ['POST', 'PUT'].includes(request.method)
       ? await request.json().catch(() => null)
       : null
+
+    // --- /api/share — a chart by link. The blob is AES-GCM ciphertext made in
+    // the sender's browser; the key travels in the link's fragment and never
+    // reaches here. The store holds what it cannot read, under a random id.
+    if (path.startsWith('/api/share')) {
+      await ensureShares(db)
+      if (seg.length === 2 && request.method === 'POST') {
+        const blob = body?.blob
+        if (typeof blob !== 'string' || !blob || blob.length > MAX_SHARE || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(blob)) {
+          return json({ error: 'expected {blob: "<iv>.<ciphertext>"}' }, 400, request)
+        }
+        const id = [...crypto.getRandomValues(new Uint8Array(16))].map((x) => x.toString(16).padStart(2, '0')).join('')
+        await db.prepare('INSERT INTO shares (id, blob, created_at) VALUES (?, ?, ?)').bind(id, blob, Date.now()).run()
+        return json({ id }, 201, request)
+      }
+      if (seg.length === 3 && request.method === 'GET' && SHARE_ID.test(seg[2])) {
+        const row = await db.prepare('SELECT blob FROM shares WHERE id = ?').bind(seg[2]).first()
+        return row ? json({ blob: row.blob }, 200, request) : json({ error: 'not found' }, 404, request)
+      }
+      return json({ error: 'not found' }, 404, request)
+    }
 
     // --- POST /api/account  { userid, authId }  → register
     if (seg.length === 2 && request.method === 'POST') {

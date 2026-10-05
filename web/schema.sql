@@ -39,3 +39,12 @@ CREATE TABLE IF NOT EXISTS profiles (
 );
 
 CREATE INDEX IF NOT EXISTS profiles_by_user ON profiles(userid);
+
+-- A chart shared by link: AES-GCM ciphertext made in the sender's browser;
+-- the key lives only in the link's fragment. Created by the Worker on first
+-- use (worker.js ensureShares) — kept here so the schema is in one place.
+CREATE TABLE IF NOT EXISTS shares (
+  id           TEXT PRIMARY KEY,   -- 16 random bytes, hex
+  blob         TEXT NOT NULL,      -- "<iv>.<ciphertext>", base64url
+  created_at   INTEGER NOT NULL
+);

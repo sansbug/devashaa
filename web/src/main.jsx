@@ -9,7 +9,7 @@ import { refsOn } from './refs.js'
 const _fetch = window.fetch.bind(window)
 window.fetch = (input, init) => {
   const url = typeof input === 'string' ? input : input?.url || ''
-  if (/\/api\/(?!account)/.test(url)) {
+  if (/\/api\/(?!account|share)/.test(url)) {
     const headers = new Headers(init?.headers || (typeof input !== 'string' ? input.headers : undefined) || {})
     headers.set('X-Refs', refsOn() ? '1' : '0')
     return _fetch(input, { ...(init || {}), headers })

@@ -24,7 +24,7 @@
     // the Worker never runs and every sync call returns the HTML page with a
     // 200. It behaves correctly under `wrangler dev` and fails only once
     // deployed, so it has to be caught against the real thing.
-    "run_worker_first": ["/api/account/*", "/api/account"]
+    "run_worker_first": ["/api/account/*", "/api/account", "/api/share/*", "/api/share"]
   },
   // Accounts and encrypted profile blobs. D1 rather than KV because a unique
   // userid needs a real PRIMARY KEY: KV has no atomic check-and-set, so two

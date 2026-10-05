@@ -65,7 +65,8 @@ print('ok')"
 - **Backend → Render**: `git push origin main`. Render redeploys automatically
   (~2–3 min). Verify with a real request before claiming it is live.
 - **Frontend → Cloudflare**: from `web/`,
-  `VITE_API_URL=https://devashaa-api.onrender.com VITE_SOURCE_URL=https://github.com/sansbug/devashaa npm run deploy`
+  `VITE_API_URL=https://devashaa-api.onrender.com VITE_SOURCE_URL=https://github.com/sansbug/devashaa VITE_SUPPORT_URL=https://donate.stripe.com/6oU28t3KwcdRg3YasQ9Ve00 npm run deploy`
+  (`VITE_SUPPORT_URL` is the Stripe Payment Link behind /support — the same link as globalmacrolens.com's Support page; a `/test_` link is never shown on the live host.)
   ⚠ Copy that line exactly — a typo in `VITE_API_URL` bakes a dead API into the
   live site.
 - ⚠ **Frontend-only work still needs `git push`.** Cloudflare deploys from the

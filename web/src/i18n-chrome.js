@@ -2899,6 +2899,150 @@ export const CHROME = {
     "en": "Chara kāraka",
     "hi": "चर कारक"
   },
+  "share.open": {
+    "en": "Share",
+    "hi": "साझा करें"
+  },
+  "share.title": {
+    "en": "Share this chart",
+    "hi": "यह कुंडली साझा करें"
+  },
+  "share.close": {
+    "en": "Close",
+    "hi": "बंद करें"
+  },
+  "share.untitled": {
+    "en": "A birth chart",
+    "hi": "एक जन्म-कुंडली"
+  },
+  "share.text": {
+    "en": "lagna",
+    "hi": "लग्न"
+  },
+  "share.moon": {
+    "en": "Moon",
+    "hi": "चन्द्र"
+  },
+  "share.sun": {
+    "en": "Sun",
+    "hi": "सूर्य"
+  },
+  "share.foot": {
+    "en": "Verified positions · cited readings · nothing sold",
+    "hi": "सत्यापित स्थितियाँ · सन्दर्भित पाठ · कुछ नहीं बेचा जाता"
+  },
+  "share.err": {
+    "en": "The link could not be made:",
+    "hi": "लिंक नहीं बन सका:"
+  },
+  "share.link": {
+    "en": "Link",
+    "hi": "लिंक"
+  },
+  "share.making": {
+    "en": "making the link…",
+    "hi": "लिंक बन रहा है…"
+  },
+  "share.copied": {
+    "en": "Copied",
+    "hi": "कॉपी हो गया"
+  },
+  "share.copy": {
+    "en": "Copy",
+    "hi": "कॉपी"
+  },
+  "share.email": {
+    "en": "Email",
+    "hi": "ईमेल"
+  },
+  "share.more": {
+    "en": "More…",
+    "hi": "और…"
+  },
+  "share.note": {
+    "en": "The birth details are encrypted in this browser before the link is made; the key is in the link itself, after the #, which no server ever receives. Only someone with the whole link can open the chart — we cannot.",
+    "hi": "लिंक बनने से पहले जन्म-विवरण इसी ब्राउज़र में एन्क्रिप्ट होता है; कुंजी लिंक में # के बाद रहती है, जो किसी सर्वर तक कभी नहीं पहुँचती। पूरा लिंक पाने वाला ही कुंडली खोल सकता है — हम नहीं।"
+  },
+  "share.openErr": {
+    "en": "This shared chart could not be opened:",
+    "hi": "यह साझा कुंडली खोली नहीं जा सकी:"
+  },
+  "share.shared": {
+    "en": "A chart shared with you",
+    "hi": "आपके साथ साझा की गई कुंडली"
+  },
+  "share.save": {
+    "en": "Save to my charts",
+    "hi": "मेरी कुंडलियों में सहेजें"
+  },
+  "support.badge": {
+    "en": "Support us",
+    "hi": "सहयोग करें"
+  },
+  "support.title": {
+    "en": "Keep Devashaa free & independent",
+    "hi": "देवाशा को मुफ़्त और स्वतंत्र रखें"
+  },
+  "support.lead": {
+    "en": "Devashaa is an independent, ad-free Jyotiṣa reference: positions verified against the ephemeris, readings cited to the texts, no remedies, no consultations, nothing to sell you. If it is useful to you, a donation keeps it running and free for everyone.",
+    "hi": "देवाशा एक स्वतंत्र, विज्ञापन-रहित ज्योतिष सन्दर्भ है: एफ़ेमेरिस से सत्यापित ग्रह-स्थितियाँ, ग्रन्थों से सन्दर्भित पाठ, न उपाय, न परामर्श, न कुछ बेचने को। यदि यह आपके काम का है, तो एक दान इसे सबके लिए चलता और मुफ़्त रखता है।"
+  },
+  "support.donate": {
+    "en": "Donate via Stripe",
+    "hi": "Stripe से दान करें"
+  },
+  "support.soon": {
+    "en": "Donation link coming soon",
+    "hi": "दान-लिंक शीघ्र"
+  },
+  "support.soonBtn": {
+    "en": "Donations opening soon",
+    "hi": "दान शीघ्र खुलेंगे"
+  },
+  "support.secure": {
+    "en": "Payments are handled by Stripe — we never see or store your card details. Any amount is appreciated; choose yours at checkout.",
+    "hi": "भुगतान Stripe सँभालता है — आपके कार्ड का विवरण हम कभी नहीं देखते या रखते। कोई भी राशि सराहनीय है; चेकआउट पर अपनी राशि चुनें।"
+  },
+  "support.funds": {
+    "en": "What your support funds",
+    "hi": "आपका सहयोग किस काम आता है"
+  },
+  "support.f1": {
+    "en": "Ephemeris & sources",
+    "hi": "एफ़ेमेरिस और स्रोत"
+  },
+  "support.f1b": {
+    "en": "The Swiss Ephemeris files, the place database, and the texts and editions the readings are drawn from.",
+    "hi": "स्विस एफ़ेमेरिस फ़ाइलें, स्थान-डेटाबेस, और वे ग्रन्थ-संस्करण जिनसे पाठ लिए गए हैं।"
+  },
+  "support.f2": {
+    "en": "Hosting",
+    "hi": "होस्टिंग"
+  },
+  "support.f2b": {
+    "en": "The API that casts every chart, the edge that serves the site, the encrypted store behind accounts and shared links.",
+    "hi": "हर कुंडली बनाने वाला API, साइट परोसने वाला एज, खातों और साझा लिंकों के पीछे का एन्क्रिप्टेड भंडार।"
+  },
+  "support.f3": {
+    "en": "Development",
+    "hi": "विकास"
+  },
+  "support.f3b": {
+    "en": "New frames, new systems, the verification suite — and the things you ask for.",
+    "hi": "नए ढाँचे, नई पद्धतियाँ, सत्यापन-सूट — और जो आप माँगते हैं।"
+  },
+  "support.f4": {
+    "en": "No ads, no remedies, nothing sold",
+    "hi": "न विज्ञापन, न उपाय, न बिक्री"
+  },
+  "support.f4b": {
+    "en": "Donations keep the site independent: no advertising, no gemstones, no consultations, no paywall on a chart.",
+    "hi": "दान साइट को स्वतंत्र रखता है: न विज्ञापन, न रत्न, न परामर्श, न कुंडली पर कोई शुल्क।"
+  },
+  "support.thanks": {
+    "en": "Thank you — every contribution, big or small, genuinely keeps this going.",
+    "hi": "धन्यवाद — छोटा या बड़ा, हर योगदान सचमुच इसे चलाए रखता है।"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

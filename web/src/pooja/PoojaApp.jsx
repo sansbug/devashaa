@@ -622,7 +622,7 @@ function Desk({ lang, L, go }) {
               </div>
             )}
           </Card>
-          <VoiceStudio lang={lang} L={L} me={d} go={go} />
+          <VoiceStudio lang={lang} L={L} me={d} go={go} reload={load} />
         </>
       )}
     </>

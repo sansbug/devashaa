@@ -3079,6 +3079,38 @@ export const CHROME = {
     "en": "Pūjā & Havan",
     "hi": "पूजा एवं हवन"
   },
+  "share.hidden": {
+    "en": "birth details not included",
+    "hi": "जन्म-विवरण सम्मिलित नहीं"
+  },
+  "share.details": {
+    "en": "Include the birth details (date, time, place)",
+    "hi": "जन्म-विवरण (तिथि, समय, स्थान) सम्मिलित करें"
+  },
+  "share.details.on": {
+    "en": "They will see the date, time and place, and get the whole site for this chart — daśā, projection and yearly charts included.",
+    "hi": "वे तिथि, समय और स्थान देखेंगे, और इस कुंडली के लिए पूरी साइट पाएँगे — दशा, प्रक्षेपण और वर्षफल सहित।"
+  },
+  "share.details.off": {
+    "en": "Off: they get the finished chart — positions, strengths, yogas and readings. The date, time and place are not in the link.",
+    "hi": "बंद: उन्हें तैयार कुंडली मिलेगी — स्थितियाँ, बल, योग और फल। तिथि, समय और स्थान लिंक में नहीं हैं।"
+  },
+  "share.note.snap": {
+    "en": "This link carries the chart, not what it was cast from: no date, no time, no place, no dated periods. It is encrypted in this browser, and the key is in the link itself, after the #, which no server receives. One thing to know: a chart is a picture of the sky at a moment, so someone who studies the positions closely could still work out the date.",
+    "hi": "इस लिंक में कुंडली है, वह नहीं जिससे वह बनी: न तिथि, न समय, न स्थान, न दिनांकित दशाएँ। यह इसी ब्राउज़र में एन्क्रिप्ट होती है, और कुंजी लिंक में ही # के बाद है, जो किसी सर्वर तक नहीं जाती। एक बात जान लें: कुंडली किसी क्षण के आकाश का चित्र है, अतः जो ग्रह-स्थितियों को ध्यान से पढ़े वह तिथि फिर भी निकाल सकता है।"
+  },
+  "share.shared.snap": {
+    "en": "It was shared without its birth details: the chart, its strengths, yogas and readings are here; the timelines (daśā, projection, yearly charts, transits) are computed from the date, time and place, which were not sent.",
+    "hi": "यह जन्म-विवरण के बिना साझा की गई है: कुंडली, उसके बल, योग और फल यहाँ हैं; समय-रेखाएँ (दशा, प्रक्षेपण, वर्षफल, गोचर) तिथि, समय और स्थान से बनती हैं, जो भेजे नहीं गए।"
+  },
+  "share.meta.birth": {
+    "en": "Date · time · place of birth",
+    "hi": "जन्म की तिथि · समय · स्थान"
+  },
+  "share.meta.hidden": {
+    "en": "not shared by the sender",
+    "hi": "भेजने वाले ने साझा नहीं किया"
+  },
   "dtl.now": {
     "en": "now",
     "hi": "अभी"

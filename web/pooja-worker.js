@@ -22,6 +22,8 @@
  *   /api/pooja/rec/<id>/<seq>          PUT   one recorded chunk             (auth: the booking's pandit or admin)
  *   /api/pooja/rec/<id>                GET   how much is recorded
  *   /api/pooja/rec/<id>/play           GET   the recording, chunks streamed in order
+ *   /api/pooja/voices                  POST  add a voice the admin records for (auth: admin)
+ *   /api/pooja/voices/<pid>            DELETE remove that voice and its recordings (auth: admin)
  *   /api/pooja/chants                  GET   which clips are recorded, by whom, in which voice
  *   /api/pooja/chant/<clip>            PUT   a pandit's own recording of that clip (auth: approved pandit)
  *   /api/pooja/chant/<clip>/<pid>      GET   that recording · DELETE (auth: its pandit, or admin)
@@ -60,6 +62,12 @@
  * recording per pandit per clip; only he (or an admin) can replace or remove
  * it. The pandit's voice (male / female) comes from his profile, so a family
  * can ask for either.
+ *
+ * A VOICE WITHOUT AN ACCOUNT. A pandit the owner knows may never sign in to a
+ * website. The admin can add him as a 'voice' — a name and male / female, no
+ * login, not on the bookable roster — and record or upload his chanting for
+ * him (PUT …/chant/<clip>?for=<pid>). Such a row's id is `voice:<pid>`, which
+ * no one can sign in as.
  */
 
 const HEX32 = /^[0-9a-f]{32}$/
@@ -299,7 +307,8 @@ export async function handlePooja(request, env, ctx, authorise) {
       contact: admin || b.priest === userid ? b.contact : null,
       mine: b.priest === userid, priest_name: b.priest ? (names[b.priest] || '') : null,
     }))
-    return json({ role: admin ? 'admin' : 'priest', priest: me || null, applicants, bookings }, 200, request)
+    const voices = admin ? (await db.prepare("SELECT pid AS id, name, voice FROM pooja_priests WHERE status = 'voice' ORDER BY name").all()).results || [] : []
+    return json({ role: admin ? 'admin' : 'priest', priest: me || null, applicants, bookings, voices }, 200, request)
   }
 
   // --- bookings ----------------------------------------------------------------
@@ -394,13 +403,35 @@ export async function handlePooja(request, env, ctx, authorise) {
     }
   }
 
+  // --- voices the admin records for: a known pandit with no account ----------------
+  if (seg[2] === 'voices') {
+    if (!authed) return need()
+    if ((await roleOf(userid)) !== 'admin') return json({ error: 'Only the admin adds or removes a voice.' }, 403, request)
+    if (seg.length === 3 && request.method === 'POST') {
+      const name = clip(body?.name, 80)
+      const voice = body?.voice === 'f' ? 'f' : body?.voice === 'm' ? 'm' : ''
+      if (name.length < 2 || !voice) return json({ error: 'A name, and whether the voice is male or female, are needed.' }, 400, request)
+      const pid = newPid(), now = Date.now()
+      await db.prepare('INSERT INTO pooja_priests (userid, pid, voice, name, status, vetted_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)')
+        .bind(`voice:${pid}`, pid, voice, name, 'voice', userid, now, now).run()
+      return json({ ok: true, id: pid }, 201, request)
+    }
+    if (seg.length === 4 && request.method === 'DELETE' && PID.test(seg[3])) {
+      const row = await db.prepare("SELECT userid FROM pooja_priests WHERE pid = ? AND status = 'voice'").bind(seg[3]).first()
+      if (!row) return json({ error: 'not found' }, 404, request)
+      await forgetPandit(env, row.userid)
+      return json({ ok: true }, 200, request)
+    }
+    return json({ error: 'not found' }, 404, request)
+  }
+
   // --- the voice library: each pandit's own voice for each mantra and explanation ---
   if (seg[2] === 'chants' && request.method === 'GET') {
     const clips = {}
     if (env.REC) {
       // Who a recording is by, and in which voice, comes from the roster — so it is always current,
       // and a recording by someone no longer on the roster is not offered.
-      const who = Object.fromEntries(((await db.prepare("SELECT pid, name, voice FROM pooja_priests WHERE status = 'approved'").all()).results || []).map((p) => [p.pid, p]))
+      const who = Object.fromEntries(((await db.prepare("SELECT pid, name, voice FROM pooja_priests WHERE status IN ('approved', 'voice')").all()).results || []).map((p) => [p.pid, p]))
       let cursor
       do {
         const l = await env.REC.list({ prefix: 'chant/', cursor })
@@ -437,12 +468,21 @@ export async function handlePooja(request, env, ctx, authorise) {
       return json({ ok: true }, 200, request)
     }
     if (seg.length !== 4) return json({ error: 'not found' }, 404, request)
-    if (me?.status !== 'approved' || !me.pid) return json({ error: 'Only a pandit on the roster records for the library.' }, 403, request)
+    // Whose recording is this? One's own — or, for the admin, a pandit or a voice he is recording for.
+    let pid = me?.status === 'approved' ? me.pid : null
+    const forPid = url.searchParams.get('for')
+    if (forPid) {
+      if (!admin) return json({ error: 'Only the admin records for someone else.' }, 403, request)
+      const target = PID.test(forPid) ? await db.prepare("SELECT pid FROM pooja_priests WHERE pid = ? AND status IN ('approved', 'voice')").bind(forPid).first() : null
+      if (!target) return json({ error: 'That voice is not in the library’s roster.' }, 404, request)
+      pid = target.pid
+    }
+    if (!pid) return json({ error: 'Only a pandit on the roster records for the library.' }, 403, request)
     const len = parseInt(request.headers.get('Content-Length') || '0', 10)
     if (!len || len > MAX_CHANT) return json({ error: 'The recording is empty or too long.' }, 413, request)
     const type = (request.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase()
-    await env.REC.put(`chant/${id}/${me.pid}`, request.body, { httpMetadata: { contentType: CHANT_TYPES.includes(type) ? type : 'audio/wav' } })
-    return json({ ok: true, id: me.pid }, 200, request)
+    await env.REC.put(`chant/${id}/${pid}`, request.body, { httpMetadata: { contentType: CHANT_TYPES.includes(type) ? type : 'audio/wav' } })
+    return json({ ok: true, id: pid }, 200, request)
   }
 
   return json({ error: 'not found' }, 404, request)

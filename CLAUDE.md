@@ -81,6 +81,19 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   its header). `api/test_muhurta.py` for the engine.
 - ⚠ `public/sw.js` must never answer for `/api/*` — a cache is keyed by URL,
   not by who is signed in.
+- A machine (device) voice is off unless the family asks for it, and the wrong
+  gender is never played (`voices.js`). The owner wants human voices: the admin
+  can add a "voice" (a pandit with no account) and record or upload for him.
+
+## Sharing a chart (`/c/<id>#<key>`)
+
+By default a link carries the finished chart WITHOUT its birth details
+(`shareCodec.js snapshotOf`: an allowlist of chart fields, then a sweep for
+anything that reads like a date, time, zone or Julian day). A new top-level
+field in `/api/chart` is NOT shared until it is added to `SNAPSHOT_KEYS`. The
+recipient's view (`snap` in `App.jsx`) hides every panel that needs the birth
+details. Test: `node web/test_share.mjs` (with the local API up it checks the
+real reference chart).
 
 ## Deploying
 

@@ -1,9 +1,15 @@
 /**
  * The share card: a link that opens this chart, the card it will look like,
- * and the ways to send it. The link is made on demand (see share.js) — the
- * birth details are encrypted before they leave this browser, and the key
- * rides in the fragment, so neither our server nor anyone reading a log can
- * open it; only the person you send the whole link to can.
+ * and the ways to send it. The link is made on demand (see share.js) — what
+ * is shared is encrypted before it leaves this browser, and the key rides in
+ * the fragment, so neither our server nor anyone reading a log can open it;
+ * only the person you send the whole link to can.
+ *
+ * By default the link carries the FINISHED CHART and not the birth details:
+ * the other person sees the chart, its strengths, yogas and readings, but the
+ * date, the time and the place of birth are not in the link at all. Ticking
+ * "include the birth details" shares those instead, which gives the other
+ * person the whole site for this chart — timelines included.
  */
 import { useEffect, useState } from 'react'
 import { useLang } from './LangContext.jsx'
@@ -11,17 +17,19 @@ import { Bubble } from './DashaGlyphs.jsx'
 import { makeShareLink } from './share.js'
 
 export default function ShareCard({ chart, name, date, time, place, namer, onClose }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
+  const [details, setDetails] = useState(false)
   const [link, setLink] = useState('')
   const [err, setErr] = useState('')
   const [copied, setCopied] = useState(false)
   useEffect(() => {
     let dead = false
-    makeShareLink({ name, date, time, place })
+    setLink(''); setErr('')
+    makeShareLink({ name, date, time, place, chart, lang }, { details })
       .then((l) => { if (!dead) setLink(l) })
       .catch((e) => { if (!dead) setErr(e.message || String(e)) })
     return () => { dead = true }
-  }, [name, date, time, place])
+  }, [name, date, time, place, chart, lang, details])
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -47,7 +55,9 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
             <div className="sh-card-head">
               <span className="sh-card-brand">devashaa</span>
               <span className="sh-card-name">{name || t('share.untitled', 'A birth chart')}</span>
-              <span className="sh-card-when">{date} · {time} · {place.name.split(',')[0]}</span>
+              <span className="sh-card-when">{details
+                ? `${date} · ${time} · ${place.name.split(',')[0]}`
+                : t('share.hidden', 'birth details not included')}</span>
             </div>
             <div className="sh-card-rows">
               <div><span className="dk-rbub">{chart.lagna_rasi + 1}</span><b>{t('deck.ascendant', 'Ascendant (Lagna)')}</b><span>{rasi(chart.lagna_rasi)}</span></div>
@@ -56,6 +66,16 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
             </div>
             <div className="sh-card-foot">{t('share.foot', 'Verified positions · cited readings · nothing sold')}</div>
           </div>
+
+          <label className="sh-details">
+            <input type="checkbox" checked={details} onChange={(e) => setDetails(e.target.checked)} />
+            <span>
+              <b>{t('share.details', 'Include the birth details (date, time, place)')}</b>
+              <i>{details
+                ? t('share.details.on', 'They will see the date, time and place, and get the whole site for this chart — daśā, projection and yearly charts included.')
+                : t('share.details.off', 'Off: they get the finished chart — positions, strengths, yogas and readings. The date, time and place are not in the link.')}</i>
+            </span>
+          </label>
 
           {err ? (
             <p className="acct-err">{t('share.err', 'The link could not be made:')} {err}</p>
@@ -74,7 +94,9 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
                   <button type="button" className="sh-btn" disabled={!link} onClick={() => navigator.share({ title, text, url: link }).catch(() => {})}>{t('share.more', 'More…')}</button>
                 )}
               </div>
-              <p className="sh-note">{t('share.note', 'The birth details are encrypted in this browser before the link is made; the key is in the link itself, after the #, which no server ever receives. Only someone with the whole link can open the chart — we cannot.')}</p>
+              <p className="sh-note">{details
+                ? t('share.note', 'The birth details are encrypted in this browser before the link is made; the key is in the link itself, after the #, which no server ever receives. Only someone with the whole link can open the chart — we cannot.')
+                : t('share.note.snap', 'This link carries the chart, not what it was cast from: no date, no time, no place, no dated periods. It is encrypted in this browser, and the key is in the link itself, after the #, which no server receives. One thing to know: a chart is a picture of the sky at a moment, so someone who studies the positions closely could still work out the date.')}</p>
             </>
           )}
         </div>

@@ -11,6 +11,7 @@ import { mintIce } from './pooja-worker.js'
 import { trimSilence, encodeWav, peakOf, fadeEdges } from './src/pooja/chantAudio.js'
 import { MANTRA_STEPS, ALL_STEPS, mantraClip, explainClip, narration, textHash } from './src/pooja/guide.js'
 import { RITUALS } from './src/pooja/rituals.js'
+import { deviceVoice, genderOf } from './src/pooja/voices.js'
 
 let failed = 0
 const ok = (name, cond, detail = '') => { console.log(`  ${cond ? 'OK ' : 'XX '}${name} ${detail}`); if (!cond) failed += 1 }
@@ -88,6 +89,36 @@ console.log('\nthe voice library’s clips')
   ok('English and Hindi explanations are different clips', explainClip(null, g, 'short', 'en') !== explainClip(null, g, 'short', 'hi'))
   ok('“mantras only” has nothing to narrate', narration(RITUALS[0], g, 'none', 'en') === '')
   ok('the Gaṇeśa step is explained as the user specified', narration(null, g, 'short', 'en').includes('What is happening: Invocation of Lord Gaṇeśa.') && narration(null, g, 'short', 'en').includes('Why: Traditionally performed before beginning an auspicious ceremony'))
+}
+
+console.log('\na man’s voice or a woman’s — and never the wrong one')
+{
+  const V = (name, lang) => ({ name, lang })
+  const EN = ['en-IN', 'en-GB', 'en-US'], HI = ['hi-IN'], SA = ['sa', 'hi-IN', 'hi']
+  const chromeWin = [V('Microsoft David - English (United States)', 'en-US'), V('Microsoft Mark - English (United States)', 'en-US'), V('Microsoft Zira - English (United States)', 'en-US'),
+    V('Google US English', 'en-US'), V('Google UK English Female', 'en-GB'), V('Google UK English Male', 'en-GB'), V('Google हिन्दी', 'hi-IN'), V('Google Deutsch', 'de-DE')]
+  const edge = [V('Microsoft Neerja Online (Natural) - English (India)', 'en-IN'), V('Microsoft Prabhat Online (Natural) - English (India)', 'en-IN'),
+    V('Microsoft Swara Online (Natural) - Hindi (India)', 'hi-IN'), V('Microsoft Madhur Online (Natural) - Hindi (India)', 'hi-IN'), V('Microsoft Sonia Online (Natural) - English (United Kingdom)', 'en-GB')]
+  const android = [V('English India', 'en_IN'), V('Hindi India', 'hi_IN'), V('English United States', 'en_US')]
+  const iphone = [V('Rishi', 'en-IN'), V('Veena', 'en-IN'), V('Lekha', 'hi-IN'), V('Samantha', 'en-US'), V('Daniel', 'en-GB')]
+  const onlyHerEnIn = [V('Microsoft Heera - English (India)', 'en-IN'), V('Microsoft David - English (United States)', 'en-US')]
+
+  ok('names tell: Female before Male, since "Female" contains "male"', genderOf(V('Google UK English Female')) === 'f' && genderOf(V('Google UK English Male')) === 'm'
+    && genderOf(V('Microsoft Madhur Online (Natural) - Hindi (India)')) === 'm' && genderOf(V('Microsoft Swara Online (Natural) - Hindi (India)')) === 'f' && genderOf(V('English India')) === '')
+  ok('Chrome on Windows, English: Male → a man, Female → a woman', genderOf(deviceVoice(chromeWin, EN, 'm').voice) === 'm' && genderOf(deviceVoice(chromeWin, EN, 'f').voice) === 'f')
+  const hiM = deviceVoice(chromeWin, HI, 'm')
+  ok('Chrome on Windows, Hindi: it has only a woman’s voice — Male plays NOTHING, and says why', hiM.voice === null && hiM.how === 'other')
+  ok('…and Female plays her', deviceVoice(chromeWin, HI, 'f').voice.name === 'Google हिन्दी')
+  ok('…and the mantra aid follows the same rule', deviceVoice(chromeWin, SA, 'm').voice === null && deviceVoice(chromeWin, SA, 'f').how === 'exact')
+  ok('Edge: both languages have both, and the natural voices are chosen', deviceVoice(edge, EN, 'm').voice.name.includes('Prabhat') && deviceVoice(edge, EN, 'f').voice.name.includes('Neerja')
+    && deviceVoice(edge, HI, 'm').voice.name.includes('Madhur') && deviceVoice(edge, HI, 'f').voice.name.includes('Swara'))
+  ok('a man is found in another English before a woman is settled for', deviceVoice(onlyHerEnIn, EN, 'm').voice.name.includes('David') && deviceVoice(onlyHerEnIn, EN, 'f').voice.name.includes('Heera'))
+  const a = deviceVoice(android, EN, 'm')
+  ok('Android names say nothing of gender: the voice is used, and reported as unknown — not passed off as male', a.how === 'unknown' && a.voice.name === 'English India')
+  ok('iPhone: Rishi for Male, Veena for Female; Hindi has only Lekha', deviceVoice(iphone, EN, 'm').voice.name === 'Rishi' && deviceVoice(iphone, EN, 'f').voice.name === 'Veena'
+    && deviceVoice(iphone, HI, 'm').voice === null && deviceVoice(iphone, HI, 'f').voice.name === 'Lekha')
+  ok('no voice for the language at all', deviceVoice([V('Google Deutsch', 'de-DE')], HI, 'm').how === 'none' && deviceVoice([], EN, 'f').how === 'none')
+  ok('a voice of another language is never borrowed', deviceVoice(chromeWin, HI, 'f').voice.lang === 'hi-IN' && deviceVoice(chromeWin, EN, 'm').voice.lang.startsWith('en'))
 }
 
 console.log('\nthe offline cache (service worker)')

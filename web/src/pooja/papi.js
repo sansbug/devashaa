@@ -57,7 +57,10 @@ export const api = {
   /** The voice library: which clips are recorded, by whom and in which voice — and their audio. */
   chants: () => call('/chants').then((j) => j.clips || {}).catch(() => ({})),
   chantUrl: (clip, pid, at) => `${BASE}/chant/${clip}/${pid}${at ? `?v=${at}` : ''}`,
-  putChant: (clip, blob) => call(`/chant/${clip}`, { method: 'PUT', blob, type: 'audio/wav' }),
+  putChant: (clip, blob, forPid) => call(`/chant/${clip}${forPid ? `?for=${forPid}` : ''}`, { method: 'PUT', blob, type: 'audio/wav' }),
+  /** A voice the admin records for: a known pandit with no account of his own. */
+  addVoice: (name, voice) => call('/voices', { method: 'POST', body: { name, voice } }),
+  delVoice: (pid) => call(`/voices/${pid}`, { method: 'DELETE' }),
   delChant: (clip, pid) => call(`/chant/${clip}/${pid}`, { method: 'DELETE' }),
   /** STUN, and a short-lived TURN relay credential when the service has one, for this room. */
   ice: (id) => call(`/room/${id}/ice`),

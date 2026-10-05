@@ -101,6 +101,27 @@ ok('the mantra is unrecorded again; the explanation remains', !lib[M] && (lib[X]
 ok('a removed chant is gone', (await call(`/api/pooja/chant/${M}/${meA.priest.pid}`)).status === 404)
 await call(`/api/pooja/chant/${X}/${meA.priest.pid}`, { method: 'DELETE', as: A })
 
+console.log('\na voice the admin records for (a known pandit with no account)')
+ok('only the admin adds a voice', (await call('/api/pooja/voices', { method: 'POST', as: A, body: { name: 'X Y', voice: 'm' } })).status === 403
+  && (await call('/api/pooja/voices', { method: 'POST', body: { name: 'X Y', voice: 'm' } })).status === 401)
+ok('a voice needs a name and male / female', (await call('/api/pooja/voices', { method: 'POST', as: ADMIN, body: { name: 'Guru Voice (test)' } })).status === 400)
+const nv = await call('/api/pooja/voices', { method: 'POST', as: ADMIN, body: { name: 'Guru Voice (test)', voice: 'm' } })
+const VP = nv.body.id
+ok('the admin adds one', nv.status === 201 && /^[0-9a-f]{16}$/.test(VP || ''))
+ok('it is on the admin’s desk', (await call('/api/pooja/desk', { as: ADMIN })).body.voices.some((v) => v.id === VP && v.voice === 'm'))
+ok('…not on a pandit’s desk, and not on the bookable roster', (await call('/api/pooja/desk', { as: A })).body.voices.length === 0 && !(await call('/api/pooja/priests')).body.priests.some((p) => p.id === VP))
+ok('a pandit cannot record in someone else’s name', (await call(`/api/pooja/chant/${M}?for=${VP}`, { method: 'PUT', as: A, raw: wa })).status === 403)
+ok('the admin cannot record for a voice that is not there', (await call(`/api/pooja/chant/${M}?for=0123456789abcdef`, { method: 'PUT', as: ADMIN, raw: wa })).status === 404)
+const forV = await call(`/api/pooja/chant/${M}?for=${VP}`, { method: 'PUT', as: ADMIN, raw: wa })
+ok('the admin records (or uploads) for him', forV.status === 200 && forV.body.id === VP)
+ok('the library offers it under his name and voice', ((await call('/api/pooja/chants')).body.clips[M] || []).some((c) => c.id === VP && c.by === 'Guru Voice (test)' && c.voice === 'm'))
+ok('it plays', (await call(`/api/pooja/chant/${M}/${VP}`)).body.length === wa.length)
+ok('no family can book a voice', (await call(`/api/pooja/bookings/${(await call('/api/pooja/bookings', { method: 'POST', body: { ritual: 'ganesh', starts_at: '2026-12-05T09:30', priest: VP, name: 'Voice test', contact: 'contact-voice' } })).body.id}`)).body.priest === null)
+ok('only the admin removes a voice', (await call(`/api/pooja/voices/${VP}`, { method: 'DELETE', as: A })).status === 403)
+ok('the admin removes him', (await call(`/api/pooja/voices/${VP}`, { method: 'DELETE', as: ADMIN })).status === 200)
+ok('…and his recordings go with him', !(await call('/api/pooja/chants')).body.clips[M] && (await call(`/api/pooja/chant/${M}/${VP}`)).status === 404
+  && !(await call('/api/pooja/desk', { as: ADMIN })).body.voices.some((v) => v.id === VP))
+
 console.log('\nbookings and the room')
 const bk = await call('/api/pooja/bookings', { method: 'POST', body: { ritual: 'ganesh', starts_at: '2026-12-01T09:30', tz: 'Asia/Kolkata', priest: meA.priest.pid, name: 'Test family', contact: 'family-contact-xyz', notes: 'gotra: test' } })
 ok('a family asks for pandit A by his public id', bk.status === 201)

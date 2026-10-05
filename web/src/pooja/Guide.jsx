@@ -13,7 +13,10 @@
  *   machine: it is shown, to be chanted from the text. (A device-voice reading
  *   can be switched on as a pronunciation aid; it is off unless asked for.)
  *   The explanation is likewise the pandit's own recording where he has made
- *   one, and only otherwise the device's voice, labelled as such.
+ *   one. The device's own voice — a machine's — is used for neither unless the
+ *   family asks for it, and then it is labelled as what it is. If the family
+ *   asked for a man's voice and the device has only a woman's (or the reverse),
+ *   the wrong one is not played: the panel says the device has none.
  *
  *   Live — the pandit chants in the room and moves everyone's screen to the
  *   step he is on; this panel then only explains (aloud too, if asked — for
@@ -22,6 +25,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MODES, VOICE_LANGS, scriptFor, explain, plainRoman, narration, mantraClip, explainClip } from './guide.js'
 import { api } from './papi.js'
+import { deviceVoice } from './voices.js'
 
 const PREFS = 'pooja.guide'
 const loadPrefs = () => { try { return JSON.parse(localStorage.getItem(PREFS)) || {} } catch { return {} } }
@@ -40,21 +44,6 @@ function useVoices() {
     return () => { s.removeEventListener && s.removeEventListener('voiceschanged', read) }
   }, [])
   return v
-}
-// A device does not say whether a voice is a man's or a woman's; the common ones are known by name.
-const FEMALE = /female|swara|neerja|heera|kalpana|ananya|aditi|lekha|veena|zira|aria|jenny|sonia|libby|samantha|karen|moira|tessa|nicky|google हिन्दी|google us english/i
-const MALE = /(^|[^e])male|madhur|prabhat|ravi|hemant|rishi|david|mark|guy|ryan|daniel|alex|aaron|george|james/i
-const genderOf = (v) => (FEMALE.test(v.name) ? 'f' : MALE.test(v.name) ? 'm' : '')
-/** The best device voice for these language tags: of the gender asked for if the device has one, natural if it has one. */
-function voiceFor(voices, tags, gender) {
-  for (const tag of tags) {
-    const hits = voices.filter((v) => (v.lang || '').replace('_', '-').toLowerCase().startsWith(tag.toLowerCase()))
-    if (!hits.length) continue
-    const pool = hits.filter((v) => genderOf(v) === gender)
-    const from = pool.length ? pool : hits
-    return from.find((v) => /natural|neural/i.test(v.name)) || from.find((v) => /google/i.test(v.name)) || from[0]
-  }
-  return null
 }
 const sentences = (text) => (String(text).match(/[^.!?।॥\n]+[.!?।॥]*/g) || []).map((x) => x.replace(/[।॥]+/g, '').trim()).filter(Boolean)
 
@@ -85,7 +74,8 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
   const [glang, setGlang] = useState(VOICE_LANGS.some((v) => v.key === prefs.glang) ? prefs.glang : (lang === 'hi' ? 'hi' : 'en'))
   const [gender, setGender] = useState(prefs.gender === 'f' ? 'f' : 'm')
   const [auto, setAuto] = useState(!!prefs.auto)
-  const [aid, setAid] = useState(!!prefs.aid)    // let the device voice read a mantra no pandit has recorded
+  const [machine, setMachine] = useState(!!prefs.machine)  // let the device voice read an explanation no pandit has recorded
+  const [aid, setAid] = useState(!!prefs.aid)    // …and a mantra, as a pronunciation aid
   const [voice, setVoice] = useState(false)      // read aloud — always starts off; a tap turns it on
   const [i, setI] = useState(0)
   const [speaking, setSpeaking] = useState('')   // '' | 'explain' | 'mantra'
@@ -93,12 +83,13 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
   const audio = useRef(null)
   const voices = useVoices()
   const clips = useClips()
-  const exVoice = useMemo(() => voiceFor(voices, VOICE_LANGS.find((v) => v.key === glang).bcp, gender), [voices, glang, gender])
-  const mantraVoice = useMemo(() => voiceFor(voices, ['sa', 'hi-IN', 'hi'], gender), [voices, gender])
+  const ex = useMemo(() => deviceVoice(voices, VOICE_LANGS.find((v) => v.key === glang).bcp, gender), [voices, glang, gender])
+  const mv = useMemo(() => deviceVoice(voices, ['sa', 'hi-IN', 'hi'], gender), [voices, gender])
+  const exVoice = ex.voice, mantraVoice = mv.voice
   const G = (o) => (o ? (o[glang] || o.en) : '')
   const T = (en, hi) => (glang === 'hi' ? hi : en)
 
-  useEffect(() => { savePrefs({ mode, glang, gender, auto, aid }) }, [mode, glang, gender, auto, aid])
+  useEffect(() => { savePrefs({ mode, glang, gender, auto, machine, aid }) }, [mode, glang, gender, auto, machine, aid])
   // The pandit moved on: follow him.
   useEffect(() => { if (remote != null && remote >= 0 && remote < total) setI(remote) }, [remote, total])
 
@@ -107,6 +98,12 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
   const parts = step ? explain(step, mode, glang) : []
   // A recording in the voice asked for; failing that, whoever has recorded it.
   const pick = (id) => { const list = clips[id] || []; return list.find((c) => c.voice === gender) || list[0] || null }
+  // A person's chant in the other voice is still offered — a real chant beats silence — but never unannounced.
+  const otherVoice = (rec) => (rec && rec.voice && rec.voice !== gender
+    ? (gender === 'm'
+      ? T(' — no man’s voice has recorded this yet', ' — इसे अभी किसी पुरुष स्वर ने रिकॉर्ड नहीं किया')
+      : T(' — no woman’s voice has recorded this yet', ' — इसे अभी किसी स्त्री स्वर ने रिकॉर्ड नहीं किया'))
+    : '')
   const chantId = step && step.mantra ? mantraClip(step) : null
   const chant = chantId ? pick(chantId) : null
   const toldId = told ? explainClip(ritual, step, mode, glang) : null
@@ -155,7 +152,7 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
   const soundExplanation = async (token) => {
     if (!told) return
     if (toldBy && await playClip(token, toldId, toldBy, 'explain')) return
-    if (alive(token)) await say(token, step ? told : `${T('The purpose of this ceremony', 'इस अनुष्ठान का उद्देश्य')}. ${told}`, exVoice, 0.95, 'explain')
+    if (machine && alive(token)) await say(token, step ? told : `${T('The purpose of this ceremony', 'इस अनुष्ठान का उद्देश्य')}. ${told}`, exVoice, 0.95, 'explain')
   }
   /** The mantra: a pandit's chant; else — only if asked for — the device voice as a pronunciation aid. True if anything sounded. */
   const soundMantra = async (token) => {
@@ -195,7 +192,7 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
       }
     })()
     return () => { run.current += 1; const s = synth(); try { s && s.cancel() } catch { /* idle */ } try { audio.current && audio.current.pause() } catch { /* idle */ } }
-  }, [voice, i, mode, glang, gender, aid, exVoice, mantraVoice, chant && chant.id, toldBy && toldBy.id])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [voice, i, mode, glang, gender, machine, aid, exVoice, mantraVoice, chant && chant.id, toldBy && toldBy.id])  // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => hush(), [])  // eslint-disable-line react-hooks/exhaustive-deps
 
   const behind = live && !canLead && remote != null && remote !== i
@@ -247,7 +244,7 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
             {!live && (
               <p className="pg-src">
                 {chant
-                  ? <><button type="button" className="pg-hear" onClick={hearMantra}>▶ {T('Hear the chant', 'मंत्रोच्चार सुनें')}</button> ♪ {T('chanted by', 'स्वर')} <b>{chant.by}</b></>
+                  ? <><button type="button" className="pg-hear" onClick={hearMantra}>▶ {T('Hear the chant', 'मंत्रोच्चार सुनें')}</button> ♪ {T('chanted by', 'स्वर')} <b>{chant.by}</b>{otherVoice(chant)}</>
                   : <>{T('No pandit has recorded this mantra yet — chant it from the text.', 'इस मंत्र का उच्चारण अभी किसी पंडित जी ने रिकॉर्ड नहीं किया — पाठ देखकर स्वयं बोलें।')}
                       {aid && mantraVoice && <> <button type="button" className="pg-hear" onClick={hearMantra}>▶ {T('Pronunciation aid', 'उच्चारण सहायता')}</button></>}</>}
               </p>
@@ -267,10 +264,18 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
         )}
         {voice && told && (
           <p className="pg-src pg-toldby">{toldBy
-            ? <>♪ {T('explained by', 'व्याख्या')} <b>{toldBy.by}</b></>
-            : exVoice
-              ? T('Read by your device’s voice. A pandit’s own voice replaces it as each explanation is recorded.', 'आपके उपकरण की आवाज़ में। जैसे-जैसे हर व्याख्या रिकॉर्ड होगी, पंडित जी की अपनी आवाज़ इसकी जगह लेगी।')
-              : T('This device has no voice for that language — the explanation is shown, not read.', 'इस उपकरण में उस भाषा की आवाज़ नहीं है — व्याख्या दिखाई जा रही है, पढ़ी नहीं जा रही।')}</p>
+            ? <>♪ {T('explained by', 'व्याख्या')} <b>{toldBy.by}</b>{otherVoice(toldBy)}</>
+            : !machine
+              ? T('No pandit has recorded this explanation yet — it is shown, not read. (A machine voice can be switched on below.)', 'यह व्याख्या अभी किसी पंडित जी ने रिकॉर्ड नहीं की — यह दिखाई जा रही है, पढ़ी नहीं जा रही। (मशीन की आवाज़ नीचे चालू की जा सकती है।)')
+              : ex.how === 'exact'
+                ? `${T('A machine voice, from your device', 'मशीन की आवाज़, आपके उपकरण से')}: ${exVoice.name}.`
+                : ex.how === 'unknown'
+                  ? `${T('A machine voice, from your device', 'मशीन की आवाज़, आपके उपकरण से')}: ${exVoice.name}. ${T('This device does not say whether its voices are a man’s or a woman’s, so the choice above cannot be applied to it.', 'यह उपकरण नहीं बताता कि उसकी आवाज़ें पुरुष की हैं या स्त्री की, अतः ऊपर का चुनाव इस पर लागू नहीं हो सकता।')}`
+                  : ex.how === 'other'
+                    ? (gender === 'm'
+                      ? T('This device has no male voice for this language, only a female one — so nothing is read. Choose Female above, or read from the screen.', 'इस उपकरण में इस भाषा की पुरुष आवाज़ नहीं है, केवल स्त्री की — इसलिए कुछ पढ़ा नहीं जा रहा। ऊपर "स्त्री" चुनें, या स्क्रीन से पढ़ें।')
+                      : T('This device has no female voice for this language, only a male one — so nothing is read. Choose Male above, or read from the screen.', 'इस उपकरण में इस भाषा की स्त्री आवाज़ नहीं है, केवल पुरुष की — इसलिए कुछ पढ़ा नहीं जा रहा। ऊपर "पुरुष" चुनें, या स्क्रीन से पढ़ें।'))
+                    : T('This device has no voice for that language — the explanation is shown, not read.', 'इस उपकरण में उस भाषा की आवाज़ नहीं है — व्याख्या दिखाई जा रही है, पढ़ी नहीं जा रही।')}</p>
         )}
 
         <footer>
@@ -282,11 +287,17 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
         </footer>
       </article>
 
-      {!live && (
-        <label className="pg-aid"><input type="checkbox" checked={aid} onChange={(e) => setAid(e.target.checked)} /> {L(
-          'Where no pandit has recorded a mantra, let my device’s voice read it as a pronunciation aid (it is a machine reading, not a chant).',
-          'जहाँ किसी पंडित जी ने मंत्र रिकॉर्ड नहीं किया, वहाँ मेरे उपकरण की आवाज़ उसे उच्चारण-सहायता के रूप में पढ़े (यह मशीन का पाठ है, मंत्रोच्चार नहीं)।')}</label>
-      )}
+      <fieldset className="pg-machine">
+        <legend>{L('Where no pandit has recorded yet', 'जहाँ अभी किसी पंडित जी ने रिकॉर्ड नहीं किया')}</legend>
+        <label className="pg-aid"><input type="checkbox" checked={machine} onChange={(e) => setMachine(e.target.checked)} /> {L(
+          'let my device’s voice read the explanation — a machine voice, off unless you ask for it',
+          'व्याख्या मेरे उपकरण की आवाज़ में पढ़ी जाए — यह मशीन की आवाज़ है, माँगे बिना चालू नहीं होती')}</label>
+        {!live && (
+          <label className="pg-aid"><input type="checkbox" checked={aid} onChange={(e) => setAid(e.target.checked)} /> {L(
+            'and let it read the mantra as a pronunciation aid — a machine reading, not a chant',
+            'और मंत्र को उच्चारण-सहायता के रूप में पढ़े — यह मशीन का पाठ है, मंत्रोच्चार नहीं')}</label>
+        )}
+      </fieldset>
       <p className="pu-note pg-note">{L(
         'The explanations say what each step is and why it is done; they are not word-for-word translations of the Sanskrit. Rites differ by region and family — where a pandit leads, his order of steps stands above this one.',
         'व्याख्या बताती है कि हर चरण क्या है और क्यों किया जाता है; यह संस्कृत का शब्दशः अनुवाद नहीं है। विधि क्षेत्र और कुल से बदलती है — जहाँ पंडित जी करा रहे हों, वहाँ उनका क्रम ही मान्य है।')}</p>

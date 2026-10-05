@@ -35,7 +35,9 @@ const HEX64 = /^[0-9a-f]{64}$/
 const USERID = /^(?:[a-z0-9][a-z0-9._-]{2,31}|[a-z0-9._%+-]{1,64}@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24})$/
 const MAX_BLOB = 64 * 1024
 const MAX_PROFILES = 200
-const MAX_SHARE = 8 * 1024
+// A share is either the four birth details (a few hundred bytes) or a finished chart without them
+// (~40 KB once squeezed and sealed; ~190 KB from a browser that cannot squeeze).
+const MAX_SHARE = 256 * 1024
 const SHARE_ID = /^[0-9a-f]{32}$/
 
 function corsHeaders(request) {

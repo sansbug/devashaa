@@ -314,3 +314,18 @@
 .pu-tagline { font-size: clamp(.84rem, 1.8vw, .96rem); margin-bottom: .25rem; }
 .pu-hero .pu-lead { font-size: .76rem; line-height: 1.45; max-width: 37rem; margin-bottom: .55rem; }
 .pu-hero-btns .go, .pu-hero-btns .pu-ghost { padding: .4rem .9rem; font-size: .8rem; }
+
+/* ── the guide: a machine voice only if asked for ─────────────────────────── */
+.pg-machine { margin: 0; padding: .45rem .7rem .55rem; border: 1px dashed var(--line); border-radius: 10px; display: grid; gap: .3rem; }
+.pg-machine legend { padding: 0 .35rem; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--dim); }
+
+/* ── the voice library: voices the admin records for ──────────────────────── */
+.vs-voices { border: 1px solid var(--line); border-radius: 10px; padding: .6rem .8rem .7rem; margin-bottom: .8rem; background: var(--sunken); }
+.vs-voices-h { margin: 0; font-family: Georgia, serif; font-weight: 600; font-size: .95rem; }
+.vs-voices .pu-note { margin: .2rem 0 .5rem; }
+.vs-voice-list { list-style: none; margin: 0 0 .5rem; padding: 0; display: flex; gap: .3rem 1.1rem; flex-wrap: wrap; font-size: .84rem; }
+.vs-addvoice { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.vs-addvoice input, .vs-addvoice select, .vs-as select { font: inherit; font-size: .84rem; padding: .38rem .55rem; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+.vs-addvoice input { flex: 1; min-width: 12rem; }
+.vs-addvoice .pu-ghost { padding: .38rem .8rem; font-size: .8rem; }
+.vs-as { display: inline-flex; align-items: center; gap: .45rem; font-size: .74rem; color: var(--dim); }

@@ -3033,3 +3033,9 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .site-tabs a { font-size: .8rem; color: var(--ink); text-decoration: none; padding: .32rem .95rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
 .site-tabs a:hover { border-color: var(--accent); color: var(--accent); }
 .site-tabs a.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+/* Share: with or without the birth details. */
+.sh-details { display: flex; gap: .55rem; align-items: flex-start; margin: .2rem 0 .7rem; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 10px; background: var(--sunken); cursor: pointer; }
+.sh-details input { margin-top: .2rem; flex: none; }
+.sh-details b { display: block; font-size: .84rem; font-weight: 600; }
+.sh-details i { display: block; font-style: normal; font-size: .74rem; color: var(--dim); line-height: 1.5; margin-top: .1rem; }

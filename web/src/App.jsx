@@ -254,7 +254,12 @@ export default function App() {
     if (!m || !key) return
     let dead = false
     openShare(m[1], key)
-      .then((p) => { if (!dead) { setSharedIn(true); useProfile(p) } })
+      .then((p) => {
+        if (dead) return
+        setSharedIn(true)
+        if (p.kind === 'snapshot') openSnapshot(p)
+        else useProfile(p)
+      })
       .catch((e) => { if (!dead) setError(`${t('share.openErr', 'This shared chart could not be opened:')} ${e.message || e}`) })
     return () => { dead = true }
   }, [])  // eslint-disable-line react-hooks/exhaustive-deps
@@ -282,6 +287,10 @@ export default function App() {
   const [activeProfile, setActiveProfile] = useState(null)
   const [shareOpen, setShareOpen] = useState(false)
   const [sharedIn, setSharedIn] = useState(false)   // this chart arrived by a share link
+  // …and it arrived WITHOUT its birth details: the finished chart is all there
+  // is. Nothing that is computed from a date, a time or a place can be shown,
+  // because this browser was never given them.
+  const [snap, setSnap] = useState(false)
   // The most-viewed saved chart is the one that comes up by default. Views
   // are counted per profile id in this browser; ties go to the newer chart.
   const restored = useRef(false)
@@ -495,6 +504,7 @@ export default function App() {
 
   async function submit(e) {
     e.preventDefault()
+    setSnap(false)
     setError(''); setBusy(true); setChart(null)
     try {
       const r = await fetch(`${API}/api/chart`, {
@@ -523,7 +533,17 @@ export default function App() {
   }
 
   /** Load a saved chart back into the form and cast it straight away. */
+  function openSnapshot(p) {
+    setName(p.name || ''); setDate(''); setTime(''); setPlace(null); setActiveProfile(null)
+    setError(''); setTransitOn(false); setTransit(null)
+    setSection('overview')
+    setStyle((st) => (st === 'panchang' ? 'north' : st))
+    setSnap(true)
+    setChart({ ...p.chart, name: p.name || '' })
+  }
+
   async function useProfile(p) {
+    setSnap(false)
     if (p.id) bumpViews(p.id)
     setName(p.name || ''); setDate(p.date); setTime(p.time); setPlace(p.place)
     setActiveProfile(p.id)
@@ -745,10 +765,13 @@ export default function App() {
       {error && <div className="error">{error}</div>}
       {sharedIn && chart && (
         <div className="shared-note" role="note">
-          <span>↗ {t('share.shared', 'A chart shared with you')}{chart.name ? ` — ${chart.name}` : ''}.</span>
-          <button type="button" className="profile-x sh-save" onClick={() => {
-            const saved = saveProfile({ name, date, time, place }); setProfiles(saved); setActiveProfile(saved[0]?.id ?? null); setSharedIn(false)
-          }}>{t('share.save', 'Save to my charts')}</button>
+          <span>↗ {t('share.shared', 'A chart shared with you')}{chart.name ? ` — ${chart.name}` : ''}.
+            {snap && <> {t('share.shared.snap', 'It was shared without its birth details: the chart, its strengths, yogas and readings are here; the timelines (daśā, projection, yearly charts, transits) are computed from the date, time and place, which were not sent.')}</>}</span>
+          {!snap && (
+            <button type="button" className="profile-x sh-save" onClick={() => {
+              const saved = saveProfile({ name, date, time, place }); setProfiles(saved); setActiveProfile(saved[0]?.id ?? null); setSharedIn(false)
+            }}>{t('share.save', 'Save to my charts')}</button>
+          )}
         </div>
       )}
       {shareOpen && chart && place && (
@@ -765,6 +788,7 @@ export default function App() {
           <section className="meta" id="rg-positions">
             <div className="meta-head">
               <h2>{chart.name || 'Chart'}</h2>
+              {!snap && (
               <div className="rg-open-wrap">
                 <button type="button" className="rg-open sh-open" onClick={() => setShareOpen(true)}>
                   ↗ {t('share.open', 'Share')}
@@ -784,8 +808,19 @@ export default function App() {
                   </div>
                 )}
               </div>
+              )}
             </div>
             <div className="dk-table-wrap meta-table-wrap">
+              {snap ? (
+              <table className="dk-table meta-table">
+                <thead><tr><th>Lagna</th><th>{t('share.meta.birth', 'Date · time · place of birth')}</th><th>Ayanāṁśa</th></tr></thead>
+                <tbody><tr>
+                  <td className="mc-lagna">{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
+                  <td>{t('share.meta.hidden', 'not shared by the sender')}</td>
+                  <td>{chart.ayanamsa}</td>
+                </tr></tbody>
+              </table>
+              ) : (
               <table className="dk-table meta-table">
                 <thead><tr><th>Lagna</th><th>Local</th><th>Zone</th><th>UTC</th><th>JD</th><th>Ayanāṁśa</th></tr></thead>
                 <tbody><tr>
@@ -797,6 +832,7 @@ export default function App() {
                   <td className="dk-num">{fmtAyan(chart.ayanamsa_value)}</td>
                 </tr></tbody>
               </table>
+              )}
             </div>
           </section>
 
@@ -809,8 +845,10 @@ export default function App() {
                         onClick={() => setStyle('north')}>North Indian</button>
                 <button type="button" className={style === 'wheel' ? 'on' : ''}
                         onClick={() => setStyle('wheel')}>Sky wheel</button>
-                <button type="button" className={style === 'panchang' ? 'on' : ''}
-                        onClick={() => setStyle('panchang')}>{t('panchang.tab', 'Pañcāṅga')}</button>
+                {!snap && (
+                  <button type="button" className={style === 'panchang' ? 'on' : ''}
+                          onClick={() => setStyle('panchang')}>{t('panchang.tab', 'Pañcāṅga')}</button>
+                )}
               </div>
               {style !== 'panchang' && (
                 <div className="vargas">
@@ -828,6 +866,7 @@ export default function App() {
                   <span className="varga-tier" title={VARGA_SIG_NOTE}>traditional</span>
                 </div>
               )}
+              {!snap && (
               <form className="ask-inline" role="search"
                     onSubmit={(e) => {
                       e.preventDefault()
@@ -840,6 +879,7 @@ export default function App() {
                        aria-label={t('explain.title', 'Ask your chart')} />
                 <button type="submit">{t('explain.ask', 'Ask')}</button>
               </form>
+              )}
             </div>
             <div className="chart-figure">
               {style === 'panchang' ? (
@@ -894,7 +934,7 @@ export default function App() {
                 combust={combust}
                 transit={transit}
                 transitOn={transitOn}
-                setTransitOn={setTransitOn}
+                setTransitOn={snap ? () => {} : setTransitOn}
                 transitDate={transitDate}
                 setTransitDate={setTransitDate}
                 transitBusy={transitBusy}
@@ -956,7 +996,10 @@ export default function App() {
               ['dasha', t('sec.dasha', 'Daśā')],
               ['varsha', t('sec.varsha', 'Varṣaphala')],
               ['classical', t('sec.classical', 'Classical')],
-              ['reference', t('sec.reference', 'Reference')]].map(([id, label]) => (
+              ['reference', t('sec.reference', 'Reference')]]
+              // a chart shared without its birth details has no timelines to show
+              .filter(([id]) => !snap || !['projection', 'explain', 'dasha', 'varsha'].includes(id))
+              .map(([id, label]) => (
               <button type="button" key={id} role="tab" aria-selected={section === id}
                       className={'sec-pill' + (section === id ? ' on' : '')}
                       onClick={() => setSection(id)}>{label}</button>
@@ -1003,15 +1046,15 @@ export default function App() {
             <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
 
-          {section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
+          {!snap && section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
 
-          {section === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
+          {!snap && section === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
 
-          {section === 'varsha' && (
+          {!snap && section === 'varsha' && (
             <VarshaphalPanel date={date} time={time} place={place} namer={namer} chartStyle={style} />
           )}
 
-          {section === 'dasha' && (
+          {!snap && section === 'dasha' && (
           <section className="table-panel" id="rg-dasha">
             <h3>{t('dasha.title')}</h3>
             <DashaTree

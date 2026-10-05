@@ -78,13 +78,15 @@ function PoojaSources({ hi }) {
   const [d, setD] = useState(null)
   useEffect(() => {
     let dead = false
-    Promise.all([import('./pooja/sources.json'), import('./pooja/guide.js'), import('./pooja/rituals.js')])
-      .then(([s, g, r]) => { if (!dead) setD({ src: s.default, guide: g, rituals: r }) })
+    Promise.all([import('./pooja/sources.json'), import('./pooja/guide.js'), import('./pooja/rituals.js'), import('./pooja/chalisa.js')])
+      .then(([s, g, r, c]) => { if (!dead) setD({ src: s.default, guide: g, rituals: r, chalisa: c }) })
       .catch(() => {})
     return () => { dead = true }
   }, [])
   if (!d) return null
-  const { src, guide, rituals } = d
+  const { src, guide, rituals, chalisa } = d
+  const bhav = chalisa.BHAV_SOURCE
+  const cv = Object.values(chalisa.CHALISA_STEPS).flatMap((s) => s.mantra.verses)
   const title = (o) => (o ? (hi ? o.hi || o.en : o.en) : '')
   const stepTitle = Object.fromEntries(guide.ALL_STEPS.map((s) => [s.id, title(s.title)]))
   const used = {}
@@ -114,6 +116,10 @@ function PoojaSources({ hi }) {
           </tbody>
         </table>
       </div>
+      <h3>{hi ? 'श्री हनुमान चालीसा — हर छंद का भाव' : 'Śrī Hanumān Cālīsā — the gist of each verse'}</h3>
+      <p>{hi
+        ? `चालीसा के ${cv.length} छंदों में से हर एक के नीचे उसका भाव हिन्दी में है। ${bhav.after.hi}: ${bhav.edition.hi} (पृ. ${cv[0].page}–${cv[cv.length - 1].page}; हर छंद का पृष्ठ संदर्भ चालू होने पर उसके साथ दिखता है)। जो छंद स्मरण या पाठ का फल बताते हैं, उनका भाव कवि के कथन के रूप में दिया गया है — कोई वादा नहीं।`
+        : `Each of the Cālīsā's ${cv.length} verses carries its gist in Hindi — ${bhav.after.en}: ${bhav.edition.en} (pp. ${cv[0].page}–${cv[cv.length - 1].page}; each verse's page is shown beside it when references are switched on). Where a verse says what remembrance or recitation brings, its gist reports it as the poet's word — nothing is promised.`}</p>
     </section>
   )
 }

@@ -27,6 +27,8 @@ import { MODES, VOICE_LANGS, scriptFor, explain, romanOf, narration, mantraClip,
 import { api } from './papi.js'
 import { deviceVoice } from './voices.js'
 import Scripture, { versesFor } from './Scripture.jsx'
+import { BHAV_SOURCE } from './chalisa.js'
+import { refsOn } from '../refs.js'
 
 const PREFS = 'pooja.guide'
 const loadPrefs = () => { try { return JSON.parse(localStorage.getItem(PREFS)) || {} } catch { return {} } }
@@ -212,7 +214,7 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
         </div>
       </div>
       <p className="pg-langs">{steps.some((s) => s.mantra && s.mantra.lang === 'awa')
-        ? L('The verses are Tulasīdāsa’s own, in Awadhi — given in Hindi letters and in roman; the explanation is in the language you choose.', 'छंद गोस्वामी तुलसीदास के अपने हैं, अवधी में — हिन्दी और रोमन अक्षरों में दिए गए; व्याख्या आपकी चुनी भाषा में।')
+        ? L('The verses are Tulasīdāsa’s own, in Awadhi — given in Hindi letters and in roman, with the gist of each in Hindi (in our words); the explanation is in the language you choose.', 'छंद गोस्वामी तुलसीदास के अपने हैं, अवधी में — हिन्दी और रोमन अक्षरों में, हर छंद के नीचे उसका भाव (हमारे शब्दों में); व्याख्या आपकी चुनी भाषा में।')
         : L('The chant is always in Sanskrit; the explanation is in the language you choose.', 'मंत्रोच्चार सदा संस्कृत में है; व्याख्या आपकी चुनी भाषा में।')}</p>
       {voice && live && <p className="pu-note pg-warn">{L('Use headphones, so the voice does not carry into the room. Only the explanation is read — the pandit chants.', 'हेडफ़ोन लगाएँ, ताकि आवाज़ कक्ष में न जाए। केवल व्याख्या पढ़ी जाती है — मंत्रोच्चार पंडित जी करते हैं।')}</p>}
 
@@ -242,8 +244,24 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
 
         {step && step.mantra && (
           <div className={`pg-mantra${speaking === 'mantra' ? ' sounding' : ''}`}>
-            <p className={`pg-dev${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`} lang={step.mantra.lang || 'sa'}>{step.mantra.dev}</p>
-            <p className={`pg-roman${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`}>{romanOf(step.mantra)}</p>
+            {/* Verses that carry their own gist (the Cālīsā) are shown verse by verse, the gist under each — unless only the text is asked for. */}
+            {step.mantra.verses && mode !== 'none'
+              ? (
+                <ol className="pg-verses">
+                  {step.mantra.verses.map((v, k) => (
+                    <li key={k}>
+                      <p className="pg-dev" lang={step.mantra.lang || 'sa'}>{v.dev}</p>
+                      <p className="pg-roman">{v.roman}</p>
+                      <p className="pg-bhav" lang="hi"><b>भाव</b> {v.gist.hi}{refsOn() && <span className="pg-bhav-pg"> (पृ. {v.page})</span>}</p>
+                    </li>
+                  ))}
+                  {refsOn() && <li className="pg-bhav-src">{BHAV_SOURCE.after.hi}: {BHAV_SOURCE.edition.hi}।</li>}
+                </ol>
+              )
+              : <>
+                  <p className={`pg-dev${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`} lang={step.mantra.lang || 'sa'}>{step.mantra.dev}</p>
+                  <p className={`pg-roman${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`}>{romanOf(step.mantra)}</p>
+                </>}
             {!live && (
               <p className="pg-src">
                 {chant

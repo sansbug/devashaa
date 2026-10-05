@@ -188,6 +188,16 @@
 .pg-mantra.sounding, .pg-ex.sounding { border-color: var(--deck-gold); box-shadow: 0 0 0 3px color-mix(in oklab, var(--deck-gold) 22%, transparent); }
 .pg-dev { margin: 0; white-space: pre-line; font-size: clamp(1.15rem, 3.4vw, 1.6rem); line-height: 1.8; font-weight: 600; color: color-mix(in oklab, var(--deck-gold) 58%, var(--ink)); }
 .pg-roman { margin: .5rem 0 0; white-space: pre-line; font-style: italic; font-size: clamp(.88rem, 2.3vw, 1.02rem); line-height: 1.65; color: var(--ink); }
+/* verse by verse, each with its gist (the Cālīsā) */
+.pg-verses { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+.pg-verses li { padding: 0 0 .7rem; border-bottom: 1px dashed var(--line); }
+.pg-verses li:last-child { padding-bottom: 0; border-bottom: 0; }
+.pg-verses .pg-dev { font-size: clamp(1.02rem, 2.7vw, 1.25rem); line-height: 1.75; }
+.pg-verses .pg-roman { margin-top: .2rem; font-size: clamp(.8rem, 2vw, .92rem); line-height: 1.55; }
+.pg-bhav { margin: .35rem auto 0; max-width: 44rem; font-size: .92rem; line-height: 1.65; color: var(--ink); }
+.pg-bhav b { margin-right: .35rem; font-size: .74rem; font-weight: 600; letter-spacing: .04em; color: var(--dim); }
+.pg-bhav-pg { font-size: .72rem; color: var(--dim); }
+.pg-verses .pg-bhav-src { font-size: .72rem; line-height: 1.5; color: var(--dim); }
 .pg-src { margin: .55rem 0 0; font-size: .7rem; color: var(--dim); }
 .pg-nomantra { margin: 0; font-size: .84rem; font-style: italic; color: var(--dim); text-align: center; padding: .6rem; border: 1px dashed var(--line); border-radius: 10px; }
 .pg-ex { margin: 0; display: grid; gap: .55rem; border: 1px solid transparent; border-radius: 10px; padding: .1rem; }

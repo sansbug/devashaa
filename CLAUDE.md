@@ -86,6 +86,12 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   not describe a ceremony (annaprāśana, muṇḍana, gṛha-praveśa, a vehicle pūjā),
   its verse carries a `note` saying so plainly and what the verse is instead —
   never presented as the rite's own authority.
+- **The Hanumān Cālīsā** (`chalisa.js`): every one of its 43 verses carries a
+  Hindi gist in our own words, after the *bhāva* of Dr. Ramak Lakshmana
+  Murty's commentary (Hindi tr. Dr. Shiv Satyanarayana, 1999 — `BHAV_SOURCE`,
+  page per verse). A verse on what recitation brings is reported as the poet's
+  word ("कवि कहते हैं कि …"). The gists are display-only: the chanted text and
+  its clip ids are unchanged (the test checks the verses join back exactly).
 - **A pandit is public by `pid`, never by `userid`** (which may be an email).
 - **TURN relay**: on when the Worker has secrets `TURN_KEY_ID` and
   `TURN_KEY_API_TOKEN` (Cloudflare Realtime TURN key); STUN-only otherwise.

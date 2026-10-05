@@ -143,6 +143,19 @@ console.log('\nthe Hanumān Cālīsā — the whole text, in both scripts')
   ok('each passage says what its verses speak of, and why — in English and Hindi', hc.every((s) => s.what.en && s.what.hi && s.why.en && s.why.hi && s.title.en && s.title.hi))
   ok('where the verses speak of results, they are reported as the poet’s — nothing is promised', hc[4].why.en.includes('nothing is promised') && hc[5].why.en.includes('poet’s own words'))
   ok('each passage can be recorded by a pandit as its own clip', hc.every((s) => MANTRA_STEPS.some((m) => m.id === s.id)) && new Set(hc.map(mantraClip)).size === 7)
+
+  // the gist of each verse (Hindi, in our words after BHAV_SOURCE's bhāva)
+  const vv = hc.flatMap((s) => s.mantra.verses || [])
+  ok('every verse — two dohās, forty chaupāīs, the closing dohā — carries its gist in Hindi', vv.length === 43 && vv.every((v) => DEV.test(v.gist.hi) && !LATIN.test(v.gist.hi) && v.gist.hi.length > 20), `${vv.length} verses`)
+  ok('the verses joined are exactly the text that is chanted — no pandit’s recording is orphaned',
+    hc.every((s) => s.mantra.verses.map((v) => v.dev).join(s.id.startsWith('hcDoha') ? '\n\n' : '\n') === s.mantra.dev && s.mantra.verses.map((v) => v.roman).join(s.id.startsWith('hcDoha') ? '\n\n' : '\n') === s.mantra.roman))
+  ok('each gist names the commentary page it follows, in the order of the book (pp. 23–170)',
+    vv.every((v, k) => Number.isInteger(v.page) && (k === 0 || v.page > vv[k - 1].page)) && vv[0].page === 23 && vv[42].page === 170)
+  ok('no gist is given twice', new Set(vv.map((v) => v.gist.hi)).size === 43)
+  // chaupāīs (1-based) that say what remembrance or recitation brings
+  const FRUIT = [20, 22, 24, 25, 26, 28, 33, 34, 35, 36, 38, 39]
+  ok('where a verse says what remembrance or recitation brings, its gist reports it as the poet’s word — nothing is promised',
+    FRUIT.every((n) => vv[n + 1].gist.hi.startsWith('कवि कहते हैं कि')), FRUIT.filter((n) => !vv[n + 1].gist.hi.startsWith('कवि कहते हैं कि')).join(' '))
 }
 
 console.log('\nthe scripture behind the explanations (sources.json)')

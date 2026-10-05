@@ -52,8 +52,20 @@ may only cite a registered source.
 | `tajika_nilakanthi` | Tājika-Nīlakaṇṭhī | Nīlakaṇṭha Daivajña | 1587 CE | **D.P. Saxena** (Ranjan) | page + śloka (Saṁjñā-tantra) | PDF (scanned; Sanskrit + English) | modern tr. © | **live** (`tajika`) — calculation rules only |
 | `charak_varshaphala` | A Textbook of Varshaphala | K.S. Charak | 1996 | — (modern author) | ch./page/table | PDF (scanned) | © | **live** (`modern`) — its Example Chart is the fixture in `test_tajika.py`; ch. IX (pp. 93-106) and pp. 73-75, 106-107 extracted as cited §5-classified gists in `charak_annual_rules.py` (2026-09-29; §7.5 independent pass pending) |
 | `raman_varshaphal` | Varshaphal or the Hindu Progressed Horoscope | B.V. Raman | 2nd ed. | — (modern author) | Art./page | PDF (scanned) | © | on hand — corroborates the unit table and tri-rāśi lords |
+| `gita` | Bhagavad-gītā | (Mahābhārata, Bhīṣma-parva) | received | **Swami B.G. Narasingha** — translation + *Anuvṛtti* commentary (Gosai Publishers) | ch.verse — this edition numbers ch.1 with 46 and ch.13 with 35 (700 in all) | PDF, text-extractable (legacy diacritic font, decoded) — **all 700 verses indexed** with transliteration + page | Skt public domain; modern tr. © | on hand — indexed; 28 ritual-relevant references verified against the edition; **not yet cited on the site** |
+| `bhagavata` | Śrīmad Bhāgavata Mahāpurāṇa | (Vyāsa) | received | **Gita Press, Gorakhpur** — Sanskrit with Hindi translation, 2 vols (1,617 + 1,520 pp.) | skandha.adhyāya.śloka | PDF ×2, an e-book conversion: the **contents are recovered** (381 entries, all 12 skandhas, with pages); the body text has mis-mapped conjunct glyphs and needs a glyph table before it can be searched | Skt public domain; Hindi tr. © Gita Press | on hand — contents indexed; body not yet readable by machine |
+| `bhagavata_skt` | Śrīmad Bhāgavata — Sanskrit, with a Sanskrit commentary (not yet identified) | — | old pothī-format printing (Digital Library of India scan 2015.327535) | — | skandha.adhyāya.śloka | PDF scan, 1,538 pp., image only, pages rotated | old printing — public domain to be confirmed from the title page | on hand — unread (needs OCR) |
+| `bhrigu_phalita` | Bhṛgu Saṁhitā — *Phalita-Darpaṇa (Phalita-Prakāśa)* | attributed to Bhṛgu; a modern Hindi compilation | 20th c. | Dehati Pustak Bhandar, Delhi | page | PDF scan, 638 pp., image only, pages rotated | © | on hand — unread (needs OCR). **A predictive (phalita) text for the chart side, not a ritual source** — and it speaks in fated verdicts, so anything from it passes §5 first |
 
 Notes carried by the registry, not to be forgotten:
+- **The Sanātana sources (added 2026-10-05)** are for the Pūjā section's explanations of
+  rituals and concepts. The rule for them is §4, unchanged: *the Sanskrit verse in full +
+  a concise site-authored gist + the citation* — never a translator's prose wholesale, and
+  never a meaning the verse does not state. The Gita Press Bhāgavata's own front matter is
+  directly on point (vol 1: *pūjana-vidhi* p.26, *saptāha* procedure p.37, the list of
+  materials p.53; vol 2: *pāṭha-vidhi* p.1462). Working files — the Gītā verse index, the
+  Bhāgavata contents — live on the workstation at `C:\proj\_reading\sanatan\`, not in this
+  repository.
 - The file first labelled "Brihat Jataka" was **Bṛhat *Saṁhitā*** — a different work. The
   real **Bṛhat Jātaka** is now on hand (Suryanarain Row 1919) and, being public domain,
   is the one text whose full translation we may reproduce.

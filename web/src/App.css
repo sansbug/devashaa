@@ -2282,7 +2282,7 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .sh-note { margin: .7rem 0 0; font-size: .72rem; color: var(--dim); line-height: 1.55; }
 .rg-open-wrap { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
 .shared-note { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 1rem; padding: .55rem .8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--sunken); font-size: .82rem; }
-.sh-save { width: auto; height: auto; padding: .3rem .7rem; font-size: .78rem; color: var(--ink); }
+.shared-note .sh-save { width: auto; min-width: max-content; height: auto; white-space: nowrap; padding: .3rem .7rem; font-size: .78rem; color: var(--ink); }
 .sh-save:hover { color: var(--accent); border-color: var(--accent); }
 
 /* ── support page ───────────────────────────────────────────────────────── */

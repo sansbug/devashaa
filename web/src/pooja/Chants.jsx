@@ -19,7 +19,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from './papi.js'
 import { RITUALS } from './rituals.js'
-import { MANTRA_STEPS, ALL_STEPS, plainRoman, narration, mantraClip, explainClip } from './guide.js'
+import { MANTRA_STEPS, ALL_STEPS, romanOf, narration, mantraClip, explainClip } from './guide.js'
 import { toWav } from './chantAudio.js'
 
 const MAX_SECONDS = 150
@@ -127,10 +127,10 @@ function Recorder({ item, forPid, who, L, onSaved, onClose }) {
     <section className="vs-rec" ref={box} aria-label={L('Recording', 'रिकॉर्डिंग')}>
       <header>
         <b>{item.title}</b>
-        <span>{item.sa ? L('Sanskrit — the mantra', 'संस्कृत — मंत्र') : item.kind}{who ? ` · ${L('voice', 'स्वर')}: ${who}` : ''}</span>
+        <span>{item.sa ? (item.tongue === 'awa' ? L('Awadhi — the verses', 'अवधी — छंद') : L('Sanskrit — the mantra', 'संस्कृत — मंत्र')) : item.kind}{who ? ` · ${L('voice', 'स्वर')}: ${who}` : ''}</span>
         <button type="button" className="vs-x" onClick={onClose} disabled={phase === 'recording' || phase === 'saving'} aria-label={L('Close', 'बंद करें')}>×</button>
       </header>
-      <p className={`vs-text${item.sa ? ' sa' : ''}`} lang={item.sa ? 'sa' : item.lang}>{item.text}</p>
+      <p className={`vs-text${item.sa ? ' sa' : ''}${item.sa && item.text.split('\n').length > 5 ? ' long' : ''}`} lang={item.sa ? item.tongue : item.lang}>{item.text}</p>
       {item.roman && <p className="vs-roman">{item.roman}</p>}
       <input ref={file} type="file" accept="audio/*,.m4a,.mp3,.wav,.ogg,.opus,.aac" hidden onChange={pickFile} />
       {phase === 'ready' && (
@@ -188,7 +188,7 @@ export default function VoiceStudio({ lang, L, me, go, reload }) {
 
   const items = useMemo(() => {
     if (tab === 'm') {
-      return MANTRA_STEPS.map((s) => ({ id: mantraClip(s), sa: true, title: s.title[lang] || s.title.en, text: s.mantra.dev, roman: plainRoman(s.mantra.iast) }))
+      return MANTRA_STEPS.map((s) => ({ id: mantraClip(s), sa: true, tongue: s.mantra.lang || 'sa', title: s.title[lang] || s.title.en, text: s.mantra.dev, roman: romanOf(s.mantra) }))
     }
     const kindP = tab === 'hi' ? 'उद्देश्य' : 'Purpose', kindS = tab === 'hi' ? 'चरण' : 'Step'
     return [
@@ -210,7 +210,7 @@ export default function VoiceStudio({ lang, L, me, go, reload }) {
     setErr('')
     try { await api.delVoice(v.id); if (reload) await reload(); await load(); setAs('') } catch (e) { setErr(e.message || String(e)) }
   }
-  const TABS = [['m', L('Mantras (Sanskrit)', 'मंत्र (संस्कृत)')], ['en', L('Explanations — English', 'व्याख्या — अंग्रेज़ी')], ['hi', L('Explanations — Hindi', 'व्याख्या — हिन्दी')]]
+  const TABS = [['m', L('Mantras and verses', 'मंत्र और छंद')], ['en', L('Explanations — English', 'व्याख्या — अंग्रेज़ी')], ['hi', L('Explanations — Hindi', 'व्याख्या — हिन्दी')]]
   const sex = (v) => (v === 'f' ? L('female', 'स्त्री') : v === 'm' ? L('male', 'पुरुष') : '')
 
   return (
@@ -272,7 +272,7 @@ export default function VoiceStudio({ lang, L, me, go, reload }) {
         )}
         <div className="dk-table-wrap">
           <table className="dk-table vs-table">
-            <thead><tr><th>{tab === 'm' ? L('Mantra', 'मंत्र') : L('To be read', 'पढ़ने हेतु')}</th><th>{L('Recorded by', 'किसने रिकॉर्ड किया')}</th><th /></tr></thead>
+            <thead><tr><th>{tab === 'm' ? L('Mantra or verses', 'मंत्र या छंद') : L('To be read', 'पढ़ने हेतु')}</th><th>{L('Recorded by', 'किसने रिकॉर्ड किया')}</th><th /></tr></thead>
             <tbody>
               {items.map((x) => {
                 const list = clips[x.id] || []

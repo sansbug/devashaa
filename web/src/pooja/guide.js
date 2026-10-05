@@ -24,6 +24,8 @@
  * are named, not reproduced — the pandit recites them.
  */
 
+import { CHALISA_STEPS, CHALISA_ORDER, CHALISA_ABOUT } from './chalisa.js'
+
 /** The fuller purpose of each ceremony — read out first, before any chanting. */
 export const ABOUT = {
   satyanarayan: {
@@ -344,6 +346,11 @@ const ORDER = {
   janmadin: [...OPEN, 'svasti', 'agni', 'ahutiGayatri', 'purnahuti', 'blessing', 'aarti', 'shanti', 'prasada'],
 }
 
+// The Hanumān Cālīsā — its full text lives in its own file (chalisa.js).
+Object.assign(S, CHALISA_STEPS)
+ORDER['hanuman-chalisa'] = CHALISA_ORDER
+ABOUT['hanuman-chalisa'] = CHALISA_ABOUT
+
 /** The ordered steps of a ceremony. */
 export function scriptFor(ritualKey) {
   return (ORDER[ritualKey] || []).map((id) => ({ id, ...S[id] }))
@@ -396,6 +403,9 @@ export function plainRoman(iast) {
   }
   return out.replace(/[ 	]+$/gm, '')
 }
+
+/** The roman reading of a mantra or verse: its own where it has one (the Cālīsā is Awadhi, written out plainly), else from the IAST. */
+export const romanOf = (m) => (m ? (m.roman || plainRoman(m.iast)) : '')
 
 /** The verse under the motto. Shown as written; this site does not translate Sanskrit itself. */
 export const HERO_SHLOKA = {

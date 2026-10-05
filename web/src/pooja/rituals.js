@@ -1,6 +1,6 @@
 /**
- * The ritual catalogue — sixteen pūjās, havans and saṁskāras a family
- * commonly asks a pandit for.
+ * The ritual catalogue — the pūjās, havans, pāṭhas and saṁskāras a family
+ * commonly keeps, on its own or with a pandit.
  *
  * What this is, and is not. Each entry says what the ceremony is for, what
  * happens in outline, how long it usually takes, and what to have ready.
@@ -167,6 +167,26 @@ export const RITUALS = [
       { en: 'Sindūra and jasmine oil (where offered); būndī or laḍḍū', hi: 'सिंदूर और चमेली का तेल (जहाँ चढ़ाते हों); बूंदी या लड्डू' },
     ],
     when: ['hanuman-jayanti', 'rama-navami'],
+  },
+  {
+    key: 'hanuman-chalisa', kind: 'path', minutes: 20, base: false,
+    name: { en: 'Hanumān Cālīsā Pāṭha', hi: 'हनुमान चालीसा पाठ' },
+    purpose: { en: 'The recitation of Tulasīdāsa’s forty verses in praise of Hanumān — said daily in many homes, on Tuesdays and Saturdays, and whenever courage is needed.', hi: 'हनुमान जी की स्तुति में गोस्वामी तुलसीदास के चालीस छंदों का पाठ — अनेक घरों में प्रतिदिन, मंगलवार और शनिवार को, और जब भी साहस की आवश्यकता हो।' },
+    outline: [
+      { en: 'The lamp is lit before Hanumān', hi: 'हनुमान जी के सामने दीपक जलाया जाता है' },
+      { en: 'The two opening dohās', hi: 'आरंभ के दो दोहे' },
+      { en: 'The forty chaupāīs, the family reciting together', hi: 'चालीस चौपाइयाँ, परिवार साथ पढ़ता है' },
+      { en: 'The closing dohā', hi: 'समापन का दोहा' },
+      { en: 'Āratī and prasāda', hi: 'आरती और प्रसाद' },
+    ],
+    samagri: [
+      { en: 'A picture or mūrti of Hanumān (or of Rāma-darbār)', hi: 'हनुमान जी का चित्र या मूर्ति (या राम दरबार)' },
+      { en: 'A dīpa with ghee or sesame oil, cotton wicks, and incense', hi: 'घी या तिल के तेल का दीपक, रुई की बत्तियाँ, और धूप / अगरबत्ती' },
+      { en: 'Red flowers; sindūra and jasmine oil where the family offers them', hi: 'लाल फूल; सिंदूर और चमेली का तेल, जहाँ चढ़ाने की रीति हो' },
+      { en: 'Prasāda: būndī or laḍḍū, or jaggery with roasted gram', hi: 'प्रसाद: बूंदी या लड्डू, या गुड़-चना' },
+      { en: 'The text for each reader — it is given in full here, in Hindi and in roman letters', hi: 'हर पढ़ने वाले के लिए पाठ — यहाँ पूरा दिया है, हिन्दी और रोमन अक्षरों में' },
+    ],
+    when: ['hanuman-jayanti'],
   },
   {
     key: 'gayatri-havan', kind: 'havan', minutes: 90,

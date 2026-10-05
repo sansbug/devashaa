@@ -181,7 +181,7 @@ function ObservanceList({ days, lang, L, go, limit, fromToday = true }) {
 function Home({ lang, L, go }) {
   const [place, setPlace] = usePlace()
   const { days, err } = useObservances(place, 2)
-  const featured = ['satyanarayan', 'ganesh', 'rudrabhishek', 'griha-pravesh', 'durga', 'gayatri-havan'].map(ritualByKey)
+  const featured = ['hanuman-chalisa', 'satyanarayan', 'ganesh', 'rudrabhishek', 'durga', 'gayatri-havan'].map(ritualByKey)
   const link = (path) => ({ href: path, onClick: (e) => { e.preventDefault(); go(path) } })
   return (
     <>
@@ -215,7 +215,7 @@ function Home({ lang, L, go }) {
           <div className="dk-body"><p>{L('When you want it led: a pandit we know, or one vetted by them, chants in the room while each of you reads what the step is and why, in your own language. Recorded, to watch again.', 'जब आप चाहें कि कोई कराए: हमारे परिचित, या उनके परखे हुए पंडित जी कक्ष में मंत्रोच्चार करते हैं, और आप में से हर कोई अपनी भाषा में पढ़ता है कि चरण क्या है और क्यों। रिकॉर्ड होता है, फिर देखने के लिए।')}</p></div>
         </section>
       </div>
-      <Card title={L('Begin with one of these', 'इनमें से किसी से आरंभ करें')} right={<a {...link('/pooja/rituals')}>{L('all sixteen →', 'सभी सोलह →')}</a>}>
+      <Card title={L('Begin with one of these', 'इनमें से किसी से आरंभ करें')} right={<a {...link('/pooja/rituals')}>{L(`all ${RITUALS.length} →`, `सभी ${RITUALS.length} →`)}</a>}>
         <div className="pu-rituals">{featured.map((r) => <RitualCard key={r.key} r={r} lang={lang} L={L} go={go} />)}</div>
       </Card>
       <Card title={L('Coming up in the calendar', 'पंचांग में आगे')} right={<a {...link('/pooja/calendar')}>{L('full calendar →', 'पूरा पंचांग →')}</a>}>

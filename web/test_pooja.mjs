@@ -9,7 +9,8 @@ import fs from 'node:fs'
 import vm from 'node:vm'
 import { mintIce } from './pooja-worker.js'
 import { trimSilence, encodeWav, peakOf, fadeEdges } from './src/pooja/chantAudio.js'
-import { MANTRA_STEPS, ALL_STEPS, mantraClip, explainClip, narration, textHash } from './src/pooja/guide.js'
+import { MANTRA_STEPS, ALL_STEPS, ABOUT, scriptFor, romanOf, mantraClip, explainClip, narration, textHash } from './src/pooja/guide.js'
+import { CHAUPAIS } from './src/pooja/chalisa.js'
 import { RITUALS } from './src/pooja/rituals.js'
 import { deviceVoice, genderOf } from './src/pooja/voices.js'
 
@@ -119,6 +120,29 @@ console.log('\na man’s voice or a woman’s — and never the wrong one')
     && deviceVoice(iphone, HI, 'm').voice === null && deviceVoice(iphone, HI, 'f').voice.name === 'Lekha')
   ok('no voice for the language at all', deviceVoice([V('Google Deutsch', 'de-DE')], HI, 'm').how === 'none' && deviceVoice([], EN, 'f').how === 'none')
   ok('a voice of another language is never borrowed', deviceVoice(chromeWin, HI, 'f').voice.lang === 'hi-IN' && deviceVoice(chromeWin, EN, 'm').voice.lang.startsWith('en'))
+}
+
+console.log('\nthe Hanumān Cālīsā — the whole text, in both scripts')
+{
+  const DEV = /[ऀ-ॿ]/, LATIN = /[A-Za-z]/
+  ok('forty chaupāīs — the count that gives it its name', CHAUPAIS.length === 40)
+  ok('each chaupāī is two halves: one । and a closing ॥', CHAUPAIS.every(([d]) => (d.match(/।/g) || []).length === 1 && d.endsWith('॥') && (d.match(/॥/g) || []).length === 1))
+  ok('each has its roman reading, two halves likewise', CHAUPAIS.every(([, r]) => r.split(' · ').length === 2 && !DEV.test(r) && LATIN.test(r)))
+  ok('no Latin letter has strayed into the Devanāgarī', CHAUPAIS.every(([d]) => !LATIN.test(d)))
+  ok('no chaupāī is given twice', new Set(CHAUPAIS.map(([d]) => d)).size === 40 && new Set(CHAUPAIS.map(([, r]) => r)).size === 40)
+  ok('it opens and closes where it should', CHAUPAIS[0][0].startsWith('जय हनुमान ज्ञान गुन सागर।') && CHAUPAIS[39][0].startsWith('तुलसीदास सदा हरि चेरा।') && CHAUPAIS[38][0].includes('हनुमान चलीसा'))
+  ok('the readings the two checked copies agree on', CHAUPAIS[22][0].includes('सम्हारो') && !CHAUPAIS[22][0].includes('संहारो') && CHAUPAIS[5][0].startsWith('संकर सुवन केसरीनंदन') && CHAUPAIS[31][0].includes('सदा रहो रघुपति के दासा') && CHAUPAIS[37][0].startsWith('जो सत बार पाठ कर कोई'))
+  const sc = scriptFor('hanuman-chalisa')
+  const hc = sc.filter((s) => s.id.startsWith('hc'))
+  ok('the pāṭha is in the catalogue, with its purpose and its script', !!RITUALS.find((r) => r.key === 'hanuman-chalisa') && !!ABOUT['hanuman-chalisa'] && sc.length === 10 && sc[0].id === 'deepa' && sc[sc.length - 1].id === 'prasada')
+  ok('two opening dohās, five passages of eight, one closing dohā — in order', hc.map((s) => s.id).join() === 'hcDoha1,hcChaupai1,hcChaupai2,hcChaupai3,hcChaupai4,hcChaupai5,hcDoha2')
+  const lines = (t) => t.split('\n').filter((x) => x.trim())
+  ok('the opening dohās are four lines, the closing one two', lines(hc[0].mantra.dev).length === 4 && lines(hc[6].mantra.dev).length === 2 && hc[0].mantra.dev.startsWith('श्रीगुरु चरन सरोज रज') && hc[6].mantra.dev.includes('हृदय बसहु सुर भूप॥'))
+  ok('every passage has as many roman lines as Devanāgarī ones', hc.every((s) => lines(s.mantra.dev).length === lines(romanOf(s.mantra)).length))
+  ok('the five passages together are the forty, in order', hc.slice(1, 6).flatMap((s) => lines(s.mantra.dev)).join('|') === CHAUPAIS.map(([d]) => d).join('|'))
+  ok('each passage says what its verses speak of, and why — in English and Hindi', hc.every((s) => s.what.en && s.what.hi && s.why.en && s.why.hi && s.title.en && s.title.hi))
+  ok('where the verses speak of results, they are reported as the poet’s — nothing is promised', hc[4].why.en.includes('nothing is promised') && hc[5].why.en.includes('poet’s own words'))
+  ok('each passage can be recorded by a pandit as its own clip', hc.every((s) => MANTRA_STEPS.some((m) => m.id === s.id)) && new Set(hc.map(mantraClip)).size === 7)
 }
 
 console.log('\nthe offline cache (service worker)')

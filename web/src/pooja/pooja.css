@@ -329,3 +329,8 @@
 .vs-addvoice input { flex: 1; min-width: 12rem; }
 .vs-addvoice .pu-ghost { padding: .38rem .8rem; font-size: .8rem; }
 .vs-as { display: inline-flex; align-items: center; gap: .45rem; font-size: .74rem; color: var(--dim); }
+
+/* ── a long passage (the Cālīsā's eight chaupāīs): the same care, a size that fits a screen ── */
+.pg-dev.long { font-size: clamp(1rem, 2.6vw, 1.22rem); line-height: 1.9; }
+.pg-roman.long { font-size: clamp(.8rem, 2vw, .92rem); line-height: 1.75; }
+.vs-text.sa.long { font-size: clamp(1rem, 2.6vw, 1.2rem); line-height: 1.85; }

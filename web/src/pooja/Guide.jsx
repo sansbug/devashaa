@@ -23,7 +23,7 @@
  *   someone on headphones who wants it in another language).
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MODES, VOICE_LANGS, scriptFor, explain, plainRoman, narration, mantraClip, explainClip } from './guide.js'
+import { MODES, VOICE_LANGS, scriptFor, explain, romanOf, narration, mantraClip, explainClip } from './guide.js'
 import { api } from './papi.js'
 import { deviceVoice } from './voices.js'
 
@@ -210,7 +210,9 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
           {!live && <label className="pg-auto"><input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} /> {L('move on by itself', 'स्वयं आगे बढ़े')}</label>}
         </div>
       </div>
-      <p className="pg-langs">{L('The chant is always in Sanskrit; the explanation is in the language you choose.', 'मंत्रोच्चार सदा संस्कृत में है; व्याख्या आपकी चुनी भाषा में।')}</p>
+      <p className="pg-langs">{steps.some((s) => s.mantra && s.mantra.lang === 'awa')
+        ? L('The verses are Tulasīdāsa’s own, in Awadhi — given in Hindi letters and in roman; the explanation is in the language you choose.', 'छंद गोस्वामी तुलसीदास के अपने हैं, अवधी में — हिन्दी और रोमन अक्षरों में दिए गए; व्याख्या आपकी चुनी भाषा में।')
+        : L('The chant is always in Sanskrit; the explanation is in the language you choose.', 'मंत्रोच्चार सदा संस्कृत में है; व्याख्या आपकी चुनी भाषा में।')}</p>
       {voice && live && <p className="pu-note pg-warn">{L('Use headphones, so the voice does not carry into the room. Only the explanation is read — the pandit chants.', 'हेडफ़ोन लगाएँ, ताकि आवाज़ कक्ष में न जाए। केवल व्याख्या पढ़ी जाती है — मंत्रोच्चार पंडित जी करते हैं।')}</p>}
 
       <ol className="pg-rail" aria-label={L('The steps', 'चरण')}>
@@ -239,8 +241,8 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
 
         {step && step.mantra && (
           <div className={`pg-mantra${speaking === 'mantra' ? ' sounding' : ''}`}>
-            <p className="pg-dev" lang="sa">{step.mantra.dev}</p>
-            <p className="pg-roman">{plainRoman(step.mantra.iast)}</p>
+            <p className={`pg-dev${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`} lang={step.mantra.lang || 'sa'}>{step.mantra.dev}</p>
+            <p className={`pg-roman${step.mantra.dev.split('\n').length > 5 ? ' long' : ''}`}>{romanOf(step.mantra)}</p>
             {!live && (
               <p className="pg-src">
                 {chant

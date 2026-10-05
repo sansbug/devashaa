@@ -443,3 +443,27 @@ export const explainClip = (ritual, step, mode, lang) => {
   const h = textHash(narration(ritual, step, mode, lang))
   return step ? `x.${step.id}.${lang}.${mode}.${h}` : `p.${ritual.key}.${lang}.${mode}.${h}`
 }
+
+// ── Devanāgarī → IAST, for the roman reading of a quoted verse ───────────────
+const DV = '\u094d'
+const D_CONS = Object.fromEntries('क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न प फ ब भ म य र ल व श ष स ह ळ'.split(' ')
+  .map((c, i) => [c, 'k kh g gh ṅ c ch j jh ñ ṭ ṭh ḍ ḍh ṇ t th d dh n p ph b bh m y r l v ś ṣ s h ḷ'.split(' ')[i]]))
+const D_VOW = Object.fromEntries('अ आ इ ई उ ऊ ऋ ॠ ऌ ए ऐ ओ औ'.split(' ').map((c, i) => [c, 'a ā i ī u ū ṛ ṝ ḷ e ai o au'.split(' ')[i]]))
+const D_SIGN = Object.fromEntries('ा ि ी ु ू ृ ॄ े ै ो ौ'.split(' ').map((c, i) => [c, 'ā i ī u ū ṛ ṝ e ai o au'.split(' ')[i]]))
+const D_MARK = { 'ं': 'ṁ', 'ः': 'ḥ', 'ँ': 'm̐', 'ऽ': '’', 'ॐ': 'oṁ', '।': '|', '॥': '||' }
+
+/** A deterministic letter-for-letter transliteration — not a translation. */
+export function devToIast(s) {
+  let out = ''
+  const t = String(s || '').replace(/ऽऽ/g, 'ऽ')          // the Gita Press marks a long elided ā with two
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i]
+    if (D_CONS[c]) {
+      out += D_CONS[c]
+      const n = t[i + 1]
+      if (n === DV) i += 1
+      else if (D_SIGN[n]) { out += D_SIGN[n]; i += 1 } else out += 'a'
+    } else out += D_VOW[c] ?? D_MARK[c] ?? c
+  }
+  return out
+}

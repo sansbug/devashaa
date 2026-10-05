@@ -64,6 +64,56 @@ export default function References({ onBack, lang = 'en' }) {
         </div>
         <p>{hi ? 'नीति: उद्धृत करो या मना करो; प्रमाण-स्तर कभी मिश्रित नहीं; संस्कृत का स्व-अनुवाद कभी नहीं। विवरण “देवाशा किस तरह अलग है” पृष्ठ पर।' : 'The working rules — cite or refuse, provenance tiers never blended, no self-translation of Sanskrit — are on “How Devashaa is different”.'}</p>
       </section>
+      <PoojaSources hi={hi} />
     </div>
+  )
+}
+
+/**
+ * The scripture behind the Pūjā & Havan explanations: every verse quoted, where
+ * it is used, which edition's translation its brief follows (and the page), and
+ * what its Sanskrit was checked against. Loaded only when this page is opened.
+ */
+function PoojaSources({ hi }) {
+  const [d, setD] = useState(null)
+  useEffect(() => {
+    let dead = false
+    Promise.all([import('./pooja/sources.json'), import('./pooja/guide.js'), import('./pooja/rituals.js')])
+      .then(([s, g, r]) => { if (!dead) setD({ src: s.default, guide: g, rituals: r }) })
+      .catch(() => {})
+    return () => { dead = true }
+  }, [])
+  if (!d) return null
+  const { src, guide, rituals } = d
+  const title = (o) => (o ? (hi ? o.hi || o.en : o.en) : '')
+  const stepTitle = Object.fromEntries(guide.ALL_STEPS.map((s) => [s.id, title(s.title)]))
+  const used = {}
+  for (const [k, ids] of Object.entries(src.steps)) for (const id of ids) (used[id] = used[id] || []).push(stepTitle[k] || k)
+  for (const [k, ids] of Object.entries(src.rituals)) for (const id of ids) (used[id] = used[id] || []).push(title(rituals.ritualByKey(k)?.name) || k)
+  return (
+    <section>
+      <h2>{hi ? 'पूजा एवं हवन — व्याख्याओं के पीछे के श्लोक' : 'Pūjā & Havan — the verses behind the explanations'}</h2>
+      <p>{hi
+        ? 'हर श्लोक का संस्कृत पाठ प्रविष्ट करने से पहले एक स्वतंत्र पाठ से मिलाया गया। “संक्षेप” हमारे अपने शब्दों में है — वह बताता है कि नामित संस्करण का अनुवाद क्या कहता है; वह संस्कृत का हमारा अनुवाद नहीं है।'
+        : 'The Sanskrit of every verse was checked against an independent text before it was entered. Each “in brief” is in our own words and says what the named edition’s translation says — it is not our translation of the Sanskrit.'}</p>
+      <div className="dk-table-wrap">
+        <table className="dk-table refs-table">
+          <thead><tr><th>{hi ? 'श्लोक' : 'Verse'}</th><th>{hi ? 'जहाँ उपयोग' : 'Used for'}</th><th>{hi ? 'संक्षेप का आधार' : 'The brief follows'}</th><th>{hi ? 'संस्कृत मिलाया गया' : 'Sanskrit checked against'}</th></tr></thead>
+          <tbody>
+            {Object.entries(src.verses).map(([id, v]) => {
+              const b = src.books[v.book]
+              return (
+                <tr key={id}>
+                  <td>{title(b.name)} {v.ref}</td>
+                  <td>{[...new Set(used[id] || [])].join(' · ')}</td>
+                  <td>{b.edition}, {v.book === 'bhagavata' ? `vol ${v.vol}, PDF p.${v.page}` : `p.${v.page}`}</td>
+                  <td>{b.checked}{v.variant ? ` — ${v.variant}` : ''}{v.corrected ? ` — ${v.corrected}` : ''}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
   )
 }

@@ -73,6 +73,15 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   explanation orphans its recording — it must be re-recorded, by design.
 - **The explanations are not translations** (rule above): they say what a step
   is and why it is done.
+- **Scripture behind them**: `web/src/pooja/sources.json` — each verse's
+  Sanskrit, a brief IN OUR WORDS of what the named edition's translation says
+  (Gītā: Swami B.G. Narasingha; Bhāgavata: Gita Press Hindi), and which steps /
+  ceremonies cite it. Shown in the guide's Detailed mode and on each ceremony
+  page; edition and page only on /references (or with references switched on).
+  ⚠ A verse's Sanskrit is entered only after it is checked against an
+  independent text (`C:\proj\_reading\sanatan\tools\refs_verify.py`, GRETIL /
+  sanskritdocuments.org); its `checked` fingerprint makes the test fail if the
+  text is later edited without re-checking. The Gita Press e-book has typos.
 - **A pandit is public by `pid`, never by `userid`** (which may be an email).
 - **TURN relay**: on when the Worker has secrets `TURN_KEY_ID` and
   `TURN_KEY_API_TOKEN` (Cloudflare Realtime TURN key); STUN-only otherwise.

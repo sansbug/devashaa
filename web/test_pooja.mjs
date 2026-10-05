@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import vm from 'node:vm'
 import { mintIce } from './pooja-worker.js'
 import { trimSilence, encodeWav, peakOf, fadeEdges } from './src/pooja/chantAudio.js'
-import { MANTRA_STEPS, ALL_STEPS, ABOUT, scriptFor, romanOf, mantraClip, explainClip, narration, textHash } from './src/pooja/guide.js'
+import { MANTRA_STEPS, ALL_STEPS, ABOUT, scriptFor, romanOf, mantraClip, explainClip, narration, textHash, devToIast } from './src/pooja/guide.js'
 import { CHAUPAIS } from './src/pooja/chalisa.js'
 import { RITUALS } from './src/pooja/rituals.js'
 import { deviceVoice, genderOf } from './src/pooja/voices.js'
@@ -143,6 +143,27 @@ console.log('\nthe Hanumān Cālīsā — the whole text, in both scripts')
   ok('each passage says what its verses speak of, and why — in English and Hindi', hc.every((s) => s.what.en && s.what.hi && s.why.en && s.why.hi && s.title.en && s.title.hi))
   ok('where the verses speak of results, they are reported as the poet’s — nothing is promised', hc[4].why.en.includes('nothing is promised') && hc[5].why.en.includes('poet’s own words'))
   ok('each passage can be recorded by a pandit as its own clip', hc.every((s) => MANTRA_STEPS.some((m) => m.id === s.id)) && new Set(hc.map(mantraClip)).size === 7)
+}
+
+console.log('\nthe scripture behind the explanations (sources.json)')
+{
+  const src = JSON.parse(fs.readFileSync(new URL('./src/pooja/sources.json', import.meta.url), 'utf8'))
+  const vs = Object.entries(src.verses)
+  ok('every verse names a known book and carries its Sanskrit, a page and a brief in English and Hindi',
+    vs.every(([, v]) => src.books[v.book] && /[ऀ-ॿ]/.test(v.dev) && !/[A-Za-z]/.test(v.dev) && Number.isInteger(v.page) && v.gist.en && v.gist.hi), `${vs.length} verses`)
+  ok('every verse is the text that was checked — change a letter and this fails until it is checked again (refs_verify.py)',
+    vs.every(([, v]) => v.checked && v.checked.endsWith(' ' + textHash(v.dev))), vs.filter(([, v]) => !(v.checked || '').endsWith(' ' + textHash(v.dev))).map(([id]) => id).join(' '))
+  ok('no footnote digit or Latin letter has crept into a verse', vs.every(([, v]) => !/[ऀ-ॿ][०-९]/.test(v.dev)))
+  ok('the Bhāgavata verses carry a volume', vs.every(([, v]) => v.book !== 'bhagavata' || [1, 2].includes(v.vol)))
+  const stepIds = new Set(ALL_STEPS.map((s) => s.id))
+  ok('every step that cites a verse is a real step, and every verse it cites exists',
+    Object.entries(src.steps).every(([k, ids]) => stepIds.has(k) && ids.every((id) => src.verses[id])), Object.keys(src.steps).filter((k) => !stepIds.has(k)).join(' '))
+  ok('every ceremony that cites a verse is a real ceremony, and every verse it cites exists',
+    Object.entries(src.rituals).every(([k, ids]) => RITUALS.some((r) => r.key === k) && ids.every((id) => src.verses[id])))
+  const usedIds = new Set([...Object.values(src.steps), ...Object.values(src.rituals)].flat())
+  ok('every verse is used somewhere', vs.every(([id]) => usedIds.has(id)))
+  ok('a brief says what a translation says — it never claims to be one', vs.every(([, v]) => !/\btranslat/i.test(v.gist.en) || /Gita Press translation reckons/.test(v.gist.en)))
+  ok('the roman reading is made letter for letter from the Devanāgarī', devToIast('पत्रं पुष्पं फलं तोयं') === 'patraṁ puṣpaṁ phalaṁ toyaṁ' && devToIast('बुद्ध्याऽऽत्मना') === 'buddhyā’tmanā' && devToIast('ॐ') === 'oṁ')
 }
 
 console.log('\nthe offline cache (service worker)')

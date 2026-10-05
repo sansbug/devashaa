@@ -1,0 +1,235 @@
+{
+  "_about": "Scripture behind the Pūjā section's explanations. Each verse: the Sanskrit (checked against an independent text before it was entered — see 'checked'), and a short gist IN OUR OWN WORDS of what the named edition's translation says. The gist is never our translation of the Sanskrit. Edition, translator and page are kept here for /references; the page shows them only when references are switched on. A step or ceremony lists the verses that bear on it in 'steps' and 'rituals'.",
+  "books": {
+    "gita": {
+      "name": { "en": "Bhagavad-gītā", "hi": "श्रीमद्भगवद्गीता" },
+      "edition": "Swami B.G. Narasingha — translation and Anuvṛtti commentary",
+      "after": { "en": "in brief, after Swami B.G. Narasingha's translation", "hi": "संक्षेप में — स्वामी बी.जी. नरसिंह के अनुवाद के आधार पर" },
+      "pages": "printed page numbers",
+      "checked": "sanskritdocuments.org (Devanāgarī) against the edition's transliteration"
+    },
+    "bhagavata": {
+      "name": { "en": "Śrīmad Bhāgavata", "hi": "श्रीमद्भागवत" },
+      "edition": "Gita Press, Gorakhpur — Sanskrit with Hindi translation, 2 vols (e-book)",
+      "after": { "en": "in brief, after the Gita Press Hindi translation", "hi": "संक्षेप में — गीताप्रेस के हिन्दी अनुवाद के आधार पर" },
+      "pages": "volume and PDF page of the e-book (it carries no printed page numbers)",
+      "checked": "GRETIL e-text (Ulrich Stiehl) against the Gita Press e-book"
+    }
+  },
+  "verses": {
+    "gita:3.11": {
+      "checked": "2026-10-05 a4ec96",
+      "book": "gita", "ref": "3.11", "page": 78,
+      "dev": "देवान्भावयतानेन ते देवा भावयन्तु वः ।\nपरस्परं भावयन्तः श्रेयः परमवाप्स्यथ ॥",
+      "gist": {
+        "en": "Pleased by sacrifice, the devas in turn sustain those who offer it; pleasing one another, both reach the highest good.",
+        "hi": "यज्ञ से प्रसन्न देवता यज्ञ करने वालों को भी तृप्त करते हैं; एक-दूसरे को प्रसन्न करते हुए दोनों परम कल्याण पाते हैं।"
+      }
+    },
+    "gita:3.13": {
+      "checked": "2026-10-05 9c0acd",
+      "book": "gita", "ref": "3.13", "page": 78,
+      "dev": "यज्ञशिष्टाशिनः सन्तो मुच्यन्ते सर्वकिल्बिषैः ।\nभुञ्जते ते त्वघं पापा ये पचन्त्यात्मकारणात् ॥",
+      "gist": {
+        "en": "Those who eat what remains of food offered in sacrifice are freed from all impiety; those who cook only for themselves keep themselves bound.",
+        "hi": "जो यज्ञ में अर्पित भोजन का शेष ग्रहण करते हैं, वे हर प्रकार की अधार्मिकता से मुक्त होते हैं; जो केवल अपने लिए पकाते हैं, वे अपना ही बंधन बढ़ाते हैं।"
+      }
+    },
+    "gita:3.14": {
+      "checked": "2026-10-05 252ad4",
+      "book": "gita", "ref": "3.14", "page": 79,
+      "dev": "अन्नाद्भवन्ति भूतानि पर्जन्यादन्नसम्भवः ।\nयज्ञाद्भवति पर्जन्यो यज्ञः कर्मसमुद्भवः ॥",
+      "gist": {
+        "en": "Living beings live on food, food comes from rain, rain from sacrifice — and sacrifice is born of prescribed action.",
+        "hi": "प्राणी अन्न से जीते हैं, अन्न वर्षा से होता है, वर्षा यज्ञ से — और यज्ञ विहित कर्म से उत्पन्न होता है।"
+      }
+    },
+    "gita:4.24": {
+      "checked": "2026-10-05 06f6b7",
+      "book": "gita", "ref": "4.24", "page": 119,
+      "dev": "ब्रह्मार्पणं ब्रह्म हविर्ब्रह्माग्नौ ब्रह्मणा हुतम् ।\nब्रह्मैव तेन गन्तव्यं ब्रह्मकर्मसमाधिना ॥",
+      "gist": {
+        "en": "The utensils of the sacrifice, the sacred fire and the offering made are all the Absolute; one whose mind stays absorbed in the Absolute reaches the Absolute.",
+        "hi": "यज्ञ के पात्र, पवित्र अग्नि और अर्पित आहुति — सब ब्रह्म हैं; जिसका मन सदा ब्रह्म में लीन रहता है, वह ब्रह्म को प्राप्त होता है।"
+      }
+    },
+    "gita:9.26": {
+      "checked": "2026-10-05 5a977e",
+      "book": "gita", "ref": "9.26", "page": 237,
+      "dev": "पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति ।\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ॥",
+      "gist": {
+        "en": "Kṛṣṇa says that whoever offers him, with devotion, a leaf, a flower, a fruit or a little water — that offering of a pure heart he accepts.",
+        "hi": "श्रीकृष्ण कहते हैं — जो भक्ति से उन्हें एक पत्ता, एक फूल, एक फल या थोड़ा-सा जल अर्पित करता है, उस शुद्ध हृदय का वह अर्पण वे स्वीकार करते हैं।"
+      }
+    },
+    "gita:9.27": {
+      "checked": "2026-10-05 5d9cfa",
+      "book": "gita", "ref": "9.27", "page": 237,
+      "dev": "यत्करोषि यदश्नासि यज्जुहोषि ददासि यत् ।\nयत्तपस्यसि कौन्तेय तत्कुरुष्व मदर्पणम् ॥",
+      "gist": {
+        "en": "Whatever you do, whatever you eat, whatever you offer in sacrifice or give in charity, whatever austerity you take on — do it as an offering to me.",
+        "hi": "जो कुछ करो, जो खाओ, जो यज्ञ में अर्पित करो या दान दो, जो तप करो — वह सब मुझे अर्पण करके करो।"
+      }
+    },
+    "gita:10.25": {
+      "checked": "2026-10-05 3c01cf",
+      "book": "gita", "ref": "10.25", "page": 258,
+      "dev": "महर्षीणां भृगुरहं गिरामस्म्येकमक्षरम् ।\nयज्ञानां जपयज्ञोऽस्मि स्थावराणां हिमालयः ॥",
+      "gist": {
+        "en": "Among sounds, Kṛṣṇa says, he is the single syllable Oṁ; among sacrifices, he is japa — the repetition of a mantra.",
+        "hi": "श्रीकृष्ण कहते हैं — ध्वनियों में वे एकाक्षर ॐ हैं; और यज्ञों में जप-यज्ञ, अर्थात् मंत्र का जप।"
+      }
+    },
+    "gita:10.35": {
+      "checked": "2026-10-05 c63a70",
+      "book": "gita", "ref": "10.35", "page": 261,
+      "dev": "बृहत्साम तथा साम्नां गायत्री छन्दसामहम् ।\nमासानां मार्गशीर्षोऽहमृतूनां कुसुमाकरः ॥",
+      "gist": {
+        "en": "Among the Vedic metres, Kṛṣṇa says, he is the Gāyatrī.",
+        "hi": "श्रीकृष्ण कहते हैं — वैदिक छन्दों में वे गायत्री हैं।"
+      }
+    },
+    "gita:17.20": {
+      "checked": "2026-10-05 3b295b",
+      "book": "gita", "ref": "17.20", "page": 404,
+      "dev": "दातव्यमिति यद्दानं दीयतेऽनुपकारिणे ।\nदेशे काले च पात्रे च तद्दानं सात्त्विकं स्मृतम् ॥",
+      "gist": {
+        "en": "A gift given because it ought to be given, expecting nothing in return, at a fitting place and time, to one fit to receive it — that is giving in goodness.",
+        "hi": "जो दान इस भाव से दिया जाए कि देना चाहिए, बदले में कुछ चाहे बिना, उचित स्थान और समय पर, योग्य व्यक्ति को — वह सात्त्विक दान है।"
+      }
+    },
+    "gita:17.24": {
+      "checked": "2026-10-05 7bd9f5",
+      "book": "gita", "ref": "17.24", "page": 407,
+      "dev": "तस्मादोमित्युदाहृत्य यज्ञदानतपःक्रियाः ।\nप्रवर्तन्ते विधानोक्ताः सततं ब्रह्मवादिनाम् ॥",
+      "gist": {
+        "en": "Those who seek the Supreme always begin their sacrifices, their gifts and their austerities by chanting Oṁ.",
+        "hi": "परमात्मा को खोजने वाले अपने यज्ञ, दान और तप सदा ॐ का उच्चारण करके आरंभ करते हैं।"
+      }
+    },
+    "gita:17.28": {
+      "checked": "2026-10-05 80a998",
+      "book": "gita", "ref": "17.28", "page": 408,
+      "dev": "अश्रद्धया हुतं दत्तं तपस्तप्तं कृतं च यत् ।\nअसदित्युच्यते पार्थ न च तत्प्रेत्य नो इह ॥",
+      "gist": {
+        "en": "An offering, a gift, an austerity or any act done without faith is called asat — it bears no good fruit, in this world or the next.",
+        "hi": "श्रद्धा के बिना किया गया यज्ञ, दान, तप या कोई भी कर्म ‘असत्’ कहलाता है — उसका न इस लोक में शुभ फल होता है, न परलोक में।"
+      }
+    },
+    "bhagavata:5.19.1-2": {
+      "checked": "2026-10-05 15592b",
+      "book": "bhagavata", "ref": "5.19.1–2", "vol": 1, "page": 1049, "prose": true,
+      "variant": "GRETIL joins किम्पुरुषैरविरत- by sandhi; the Gita Press e-book prints किम्पुरुषैः अविरत-.",
+      "dev": "किम्पुरुषे वर्षे भगवन्तमादिपुरुषं लक्ष्मणाग्रजं सीताभिरामं रामं तच्चरणसंनिकर्षाभिरतः परमभागवतो हनुमान् सह किम्पुरुषैः अविरतभक्तिरुपास्ते ॥\nआर्ष्टिषेणेन सह गन्धर्वैरनुगीयमानां परमकल्याणीं भर्तृभगवत्कथां समुपशृणोति स्वयं चेदं गायति ॥",
+      "gist": {
+        "en": "In Kimpuruṣa-varṣa, Hanumān — the great devotee who delights to be near Śrī Rāma's feet — worships Rāma with unbroken devotion; he listens as Ārṣṭiṣeṇa and the gandharvas sing the blessed story of his Lord, and sings his praise himself.",
+        "hi": "किम्पुरुषवर्ष में परम भागवत हनुमान जी, जिन्हें श्रीराम के चरणों का सान्निध्य प्रिय है, अविचल भक्ति से श्रीराम की उपासना करते हैं; आर्ष्टिषेण और गन्धर्व जब उनके स्वामी की मंगलमयी कथा गाते हैं, वे उसे सुनते हैं और स्वयं भी उनकी स्तुति गाते हैं।"
+      }
+    },
+    "bhagavata:7.5.23": {
+      "checked": "2026-10-05 c94ee8",
+      "book": "bhagavata", "ref": "7.5.23", "vol": 1, "page": 1312,
+      "dev": "श्रवणं कीर्तनं विष्णोः स्मरणं पादसेवनम् ।\nअर्चनं वन्दनं दास्यं सख्यमात्मनिवेदनम् ॥",
+      "gist": {
+        "en": "Prahlāda names the nine forms of devotion to Viṣṇu: hearing of him, singing of him, remembering him, serving his feet, worshipping him (arcana), bowing to him (vandana), serving him, befriending him, and offering oneself to him.",
+        "hi": "प्रह्लाद जी विष्णु-भक्ति के नौ रूप बताते हैं: उनका श्रवण, कीर्तन, स्मरण, चरण-सेवा, पूजा-अर्चना, वन्दन, दास्य, सख्य और आत्म-निवेदन।"
+      }
+    },
+    "bhagavata:7.14.19": {
+      "checked": "2026-10-05 3796ff",
+      "book": "bhagavata", "ref": "7.14.19", "vol": 1, "page": 1406,
+      "dev": "कुर्यादापरपक्षीयं मासि प्रौष्ठपदे द्विजः ।\nश्राद्धं पित्रोर्यथावित्तं तद्बन्धूनां च वित्तवान् ॥",
+      "variant": "GRETIL reads अपरपक्षीयं; the Gita Press e-book आपरपक्षीयं. The sense is the same.",
+      "gist": {
+        "en": "Nārada tells Yudhiṣṭhira that one who has the means should, as far as those means allow, offer the Mahālaya śrāddha for their parents and their parents' kin in the dark fortnight of the month — Āśvina, as the Gita Press translation reckons it (the verse names the month Proṣṭhapada).",
+        "hi": "नारद जी युधिष्ठिर से कहते हैं कि जिसके पास साधन हों, वह अपनी सामर्थ्य के अनुसार माता-पिता और उनके बन्धुओं के लिए मास के कृष्णपक्ष में महालय श्राद्ध करे — गीताप्रेस के अनुवाद की गणना से आश्विन मास में (श्लोक मास का नाम प्रौष्ठपद देता है)।"
+      }
+    },
+    "bhagavata:8.8.8": {
+      "checked": "2026-10-05 90ee5a",
+      "book": "bhagavata", "ref": "8.8.8", "vol": 1, "page": 1484,
+      "numbering": "GRETIL numbers this verse 8.8.9",
+      "dev": "ततश्चाविरभूत् साक्षाच्छ्री रमा भगवत्परा ।\nरञ्जयन्ती दिशः कान्त्या विद्युत् सौदामनी यथा ॥",
+      "gist": {
+        "en": "Then, as the ocean was churned, Lakṣmī herself appeared — the Lord's own eternal power — and her radiance lit up the directions like lightning.",
+        "hi": "फिर समुद्र-मन्थन में स्वयं भगवती लक्ष्मी प्रकट हुईं — जो भगवान की नित्य शक्ति हैं — और बिजली-सी उनकी कांति से दिशाएँ जगमगा उठीं।"
+      }
+    },
+    "bhagavata:10.2.10-12": {
+      "checked": "2026-10-05 8b2d83",
+      "book": "bhagavata", "ref": "10.2.10–12", "vol": 2, "page": 212,
+      "dev": "अर्चिष्यन्ति मनुष्यास्त्वां सर्वकामवरेश्वरीम् ।\nधूपोपहारबलिभिः सर्वकामवरप्रदाम् ॥\nनामधेयानि कुर्वन्ति स्थानानि च नरा भुवि ।\nदुर्गेति भद्रकालीति विजया वैष्णवीति च ॥\nकुमुदा चण्डिका कृष्णा माधवी कन्यकेति च ।\nमाया नारायणीशानी शारदेत्यम्बिकेति च ॥",
+      "gist": {
+        "en": "The Lord tells Yogamāyā that people will worship her with incense, lamps and offerings as the one who fulfils every wish, will raise places to her across the earth, and will call her by many names — Durgā, Bhadrakālī, Vijayā, Vaiṣṇavī, Kumudā, Caṇḍikā, Kṛṣṇā, Mādhavī, Kanyā, Māyā, Nārāyaṇī, Īśānī, Śāradā and Ambikā.",
+        "hi": "भगवान योगमाया से कहते हैं कि मनुष्य उन्हें सब अभिलाषाएँ पूर्ण करने वाली जानकर धूप-दीप और नैवेद्य से पूजेंगे, पृथ्वी पर उनके अनेक स्थान बनाएँगे, और उन्हें अनेक नामों से पुकारेंगे — दुर्गा, भद्रकाली, विजया, वैष्णवी, कुमुदा, चण्डिका, कृष्णा, माधवी, कन्या, माया, नारायणी, ईशानी, शारदा और अम्बिका।"
+      }
+    },
+    "bhagavata:10.7.4": {
+      "checked": "2026-10-05 56041b",
+      "book": "bhagavata", "ref": "10.7.4", "vol": 2, "page": 261,
+      "dev": "कदाचिदौत्थानिककौतुकाप्लवे\nजन्मर्क्षयोगे समवेतयोषिताम् ।\nवादित्रगीतद्विजमन्त्रवाचकै-\nश्चकार सूनोरभिषेचनं सती ॥",
+      "gist": {
+        "en": "On the day of the child Kṛṣṇa's birth-star, when his first turning-over was being celebrated, Yaśodā bathed her son among the gathered women, with music and song, while brāhmaṇas recited mantras and blessed him.",
+        "hi": "बालक श्रीकृष्ण के जन्म-नक्षत्र के दिन, जब उनके पहली बार करवट बदलने का उत्सव मनाया जा रहा था, यशोदा जी ने एकत्र स्त्रियों के बीच, गीत-वाद्य के साथ, अपने पुत्र का अभिषेक किया; ब्राह्मण मंत्र पढ़कर आशीर्वाद दे रहे थे।"
+      }
+    },
+    "bhagavata:10.8.11": {
+      "checked": "2026-10-05 261d4b",
+      "book": "bhagavata", "ref": "10.8.11", "vol": 2, "page": 271,
+      "dev": "एवं सम्प्रार्थितो विप्रः स्वचिकीर्षितमेव तत् ।\nचकार नामकरणं गूढो रहसि बालयोः ॥",
+      "gist": {
+        "en": "Asked by Nanda, the sage Garga — who had come wishing to do just this — performs the naming rite of the two boys, Kṛṣṇa and Balarāma, quietly and in secret.",
+        "hi": "नन्द बाबा के कहने पर गर्गाचार्य — जो स्वयं यही करना चाहते थे — दोनों बालकों, श्रीकृष्ण और बलराम, का नामकरण-संस्कार एकान्त में, गुप्त रूप से करते हैं।"
+      }
+    },
+    "bhagavata:11.2.36": {
+      "checked": "2026-10-05 87fb75",
+      "book": "bhagavata", "ref": "11.2.36", "vol": 2, "page": 1054,
+      "dev": "कायेन वाचा मनसेन्द्रियैर्वा\nबुद्ध्याऽऽत्मना वानुसृतस्वभावात् ।\nकरोति यद् यत् सकलं परस्मै\nनारायणायेति समर्पयेत्तत् ॥",
+      "corrected": "The Gita Press e-book prints बुद्धयाऽऽत्मना; बुद्ध्याऽऽत्मना is the reading of GRETIL and of the sense (buddhyā).",
+      "gist": {
+        "en": "Whatever one does — with body, speech, mind or senses, with the intellect, or out of the nature one has come to have — one should offer all of it to Nārāyaṇa, as being for him.",
+        "hi": "शरीर, वाणी, मन, इन्द्रियों या बुद्धि से, या अपने स्वभाववश, मनुष्य जो कुछ भी करे — वह सब ‘नारायण के लिए’ इस भाव से नारायण को समर्पित कर दे।"
+      }
+    },
+    "bhagavata:12.13.23": {
+      "checked": "2026-10-05 c11176",
+      "book": "bhagavata", "ref": "12.13.23", "vol": 2, "page": 1423,
+      "dev": "नामसंकीर्तनं यस्य सर्वपापप्रणाशनम् ।\nप्रणामो दुःखशमनस्तं नमामि हरिं परम् ॥",
+      "gist": {
+        "en": "The Bhāgavata's last verse: I bow to Hari, the Supreme — the singing of whose names destroys every sin, and bowing to whom ends all sorrow.",
+        "hi": "श्रीमद्भागवत का अंतिम श्लोक: मैं परम हरि को नमस्कार करता हूँ — जिनके नामों का संकीर्तन सब पापों का नाश करता है, और जिन्हें प्रणाम सब दुःखों को शान्त करता है।"
+      }
+    }
+  },
+  "steps": {
+    "sankalpa": ["gita:17.24", "gita:17.28"],
+    "vishnu": ["bhagavata:7.5.23"],
+    "katha": ["bhagavata:7.5.23"],
+    "lakshmi": ["bhagavata:8.8.8"],
+    "durga": ["bhagavata:10.2.10-12"],
+    "hanuman": ["bhagavata:5.19.1-2"],
+    "hcChaupai1": ["bhagavata:5.19.1-2"],
+    "mrityunjaya": ["gita:10.25"],
+    "agni": ["gita:4.24"],
+    "ahutiMain": ["gita:3.11", "gita:3.14"],
+    "ahutiGayatri": ["gita:10.35"],
+    "naivedya": ["gita:9.26"],
+    "aarti": ["bhagavata:12.13.23"],
+    "kshama": ["bhagavata:11.2.36", "gita:9.27"],
+    "prasada": ["gita:3.13", "gita:17.20"],
+    "naming": ["bhagavata:10.8.11"],
+    "tarpana": ["bhagavata:7.14.19"]
+  },
+  "rituals": {
+    "janmadin": ["bhagavata:10.7.4"],
+    "namakaran": ["bhagavata:10.8.11"],
+    "shraddha": ["bhagavata:7.14.19"],
+    "durga": ["bhagavata:10.2.10-12"],
+    "lakshmi": ["bhagavata:8.8.8"],
+    "sundarkand": ["bhagavata:5.19.1-2"],
+    "hanuman-chalisa": ["bhagavata:5.19.1-2"],
+    "gayatri-havan": ["gita:10.35", "gita:3.14"],
+    "satyanarayan": ["gita:9.26", "bhagavata:7.5.23"]
+  }
+}

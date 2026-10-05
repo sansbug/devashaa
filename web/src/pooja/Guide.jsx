@@ -26,6 +26,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { MODES, VOICE_LANGS, scriptFor, explain, romanOf, narration, mantraClip, explainClip } from './guide.js'
 import { api } from './papi.js'
 import { deviceVoice } from './voices.js'
+import Scripture, { versesFor } from './Scripture.jsx'
 
 const PREFS = 'pooja.guide'
 const loadPrefs = () => { try { return JSON.parse(localStorage.getItem(PREFS)) || {} } catch { return {} } }
@@ -264,6 +265,8 @@ export default function Guide({ ritual, lang = 'en', L, live = false, canLead = 
             {parts.map((p) => (<div key={p.k} className={`pg-${p.k}`}><dt>{p.label}</dt><dd>{p.text}</dd></div>))}
           </dl>
         )}
+        {/* The detailed explanation carries the verses behind it — for the purpose, the ceremony's own; for a step, the step's. */}
+        {mode === 'detailed' && <Scripture verses={step ? versesFor('steps', step.id) : versesFor('rituals', ritual.key)} lang={glang} L={T} />}
         {voice && told && (
           <p className="pg-src pg-toldby">{toldBy
             ? <>♪ {T('explained by', 'व्याख्या')} <b>{toldBy.by}</b>{otherVoice(toldBy)}</>

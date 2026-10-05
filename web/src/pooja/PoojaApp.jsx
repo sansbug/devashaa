@@ -31,6 +31,7 @@ import { api, getSession, onSession, signIn, signOut } from './papi.js'
 import { RITUALS, KIND_LABEL, ritualByKey, ritualsFor, samagriFor, durationLabel } from './rituals.js'
 import { ABOUT, HERO_SHLOKA, scriptFor, plainRoman } from './guide.js'
 import Guide from './Guide.jsx'
+import Scripture, { versesFor } from './Scripture.jsx'
 import Muhurta, { PlacePicker, usePlace } from './Muhurta.jsx'
 import VoiceStudio from './Chants.jsx'
 import Room from './Room.jsx'
@@ -348,6 +349,7 @@ function RitualDetail({ rkey, lang, L, go, query }) {
       {about && (
         <Card title={L('Why this ceremony is kept', 'यह अनुष्ठान क्यों किया जाता है')}>
           <p className="pu-about">{about[lang] || about.en}</p>
+          <Scripture verses={versesFor('rituals', r.key)} lang={lang} L={L} />
         </Card>
       )}
       <div className="pu-two">

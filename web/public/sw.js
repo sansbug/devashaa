@@ -40,6 +40,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // API + any 3rd-party: leave alone
   if (url.pathname.startsWith('/api/')) return;    // our own API: always the network, never a cache
+  // the dev server's modules (/src, /@vite, /node_modules) change on every edit: never cache them either
+  if (/^\/(?:src|@[a-z]+|node_modules)\//.test(url.pathname)) return;
 
   // App shell / SPA routes: network-first, offline fallback to cached index.
   if (request.mode === 'navigate') {

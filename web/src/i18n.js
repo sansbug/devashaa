@@ -70,6 +70,7 @@ const MANUAL = {
   'sec.overview': { en: 'Overview', hi: 'सारांश' },
   'sec.strength': { en: 'Strength', hi: 'बल' },
   'sec.bhava': { en: 'Bhāvas & Yogas', hi: 'भाव व योग' },
+  'wt.open': { en: '▶ Watch it explained', hi: '▶ व्याख्या देखें' },
   'sec.dasha': { en: 'Daśā', hi: 'दशा' },
   'sec.projection': { en: 'Projection', hi: 'प्रक्षेपण' },
   'sec.classical': { en: 'Classical', hi: 'शास्त्रीय' },

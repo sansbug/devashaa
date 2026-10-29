@@ -104,6 +104,21 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   gender is never played (`voices.js`). The owner wants human voices: the admin
   can add a "voice" (a pandit with no account) and record or upload for him.
 
+## "Watch it explained" (the chart walkthrough)
+
+`web/src/walkthrough.js` builds a step-by-step script from the chart payload
+alone (lagna → its lord → Moon & Sun → dignity → Jupiter's aspects → yogas →
+ātmakāraka → current daśā → close); `ChartWalkthrough.jsx` plays it on its own
+animated North chart (houses outlined, never tinted; lines for the lagna lord and
+aspects), captions in EN/HI, an opt-in labelled device voice, and "Copy the
+script" (plain text, one paragraph a step — for a narrator or a presenter/avatar).
+- ⚠ What is SPOKEN is facts + method only: never a lord-in-house rule or a
+  planet reading (they can state a death or a lost child) and never a book's
+  name (refs stay behind the switch; `cite` shows only with refs on). A yoga's
+  cited effect is on screen only (`quote`). `node web/test_walkthrough.mjs`
+  pins all of this (and walks the reference chart when the local API is up).
+- A chart shared without birth details has no daśā: that step is dropped.
+
 ## Sharing a chart (`/c/<id>#<key>`)
 
 By default a link carries the finished chart WITHOUT its birth details

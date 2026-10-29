@@ -45,6 +45,7 @@ import './App.css'
 
 // Pūjā & Havan is its own section with its own bundle — nothing of it loads with a chart.
 const PoojaApp = lazy(() => import('./pooja/PoojaApp.jsx'))
+const ChartWalkthrough = lazy(() => import('./ChartWalkthrough.jsx'))
 
 const VARGA_LABELS = [
   ['D1', 'Rāśi'], ['D2', 'Horā'], ['D3', 'Drekkāṇa'], ['D4', 'Chaturthāṁśa'],
@@ -340,6 +341,8 @@ export default function App() {
 
   // "How to read this chart" interactive walkthrough.
   const [guideOpen, setGuideOpen] = useState(false)
+  // "Watch it explained" — the chart walked through on its own animated chart.
+  const [watchOpen, setWatchOpen] = useState(false)
   // First-time nudge toward the walkthrough — shown once, then remembered.
   const [nudgeSeen, setNudgeSeen] = useState(
     () => localStorage.getItem('rg-nudge-seen') === '1',
@@ -445,6 +448,9 @@ export default function App() {
     t: refs ? (k, f) => tFn(lang, k, f) : (k, f) => scrubProse(tFn(lang, k, f)),
   }), [lang, refs])
   const { t } = langValue
+  const watchButton = (
+    <button type="button" className="rg-open" onClick={() => setWatchOpen(true)}>{t('wt.open', '▶ Watch it explained')}</button>
+  )
 
   // Re-cast when the language changes so the generated readings switch too
   // (the birth params are unchanged; only `lang` on the request differs).
@@ -785,14 +791,21 @@ export default function App() {
                           initialStep={guideStep}
                           onClose={() => setGuideOpen(false)} />
           )}
+          {watchOpen && (
+            <Suspense fallback={null}>
+              <ChartWalkthrough chart={chart} namer={namer} onClose={() => setWatchOpen(false)} />
+            </Suspense>
+          )}
           <section className="meta" id="rg-positions">
             <div className="meta-head">
               <h2>{chart.name || 'Chart'}</h2>
+              {snap && <div className="rg-open-wrap">{watchButton}</div>}
               {!snap && (
               <div className="rg-open-wrap">
                 <button type="button" className="rg-open sh-open" onClick={() => setShareOpen(true)}>
                   ↗ {t('share.open', 'Share')}
                 </button>
+                {watchButton}
                 <button type="button" className="rg-open" onClick={openGuide}>
                   How to read this chart →
                 </button>

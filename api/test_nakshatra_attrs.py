@@ -157,5 +157,16 @@ for bad in (0, 28, -1, 100):
         except ValueError:
             check(f"{fn.__name__}({bad}) rejected", True)
 
+print("\nThe seven muhūrta classes, as the tradition lists them, and the chart carries them:")
+SEVEN = {"Light": {1, 8, 13}, "Fierce": {2, 10, 11, 20, 25}, "Mixed": {3, 16}, "Fixed": {4, 12, 21, 26},
+         "Soft": {5, 14, 17, 27}, "Sharp": {6, 9, 18, 19}, "Mutable": {7, 15, 22, 23, 24}}
+for cls, members in SEVEN.items():
+    check(f"{cls}: {sorted(members)}", {i for i in range(1, 28) if na.quality_of(i) == cls} == members)
+check("every nakṣatra is in exactly one class", sorted(i for m in SEVEN.values() for i in m) == list(range(1, 28)))
+check("quality_of agrees with the attribute table",
+      all(na.quality_of(i) == na.attributes_of(i)["cells"]["quality"]["value"] for i in range(1, 28)))
+check("a nakṣatra from the chart engine carries its class (0° = Aśvinī, Light)", vedic._nakshatra_of(0.0).quality == "Light")
+check("…at the end of the zodiac too (359° = Revatī, Soft)", vedic._nakshatra_of(359.0).quality == "Soft")
+
 print("\n" + ("ALL PASS" if not fails else f"FAILURES: {fails}"))
 sys.exit(1 if fails else 0)

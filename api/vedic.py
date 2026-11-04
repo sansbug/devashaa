@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
+import nakshatra_attrs
 from vargas import VARGAS, all_vargas
 
 EPHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ephe")
@@ -193,6 +194,7 @@ class Nakshatra:
     pada: int           # 1-4
     degrees_in: float   # arc traversed within the nakṣatra
     fraction: float     # 0-1 through the nakṣatra (Viṁśottarī needs this)
+    quality: str = ""   # muhūrta class (Soft, Fierce, …): `traditional` tier, nakshatra_attrs — NOT BPHS
 
 
 @dataclass
@@ -262,6 +264,7 @@ def _nakshatra_of(lon: float) -> Nakshatra:
         pada=int(within // PADA_ARC) + 1,
         degrees_in=within,
         fraction=within / NAKSHATRA_ARC,
+        quality=nakshatra_attrs.quality_of(idx + 1),
     )
 
 

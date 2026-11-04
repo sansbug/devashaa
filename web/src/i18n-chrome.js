@@ -2652,8 +2652,8 @@ export const CHROME = {
     "hi": "ग्रह-स्थिति"
   },
   "deck.positions.tip": {
-    "en": "Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna.",
-    "hi": "निरयण (लाहिड़ी) भोगांश; भाव लग्न से राशि-भाव हैं।"
+    "en": "Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna. Nakṣatra classes: the muhūrta tradition’s seven (traditional tier).",
+    "hi": "निरयण (लाहिड़ी) भोगांश; भाव लग्न से राशि-भाव हैं। नक्षत्र-वर्ग: मुहूर्त-परंपरा के सात वर्ग (परंपरागत स्तर)।"
   },
   "deck.planet": {
     "en": "Planet",
@@ -2670,6 +2670,26 @@ export const CHROME = {
   "deck.house": {
     "en": "House",
     "hi": "भाव"
+  },
+  "deck.nakshatra": { "en": "Nakṣatra", "hi": "नक्षत्र" },
+  "deck.pada.head": { "en": "Pāda", "hi": "पाद" },
+  "deck.nakdeg": { "en": "In nak.", "hi": "नक्षत्र-अंश" },
+  "deck.order": { "en": "Start the table with", "hi": "तालिका किससे आरंभ हो" },
+  "deck.order.planets": { "en": "Planets", "hi": "ग्रह" },
+  "deck.order.houses": { "en": "Houses 1–12", "hi": "भाव 1–12" },
+  "deck.nak.Soft": { "en": "Soft", "hi": "मृदु" },
+  "deck.nak.Light": { "en": "Light", "hi": "क्षिप्र" },
+  "deck.nak.Fixed": { "en": "Fixed", "hi": "ध्रुव" },
+  "deck.nak.Mixed": { "en": "Mixed", "hi": "मिश्र" },
+  "deck.nak.Mutable": { "en": "Mutable", "hi": "चर" },
+  "deck.nak.Fierce": { "en": "Fierce", "hi": "उग्र" },
+  "deck.nak.Sharp": { "en": "Sharp", "hi": "तीक्ष्ण" },
+  "deck.nak.good": { "en": "Soft, light or fixed", "hi": "मृदु, क्षिप्र या ध्रुव" },
+  "deck.nak.mixed": { "en": "Mixed or mutable", "hi": "मिश्र या चर" },
+  "deck.nak.hard": { "en": "Fierce or sharp", "hi": "उग्र या तीक्ष्ण" },
+  "deck.nak.note": {
+    "en": "The colour is the class of the nakṣatra itself in the muhūrta tradition, not of the planet standing in it.",
+    "hi": "रंग मुहूर्त-परंपरा में स्वयं नक्षत्र का वर्ग है, उसमें बैठे ग्रह का नहीं।"
   },
   "deck.highlights": {
     "en": "Key Highlights",

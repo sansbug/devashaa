@@ -1320,6 +1320,8 @@ footer a:hover { color: var(--accent); }
     gap: 1.25rem; align-items: start;
   }
   .chart-panel > .controls { grid-column: 1 / -1; margin-bottom: 0; }
+  /* the side column spans the figure and the cards under it: when it is the taller, the spare height goes below the cards, never between them */
+  .chart-panel--deck { grid-template-rows: auto auto 1fr; }
   .chart-panel--deck .chart-figure { grid-column: 1; grid-row: 2; }
   .chart-panel--deck .deck-side { grid-column: 2; grid-row: 2 / 4; }
   .chart-panel--deck .deck-under { grid-column: 1; grid-row: 3; }
@@ -3089,4 +3091,34 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .wt-house, .wt-graha, .wt-ray { animation: none !important; }
   .wt-ray { stroke-dashoffset: 0; }
+}
+
+/* ── the deck's Planetary Positions: nakṣatra columns, smaller type, two orderings ── */
+.dk-order { display: inline-flex; border: 1px solid color-mix(in oklab, var(--on-accent) 55%, transparent); border-radius: 7px; overflow: hidden; }
+.dk-order button { border: 0; background: transparent; color: var(--on-accent); font: inherit; font-size: .68rem; padding: .18rem .5rem; cursor: pointer; white-space: nowrap; }
+.dk-order button.on { background: var(--on-accent); color: var(--accent); font-weight: 600; }
+.dk-pos { font-size: .72rem; }
+.dk-pos th { padding: .3rem .24rem; font-size: .66rem; text-transform: none; letter-spacing: 0; white-space: normal; line-height: 1.15; }
+.dk-pos td { padding: .24rem; line-height: 1.25; }
+.dk-pos .dk-en { display: block; font-size: .62rem; }
+.dk-pos .dk-planet { gap: .3rem; }
+.dk-pos .dk-h { font-weight: var(--strong-weight, 600); }
+.dk-pos .dk-empty td { color: var(--dim); }
+.dk-nak { font-weight: var(--strong-weight, 600); white-space: normal; }
+.dk-nak small { display: block; font-size: .62rem; font-weight: 400; }
+.dk-nak.good { color: var(--ok-ink); }
+.dk-nak.hard { color: var(--err-ink); }
+:root[data-theme='tulasi'] .dk-nak.hard, :root[data-theme='blossom'] .dk-nak.hard { color: #b0131e; } /* their --err-ink is brick, and this must read red */
+:root[data-theme='midnight'] .dk-nak.hard { color: #ff8f96; }
+.dk-nak.mixed { color: var(--dim); }
+.dk-nak-key { margin-top: .45rem; font-size: .68rem; line-height: 1.45; }
+.dk-nak-key small { display: block; color: var(--dim); font-size: .64rem; }
+/* a phone: all seven columns on screen, no sideways scroll */
+@media (max-width: 480px) {
+  .dk-body:has(> .dk-pos) { padding-left: .3rem; padding-right: .3rem; }
+  .dk-pos { font-size: .64rem; }
+  .dk-pos th { font-size: .6rem; padding: .24rem .12rem; }
+  .dk-pos td { padding: .2rem .12rem; }
+  .dk-pos .gbub { display: none; }
+  .dk-pos .dk-en, .dk-nak small { font-size: .56rem; }
 }

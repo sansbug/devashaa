@@ -11,6 +11,7 @@
  * later edit could flip. The citations live in the card headers' tooltips, not
  * in the body — the deck is a figure, not a footnote.
  */
+import { useState } from 'react'
 import { useLang } from './LangContext.jsx'
 import { Bubble } from './DashaGlyphs.jsx'
 import { BhavaHoverCard } from './RasiChart.jsx'
@@ -65,6 +66,112 @@ function Planet({ g, namer, deg = false, size = 'm' }) {
   )
 }
 
+/** A nakṣatra's muhūrta class (the chart payload's `quality`, from api/nakshatra_attrs.py) grouped for colour. The
+ *  classes are the tradition's; this three-way grouping is ours. It describes the nakṣatra, not the planet in it. */
+const NAK_TONE = { Soft: 'good', Light: 'good', Fixed: 'good', Mixed: 'mixed', Mutable: 'mixed', Fierce: 'hard', Sharp: 'hard' }
+const ORDER_KEY = 'deck.positions.order'
+const loadOrder = () => { try { return localStorage.getItem(ORDER_KEY) === 'houses' ? 'houses' : 'planets' } catch { return 'planets' } }
+/** Rounded to the minute with the carry, as a graha's degree in its sign is. */
+const degMin = (d) => { const m = Math.round(d * 60); return `${Math.floor(m / 60)}°${pad2(m % 60)}′` }
+
+function NakCells({ g, namer }) {
+  const { t } = useLang()
+  const n = g.nakshatra
+  return (
+    <>
+      <td className={`dk-nak ${NAK_TONE[n.quality] || ''}`}>
+        {namer.nakshatra(n)}
+        {n.quality && <small>{t(`deck.nak.${n.quality}`, n.quality)}</small>}
+      </td>
+      <td className="dk-num">{n.pada}</td>
+      <td className="dk-num">{degMin(n.degrees_in)}</td>
+    </>
+  )
+}
+
+function SignCell({ sign, namer, rowSpan }) {
+  return (
+    <td rowSpan={rowSpan}>
+      {namer.rasi(sign)}
+      {namer.style !== 'english' && <span className="dk-en">{namer.rasiEnglish(sign)}</span>}
+    </td>
+  )
+}
+
+/** Planetary positions: by planet, or by house from the 1st to the 12th (empty houses included, so it always starts
+ *  at the 1st). A house's planets stand in the order they fall in its sign. */
+function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
+  const { t } = useLang()
+  const [order, setOrderState] = useState(loadOrder)
+  const setOrder = (k) => { setOrderState(k); try { localStorage.setItem(ORDER_KEY, k) } catch { /* private mode */ } }
+  const hover = (sign) => ({ onPointerEnter: () => onHoverSign?.(sign), onPointerLeave: () => onHoverSign?.(null) })
+  const degree = (x) => <td className={`dk-num${x.retrograde ? ' rx' : ''}`}>{degOf(x)}{x.retrograde ? ' ℞' : ''}</td>
+  const nakHead = <><th>{t('deck.nakshatra', 'Nakṣatra')}</th><th>{t('deck.pada.head', 'Pāda')}</th><th>{t('deck.nakdeg', 'In nak.')}</th></>
+  const toggle = (
+    <span className="dk-order" role="group" aria-label={t('deck.order', 'Start the table with')}>
+      {[['planets', t('deck.order.planets', 'Planets')], ['houses', t('deck.order.houses', 'Houses 1–12')]].map(([k, label]) => (
+        <button type="button" key={k} className={order === k ? 'on' : ''} aria-pressed={order === k} onClick={() => setOrder(k)}>{label}</button>
+      ))}
+    </span>
+  )
+  return (
+    <Card title={t('deck.positions', 'Planetary Positions')} right={toggle} tip={t('deck.positions.tip', 'Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna. Nakṣatra classes: the muhūrta tradition’s seven (traditional tier).')}>
+      <table className="dk-table dk-pos">
+        {order === 'planets' ? (
+          <>
+            <thead><tr><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.sign', 'Sign (Rāśi)')}</th><th>{t('deck.degree', 'Degree')}</th><th>{t('deck.house', 'House')}</th>{nakHead}</tr></thead>
+            <tbody>
+              {ordered.map((x) => (
+                <tr key={x.key} {...hover(x.rasi)}>
+                  <td><Planet g={x} namer={namer} size="s" /></td>
+                  <SignCell sign={x.rasi} namer={namer} />
+                  {degree(x)}
+                  <td className="dk-num">{t(ORDINAL[bhavaOf(x.rasi, lagna)])}</td>
+                  <NakCells g={x} namer={namer} />
+                </tr>
+              ))}
+            </tbody>
+          </>
+        ) : (
+          <>
+            <thead><tr><th>{t('deck.house', 'House')}</th><th>{t('deck.sign', 'Sign (Rāśi)')}</th><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.degree', 'Degree')}</th>{nakHead}</tr></thead>
+            <tbody>
+              {Array.from({ length: 12 }, (_, i) => {
+                const h = i + 1, sign = (lagna + i) % 12
+                const occ = ordered.filter((x) => bhavaOf(x.rasi, lagna) === h).sort((a, b) => a.longitude - b.longitude)
+                if (!occ.length) {
+                  return (
+                    <tr key={h} className="dk-empty" {...hover(sign)}>
+                      <td className="dk-num dk-h">{t(ORDINAL[h])}</td>
+                      <SignCell sign={sign} namer={namer} />
+                      <td colSpan={5}>—</td>
+                    </tr>
+                  )
+                }
+                return occ.map((x, k) => (
+                  <tr key={x.key} {...hover(sign)}>
+                    {k === 0 && <td className="dk-num dk-h" rowSpan={occ.length}>{t(ORDINAL[h])}</td>}
+                    {k === 0 && <SignCell sign={sign} namer={namer} rowSpan={occ.length} />}
+                    <td><Planet g={x} namer={namer} size="s" /></td>
+                    {degree(x)}
+                    <NakCells g={x} namer={namer} />
+                  </tr>
+                ))
+              })}
+            </tbody>
+          </>
+        )}
+      </table>
+      <p className="dk-note dk-nak-key">
+        <span className="dk-nak good">{t('deck.nak.good', 'Soft, light or fixed')}</span>
+        {' · '}<span className="dk-nak mixed">{t('deck.nak.mixed', 'Mixed or mutable')}</span>
+        {' · '}<span className="dk-nak hard">{t('deck.nak.hard', 'Fierce or sharp')}</span>
+        <small>{t('deck.nak.note', 'The colour is the class of the nakṣatra itself in the muhūrta tradition, not of the planet standing in it.')}</small>
+      </p>
+    </Card>
+  )
+}
+
 export default function ChartDeck({
   chart, drishti, grahas, namer, subject, onPickSubject, onHoverSign, varga, analysis, vargaSig,
 }) {
@@ -114,21 +221,7 @@ export default function ChartDeck({
     <>
       <div className="deck-side">
         {/* ── Planetary positions ─────────────────────────────────── */}
-        <Card title={t('deck.positions', 'Planetary Positions')} tip={t('deck.positions.tip', 'Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna.')}>
-          <table className="dk-table">
-            <thead><tr><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.sign', 'Sign (Rāśi)')}</th><th>{t('deck.degree', 'Degree')}</th><th>{t('deck.house', 'House')}</th></tr></thead>
-            <tbody>
-              {ordered.map((x) => (
-                <tr key={x.key} onPointerEnter={() => onHoverSign?.(x.rasi)} onPointerLeave={() => onHoverSign?.(null)}>
-                  <td><Planet g={x} namer={namer} /></td>
-                  <td>{namer.rasi(x.rasi)}{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(x.rasi)})</span>}</td>
-                  <td className={`dk-num${x.retrograde ? ' rx' : ''}`}>{degOf(x)}{x.retrograde ? ' ℞' : ''}</td>
-                  <td className="dk-num">{t(ORDINAL[bhavaOf(x.rasi, lagna)])}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+        <PositionsCard ordered={ordered} lagna={lagna} namer={namer} onHoverSign={onHoverSign} />
 
         {/* ── Key highlights — placements only; no trait sentences (uncited) ── */}
         <Card title={t('deck.highlights', 'Key Highlights')} className="dk-hl-card">

@@ -104,6 +104,20 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
   gender is never played (`voices.js`). The owner wants human voices: the admin
   can add a "voice" (a pandit with no account) and record or upload for him.
 
+## Planetary Positions table (`ChartDeck.jsx`, `PositionsCard`)
+
+Each graha's nakṣatra, pāda and degree in the nakṣatra, in two orders (planets, or
+houses 1–12 with empty houses shown; the choice stays in localStorage). The nakṣatra's
+colour comes from its muhūrta class (`nakshatra.quality` in the chart payload, from
+`api/nakshatra_attrs.py`): Soft/Light/Fixed green, Mixed/Mutable neutral, Fierce/Sharp
+red. ⚠ The seven classes are the tradition's (`traditional` tier, not BPHS); the
+three-way grouping (`NAK_TONE`) is OURS, and it describes the nakṣatra, not the planet
+in it. No registered text gives planet-in-nakṣatra results. The word for the class is
+shown under the name so the colour is never the only cue.
+- ⚠ With references off, `t()` runs `scrubProse`, which strips hedges such as "not a
+  prediction" from UI strings: state the fact instead.
+- A chart shared before this existed has no `quality`: no colour, nothing breaks.
+
 ## "Watch it explained" (the chart walkthrough)
 
 `web/src/walkthrough.js` builds a step-by-step script from the chart payload

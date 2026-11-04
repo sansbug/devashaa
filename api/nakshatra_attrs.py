@@ -444,6 +444,11 @@ def attributes_of(index: int) -> dict:
     return out
 
 
+def quality_of(index: int) -> str:
+    """The muhūrta class of nakṣatra `index` (1-27), the value alone — for the chart payload."""
+    return _QUALITY[index]
+
+
 def all_attributes() -> list[dict]:
     """The full 27-row `traditional`-tier attribute table, with provenance."""
     return [attributes_of(i) for i in range(1, 28)]

@@ -109,7 +109,7 @@ per room + R2 `devashaa-recordings`), engine `api/muhurta.py`.
 Each graha's nakṣatra, pāda and degree in the nakṣatra, in two orders (planets, or
 houses 1–12 with empty houses shown; the choice stays in localStorage). The nakṣatra's
 colour comes from its muhūrta class (`nakshatra.quality` in the chart payload, from
-`api/nakshatra_attrs.py`): Soft/Light/Fixed green, Mixed/Mutable neutral, Fierce/Sharp
+`api/nakshatra_attrs.py`): Soft/Light/Fixed/Mutable green (the owner's call), Mixed neutral, Fierce/Sharp
 red. ⚠ The seven classes are the tradition's (`traditional` tier, not BPHS); the
 three-way grouping (`NAK_TONE`) is OURS, and it describes the nakṣatra, not the planet
 in it. No registered text gives planet-in-nakṣatra results. The word for the class is

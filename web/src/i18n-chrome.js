@@ -2684,8 +2684,8 @@ export const CHROME = {
   "deck.nak.Mutable": { "en": "Mutable", "hi": "चर" },
   "deck.nak.Fierce": { "en": "Fierce", "hi": "उग्र" },
   "deck.nak.Sharp": { "en": "Sharp", "hi": "तीक्ष्ण" },
-  "deck.nak.good": { "en": "Soft, light or fixed", "hi": "मृदु, क्षिप्र या ध्रुव" },
-  "deck.nak.mixed": { "en": "Mixed or mutable", "hi": "मिश्र या चर" },
+  "deck.nak.good": { "en": "Soft, light, fixed or mutable", "hi": "मृदु, क्षिप्र, ध्रुव या चर" },
+  "deck.nak.mixed": { "en": "Mixed", "hi": "मिश्र" },
   "deck.nak.hard": { "en": "Fierce or sharp", "hi": "उग्र या तीक्ष्ण" },
   "deck.nak.note": {
     "en": "The colour is the class of the nakṣatra itself in the muhūrta tradition, not of the planet standing in it.",

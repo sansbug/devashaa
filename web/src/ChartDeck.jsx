@@ -68,7 +68,7 @@ function Planet({ g, namer, deg = false, size = 'm' }) {
 
 /** A nakṣatra's muhūrta class (the chart payload's `quality`, from api/nakshatra_attrs.py) grouped for colour. The
  *  classes are the tradition's; this three-way grouping is ours. It describes the nakṣatra, not the planet in it. */
-const NAK_TONE = { Soft: 'good', Light: 'good', Fixed: 'good', Mixed: 'mixed', Mutable: 'mixed', Fierce: 'hard', Sharp: 'hard' }
+const NAK_TONE = { Soft: 'good', Light: 'good', Fixed: 'good', Mutable: 'good', Mixed: 'mixed', Fierce: 'hard', Sharp: 'hard' }
 const ORDER_KEY = 'deck.positions.order'
 const loadOrder = () => { try { return localStorage.getItem(ORDER_KEY) === 'houses' ? 'houses' : 'planets' } catch { return 'planets' } }
 /** Rounded to the minute with the carry, as a graha's degree in its sign is. */
@@ -163,8 +163,8 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
         )}
       </table>
       <p className="dk-note dk-nak-key">
-        <span className="dk-nak good">{t('deck.nak.good', 'Soft, light or fixed')}</span>
-        {' · '}<span className="dk-nak mixed">{t('deck.nak.mixed', 'Mixed or mutable')}</span>
+        <span className="dk-nak good">{t('deck.nak.good', 'Soft, light, fixed or mutable')}</span>
+        {' · '}<span className="dk-nak mixed">{t('deck.nak.mixed', 'Mixed')}</span>
         {' · '}<span className="dk-nak hard">{t('deck.nak.hard', 'Fierce or sharp')}</span>
         <small>{t('deck.nak.note', 'The colour is the class of the nakṣatra itself in the muhūrta tradition, not of the planet standing in it.')}</small>
       </p>

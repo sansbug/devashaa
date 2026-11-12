@@ -449,7 +449,7 @@ export default function App() {
   }), [lang, refs])
   const { t } = langValue
   const watchButton = (
-    <button type="button" className="rg-open" onClick={() => setWatchOpen(true)}>{t('wt.open', '▶ Watch it explained')}</button>
+    <button type="button" className="rg-open" onClick={() => setWatchOpen(true)}>{t('wt.open', '▶ Explain my chart')}</button>
   )
 
   // Re-cast when the language changes so the generated readings switch too

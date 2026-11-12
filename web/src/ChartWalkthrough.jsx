@@ -1,14 +1,18 @@
 /**
- * "Watch it explained" — the chart walked through, step by step, on its own
- * animated North Indian chart: the house being spoken of is outlined (never
- * tinted), its grahas glow, the lagna's lord and the aspects are drawn as
- * lines, while the caption says what is being shown.
+ * "Watch it explained" — the chart explained topic by topic, in plain words, on
+ * its own animated North Indian chart. One topic a screen (the basics, each of
+ * the twelve houses, what is running now): the house in question is outlined —
+ * never tinted — the house its lord sits in is outlined lighter, a line runs to
+ * the lord, the grahas that matter glow and the aspects are drawn in.
  *
- * Everything said comes from walkthrough.js, which builds it from this chart's
- * own payload — facts and method, never a verdict (see there). The caption is
- * the narration; a device voice reads it only if the reader turns that on, and
- * it is labelled as a machine's. The script can be copied as plain text, one
- * paragraph a step, for a narrator or a presenter to read.
+ * Everything shown comes from walkthrough.js, built from this chart's own
+ * payload: the chart's facts and the method that reads them, in the format of
+ * the simple explainers people already read — the houses that matter, then
+ * numbered lines about THIS chart. The classical rule behind a placement is a
+ * click away, in the text's own words (or, when it carries a care-sensitive
+ * verdict, a pointer to the Bhāvas panel). A device voice reads the lines only
+ * if the reader turns it on, labelled as a machine's; "Copy the script" gives
+ * one paragraph a topic, for a narrator or a presenter to read.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLang } from './LangContext.jsx'
@@ -48,14 +52,16 @@ function TourChart({ chart, step, lang }) {
       <line x1="400" y1="0" x2="0" y2="400" className="wt-line" />
       <polygon points="200,0 400,200 200,400 0,200" className="wt-line" />
       {NORTH_REGIONS.map((r, i) => (
-        <polygon key={i} points={r.pts} className={`wt-house${on.has(i + 1) ? ' on' : ''}`} style={{ '--d': `${i * 0.28}s` }} />
+        <polygon key={i} points={r.pts} className={`wt-house${on.has(i + 1) ? ' on' : ''}${f.main === i + 1 ? ' main' : ''}`} style={{ '--d': `${i * 0.28}s` }} />
       ))}
       {f.lines.map((ln, k) => {
         const a = C(ln.from), b = C(ln.to)
         // stop short of the centres, so a line never sits on the labels it joins
         const dx = b.cx - a.cx, dy = b.cy - a.cy, len = Math.hypot(dx, dy) || 1, s = 26 / len
+        // an aspect runs a little to one side, so it never lies on top of the lord's line between the same two houses
+        const o = ln.kind === 'lord' ? 0 : 6, ox = (-dy / len) * o, oy = (dx / len) * o
         return (
-          <line key={k} x1={a.cx + dx * s} y1={a.cy + dy * s} x2={b.cx - dx * s} y2={b.cy - dy * s}
+          <line key={k} x1={a.cx + dx * s + ox} y1={a.cy + dy * s + oy} x2={b.cx - dx * s + ox} y2={b.cy - dy * s + oy}
                 className={`wt-ray ${ln.kind}`} style={{ '--d': `${0.25 + k * 0.18}s` }}
                 markerEnd={ln.kind === 'part' ? undefined : 'url(#wt-head)'} pathLength="1" />
         )
@@ -97,6 +103,7 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
   }, [])
   const step = steps[Math.min(i, steps.length - 1)]
   const text = step.say[lang] || step.say.en
+  const P = (o) => (o ? (o[lang] || o.en) : null)
   const refs = refsOn()
   const L = (en, hi) => (lang === 'hi' ? hi : en)
 
@@ -125,6 +132,13 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
 
   useEffect(() => () => { clearTimeout(timer.current); if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel() }, [])
 
+  // keep the current topic in view in the topic row (sideways only — the page itself does not move)
+  const topics = useRef(null)
+  useEffect(() => {
+    const row = topics.current, b = row && row.querySelector('button.on')
+    if (b) row.scrollTo({ left: b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' })
+  }, [i])
+
   const go = (k) => setI(Math.max(0, Math.min(steps.length - 1, k)))
   const onKey = (e) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); go(i + 1) }
@@ -137,25 +151,40 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
   const noVoice = voiceOn && !pickVoice(lang)
 
   return (
-    <section className="wt" aria-label={L('The chart, explained', 'कुंडली की व्याख्या')} onKeyDown={onKey}>
+    <section className="wt" aria-label={L('Your chart, explained simply', 'आपकी कुंडली, सरल शब्दों में')} onKeyDown={onKey}>
       <header className="wt-top">
-        <h3>{L('The chart, explained', 'कुंडली की व्याख्या')}</h3>
+        <h3>{L('Your chart, explained simply', 'आपकी कुंडली, सरल शब्दों में')}</h3>
         <span className="wt-count">{i + 1} / {steps.length}</span>
         <button type="button" className="wt-x" onClick={onClose} aria-label={t('common.close', 'Close')}>×</button>
       </header>
+      <ol className="wt-topics" ref={topics} aria-label={L('Topics', 'विषय')}>
+        {steps.map((s, k) => (
+          <li key={s.key}>
+            <button type="button" className={k === i ? 'on' : ''} aria-current={k === i ? 'step' : undefined} onClick={() => go(k)}>
+              {s.key.startsWith('house') ? `${s.key.slice(5)} · ` : ''}{P(s.title)}
+            </button>
+          </li>
+        ))}
+      </ol>
       <div className="wt-body">
         <div className="wt-stage"><TourChart key={i} chart={chart} step={step} lang={lang} /></div>
         <div className="wt-cap" aria-live="polite">
-          <p className="wt-say">{text}</p>
-          {step.focus.names && step.focus.names.length > 0 && (
-            <ul className="wt-names">{step.focus.names.map((n) => <li key={n}>{n}</li>)}</ul>
+          <h4 className="wt-title">{P(step.title)}</h4>
+          {P(step.chips).length > 0 && (
+            <ul className="wt-chips" aria-label={L('What matters here', 'यहाँ क्या मायने रखता है')}>
+              {P(step.chips).map((c) => <li key={c.label}><b>{c.label}</b> = {c.text}</li>)}
+            </ul>
           )}
-          {step.quote && step.quote.length > 0 && (
-            <div className="wt-quotes">
-              {step.quote.map((q) => (
-                <p key={q.name} className="wt-quote"><b>{q.name}</b> — {L('the text reads', 'ग्रंथ के शब्द')}: “{q.effect}”</p>
-              ))}
-            </div>
+          <ol className={`wt-lines${P(step.lines).length > 1 ? '' : ' one'}`}>
+            {P(step.lines).map((x, k) => <li key={k}>{x}</li>)}
+          </ol>
+          {step.text && (
+            <details className="wt-text" key={step.key}>
+              <summary>{L('What the classical text says', 'शास्त्र क्या कहता है')}</summary>
+              {P(step.text).quote
+                ? <p>“{P(step.text).quote}” <small>{P(step.text).note}</small></p>
+                : <p><small>{P(step.text).note}</small></p>}
+            </details>
           )}
           {refs && step.cite && <p className="wt-cite">{step.cite}</p>}
         </div>
@@ -167,12 +196,6 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
           {playing ? `❚❚ ${L('Pause', 'रोकें')}` : `▶ ${L('Play', 'चलाएँ')}`}
         </button>
         <button type="button" className="wt-btn" onClick={() => go(i + 1)} disabled={i === steps.length - 1} aria-label={L('Next step', 'अगला चरण')}>▶</button>
-        <ol className="wt-dots">
-          {steps.map((s, k) => (
-            <li key={s.key}><button type="button" className={k === i ? 'on' : k < i ? 'done' : ''} onClick={() => go(k)}
-                                    aria-label={`${k + 1}`} aria-current={k === i ? 'step' : undefined} /></li>
-          ))}
-        </ol>
         <label className="wt-voice">
           <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} />
           {L('Read aloud — this device’s machine voice', 'पढ़कर सुनाएँ — इस उपकरण की मशीनी आवाज़')}

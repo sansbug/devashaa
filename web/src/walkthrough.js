@@ -1,44 +1,76 @@
 /**
- * The chart walkthrough — the script a narrated, animated tour of one chart
- * plays from.
+ * "Watch it explained" — a chart explained topic by topic, in plain words.
  *
- * Built ONLY from the chart the API returned: no free text is generated and no
- * reading is invented. Each step is
+ * The format follows the simple explainers people already read: one topic at a
+ * time ("Marriage and partnership"), the houses that matter in one line, then
+ * numbered lines that say what THIS chart has — which sign the house holds,
+ * where its lord sits and how strong it is there, which planets sit in it or
+ * look at it, and its natural significator. "Signs, not promises."
  *
- *   say    { en, hi } — what is spoken (and captioned): the chart's own facts
- *          and the method that reads them. It names no book (references stay
- *          behind the switch, as everywhere on the site), and it never reads out
- *          a verdict — a lord-in-house rule or a planet-in-house reading can
- *          state a death, a lost child, a short life, and those stay on the
- *          panels, as the text's dated view, where they are read in context.
- *   quote  — on screen only, never spoken: a yoga's cited effect, exactly as the
- *          Yogas panel shows it.
- *   cite   — the locus of the rule the step leans on; shown only with
- *          references switched on.
- *   focus  — what the chart lights up: houses (1–12, outlined — never tinted),
- *          grahas, lines from one house to another (the lagna lord, aspects).
+ * Built ONLY from the chart the API returned; nothing is generated and no
+ * reading is invented. The plain lines state the chart's facts and the method
+ * that reads them (a house is read through where its lord sits — BPHS ch.24).
+ * What a house stands for is drawn from BPHS ch.11's significations, shortened;
+ * longevity and one's own death are deliberately left out of the plain labels.
  *
- * The order follows the reading guide's method — lagna, its lord, the Moon,
- * dignity, aspects, yogas, the kāraka of the self, timing — told on THIS
- * chart. A chart shared without its birth details has no daśā, and that step
- * is left out. The spoken script (`spokenScript`) is plain text, one paragraph
- * a step, for a narrator or a presenter (an avatar) to read.
+ * What the classical text says about the placement (BPHS ch.24's lord-in-house
+ * rule) is NOT in the plain lines: it is behind a click (`text`), in the text's
+ * own words, and only when it carries no care-sensitive verdict (a death, a lost
+ * child or parent, childlessness, a vice); otherwise the click says where to read
+ * it. Nothing in `say` names a book; `cite` shows only with references switched on.
+ *
+ * Each step: { key, title, chips, lines, text, cite, focus, say } — title, chips,
+ * lines and text are per language ({ en, hi }); `say` is the narration (title +
+ * lines) for a voice or a presenter; `focus` is what the animated chart lights.
  */
 import { makeNamer } from './naming.js'
 
 // sign index 0-11 → its lord (graha key)
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 const EN_ORD = (n) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`
-// oblique ordinals, as in "पाँचवें भाव में"
 const HI_ORD = ['', 'पहले', 'दूसरे', 'तीसरे', 'चौथे', 'पाँचवें', 'छठे', 'सातवें', 'आठवें', 'नौवें', 'दसवें', 'ग्यारहवें', 'बारहवें']
-const DIGNITY = {
-  exalted: { en: 'exalted — at its strongest', hi: 'उच्च के हैं — अपनी सबसे बलवान स्थिति में' },
-  debilitated: { en: 'debilitated — at its weakest', hi: 'नीच के हैं — अपनी सबसे दुर्बल स्थिति में' },
-  moolatrikona: { en: 'in its mūlatrikoṇa sign — very strong', hi: 'मूलत्रिकोण में हैं — बहुत बलवान' },
-  own: { en: 'in its own sign — strong', hi: 'स्वराशि के हैं — बलवान' },
+const HI_ORD_N = ['', 'पहला', 'दूसरा', 'तीसरा', 'चौथा', 'पाँचवाँ', 'छठा', 'सातवाँ', 'आठवाँ', 'नौवाँ', 'दसवाँ', 'ग्यारहवाँ', 'बारहवाँ']
+
+/** What each house stands for, shortened from BPHS ch.11 (vv.2-13). Longevity (8th) and one's own death (12th) are
+ *  left out on purpose; "wife" is the spouse. `of` completes "the house of …"; `chip` is the one-line meaning. */
+export const HOUSE = {
+  1: { title: { en: 'You — body and nature', hi: 'आप — शरीर और स्वभाव' }, of: { en: 'self and body', hi: 'स्वयं और शरीर' }, chip: { en: 'body, looks, nature, happiness', hi: 'शरीर, रूप, स्वभाव, सुख' } },
+  2: { title: { en: 'Wealth and family', hi: 'धन और परिवार' }, of: { en: 'wealth and family', hi: 'धन और परिवार' }, chip: { en: 'wealth, food, family, gems', hi: 'धन, अन्न, परिवार, रत्न' } },
+  3: { title: { en: 'Courage and siblings', hi: 'पराक्रम और भाई-बहन' }, of: { en: 'courage and siblings', hi: 'पराक्रम और भाई-बहन' }, chip: { en: 'courage, brothers and sisters, helpers, journeys', hi: 'पराक्रम, भाई-बहन, सहायक, यात्रा' } },
+  4: { title: { en: 'Home and mother', hi: 'घर और माता' }, of: { en: 'home and mother', hi: 'घर और माता' }, chip: { en: 'home, mother, vehicles, land, happiness', hi: 'घर, माता, वाहन, भूमि, सुख' } },
+  5: { title: { en: 'Children and learning', hi: 'संतान और विद्या' }, of: { en: 'children and learning', hi: 'संतान और विद्या' }, chip: { en: 'children, learning, mantras, authority', hi: 'संतान, विद्या, मंत्र, अधिकार' } },
+  6: { title: { en: 'Rivals and health', hi: 'शत्रु और स्वास्थ्य' }, of: { en: 'rivals and health', hi: 'शत्रु और स्वास्थ्य' }, chip: { en: 'rivals, illness, maternal uncle', hi: 'शत्रु, रोग, मामा' } },
+  7: { title: { en: 'Marriage and partnership', hi: 'विवाह और साझेदारी' }, of: { en: 'marriage and partnership', hi: 'विवाह और साझेदारी' }, chip: { en: 'spouse, partnership, trade, travel', hi: 'जीवनसाथी, साझेदारी, व्यापार, यात्रा' } },
+  8: { title: { en: 'Inheritance and hidden matters', hi: 'विरासत और गूढ़ बातें' }, of: { en: 'inheritance and hidden matters', hi: 'विरासत और गूढ़ बातें' }, chip: { en: 'inheritance, struggles, hidden matters', hi: 'विरासत, संघर्ष, गूढ़ बातें' } },
+  9: { title: { en: 'Fortune and faith', hi: 'भाग्य और धर्म' }, of: { en: 'fortune and faith', hi: 'भाग्य और धर्म' }, chip: { en: 'fortune, religion, pilgrimage', hi: 'भाग्य, धर्म, तीर्थ' } },
+  10: { title: { en: 'Career and status', hi: 'कर्म और प्रतिष्ठा' }, of: { en: 'career and status', hi: 'कर्म और प्रतिष्ठा' }, chip: { en: 'profession, authority, honour, father, living abroad', hi: 'आजीविका, अधिकार, सम्मान, पिता, विदेश-वास' } },
+  11: { title: { en: 'Income and gains', hi: 'आय और लाभ' }, of: { en: 'income and gains', hi: 'आय और लाभ' }, chip: { en: 'income, gains, prosperity', hi: 'आय, लाभ, समृद्धि' } },
+  12: { title: { en: 'Expenses', hi: 'व्यय' }, of: { en: 'expenses', hi: 'व्यय' }, chip: { en: 'expenses', hi: 'व्यय, खर्च' } },
 }
-const DIGNITY_ORDER = ['exalted', 'debilitated', 'moolatrikona', 'own']
-// "a, b and c" / "क, ख और ग"
+
+const DIGNITY = {
+  exalted: { en: 'exalted — at its strongest', hi: 'उच्च का — अपनी सबसे बलवान स्थिति में' },
+  moolatrikona: { en: 'in its mūlatrikoṇa sign — very strong', hi: 'मूलत्रिकोण में — बहुत बलवान' },
+  own: { en: 'in its own sign — strong', hi: 'स्वराशि में — बलवान' },
+  friend: { en: 'in a friend’s sign — comfortable', hi: 'मित्र की राशि में — सहज' },
+  neutral: { en: 'in a neutral sign', hi: 'सम राशि में' },
+  enemy: { en: 'in an enemy’s sign — uncomfortable', hi: 'शत्रु की राशि में — असहज' },
+  debilitated: { en: 'debilitated — at its weakest', hi: 'नीच का — अपनी सबसे दुर्बल स्थिति में' },
+}
+/** A nakṣatra's muhūrta class (chart payload `quality`, api/nakshatra_attrs.py), in a word. */
+const NAK_CLASS = {
+  Soft: { en: 'soft', hi: 'मृदु' }, Light: { en: 'light, swift', hi: 'क्षिप्र' }, Fixed: { en: 'fixed', hi: 'ध्रुव' },
+  Mutable: { en: 'moving', hi: 'चर' }, Mixed: { en: 'mixed', hi: 'मिश्र' }, Fierce: { en: 'fierce', hi: 'उग्र' }, Sharp: { en: 'sharp', hi: 'तीक्ष्ण' },
+}
+const STRONG = ['exalted', 'moolatrikona', 'own']
+
+/** A lord-in-house rule that speaks of a death, a lost child or parent, childlessness, many wives or a vice is not
+ *  put in front of a reader in a plain summary; the Bhāvas panel carries it, in the text's own words. Both languages. */
+export const CARE = {
+  en: /\b(death|die[sd]?|dead|lose[sr]?|loss|deprived|bereft|devoid|childless|progeny|sons?|wives|wife|thie(f|ves)|tortur\w*|vices?|short-lived|poverty|disease|widow\w*|betray\w*|wicked|females?)\b/i,
+  hi: /संतान|पुत्र|पत्नी|पत्नि|मृत्यु|मरण|नाश|वंचित|रहित|चोर|पीड़|दुर्व्यसन|अल्पायु|रोग|दरिद्र|विश्वासघात|स्त्रियों/,
+}
+
 const list = (xs, lang) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} ${lang === 'hi' ? 'और' : 'and'} ${xs[xs.length - 1]}`)
 const MONTHS_HI = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -56,173 +88,188 @@ function currentDasha(chart) {
   const tree = dv[String(chart.dasha.default_year_days)] || dv['360'] || Object.values(dv)[0]
   const maha = tree && (tree.mahadashas || []).find((m) => m.is_current)
   if (!maha) return null
-  const antar = (maha.sub || []).find((a) => a.is_current) || null
+  const antar = (maha.sub || []).find((x) => x.is_current) || null
   return { maha, antar, cite: tree.citation || null }
 }
 
 /**
  * @param chart  the /api/chart payload (a snapshot works too)
- * @param namer  the reader's name style (naming.js) for the English script; Hindi is always in Devanāgarī
- * @returns      { steps: [{ key, say: {en, hi}, quote, cite, focus: {houses, grahas, lines, sweep} }] }
+ * @param namer  the reader's name style (naming.js) for English; Hindi is always in Devanāgarī
+ * @returns      { steps }
  */
 export function buildWalkthrough(chart, namer = makeNamer('common')) {
   const H = makeNamer('devanagari'), E = makeNamer('english')
   const N = { en: namer, hi: H }
+  const plainEn = namer.style === 'english'
   const lagna = chart.lagna_rasi
   const g = (k) => (chart.grahas || []).find((x) => x.key === k)
-  // in English, a Sanskrit name carries its English one on first mention: "Guru (Jupiter)"
-  const name = (lang, k) => N[lang].grahaKey(k)
-  const named = (lang, k) => (lang === 'en' && namer.style !== 'english' ? `${namer.grahaKey(k)} (${E.grahaKey(k)})` : name(lang, k))
-  const sign = (lang, i) => (lang === 'en' && namer.style !== 'english' ? `${namer.rasi(i)} (${namer.rasiEnglish(i)})` : N[lang].rasi(i))
   const a = chart.analysis && !chart.analysis.error ? chart.analysis : {}
-  const citeOf = (k, field) => ((a.grahas && a.grahas[k]) || []).find((e) => e.name === field)?.citation || null
-  const both = (f) => ({ en: f('en'), hi: f('hi') })
+  const bhavas = (a.bhava_phala && a.bhava_phala.bhavas) || []
+  const name = (l, k) => N[l].grahaKey(k)
+  // in English a Sanskrit name carries its English one the first time a step uses it: "Guru (Jupiter)"
+  const fold = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const named = (l, k) => (l === 'en' && !plainEn && fold(namer.grahaKey(k)) !== fold(E.grahaKey(k)) ? `${namer.grahaKey(k)} (${E.grahaKey(k)})` : name(l, k))
+  const sign = (l, i) => (l === 'en' && !plainEn ? `${namer.rasi(i)} (${namer.rasiEnglish(i)})` : N[l].rasi(i))
+  const nak = (l, x) => N[l].nakshatra(x.nakshatra)
+  const cls = (l, x) => (x.nakshatra && NAK_CLASS[x.nakshatra.quality] ? NAK_CLASS[x.nakshatra.quality][l] : '')
+  const ord = (l, h) => (l === 'hi' ? HI_ORD[h] : EN_ORD(h))
+  const ruled = (k) => Array.from({ length: 12 }, (_, i) => i + 1).filter((h) => SIGN_LORD[(lagna + h - 1) % 12] === k)
   const steps = []
-
-  // 1 — the frame
-  steps.push({
-    key: 'frame',
-    say: {
-      en: 'This is the rāśi chart, drawn in the North Indian style. Its twelve compartments are the twelve houses — the bhāvas. The top diamond is the 1st house; the others follow it anticlockwise, and the number in each is the sign that falls in it.',
-      hi: 'यह उत्तर भारतीय शैली में बनी राशि-कुंडली है। इसके बारह खाने बारह भाव हैं। ऊपर बीच का खाना पहला भाव है; बाकी भाव उसके बाद वामावर्त — घड़ी की उलटी दिशा में — चलते हैं, और हर खाने का अंक उसमें पड़ी राशि का है।',
-    },
-    quote: null, cite: null,
-    focus: { houses: [], grahas: [], lines: [], sweep: true },
-  })
-
-  // 2 — the lagna
-  const nk = chart.lagna_nakshatra
-  steps.push({
-    key: 'lagna',
-    say: both((l) => (l === 'hi'
-      ? `पहला भाव लग्न है — जन्म के क्षण पूर्व में उदित होती राशि। यहाँ लग्न ${sign(l, lagna)} है${nk ? `, ${N.hi.nakshatra(nk)} नक्षत्र में (पाद ${nk.pada})` : ''}। भाव इसी से गिने जाते हैं, और शास्त्र के नियम लग्न से बँधे हैं — "सूर्य राशि" से नहीं।`
-      : `The 1st house is the lagna — the sign rising in the east at the moment of birth. Here it is ${sign(l, lagna)}${nk ? `, in pāda ${nk.pada} of the nakṣatra ${namer.nakshatra(nk)}` : ''}. The houses are counted from it, and the classical rules are keyed to it — not to a "sun sign".`)),
-    quote: null, cite: 'BPHS Vol I, ch.34',
-    focus: { houses: [1], grahas: [], lines: [] },
-  })
-
-  // 3 — the lagna's lord
-  const L = SIGN_LORD[lagna], gl = g(L)
-  if (gl) {
-    const rule = ((a.bhava_phala && a.bhava_phala.bhavas) || []).find((b) => b.house === 1)?.lord_rule
+  const push = (key, build, focus, cite = null) => {
+    const per = { en: build('en'), hi: build('hi') }
     steps.push({
-      key: 'lagnaLord',
-      say: both((l) => (l === 'hi'
-        ? `${sign(l, lagna)} के स्वामी ${name(l, L)} हैं, और ${name(l, L)} ${gl.bhava === 1 ? 'स्वयं लग्न में' : `${HI_ORD[gl.bhava]} भाव में`}, ${sign(l, gl.rasi)} राशि में बैठे हैं। लग्नेश जिस भाव में हो, शास्त्र उसका अलग नियम देते हैं — बारहों भावों के लिए; इस कुंडली का नियम ‘भाव व योग’ खंड में है।`
-        : `${sign(l, lagna)} is ruled by ${named(l, L)}, and ${name(l, L)} sits ${gl.bhava === 1 ? 'in the lagna itself' : `in the ${EN_ORD(gl.bhava)} house`}, in ${sign(l, gl.rasi)}. The classical texts give a rule for the lagna's lord in each of the twelve houses; this chart's is in the Bhāvas & Yogas section.`)),
-      quote: null, cite: rule ? rule.citation : null,
-      focus: { houses: gl.bhava === 1 ? [1] : [1, gl.bhava], grahas: [L], lines: gl.bhava === 1 ? [] : [{ from: 1, to: gl.bhava, kind: 'lord' }] },
+      key, focus, cite,
+      title: { en: per.en.title, hi: per.hi.title },
+      chips: { en: per.en.chips || [], hi: per.hi.chips || [] },
+      lines: { en: per.en.lines, hi: per.hi.lines },
+      text: per.en.text ? { en: per.en.text, hi: per.hi.text } : null,
+      say: { en: [per.en.title, ...per.en.lines].join('. ').replace(/\.\./g, '.'), hi: [per.hi.title, ...per.hi.lines].join('। ').replace(/।।/g, '।') },
     })
   }
-
-  // 4 — the Moon and the Sun
-  const mo = g('moon'), su = g('sun'), dsh = currentDasha(chart)
-  if (mo && su) {
-    steps.push({
-      key: 'luminaries',
-      say: both((l) => (l === 'hi'
-        ? `चन्द्र ${sign(l, mo.rasi)} राशि में, ${HI_ORD[mo.bhava]} भाव में, ${N.hi.nakshatra(mo.nakshatra)} नक्षत्र में है। चन्द्र की राशि जन्म-राशि कहलाती है, और उसका नक्षत्र तय करता है कि विंशोत्तरी दशा किस ग्रह से आरंभ होती है। सूर्य ${sign(l, su.rasi)} राशि में, ${HI_ORD[su.bhava]} भाव में है।`
-        : `${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in the ${EN_ORD(mo.bhava)} house, in the nakṣatra ${namer.nakshatra(mo.nakshatra)}. Its sign is the janma rāśi, and its nakṣatra sets the graha with which the Viṁśottarī daśā begins. ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in the ${EN_ORD(su.bhava)} house.`)),
-      quote: null, cite: dsh ? dsh.cite : null,
-      focus: { houses: [...new Set([mo.bhava, su.bhava])], grahas: ['moon', 'sun'], lines: [] },
-    })
+  /** "Guru there is in its own sign — strong, in Revatī, a soft nakṣatra." */
+  const standing = (l, x) => {
+    const d = x.dignity && DIGNITY[x.dignity.state] ? DIGNITY[x.dignity.state][l] : ''
+    const rx = x.retrograde ? (l === 'hi' ? ', वक्री' : ', retrograde') : ''
+    const c = cls(l, x)
+    const [place, gloss] = d.split(' — ')
+    return l === 'hi'
+      ? `वहाँ ${name(l, x.key)} ${d ? `${place} हैं${gloss ? ` (${gloss})` : ''}${rx}` : `${sign(l, x.rasi)} राशि में हैं${rx}`}, ${nak(l, x)} नक्षत्र में${c ? ` (${c})` : ''}`
+      : `${name(l, x.key)} there is ${d ? `${d}${rx}` : `in ${sign(l, x.rasi)}${rx}`}, in ${nak(l, x)}${c ? ` — a ${c} nakṣatra` : ''}`
   }
 
-  // 5 — dignity
-  const strong = DIGNITY_ORDER.flatMap((st) => (chart.grahas || []).filter((x) => x.dignity && x.dignity.state === st)).slice(0, 3)
-  if (strong.length) {
-    steps.push({
-      key: 'dignity',
-      say: both((l) => {
-        const items = strong.map((x) => (l === 'hi'
-          ? `${sign(l, x.rasi)} राशि में ${name(l, x.key)} ${DIGNITY[x.dignity.state].hi}`
-          : `${named(l, x.key)}, in ${sign(l, x.rasi)}, is ${DIGNITY[x.dignity.state].en}`))
-        return l === 'hi'
-          ? `ग्रह की राशि उसका बल बदलती है: उच्च, मूलत्रिकोण, स्वराशि, मित्र या शत्रु की राशि, नीच। इस कुंडली में: ${items.join('; ')}। गरिमा उन बलों में से एक है जिन्हें शास्त्र गिनते हैं।`
-          : `The sign a graha stands in changes its strength — exalted, mūlatrikoṇa, its own sign, a friend's or an enemy's, debilitated. In this chart: ${items.join('; ')}. Dignity is one of the strengths the classical texts count.`
-      }),
-      quote: null, cite: citeOf(strong[0].key, 'dignity'),
-      focus: { houses: [...new Set(strong.map((x) => x.bhava))], grahas: strong.map((x) => x.key), lines: [] },
-    })
+  // ── 1. the chart in one minute ──────────────────────────────────────────────
+  const mo = g('moon'), su = g('sun'), nk = chart.lagna_nakshatra
+  const strong = STRONG.flatMap((st) => (chart.grahas || []).filter((x) => x.dignity && x.dignity.state === st))
+  const weak = (chart.grahas || []).filter((x) => x.dignity && x.dignity.state === 'debilitated')
+  push('basics', (l) => ({
+    title: l === 'hi' ? 'एक मिनट में आपकी कुंडली' : 'Your chart in one minute',
+    chips: [
+      { label: l === 'hi' ? 'लग्न' : 'Lagna', text: l === 'hi' ? 'आप — पहला भाव' : 'you — the 1st house' },
+      { label: name(l, 'moon'), text: l === 'hi' ? 'मन' : 'the mind' },
+      { label: name(l, 'sun'), text: l === 'hi' ? 'आत्मा' : 'the soul' },
+    ],
+    lines: [
+      l === 'hi'
+        ? `आपका लग्न — जन्म के समय पूर्व में उदित राशि — ${sign(l, lagna)} है${nk ? `, ${N.hi.nakshatra(nk)} नक्षत्र में` : ''}। यही आपका पहला भाव है; बाकी ग्यारह भाव इसी से गिने जाते हैं।`
+        : `Your lagna — the sign rising at your birth — is ${sign(l, lagna)}${nk ? `, in the nakṣatra ${namer.nakshatra(nk)}` : ''}. It is your 1st house; the other eleven are counted from it.`,
+      mo && (l === 'hi'
+        ? `आपका चन्द्र ${sign(l, mo.rasi)} राशि में है, ${nak(l, mo)} नक्षत्र में — यही आपकी जन्म-राशि और जन्म-नक्षत्र है।`
+        : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in ${nak(l, mo)} — your birth sign (rāśi) and birth nakṣatra.`),
+      su && (l === 'hi' ? `आपका सूर्य ${sign(l, su.rasi)} राशि में है, ${HI_ORD[su.bhava]} भाव में।` : `Your ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in your ${EN_ORD(su.bhava)} house.`),
+      strong.length > 0 && (l === 'hi'
+        ? `सबसे बलवान ग्रह: ${strong.map((x) => `${name(l, x.key)} (${DIGNITY[x.dignity.state].hi.split(' — ')[0]})`).join(', ')}।`
+        : `Strongest placements: ${strong.map((x) => `${name(l, x.key)}, ${DIGNITY[x.dignity.state].en.split(' — ')[0]}`).join('; ')}.`),
+      weak.length > 0 && (l === 'hi'
+        ? `सबसे दुर्बल: ${weak.map((x) => `${name(l, x.key)} (नीच)`).join(', ')}।`
+        : `Weakest: ${weak.map((x) => `${name(l, x.key)}, debilitated`).join('; ')}.`),
+    ].filter(Boolean),
+  }), { houses: [1, mo && mo.bhava, su && su.bhava].filter(Boolean), main: 1, grahas: ['moon', 'sun', ...strong.map((x) => x.key)], lines: [] })
+
+  // ── 2. the twelve houses, one topic each ────────────────────────────────────
+  for (const b of bhavas) {
+    const h = b.house, T = HOUSE[h]
+    if (!T) continue
+    const lord = g(b.lord), lh = b.lord_in_house
+    const occ = (b.occupants || []).map(g).filter(Boolean)
+    // fully and three-quarters only: the lighter graded aspects (½, ¼) are on the Aspects card, not in a plain summary
+    const full = (b.aspects_in || []).filter((x) => x.strength >= 1).map((x) => x.graha)
+    const part = (b.aspects_in || []).filter((x) => x.strength >= 0.75 && x.strength < 1).map((x) => x.graha)
+    const kar = b.karaka && b.karaka !== b.lord ? g(b.karaka) : null
+    const rule = b.lord_rule && b.lord_rule.effect
+    const clean = rule && !CARE.en.test(rule) && !CARE.hi.test(rule)
+    push(`house${h}`, (l) => ({
+      title: T.title[l],
+      chips: [
+        { label: l === 'hi' ? `${HI_ORD_N[h]} भाव` : `${EN_ORD(h)} house`, text: T.chip[l] },
+        ...(b.karaka ? [{ label: name(l, b.karaka), text: l === 'hi' ? 'इसका नैसर्गिक कारक' : 'its natural significator' }] : []),
+      ],
+      lines: [
+        l === 'hi'
+          ? `आपका ${HI_ORD_N[h]} भाव ${sign(l, b.sign)} राशि है; इसके स्वामी ${name(l, b.lord)} हैं।`
+          : `Your ${EN_ORD(h)} house is ${sign(l, b.sign)}, ruled by ${named(l, b.lord)}.`,
+        lh === h
+          ? (l === 'hi' ? `${name(l, b.lord)} इसी भाव में बैठे हैं — भाव का स्वामी अपने ही घर में है।` : `${name(l, b.lord)} sits right here, in your ${EN_ORD(h)} house — the house’s lord is at home.`)
+          : (l === 'hi'
+            ? `${name(l, b.lord)} आपके ${HI_ORD[lh]} भाव में बैठे हैं — ${HOUSE[lh].of.hi} का भाव। इसलिए यह भाव (${T.of.hi}) ${HOUSE[lh].of.hi} से जुड़ता है।`
+            : `${name(l, b.lord)} sits in your ${EN_ORD(lh)} house — the house of ${HOUSE[lh].of.en}. So your ${T.of.en} are tied to ${HOUSE[lh].of.en}.`),
+        lord && `${standing(l, lord)}${l === 'hi' ? '।' : '.'}`,
+        occ.length
+          ? (l === 'hi'
+            ? `इस भाव में बैठे ग्रह: ${list(occ.map((x) => `${name(l, x.key)} (${nak(l, x)}${cls(l, x) ? `, ${cls(l, x)}` : ''})`), l)}।`
+            : `Planets in this house: ${list(occ.map((x) => `${name(l, x.key)} (in ${nak(l, x)}${cls(l, x) ? `, ${cls(l, x)}` : ''})`), l)}.`)
+          : (l === 'hi' ? 'इस भाव में कोई ग्रह नहीं बैठा।' : 'No planet sits in this house.'),
+        full.length || part.length
+          ? (l === 'hi'
+            ? `इस भाव पर दृष्टि: ${full.length ? `पूर्ण — ${list(full.map((k) => name(l, k)), l)}` : ''}${full.length && part.length ? '; ' : ''}${part.length ? `तीन-चौथाई — ${list(part.map((k) => name(l, k)), l)}` : ''}।`
+            : `Looking at this house: ${full.length ? `fully, ${list(full.map((k) => name(l, k)), l)}` : ''}${full.length && part.length ? '; ' : ''}${part.length ? `three-quarters, ${list(part.map((k) => name(l, k)), l)}` : ''}.`)
+          : (l === 'hi' ? 'कोई ग्रह इस भाव को पूर्ण दृष्टि से नहीं देखता।' : 'No planet looks at this house fully.'),
+        kar && (l === 'hi'
+          ? `इस भाव के नैसर्गिक कारक ${name(l, kar.key)} आपके ${HI_ORD[kar.bhava]} भाव में, ${sign(l, kar.rasi)} राशि में हैं।`
+          : `${named(l, kar.key)}, the natural significator of this house, sits in your ${EN_ORD(kar.bhava)} house, in ${sign(l, kar.rasi)}.`),
+      ].filter(Boolean),
+      text: rule
+        ? (clean
+          ? { quote: rule, note: l === 'hi' ? 'शास्त्र के अपने (पुराने) शब्द — भविष्यवाणी नहीं।' : 'The text’s own, dated words.' }
+          : { quote: null, note: l === 'hi' ? 'इस स्थिति का शास्त्रीय नियम ‘भाव व योग’ खंड में है, शास्त्र के अपने शब्दों में।' : 'The classical rule for this placement is in the Bhāvas & Yogas section, in the text’s own words.' })
+        : null,
+    }), {
+      main: h,
+      houses: [...new Set([h, lh])],
+      grahas: [...new Set([b.lord, ...occ.map((x) => x.key), ...(kar ? [kar.key] : [])])],
+      lines: [
+        ...(lh && lh !== h ? [{ from: h, to: lh, kind: 'lord' }] : []),
+        // one line per house an aspect comes from (two grahas in one house cast along the same line)
+        ...[...new Map([...part, ...full].map((k) => [g(k) && g(k).bhava, { from: g(k) && g(k).bhava, to: h, kind: full.includes(k) ? 'full' : 'part' }])).values()]
+          .filter((x) => x.from && x.from !== h),
+      ],
+    }, [b.significations && b.significations.citation, b.lord_rule && b.lord_rule.citation].filter(Boolean).join(' · ') || null)
   }
 
-  // 6 — aspects: Jupiter's, the graha with special full aspects of the kindest repute
-  const casts = a.drishti && a.drishti.graha && a.drishti.graha.casts
-  const jc = casts && casts.jupiter, ju = g('jupiter')
-  if (jc && ju) {
-    const hj = ju.bhava
-    const aspects = Object.entries(jc.signs || {}).map(([s, v]) => ({ to: houseOf(+s, lagna), s: v })).sort((x, y) => x.to - y.to)
-    const full = aspects.filter((x) => x.s >= 1).map((x) => x.to)
-    const onto = Object.entries(jc.grahas || {}).filter(([, v]) => v >= 1).map(([k]) => k)
-    steps.push({
-      key: 'aspects',
-      say: both((l) => (l === 'hi'
-        ? `ग्रह दृष्टि डालते हैं। हर ग्रह अपने से सातवें भाव को पूर्ण दृष्टि से देखता है; ${list(['mars', 'jupiter', 'saturn'].map((k) => name(l, k)), l)} की कुछ विशेष पूर्ण दृष्टियाँ भी हैं। ${name(l, 'jupiter')}, ${HI_ORD[hj]} भाव से, ${list(full.map((h) => HI_ORD[h]), l)} भाव को पूर्ण दृष्टि से देखते हैं${onto.length ? ` — और वहाँ बैठे ${list(onto.map((k) => name(l, k)), l)} को` : ''}। हल्की रेखाएँ आंशिक दृष्टि हैं।`
-        : `Grahas cast aspects — dṛṣṭi. Every graha looks fully at the 7th house from itself, and ${list(['mars', 'jupiter', 'saturn'].map((k) => name(l, k)), l)} have special full aspects too. ${named(l, 'jupiter')}, from the ${EN_ORD(hj)} house, looks fully on the ${list(full.map(EN_ORD), l)} houses${onto.length ? ` — and on ${list(onto.map((k) => name(l, k)), l)}, who sit there` : ''}. The fainter lines are its partial aspects.`)),
-      quote: null, cite: a.drishti.graha.citation || null,
-      focus: { houses: [hj, ...full], grahas: ['jupiter', ...onto], lines: aspects.map((x) => ({ from: hj, to: x.to, kind: x.s >= 1 ? 'full' : 'part' })) },
-    })
-  }
-
-  // 7 — yogas: on screen all of them, with the first two's cited effects; spoken, only the ones with a
-  // proper name ("Parvata Yoga" — not a description like "Moon–Venus mutual 3rd/11th"), and in Hindi
-  // none (the catalogue names them in roman only) — the count, and the names are on screen
-  const yg = a.yogas
-  if (yg && Array.isArray(yg.detected)) {
-    const ys = yg.detected
-    const proper = ys.map((y) => y.name).filter((n) => /^[A-Z][a-zāīūṛṝṣṇṭḍśñṅṁḥ]+( Yoga)?$/.test(n))
-    const rest = ys.length - proper.length
-    steps.push({
-      key: 'yogas',
-      say: both((l) => (ys.length
-        ? (l === 'hi'
-          ? `शास्त्र ग्रहों के कुछ विशेष मेलों को योग कहते हैं। जाँचे गए ${yg.checked} योगों में से ${ys.length} इस कुंडली में बनते हैं — उनके नाम स्क्रीन पर हैं। हर योग का शास्त्र-वर्णित फल ‘भाव व योग’ खंड में है — शास्त्र के शब्दों में, भविष्यवाणी के रूप में नहीं।`
-          : `The classical texts name certain combinations — yogas. Of the ${yg.checked} checked, ${ys.length} ${ys.length === 1 ? 'is' : 'are'} formed in this chart${proper.length ? `: ${list([...proper, ...(rest ? [`${rest} more`] : [])], l)}` : ' — their names are on screen'}. Each yoga's effect is in the Bhāvas & Yogas section, in the text's own words — not as a forecast.`)
-        : (l === 'hi'
-          ? `शास्त्र ग्रहों के कुछ विशेष मेलों को योग कहते हैं। जाँचे गए ${yg.checked} योगों में से कोई इस कुंडली में नहीं बनता — जहाँ शास्त्र मौन है, वहाँ यह पृष्ठ भी मौन है।`
-          : `The classical texts name certain combinations — yogas. None of the ${yg.checked} checked is formed in this chart — where the texts are silent, so is this page.`))),
-      quote: ys.slice(0, 2).map((y) => ({ name: y.name, effect: String(y.effect || '').replace(/^\d+\s*[-–]?\s*\d*\.\s*/, '') })).filter((q) => q.effect),
-      cite: ys.slice(0, 2).map((y) => y.citation).filter(Boolean).join(' · ') || null,
-      focus: { houses: [], grahas: [], lines: [], names: ys.map((y) => y.name) },
-    })
-  }
-
-  // 8 — the kāraka of the self
-  const ak = a.karakas && a.karakas.atmakaraka
-  if (ak && g(ak)) {
-    steps.push({
-      key: 'atmakaraka',
-      say: both((l) => (l === 'hi'
-        ? `चर-कारक पद्धति में जो ग्रह अपनी राशि में सबसे अधिक अंश पर हो, वह आत्मकारक — आत्मा का कारक — कहलाता है। इस कुंडली में वह ${name(l, ak)} है, ${HI_ORD[g(ak).bhava]} भाव में।`
-        : `In the chara-kāraka scheme, the graha furthest advanced in its sign is the ātmakāraka — the significator of the self. In this chart it is ${named(l, ak)}, in the ${EN_ORD(g(ak).bhava)} house.`)),
-      quote: null, cite: a.karakas.citation || null,
-      focus: { houses: [g(ak).bhava], grahas: [ak], lines: [] },
-    })
-  }
-
-  // 9 — timing (not for a chart shared without its birth details: it has no daśā)
+  // ── 3. what is running now (not for a chart shared without its birth details: it has no daśā) ──
+  const dsh = currentDasha(chart)
   if (dsh) {
     const { maha, antar } = dsh
-    steps.push({
-      key: 'dasha',
-      say: both((l) => (l === 'hi'
-        ? `समय दशाओं से पढ़ा जाता है। विंशोत्तरी पद्धति में अभी ${name(l, maha.lord)} की महादशा है — ${monthYear(maha.start, l)} से ${monthYear(maha.end, l)} तक${antar ? `; उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है` : ''}। दशा अपने ग्रह की इस कुंडली में स्थिति से पढ़ी जाती है — वह एक खिड़की खोलती है, कोई घटना तय नहीं करती।`
-        : `Timing is read from the daśās. In the Viṁśottarī system this is the period of ${named(l, maha.lord)}, from ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}${antar ? `; within it, the sub-period of ${named(l, antar.lord)} runs until ${monthYear(antar.end, l)}` : ''}. A period is read from where its graha stands in this chart — it opens a window; it does not fix an event.`)),
-      quote: null, cite: dsh.cite,
-      focus: { houses: [...new Set([g(maha.lord)?.bhava, antar && g(antar.lord)?.bhava].filter(Boolean))], grahas: [maha.lord, antar && antar.lord].filter(Boolean), lines: [] },
-    })
+    const about = (l, k) => {
+      const x = g(k), r = ruled(k)
+      if (!x) return ''
+      return l === 'hi'
+        ? (r.length
+          ? `${name(l, k)} आपके ${list(r.map((h) => HI_ORD[h]), l)} भाव (${r.map((h) => HOUSE[h].of.hi).join('; ')}) के स्वामी हैं और ${HI_ORD[x.bhava]} भाव में बैठे हैं।`
+          : `${name(l, k)} किसी राशि के स्वामी नहीं; वे आपके ${HI_ORD[x.bhava]} भाव में बैठे हैं।`)
+        : (r.length
+          ? `${name(l, k)} rules your ${list(r.map(EN_ORD), l)} ${r.length > 1 ? 'houses' : 'house'} (${r.map((h) => HOUSE[h].of.en).join('; ')}) and sits in your ${EN_ORD(x.bhava)}.`
+          : `${name(l, k)} rules no sign; it sits in your ${EN_ORD(x.bhava)} house.`)
+    }
+    push('now', (l) => ({
+      title: l === 'hi' ? 'अभी क्या चल रहा है' : 'What is running now',
+      chips: [{ label: l === 'hi' ? 'दशा' : 'Daśā', text: l === 'hi' ? 'समय की खिड़की, घटना नहीं' : 'a window of time, not an event' }],
+      lines: [
+        l === 'hi'
+          ? `आप ${name(l, maha.lord)} की महादशा में हैं — ${monthYear(maha.start, l)} से ${monthYear(maha.end, l)} तक।`
+          : `You are in the period (mahādaśā) of ${named(l, maha.lord)} — ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
+        about(l, maha.lord),
+        antar && (l === 'hi'
+          ? `उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है। ${about(l, antar.lord)}`
+          : `Within it, the sub-period of ${named(l, antar.lord)} runs until ${monthYear(antar.end, l)}. ${about(l, antar.lord)}`),
+        l === 'hi'
+          ? 'दशा अपने ग्रह के भावों — जिनका वह स्वामी है और जिसमें वह बैठा है — की बातों को आगे लाती है।'
+          : 'A period brings forward the matters of the houses its planet rules and sits in.',
+      ].filter(Boolean),
+    }), {
+      main: g(maha.lord)?.bhava,
+      houses: [...new Set([g(maha.lord)?.bhava, ...ruled(maha.lord), antar && g(antar.lord)?.bhava].filter(Boolean))],
+      grahas: [maha.lord, antar && antar.lord].filter(Boolean),
+      lines: [],
+    }, dsh.cite)
   }
 
-  // 10 — the close
-  steps.push({
-    key: 'close',
-    say: {
-      en: 'That is the frame of a reading: the lagna and its lord, the Moon, dignity, aspects, yogas and timing. Every reading on this page traces to a cited text — and where the texts are silent, so is this page.',
-      hi: 'यही एक पाठ का ढाँचा है: लग्न और उसका स्वामी, चन्द्र, ग्रहों की गरिमा, दृष्टि, योग और समय। इस पृष्ठ का हर पाठ किसी उद्धृत ग्रंथ से आता है — और जहाँ ग्रंथ मौन हैं, वहाँ यह पृष्ठ भी मौन है।',
-    },
-    quote: null, cite: null,
-    focus: { houses: [], grahas: [], lines: [] },
-  })
+  // ── 4. the close ────────────────────────────────────────────────────────────
+  push('close', (l) => ({
+    title: l === 'hi' ? 'संकेत, वादे नहीं' : 'Signs, not promises',
+    lines: l === 'hi'
+      ? ['यह आपकी कुंडली थी, भाव-दर-भाव। हर पंक्ति इस पर टिकी है कि आपके ग्रह कहाँ बैठे हैं।', 'उनके पीछे के शास्त्रीय नियम ‘भाव व योग’ खंड में हैं, शास्त्र के अपने शब्दों में। समय दशाओं से आता है, और प्रयास सदा मायने रखता है।']
+      : ['That is your chart, house by house. Every line rests on where your planets stand.', 'The classical rules behind them are in the Bhāvas & Yogas section, in the texts’ own words. Timing comes from the daśās, and effort always matters.'],
+  }), { houses: [], grahas: [], lines: [] })
 
   return { steps }
 }
@@ -230,5 +277,5 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
 /** The spoken script as plain text — one paragraph a step — for a narrator or a presenter to read. */
 export const spokenScript = (steps, lang = 'en') => steps.map((s) => s.say[lang] || s.say.en).join('\n\n')
 
-/** Seconds a step stays on screen when nothing is speaking it: a calm reading pace, never under six. */
-export const readSeconds = (text) => Math.max(6, Math.round(String(text || '').split(/\s+/).length / 2.4))
+/** Seconds a step stays on screen when nothing is speaking it: a calm reading pace, never under eight. */
+export const readSeconds = (text) => Math.max(8, Math.round(String(text || '').split(/\s+/).length / 2.4))

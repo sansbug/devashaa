@@ -118,20 +118,29 @@ shown under the name so the colour is never the only cue.
   prediction" from UI strings: state the fact instead.
 - A chart shared before this existed has no `quality`: no colour, nothing breaks.
 
-## "Watch it explained" (the chart walkthrough)
+## "Explain my chart" (the plain-words walkthrough)
 
-`web/src/walkthrough.js` builds a step-by-step script from the chart payload
-alone (lagna → its lord → Moon & Sun → dignity → Jupiter's aspects → yogas →
-ātmakāraka → current daśā → close); `ChartWalkthrough.jsx` plays it on its own
-animated North chart (houses outlined, never tinted; lines for the lagna lord and
-aspects), captions in EN/HI, an opt-in labelled device voice, and "Copy the
-script" (plain text, one paragraph a step — for a narrator or a presenter/avatar).
-- ⚠ What is SPOKEN is facts + method only: never a lord-in-house rule or a
-  planet reading (they can state a death or a lost child) and never a book's
-  name (refs stay behind the switch; `cite` shows only with refs on). A yoga's
-  cited effect is on screen only (`quote`). `node web/test_walkthrough.mjs`
-  pins all of this (and walks the reference chart when the local API is up).
-- A chart shared without birth details has no daśā: that step is dropped.
+The owner asked (2026-11-11) for the format of simple explainer reels: one topic at
+a time, "the houses that matter", then numbered lines about the reader's own chart.
+`web/src/walkthrough.js` builds it from the chart payload alone: the basics, then
+one topic per house (sign, its lord and where the lord sits — "so your X is tied to
+Y" — the lord's dignity and nakṣatra class, planets in the house, full and ¾
+aspects, the natural kāraka), then what is running now (daśā), then "Signs, not
+promises". `ChartWalkthrough.jsx` plays it on its own animated North chart (the
+house outlined solid, the lord's house dashed — never tinted; a line to the lord,
+the aspects), EN/HI, a topic row, an opt-in labelled device voice, "Copy the
+script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
+- House labels (`HOUSE`) are BPHS ch.11's significations, shortened; longevity
+  (8th) and one's own death (12th) are left out of the plain labels on purpose.
+- ⚠ The BPHS ch.24 lord-in-house rule is NEVER in the plain lines: it is behind a
+  click, word for word, and only when it passes `CARE` (no death, lost child,
+  childlessness, wives, vice…; EN and HI regexes must agree); otherwise the click
+  points to Bhāvas & Yogas. No book is named in `say`; `cite` shows only with refs
+  on. `node web/test_walkthrough.mjs` pins all of this (and walks the reference
+  chart in both languages when the local API is up).
+- Popular "combination" rules (e.g. 5th–7th lord link = love marriage) are NOT in
+  the registered texts and are not used.
+- A chart shared without birth details has no daśā: that topic is dropped.
 
 ## Sharing a chart (`/c/<id>#<key>`)
 

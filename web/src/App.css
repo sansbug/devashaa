@@ -3055,7 +3055,9 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .wt-line { fill: none; stroke: color-mix(in oklab, var(--deck-gold) 70%, var(--line)); stroke-width: 1.4; }
 /* a house is outlined, never filled — the reader asked for no house tints */
 .wt-house { fill: none; stroke: transparent; stroke-width: 3.2; stroke-linejoin: round; }
-.wt-house.on { stroke: var(--accent); animation: wt-glow 1.6s ease-in-out infinite alternate; }
+.wt-house.on { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 5; }
+/* the house in question: solid and glowing; the house its lord sits in: dashed and lighter */
+.wt-house.on.main { stroke-width: 3.4; stroke-dasharray: none; animation: wt-glow 1.6s ease-in-out infinite alternate; }
 .wt-chart.sweep .wt-house { animation: wt-sweep 1.2s ease-out both; animation-delay: var(--d); }
 @keyframes wt-glow { from { stroke-opacity: .5; } to { stroke-opacity: 1; } }
 @keyframes wt-sweep { 0% { stroke: var(--accent); stroke-opacity: 0; } 35% { stroke: var(--accent); stroke-opacity: 1; } 100% { stroke: var(--accent); stroke-opacity: .12; } }
@@ -3072,19 +3074,27 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .wt-ray.lord { stroke-width: 2.8; }
 .wt-head { fill: var(--accent); }
 @keyframes wt-draw { to { stroke-dashoffset: 0; } }
-.wt-say { margin: 0; font-size: 1rem; line-height: 1.65; }
-.wt-names { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; margin: .6rem 0 0; padding: 0; }
-.wt-names li { font-size: .74rem; padding: .12rem .5rem; border: 1px solid var(--line); border-radius: 999px; }
-.wt-quote { margin: .45rem 0 0; font-size: .82rem; line-height: 1.5; color: var(--dim); }
 .wt-cite { margin: .5rem 0 0; font-size: .72rem; color: var(--dim); }
+/* the topic row: every topic a click away */
+.wt-topics { position: relative; list-style: none; display: flex; gap: .3rem; margin: 0 0 .7rem; padding: 0 0 .3rem; overflow-x: auto; scrollbar-width: thin; }
+.wt-topics button { white-space: nowrap; font: inherit; font-size: .72rem; padding: .2rem .55rem; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.wt-topics button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+/* a topic: title, what matters, numbered lines about this chart, the classical text behind a click */
+.wt-title { margin: 0 0 .45rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.12rem; }
+.wt-chips { list-style: none; display: flex; flex-wrap: wrap; gap: .3rem .4rem; margin: 0 0 .6rem; padding: 0; }
+.wt-chips li { font-size: .74rem; line-height: 1.35; padding: .16rem .55rem; border-radius: 8px; background: var(--sunken); border: 1px solid var(--line); }
+.wt-chips b { font-weight: var(--strong-weight, 600); }
+.wt-lines { margin: 0; padding-left: 1.3rem; display: grid; gap: .32rem; font-size: .9rem; line-height: 1.55; }
+.wt-lines li::marker { color: var(--accent); font-weight: 700; }
+.wt-lines.one { list-style: none; padding-left: 0; }
+.wt-text { margin-top: .65rem; font-size: .82rem; line-height: 1.5; }
+.wt-text summary { cursor: pointer; color: var(--accent); font-weight: var(--strong-weight, 600); }
+.wt-text p { margin: .35rem 0 0; }
+.wt-text small { color: var(--dim); }
 .wt-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .6rem; margin-top: .75rem; }
 .wt-btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: .3rem .6rem; font-size: .8rem; cursor: pointer; }
 .wt-btn:disabled { opacity: .4; cursor: default; }
 .wt-play { min-width: 5.6rem; background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-.wt-dots { list-style: none; display: flex; gap: .3rem; margin: 0 .2rem; padding: 0; }
-.wt-dots button { width: .6rem; height: .6rem; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; }
-.wt-dots button.done { background: color-mix(in oklab, var(--accent) 38%, transparent); }
-.wt-dots button.on { background: var(--accent); border-color: var(--accent); }
 .wt-voice { display: flex; align-items: center; gap: .3rem; margin-left: auto; font-size: .75rem; color: var(--dim); }
 .wt-copy { border: 1px solid var(--line); background: none; color: var(--ink); border-radius: 8px; padding: .25rem .55rem; font-size: .75rem; cursor: pointer; }
 .wt-note { margin: .45rem 0 0; font-size: .75rem; color: var(--dim); }

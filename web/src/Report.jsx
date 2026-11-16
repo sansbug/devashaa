@@ -133,7 +133,7 @@ export default function Report({ chart, name, date, time, place, namer, refs, sn
         </section>
 
         {/* the conclusions first: what the chart means, before how it is worked out */}
-        <section className="rp-sec"><Conclusions chart={shown} namer={namer} date={snap ? null : date} time={snap ? null : time} place={snap ? null : place} /></section>
+        <section className="rp-sec"><Conclusions chart={shown} namer={namer} date={snap ? null : date} time={snap ? null : time} place={snap ? null : place} open /></section>
 
         <section className="rp-sec"><WhoCard chart={chart} namer={namer} refs={refs} /></section>
 

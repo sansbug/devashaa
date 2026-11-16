@@ -33,6 +33,10 @@
  * "will"; no ritual, gem or charity; no medical, legal or financial instruction. test_conclusions.mjs pins it.
  */
 import { AREAS } from './lifeareas.js'
+import { HOUSE } from './walkthrough.js'
+
+const EN_ORD = (n) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`
+const HI_ORD_N = ['', 'पहला', 'दूसरा', 'तीसरा', 'चौथा', 'पाँचवाँ', 'छठा', 'सातवाँ', 'आठवाँ', 'नौवाँ', 'दसवाँ', 'ग्यारहवाँ', 'बारहवाँ']
 
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 const GOOD = ['exalted', 'moolatrikona', 'own'], BAD = ['debilitated', 'enemy']
@@ -89,6 +93,11 @@ export const RULE = {
   en: 'Each conclusion rests on three readings of the area: its ruler’s strength by sign, where that ruler sits, and the classical verses that match. It is stated firmly only when they agree. These are tendencies, not fixed events.',
   hi: 'हर निष्कर्ष क्षेत्र के तीन पठनों पर टिका है: स्वामी का राशि-बल, स्वामी कहाँ बैठा है, और लागू शास्त्रीय श्लोक। यह दृढ़ता से तभी कहा जाता है जब वे सहमत हों। ये प्रवृत्तियाँ हैं, तय घटनाएँ नहीं।',
 }
+/** The 6th, 8th and 12th hold difficult matters: a verdict there is easy to misread ("expenses is a strength"). Ours. */
+const HARD_NOTE = {
+  en: 'This house holds difficult matters. Read the verdict as how well they are met, not as more or less of them.',
+  hi: 'यह भाव कठिन बातों का है। निर्णय को यह समझें कि वे कितनी अच्छी तरह सँभलती हैं, न कि वे कम हैं या अधिक।',
+}
 /** which group a verdict is shown under */
 export const GROUP_OF = { strength: 'good', leanGood: 'good', care: 'care', leanCare: 'care', mixed: 'mixed', quiet: 'quiet' }
 
@@ -99,7 +108,8 @@ const say = (p, n) => (p && n ? '±' : p ? '+' : n ? '-' : null)
  * @param chart   the /api/chart payload
  * @param matrix  the /api/matrix payload (only `bhavas[].house` and `.net` are read), or null
  * @param dasha   buildDashaReading(chart, namer) or null
- * @returns { areas:[{key,label,houses,verdict,voices,head,reasons}], groups:{good,care,mixed,quiet}, summary, act, now, rule, usedProjection }
+ * @returns { areas:[{key,label,houses,verdict,voices,head,reasons}], houses:[the same, one per house 1-12], groups:{good,care,mixed,quiet},
+ *            summary, act, now, rule, usedProjection }
  */
 export function buildConclusions(chart, matrix = null, dasha = null) {
   const lagna = chart.lagna_rasi
@@ -117,7 +127,8 @@ export function buildConclusions(chart, matrix = null, dasha = null) {
   const both = (f) => ({ en: f('en'), hi: f('hi') })
   const count = (xs, f) => xs.filter(f).length
 
-  const areas = AREAS.map((A) => {
+  /** One area (one or more houses) heard through the readings: see the rule at the top of this file. */
+  const judge = (A) => {
     const lords = [...new Set(A.houses.map(lordOf))].map(g).filter(Boolean)
     const cl = verses.filter((v) => A.houses.includes(v.house)).flatMap((v) => v.clauses)
     const nets = A.houses.map(net).filter((x) => x != null)
@@ -142,8 +153,16 @@ export function buildConclusions(chart, matrix = null, dasha = null) {
       const withIt = BESIDE.filter((v) => voices[v] === want), against = BESIDE.filter((v) => voices[v] && voices[v] !== want)
       return [...mine, ...withIt].map((v) => line(l, v)).concat(against.length ? [`${OTHER[l]} ${against.map((v) => line(l, v)).join(' ')}`] : [])
     })
-    return { key: A.key, label: A.label, houses: A.houses, verdict, voices, head: both((l) => HEAD[verdict][l]((NAME[A.key] || A.label)[l])), reasons }
-  })
+    const note = A.houses.length === 1 && HARD.includes(A.houses[0]) && A.name ? HARD_NOTE : null
+    return { key: A.key, label: A.label, houses: A.houses, verdict, voices, head: both((l) => HEAD[verdict][l]((A.name || NAME[A.key] || A.label)[l])), reasons, note }
+  }
+  const areas = AREAS.map(judge)
+  // the same rule for each of the twelve houses on its own (the owner, 2026-11-16). A house is named by its number
+  // and what it holds (walkthrough.js HOUSE): the 8th carries no longevity and the 12th no death, as there.
+  const houses = Array.from({ length: 12 }, (_, i) => i + 1).map((h) => judge({
+    key: `house${h}`, houses: [h], label: HOUSE[h].of,
+    name: { en: `The ${EN_ORD(h)} house (${HOUSE[h].of.en})`, hi: `${HI_ORD_N[h]} भाव (${HOUSE[h].of.hi})` },
+  }))
 
   const groups = { good: [], care: [], mixed: [], quiet: [] }
   for (const x of areas) groups[GROUP_OF[x.verdict]].push(x)
@@ -154,5 +173,5 @@ export function buildConclusions(chart, matrix = null, dasha = null) {
   const act = both((l) => ['good', 'care', 'mixed'].filter((k) => n(k)).map((k) => DO[k][l]))
   // now and next: the daśā reading's own first two notes (the running period, then the coming one)
   const now = dasha ? both((l) => (dasha.notes[l] || []).slice(0, 2)) : null
-  return { areas, groups, summary, act, now, rule: RULE, usedProjection: !!matrix }
+  return { areas, houses, groups, summary, act, now, rule: RULE, usedProjection: !!matrix }
 }

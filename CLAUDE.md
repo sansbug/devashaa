@@ -298,6 +298,9 @@ block sits first under the chart in the simple view and first in the report. Per
   and our weighted projection (`/api/matrix`, fetched when the birth details are on the page).
   ⚠ The projection is largely built on that nature: letting both vote counts one signal
   twice. The first version did, and real charts came out "0 strengths, 4 mixed".
+- The same rule is run for each of the TWELVE houses on its own (`houses`), shown under
+  "House by house" (closed in the simple view, open in the report). The 6th, 8th and 12th
+  carry a note of ours: read the verdict as how well their matters are met.
 - "Now and next" is the daśā reading's first two notes; "What you can do" is ours, under the
   life-area notes' rules. `node web/test_conclusions.mjs` pins the rule and the wording.
 

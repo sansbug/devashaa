@@ -8,13 +8,13 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { useLang } from './LangContext.jsx'
-import { buildConclusions } from './conclusions.js'
+import { buildConclusions, GROUP_OF } from './conclusions.js'
 import { buildDashaReading } from './dashareading.js'
 import { API } from './config.js'
 
 const TONE = { good: 'good', care: 'hard', mixed: 'mixed', quiet: 'plain' }
 
-export default function Conclusions({ chart, namer, date, time, place, onArea }) {
+export default function Conclusions({ chart, namer, date, time, place, onArea, open = false }) {
   const { lang } = useLang()
   const L = lang === 'hi' ? 'hi' : 'en'
   const W = (en, hi) => (L === 'hi' ? hi : en)
@@ -68,6 +68,18 @@ export default function Conclusions({ chart, namer, date, time, place, onArea })
           <Group v="mixed" title={W('Where the chart is mixed', 'जहाँ कुंडली मिली-जुली है')} />
           <Group v="quiet" title={W('Where the chart says little', 'जहाँ कुंडली कम कहती है')} />
         </div>
+        <details className="cn-houses" open={open}>
+          <summary>{W('House by house: all twelve', 'भाव-दर-भाव: सभी बारह')}</summary>
+          <div className="cn-hgrid">
+            {C.houses.map((x) => (
+              <div className={`cn-house cn-${TONE[GROUP_OF[x.verdict]]}`} key={x.key}>
+                <p className="cn-head">{x.head[L]}</p>
+                {x.reasons[L].length > 0 && <ul>{x.reasons[L].map((s, i) => <li key={i}>{s}</li>)}</ul>}
+                {x.note && <p className="fd-held">{x.note[L]}</p>}
+              </div>
+            ))}
+          </div>
+        </details>
         {C.now && C.now[L].length > 0 && (
           <div className="cn-now">
             <h6>{W('Now and next', 'अभी और आगे')}</h6>

@@ -149,7 +149,7 @@ export function buildConclusions(chart, matrix = null, dasha = null) {
   for (const x of areas) groups[GROUP_OF[x.verdict]].push(x)
   const n = (k) => groups[k].length
   const summary = both((l) => (l === 'hi'
-    ? `छह क्षेत्रों में से ${n('good')} अनुकूल ओर हैं, ${n('care')} में सावधानी चाहिए, ${n('mixed')} मिले-जुले हैं और ${n('quiet')} पर कुंडली कम कहती है।`
+    ? `छह क्षेत्रों में से ${n('good')} अनुकूल ओर ${n('good') === 1 ? 'है' : 'हैं'}, ${n('care')} में सावधानी चाहिए, ${n('mixed')} ${n('mixed') === 1 ? 'मिला-जुला है' : 'मिले-जुले हैं'} और ${n('quiet')} पर कुंडली कम कहती है।`
     : `Of six areas of life, ${n('good')} ${n('good') === 1 ? 'is' : 'are'} on the favourable side, ${n('care')} ${n('care') === 1 ? 'needs' : 'need'} care, ${n('mixed')} ${n('mixed') === 1 ? 'is' : 'are'} mixed and ${n('quiet')} ${n('quiet') === 1 ? 'is' : 'are'} quiet.`))
   const act = both((l) => ['good', 'care', 'mixed'].filter((k) => n(k)).map((k) => DO[k][l]))
   // now and next: the daśā reading's own first two notes (the running period, then the coming one)

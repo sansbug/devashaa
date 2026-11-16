@@ -71,6 +71,7 @@ function checks(label, chart, matrix) {
   ok(`${label}: no book is named`, !ours.some((s) => /BPHS|Parāśara|Santhanam|Phaladīpikā/.test(s)))
   const hi = [C.summary.hi, C.act.hi, C.areas.map((x) => [x.head.hi, x.reasons.hi])].flat(Infinity)
   ok(`${label}: the Hindi is all Devanāgarī`, hi.every((s) => !/[A-Za-z]/.test(s)), hi.find((s) => /[A-Za-z]/.test(s)))
+  ok(`${label}: the Hindi summary agrees in number (1 … है / मिला-जुला, otherwise हैं / मिले-जुले)`, (C.groups.good.length === 1) === /अनुकूल ओर है,/.test(C.summary.hi) && (C.groups.mixed.length === 1) === /मिला-जुला है/.test(C.summary.hi))
   ok(`${label}: the summary's counts are the groups' sizes`, ['good', 'care', 'mixed', 'quiet'].every((v) => C.summary.en.includes(String(C.groups[v].length))))
   console.log(`     ${C.summary.en}`)
   for (const x of C.areas) console.log(`     ${x.verdict.padEnd(9)} ${x.label.en.padEnd(26)} ${Object.entries(x.voices).map(([k, v]) => `${k}:${v || '·'}`).join(' ')}`)

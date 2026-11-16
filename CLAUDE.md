@@ -304,6 +304,25 @@ block sits first under the chart in the simple view and first in the report. Per
 - "Now and next" is the daśā reading's first two notes; "What you can do" is ours, under the
   life-area notes' rules. `node web/test_conclusions.mjs` pins the rule and the wording.
 
+## Planet and house matrix (`api/planet_matrix.py` + `web/src/PlanetMatrix.jsx`, `planetmatrix.js`)
+
+Owner, 2026-11-16: one matrix of who is whose friend, which Raashi holds which planets, and which
+houses each planet aspects. First panel of **Full analysis → Overview**. Four tables: each planet,
+each house, friends and enemies in this chart, what each planet carries.
+
+- The server module adds **no rule**. It lays out `relationships`, `drishti`, `lagna_profile` and
+  `dhana_bhava.natural_natures` by planet and by house (`chart.analysis.planet_matrix`, keys only).
+  The words are in `planetmatrix.js`.
+- The owner asked for the aspect rules to be checked against BPHS. Result: full aspects (7th for all,
+  Mangal 4/8, Guru 5/9, Shani 3/10) are ch.26 vv.2-5. **"3, 5, 7 good and 2, 4, 6 bad" is not in the
+  text** (the 2nd and 6th receive no aspect at all). The count sets the strength. The planet that
+  casts the aspect sets whether it helps or harms. So a house's influences are sorted by the caster's
+  natural nature (ch.3 v.11), with the nature for the Lagn (ch.34) beside it, never blended. Do not
+  add a good/bad-by-distance column. (Friendly 3/5/9/11 and hostile 1/4/7/10 is Tajika, annual chart only.)
+- **Rahu and Ketu cast no aspect here**: ch.26 does not name them. The page says so.
+- "What each planet carries" is the owner's table. It is ours and is labelled so.
+- Tests: `api/test_planet_matrix.py`, `web/test_planetmatrix.mjs` (the second needs the local API).
+
 ## The full report (`web/src/Report.jsx`) — a page to read, print or save as a PDF
 
 The owner asked (2026-11-16) for a PDF "of all texts with charts and everything" when sharing,

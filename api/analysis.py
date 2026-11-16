@@ -48,6 +48,7 @@ import bhava_effects
 import phaladipika_lagna_rules
 import yogas as yg
 import classical
+import planet_matrix
 
 # The seven grahas BPHS assigns dignity, lordship and relationships to. The
 # nodes are handled separately and mostly return unavailable — that absence is
@@ -367,6 +368,17 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
         out["bhava_effects"] = bhava_effects.evaluate(chart_positions, lagna, moon_waxing=mw)
     except Exception as e:  # noqa: BLE001
         out["dhana_bhava"] = {"error": f"ch.13 evaluation failed: {e}"}
+
+    # The planet and house matrix: the nature, friendship and aspect tables above, laid out
+    # by planet and by house. No new rule (see planet_matrix.py).
+    try:
+        pmw = moon_waxing
+        if pmw is None and "moon" in chart_positions and "sun" in chart_positions:
+            pmw = (chart_positions["moon"]["longitude"] - chart_positions["sun"]["longitude"]) % 360.0 < 180.0
+        out["planet_matrix"] = planet_matrix.build(
+            rasi_positions, lagna, pmw, profile, out["relationships"], out["drishti"]["graha"])
+    except Exception as e:  # noqa: BLE001
+        out["planet_matrix"] = {"error": f"planet matrix failed: {e}"}
 
     # The classical description of the rising sign and (Phaladīpikā 9.13) of the Moon's sign.
     try:

@@ -9,6 +9,7 @@ import YogaPanel from './YogaPanel.jsx'
 import ClassicalPanel from './ClassicalPanel.jsx'
 import PanchangHeatmap from './PanchangHeatmap.jsx'
 import MatrixPanel from './MatrixPanel.jsx'
+import PlanetMatrix from './PlanetMatrix.jsx'
 import ExplainPanel from './ExplainPanel.jsx'
 import ReadingGuide, { NAVAMSA_STEP } from './ReadingGuide.jsx'
 import DashaTree from './DashaTree.jsx'
@@ -1206,6 +1207,10 @@ export default function App() {
             ))}
           </nav>
           </>)}
+
+          {sec === 'overview' && chart.analysis && !chart.analysis.error && (
+            <PlanetMatrix data={chart.analysis.planet_matrix} namer={namer} />
+          )}
 
           {sec === 'overview' && chart.analysis && !chart.analysis.error && (
             <section className="table-panel" id="rg-signals">

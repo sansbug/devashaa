@@ -3676,3 +3676,34 @@ body.rp-open { overflow: hidden; }
 .cn-house.cn-good { border-left-color: #2e9e6b; }
 .cn-house.cn-hard { border-left-color: #d0524a; }
 .cn-house.cn-mixed { border-left-color: #c9962b; }
+
+/* ── Planet and house matrix (PlanetMatrix.jsx) ─────────────────────────────────────────── */
+.pm-panel .pm-h { margin: 1.1rem 0 .4rem; font-size: .9rem; font-weight: 600; }
+.pm-wrap { overflow-x: auto; }
+.pm-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.pm-table th { text-align: left; font-size: .68rem; color: var(--dim); font-weight: var(--label-weight, 600); padding: .3rem .45rem; border-bottom: 1px solid var(--line, #e8e8e8); white-space: nowrap; }
+.pm-table td { padding: .34rem .45rem; border-bottom: 1px solid var(--line, #eee); vertical-align: top; line-height: 1.4; }
+.pm-table td small { opacity: .75; }
+.pm-name { font-weight: 600; white-space: nowrap; }
+.pm-num { font-variant-numeric: tabular-nums; }
+.pm-dim { opacity: .8; }
+.pm-chip { display: inline-block; min-width: 1.5rem; text-align: center; padding: 0 .3rem; margin-right: .25rem; border: 1px solid var(--line, #ddd); border-radius: 999px; font-variant-numeric: tabular-nums; }
+.pm-table td.pm-g { background: rgba(46, 158, 107, .12); }
+.pm-table td.pm-gg { background: rgba(46, 158, 107, .28); }
+.pm-table td.pm-b { background: rgba(208, 82, 74, .12); }
+.pm-table td.pm-bb { background: rgba(208, 82, 74, .28); }
+.pm-table td.pm-n { background: transparent; }
+.pm-grid th, .pm-grid td { text-align: center; }
+.pm-grid td.pm-name, .pm-grid th:first-child { text-align: left; }
+.pm-grid td.pm-self { color: var(--dim); }
+.pm-rel { display: inline-block; font-style: normal; font-size: .7rem; min-width: 1.2rem; text-align: center; margin-left: .2rem; padding: 0 .2rem; border-radius: 4px; }
+.pm-rel.pm-g { background: rgba(46, 158, 107, .16); }
+.pm-rel.pm-gg { background: rgba(46, 158, 107, .34); }
+.pm-rel.pm-b { background: rgba(208, 82, 74, .16); }
+.pm-rel.pm-bb { background: rgba(208, 82, 74, .34); }
+.pm-rel.pm-n { background: var(--sunken, #f1f1f1); }
+.pm-key { font-size: .74rem; color: var(--dim); margin: .4rem 0 0; }
+.pm-legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; font-size: .74rem; margin: .5rem 0 0; }
+.pm-notes { margin: .2rem 0 0; padding-left: 1.1rem; font-size: .82rem; }
+.pm-notes li { margin: .18rem 0; line-height: 1.45; }
+@media print { .pm-table tr { break-inside: avoid; } }

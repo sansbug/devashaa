@@ -97,12 +97,20 @@ export function notes(n, L, conjunct = []) {
     `${n('moon')} बढ़ते समय शुभ और घटते समय पाप होता है। ${n('mercury')} पाप ग्रह के साथ बैठने पर पाप होता है।`,
     'मित्रता के दो भाग हैं। एक सभी कुंडलियों के लिए स्थिर है। दूसरा इस कुंडली में ग्रहों की स्थिति से बनता है। तालिका दोनों को मिलाकर दिखाती है।',
   ]
-  en.push('Each planet sits in a Nakshatr, and each Nakshatr has a lord. The mark shows how the planet stands towards that lord in this chart.',
-    'The texts on this site state no result for that relation. It is shown as a fact of the chart.',
-    `No friendship is given for ${n('rahu')} and ${n('ketu')}. So no mark shows when one of them is the planet or the lord.`)
-  hi.push('हर ग्रह एक नक्षत्र में बैठा है, और हर नक्षत्र का एक स्वामी है। चिह्न बताता है कि इस कुंडली में ग्रह उस स्वामी के प्रति कैसा है।',
-    'इस साइट के ग्रंथ इस संबंध का कोई फल नहीं बताते। इसे कुंडली के एक तथ्य के रूप में दिखाया गया है।',
-    `${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है। इसलिए जब ग्रह या स्वामी इनमें से एक हो, तब कोई चिह्न नहीं दिखता।`)
+  en.push('Each planet sits in a Nakshatr, and each Nakshatr has a lord.',
+    'A later teaching says a Nakshatr takes its strength from its own lord, not from the lord of the Raashi.',
+    'So the matrix shows where that lord sits, how strong it is by sign, and its nature.',
+    'It also shows how the planet and the lord stand towards each other in this chart.',
+    'The classical texts on this site do not state this teaching. So the lord does not change the benefic and malefic columns.',
+    `No friendship is given for ${n('rahu')} and ${n('ketu')}. So no mark shows when one of them is the planet or the lord.`,
+    `No strength by sign is given for ${n('rahu')} and ${n('ketu')} either.`)
+  hi.push('हर ग्रह एक नक्षत्र में बैठा है, और हर नक्षत्र का एक स्वामी है।',
+    'एक बाद की शिक्षा कहती है कि नक्षत्र अपना बल अपने स्वामी से लेता है, राशि के स्वामी से नहीं।',
+    'इसलिए तालिका दिखाती है कि वह स्वामी कहाँ बैठा है, राशि से कितना बलवान है, और उसका स्वभाव क्या है।',
+    'यह भी दिखता है कि इस कुंडली में ग्रह और वह स्वामी एक-दूसरे के प्रति कैसे हैं।',
+    'इस साइट के शास्त्रीय ग्रंथ यह शिक्षा नहीं बताते। इसलिए यह स्वामी शुभ और पाप प्रभाव के स्तंभ नहीं बदलता।',
+    `${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है। इसलिए जब ग्रह या स्वामी इनमें से एक हो, तब कोई चिह्न नहीं दिखता।`,
+    `${n('rahu')} और ${n('ketu')} का राशि से बल भी नहीं दिया गया है।`)
   if (conjunct.length) {
     en.push('Planets that share a sign count as enemies for the part that comes from this chart. The verse lists six friendly houses and the same sign is not one of them. Some books count such planets as friends.')
     hi.push('एक ही राशि में बैठे ग्रह इस कुंडली वाले भाग में शत्रु गिने जाते हैं। श्लोक छह मित्र भाव बताता है और वही राशि उनमें नहीं है। कुछ पुस्तकें ऐसे ग्रहों को मित्र गिनती हैं।')
@@ -113,6 +121,38 @@ export function notes(n, L, conjunct = []) {
 /** The lord of a Nakshatr, by its number 1-27 (Ashwini = 1): the nine Dasha lords, three times over. */
 export const NAKSHATRA_LORDS = ['ketu', 'venus', 'sun', 'moon', 'mars', 'rahu', 'jupiter', 'saturn', 'mercury']
 export const nakshatraLord = (number) => (Number.isInteger(number) && number >= 1 && number <= 27 ? NAKSHATRA_LORDS[(number - 1) % 9] : null)
+
+/** A planet's strength by sign, in a few words (the chart's own dignity state). */
+export const SIGN_STATE = {
+  exalted: { tone: 'gg', en: 'Exalted', hi: 'उच्च' },
+  moolatrikona: { tone: 'gg', en: 'Mul-Trikon', hi: 'मूलत्रिकोण' },
+  own: { tone: 'g', en: 'Own sign', hi: 'अपनी राशि' },
+  friend: { tone: 'g', en: 'Friend’s sign', hi: 'मित्र राशि' },
+  neutral: { tone: 'n', en: 'Neutral sign', hi: 'सम राशि' },
+  enemy: { tone: 'b', en: 'Enemy’s sign', hi: 'शत्रु राशि' },
+  debilitated: { tone: 'bb', en: 'Debilitated', hi: 'नीच' },
+}
+
+/**
+ * The state of the lord of the Nakshatr a planet sits in (owner, 2026-11-16: "a Nakshatr draws its energy from
+ * its lord, not the Raashi lord"). That teaching is LATER than the registered classical texts, which use the
+ * Nakshatr lord for the Dasha only. So this reports chart facts about the lord and decides nothing: it never
+ * moves a planet between the benefic and malefic columns.
+ *   P: planet rows of the matrix by key. G: the chart's own planet rows by key (for the strength by sign).
+ */
+export function lordState(graha, lord, P, G) {
+  const lp = lord && P[lord]
+  if (!lp) return null
+  const me = P[graha]
+  const rel = (from, to) => (from === to ? 'own' : (P[from] && P[from].in_chart && P[from].in_chart[to] && P[from].in_chart[to].compound) || null)
+  return {
+    lord, sign: lp.sign, house: lp.house,
+    natural: lp.natural || null, functional: lp.functional || null,
+    dignity: (G && G[lord] && G[lord].dignity && G[lord].dignity.state) || null,
+    same_house: !!me && me.house === lp.house,
+    towards: rel(graha, lord), back: rel(lord, graha),
+  }
+}
 
 export const OURS = { en: 'Our words, not from a classical text.', hi: 'ये हमारे शब्द हैं, किसी शास्त्रीय ग्रंथ के नहीं।' }
 

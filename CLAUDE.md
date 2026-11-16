@@ -325,6 +325,15 @@ each house, friends and enemies in this chart, what each planet carries.
   relation: it is a fact of the chart and the page says so. No relation when the planet or the lord
   is Rahu or Ketu (the nodes have no friendship). The payload's Nakshatr index is 0-26; the chart's
   own `nakshatra.index` is 1-27.
+- **The Nakshatr lord's state** (owner, 2026-11-16: "a Nakshatr draws its energy from its lord, not
+  the Raashi lord"). Table 2 and a small line in the house table show where that lord sits, its
+  strength by sign, its two natures, and the relation in both directions (`lordState` in
+  `planetmatrix.js`, computed on the page from the matrix and `chart.grahas`). That teaching is
+  **later than the registered classical texts**, which use the Nakshatr lord for the Dasha only. The
+  page says so, and the lord **never moves a planet between the benefic and malefic columns** (a
+  test pins it). Do not let it decide a verdict without a registered source.
+- The page also reads the lord from the chart's own Nakshatr number when the payload lacks it, so
+  a Nakshatr is never shown without its lord.
 - "What each planet carries" is the owner's table. It is ours and is labelled so.
 - Tests: `api/test_planet_matrix.py`, `web/test_planetmatrix.mjs` (the second needs the local API).
 

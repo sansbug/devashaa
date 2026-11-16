@@ -1,5 +1,5 @@
 // The planet and house matrix: the words (planetmatrix.js) and the payload they are laid over.
-import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord } from './src/planetmatrix.js'
+import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE } from './src/planetmatrix.js'
 import { makeNamer } from './src/naming.js'
 
 let fails = 0
@@ -24,7 +24,8 @@ console.log('The words:')
   ok('the rules use the owner\'s spellings', E.join(' ').includes('Mangal') && E.join(' ').includes('Guru') && E.join(' ').includes('Shani') && E.join(' ').includes('Lagn'))
   ok('the Hindi rules are all Devanāgarī', H.every((s) => !/[A-Za-z]/.test(s)), H.find((s) => /[A-Za-z]/.test(s)))
   ok('the rules say the count does not make an aspect good or bad', E.some((s) => /does not make the aspect good or bad/.test(s)))
-  ok('the rules say no result is stated for the Nakshatr lord relation', E.some((s) => /state no result for that relation/.test(s)))
+  ok('the rules name the Nakshatr lord teaching as later than the texts', E.some((s) => /A later teaching says a Nakshatr takes its strength from its own lord/.test(s)) && E.some((s) => /do not state this teaching/.test(s)))
+  ok('the rules say the lord does not change the benefic and malefic columns', E.some((s) => /does not change the benefic and malefic columns/.test(s)))
   ok('the rules say the nodes are given no aspect', E.some((s) => /names no aspect for Rahu and Ketu/.test(s)))
   ok('no rule predicts ("will …")', !E.some((s) => /\bwill\b/i.test(s)))
   ok('no book is named in the rules', !E.some((s) => /BPHS|Parāśara|Santhanam/.test(s)))
@@ -42,6 +43,25 @@ console.log('\nThe lord of a Nakshatr:')
   ok('Punarvasu (7), Vishakha (16) and Purva Bhadrapada (25) belong to Guru', [7, 16, 25].every((i) => nakshatraLord(i) === 'jupiter'))
   ok('each of the nine lords holds three', ['ketu', 'venus', 'sun', 'moon', 'mars', 'rahu', 'jupiter', 'saturn', 'mercury'].every((g) => Array.from({ length: 27 }, (_, i) => nakshatraLord(i + 1)).filter((x) => x === g).length === 3))
   ok('no number, no lord', nakshatraLord(undefined) === null && nakshatraLord(0) === null && nakshatraLord(28) === null)
+}
+
+console.log('\nThe state of a Nakshatr lord:')
+{
+  const P = {
+    jupiter: { graha: 'jupiter', sign: 11, house: 2, natural: 'benefic', functional: 'malefic', in_chart: { mercury: { compound: 'satru' } } },
+    mercury: { graha: 'mercury', sign: 9, house: 12, natural: 'malefic', functional: 'benefic', in_chart: { jupiter: { compound: 'sama' } } },
+    rahu: { graha: 'rahu', sign: 9, house: 12, natural: 'malefic', functional: null },
+  }
+  const G = { mercury: { dignity: { state: 'friend' } }, jupiter: { dignity: { state: 'own' } }, rahu: { dignity: null } }
+  const s = lordState('jupiter', 'mercury', P, G)
+  ok('Guru in Revati: the lord is Budh, with its own house and sign', s.lord === 'mercury' && s.house === 12 && s.sign === 9)
+  ok('the lord\'s strength by sign and its two natures are its own', s.dignity === 'friend' && s.natural === 'malefic' && s.functional === 'benefic')
+  ok('the two directions of the relation are kept apart', s.towards === 'satru' && s.back === 'sama')
+  ok('a planet in its own Nakshatr is its own lord', lordState('jupiter', 'jupiter', P, G).towards === 'own' && lordState('jupiter', 'jupiter', P, G).back === 'own')
+  ok('a node as the lord gives a place and a nature, no strength by sign, no relation', (() => { const r = lordState('jupiter', 'rahu', P, G); return r.house === 12 && r.natural === 'malefic' && r.dignity === null && r.towards === null && r.back === null })())
+  ok('a lord in the planet\'s own house is marked', lordState('rahu', 'mercury', P, G).same_house === true && s.same_house === false)
+  ok('no lord, no state', lordState('jupiter', null, P, G) === null)
+  ok('every strength by sign has both languages', Object.values(SIGN_STATE).every((x) => x.en && x.hi && x.tone))
 }
 
 console.log('\nA house line:')
@@ -67,6 +87,16 @@ try {
     m.planets.map((p) => `${p.graha}:${p.nakshatra}/${chart.grahas.find((g) => g.key === p.graha).nakshatra.index}`).join(' '))
   ok('a relation to the Nakshatr lord is given only between the seven planets', m.planets.every((p) => (p.is_node || ['rahu', 'ketu'].includes(p.nakshatra_lord)) === (p.to_nakshatra_lord == null)))
   ok('the page\'s own lord table agrees with the server for every planet', m.planets.every((p) => nakshatraLord(chart.grahas.find((g) => g.key === p.graha).nakshatra.index) === p.nakshatra_lord))
+  {
+    const P = Object.fromEntries(m.planets.map((p) => [p.graha, p])), G = Object.fromEntries(chart.grahas.map((g) => [g.key, g]))
+    const states = m.planets.map((p) => [p, lordState(p.graha, p.nakshatra_lord, P, G)])
+    ok('every planet\'s Nakshatr lord has a state', states.every(([, s]) => s && s.house >= 1 && s.house <= 12))
+    ok('the lord\'s house and sign are the lord\'s own row', states.every(([p, s]) => s.house === P[p.nakshatra_lord].house && s.sign === P[p.nakshatra_lord].sign))
+    ok('every strength by sign the chart uses has a word', states.every(([, s]) => !s.dignity || SIGN_STATE[s.dignity]), states.map(([, s]) => s.dignity).join(' '))
+    ok('the planet-to-lord relation is the one the server gives', states.every(([p, s]) => (s.towards || null) === (p.to_nakshatra_lord || null)))
+    ok('the lord never moves a planet between the benefic and malefic columns', m.houses.every((h) => [...h.benefic.occupants, ...h.benefic.aspects].every((g) => P[g].natural === 'benefic') && [...h.malefic.occupants, ...h.malefic.aspects].every((g) => P[g].natural === 'malefic')))
+    for (const [p, s] of states) console.log(`     ${p.graha.padEnd(8)} lord ${s.lord.padEnd(8)} house ${String(s.house).padStart(2)}  ${String(s.dignity).padEnd(12)} ${String(s.natural).padEnd(8)} → ${s.towards || '·'}  ← ${s.back || '·'}`)
+  }
   ok('every relation to a Nakshatr lord has a word', m.planets.every((p) => !p.to_nakshatra_lord || RELATION[p.to_nakshatra_lord]))
   ok('every nature and relation the chart uses has a word', m.planets.every((p) => (!p.natural || NATURE[p.natural]) && (!p.functional || NATURE[p.functional])
     && Object.values(p.in_chart || {}).every((c) => !c.compound || RELATION[c.compound])) && m.houses.every((h) => h.occupants.every((o) => !o.to_lord || RELATION[o.to_lord])))

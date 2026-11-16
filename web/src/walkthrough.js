@@ -58,7 +58,7 @@ const STRONG = ['exalted', 'moolatrikona', 'own']
 /** A planet's standing in its sign, one idea a sentence (the planet topics). P = planet, S = sign. */
 const SIGN_STANDING = {
   exalted: { en: (P, S) => `${P} is exalted in ${S}. This is its strongest sign.`, hi: (P, S) => `${P} ${S} में उच्च के हैं। यह उनकी सबसे बलवान राशि है।` },
-  moolatrikona: { en: (P, S) => `${P} is in its mūlatrikoṇa part of ${S}. This is a very strong position.`, hi: (P, S) => `${P} ${S} में अपने मूलत्रिकोण में हैं। यह बहुत बलवान स्थिति है।` },
+  moolatrikona: { en: (P, S) => `${P} is in its Mul-Trikon part of ${S}. This is a very strong position.`, hi: (P, S) => `${P} ${S} में अपने मूलत्रिकोण में हैं। यह बहुत बलवान स्थिति है।` },
   own: { en: (P, S) => `${S} is the own sign of ${P}. This is a strong position.`, hi: (P, S) => `${S} ${P} की अपनी राशि है। यह बलवान स्थिति है।` },
   friend: { en: (P, S) => `${S} is a friend’s sign for ${P}. This is a comfortable position.`, hi: (P, S) => `${S} ${P} के मित्र की राशि है। यह सहज स्थिति है।` },
   neutral: { en: (P, S) => `${S} is a neutral sign for ${P}.`, hi: (P, S) => `${S} ${P} के लिए सम राशि है।` },
@@ -67,11 +67,11 @@ const SIGN_STANDING = {
 }
 /** The five Bālādi stages, in the order the text names them (BPHS ch.45 v.3). */
 const STAGE = {
-  bala: { en: 'Bala', hi: 'बाल', nth: { en: 'first', hi: 'पहली' } },
-  kumara: { en: 'Kumara', hi: 'कुमार', nth: { en: 'second', hi: 'दूसरी' } },
+  bala: { en: 'Bal', hi: 'बाल', nth: { en: 'first', hi: 'पहली' } },
+  kumara: { en: 'Kumar', hi: 'कुमार', nth: { en: 'second', hi: 'दूसरी' } },
   yuva: { en: 'Yuva', hi: 'युवा', nth: { en: 'third', hi: 'तीसरी' } },
   vriddha: { en: 'Vriddha', hi: 'वृद्ध', nth: { en: 'fourth', hi: 'चौथी' } },
-  mrita: { en: 'Mrita', hi: 'मृत', nth: { en: 'last', hi: 'अंतिम' } },
+  mrita: { en: 'Passive', hi: 'मृत', nth: { en: 'last', hi: 'अंतिम' } },
 }
 /** The grade of results the text gives each stage (ch.45 v.4), in its own words: "a planet in this stage gives …". */
 const GRADE = {
@@ -97,10 +97,10 @@ export const NATURE = {
 }
 export const OURS = { en: 'Our reading, not from a classical text:', hi: 'हमारा पाठ, किसी ग्रंथ का नहीं:' }
 
-/** The five "great person" yogas: a planet in its own or exalted sign, in a kendra (BPHS ch.75 vv.1-2). */
+/** The five "great person" yogas (`key` is the engine's name, matched on; `en` is the owner's spelling, shown): a planet in its own or exalted sign, in a kendra (BPHS ch.75 vv.1-2). */
 const MAHA = {
-  mars: { en: 'Ruchaka', hi: 'रुचक' }, mercury: { en: 'Bhadra', hi: 'भद्र' }, jupiter: { en: 'Hamsa', hi: 'हंस' },
-  venus: { en: 'Malavya', hi: 'मालव्य' }, saturn: { en: 'Sasa', hi: 'शश' },
+  mars: { key: 'Ruchaka', en: 'Ruchak', hi: 'रुचक' }, mercury: { key: 'Bhadra', en: 'Bhadra', hi: 'भद्र' }, jupiter: { key: 'Hamsa', en: 'Hans', hi: 'हंस' },
+  venus: { key: 'Malavya', en: 'Malavya', hi: 'मालव्य' }, saturn: { key: 'Sasa', en: 'Shush', hi: 'शश' },
 }
 
 /** A lord-in-house rule that speaks of a death, a lost child or parent, childlessness, many wives or a vice is not
@@ -172,12 +172,12 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     return [
       st ? st[l](P, S) : (l === 'hi' ? `${P} ${S} राशि में हैं।` : `${P} is in ${S}.`),
       x.retrograde && x.key !== 'rahu' && x.key !== 'ketu' && (l === 'hi' ? `${P} वक्री हैं।` : `${P} is retrograde.`),
-      x.nakshatra && (l === 'hi' ? `${P} ${nak(l, x)} नक्षत्र में हैं।` : `${P} is in the nakṣatra ${nak(l, x)}.`),
-      x.nakshatra && c && (l === 'hi' ? `यह ${c} नक्षत्र है।` : `This is a ${c} nakṣatra.`),
+      x.nakshatra && (l === 'hi' ? `${P} ${nak(l, x)} नक्षत्र में हैं।` : `${P} is in the Nakshatr ${nak(l, x)}.`),
+      x.nakshatra && c && (l === 'hi' ? `यह ${c} नक्षत्र है।` : `This is a ${c} Nakshatr.`),
     ].filter(Boolean).join(' ')
   }
   const strongWord = {
-    exalted: { en: 'is exalted', hi: 'उच्च के हैं' }, moolatrikona: { en: 'is in its mūlatrikoṇa', hi: 'अपने मूलत्रिकोण में हैं' }, own: { en: 'is in its own sign', hi: 'अपनी राशि में हैं' },
+    exalted: { en: 'is exalted', hi: 'उच्च के हैं' }, moolatrikona: { en: 'is in its Mul-Trikon', hi: 'अपने मूलत्रिकोण में हैं' }, own: { en: 'is in its own sign', hi: 'अपनी राशि में हैं' },
   }
 
   // ── 1. the chart in one minute ──────────────────────────────────────────────
@@ -187,17 +187,17 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
   push('basics', (l) => ({
     title: l === 'hi' ? 'एक मिनट में आपकी कुंडली' : 'Your chart in one minute',
     chips: [
-      { label: l === 'hi' ? 'लग्न' : 'Lagna', text: l === 'hi' ? 'आप, पहला भाव' : 'you, the 1st house' },
+      { label: l === 'hi' ? 'लग्न' : 'Lagn', text: l === 'hi' ? 'आप, पहला भाव' : 'you, the 1st house' },
       { label: name(l, 'moon'), text: l === 'hi' ? 'मन' : 'the mind' },
       { label: name(l, 'sun'), text: l === 'hi' ? 'आत्मा' : 'the soul' },
     ],
     lines: [
       l === 'hi'
         ? `आपका लग्न ${sign(l, lagna)} है। लग्न वह राशि है जो आपके जन्म के समय पूर्व में उदित थी। यह आपका पहला भाव है। बाकी भाव इसी से गिने जाते हैं।${nk ? ` लग्न ${N.hi.nakshatra(nk)} नक्षत्र में है।` : ''}`
-        : `Your Lagna is ${sign(l, lagna)}. The Lagna is the sign that was rising at your birth. It is your 1st house. The other houses are counted from it.${nk ? ` The Lagna is in the nakṣatra ${namer.nakshatra(nk)}.` : ''}`,
+        : `Your Lagn is ${sign(l, lagna)}. The Lagn is the sign that was rising at your birth. It is your 1st house. The other houses are counted from it.${nk ? ` The Lagn is in the Nakshatr ${namer.nakshatra(nk)}.` : ''}`,
       mo && (l === 'hi'
-        ? `आपका चन्द्र ${sign(l, mo.rasi)} राशि में, ${nak(l, mo)} नक्षत्र में है। ये आपकी जन्म-राशि और आपका जन्म-नक्षत्र हैं।`
-        : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in the nakṣatra ${nak(l, mo)}. These are your birth sign and your birth nakṣatra.`),
+        ? `आपका चंद्र ${sign(l, mo.rasi)} राशि में, ${nak(l, mo)} नक्षत्र में है। ये आपकी जन्म-राशि और आपका जन्म-नक्षत्र हैं।`
+        : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in the Nakshatr ${nak(l, mo)}. These are your birth sign and your birth Nakshatr.`),
       su && (l === 'hi' ? `आपका सूर्य ${sign(l, su.rasi)} राशि में, आपके ${HI_ORD[su.bhava]} भाव में है।` : `Your ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in your ${EN_ORD(su.bhava)} house.`),
       strong.length > 0 && (l === 'hi'
         ? `${strong.length > 1 ? 'ये ग्रह अपनी राशि से बलवान हैं।' : 'एक ग्रह अपनी राशि से बलवान है।'} ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].hi}।`).join(' ')}`
@@ -229,18 +229,18 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     const st = stageOf(k)
     const node = k === 'rahu' || k === 'ketu'   // the nodes rule no sign and carry no sign strength
     const dg = !node && x.dignity && SIGN_STANDING[x.dignity.state] ? x.dignity.state : null
-    const yoga = MAHA[k] && detected ? { ...MAHA[k], on: detected.some((y) => String(y.name || '').startsWith(MAHA[k].en)), cite: (detected.find((y) => String(y.name || '').startsWith(MAHA[k].en)) || {}).citation } : null
+    const yoga = MAHA[k] && detected ? { ...MAHA[k], on: detected.some((y) => String(y.name || '').startsWith(MAHA[k].key)), cite: (detected.find((y) => String(y.name || '').startsWith(MAHA[k].key)) || {}).citation } : null
     const kendra = [1, 4, 7, 10].includes(h), strong = STRONG.includes(dg)
     const deg = Math.floor(Number(x.degree) || 0)
     push(`graha_${k}`, (l) => {
       const P = name(l, k), S = N[l].rasi(x.rasi), hi = l === 'hi'
       const yogaLine = !yoga ? null
         : yoga.on
-          ? (hi ? `${P} ${yoga.hi} योग बनाते हैं। वे अपनी या उच्च राशि में हैं, और केंद्र भाव में हैं।` : `${P} forms ${yoga.en} Yoga. It is in its own or exalted sign, in a Kendra house.`)
+          ? (hi ? `${P} ${yoga.hi} योग बनाते हैं। वे अपनी या उच्च राशि में हैं, और केंद्र भाव में हैं।` : `${P} forms ${yoga.en} Yog. It is in its own or exalted sign, in a Kendra house.`)
           : strong && !kendra
-            ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए केंद्र भाव चाहिए: पहला, चौथा, सातवाँ या दसवाँ।` : `${P} forms no ${yoga.en} Yoga. That yoga needs a Kendra house: the 1st, 4th, 7th or 10th.`)
+            ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए केंद्र भाव चाहिए: पहला, चौथा, सातवाँ या दसवाँ।` : `${P} forms no ${yoga.en} Yog. That Yog needs a Kendra house: the 1st, 4th, 7th or 10th.`)
             : kendra && !strong && dg
-              ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए ग्रह अपनी या उच्च राशि में चाहिए।` : `${P} forms no ${yoga.en} Yoga. That yoga needs the planet in its own or exalted sign.`)
+              ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए ग्रह अपनी या उच्च राशि में चाहिए।` : `${P} forms no ${yoga.en} Yog. That Yog needs the planet in its own or exalted sign.`)
               : null
       return {
         title: hi ? `${P} · ${deg}° ${S}, ${HI_ORD_N[h]} भाव` : `${named(l, k)} · ${deg}° ${S}, ${EN_ORD(h)} house`,
@@ -252,7 +252,7 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
             r.length
               ? (hi ? `${P} आपके ${list(r.map((q) => HI_ORD[q]), l)} भाव के स्वामी हैं।` : `${P} rules your ${r.map((q) => `${EN_ORD(q)} house`).join(' and your ')}.`)
               : (hi ? `${P} किसी राशि के स्वामी नहीं हैं।` : `${P} rules no sign.`),
-            k === lagnaLord && (hi ? `पहला भाव आपका लग्न है, इसलिए ${P} आपके लग्न के स्वामी हैं।` : `The 1st house is your Lagna, so ${P} is the lord of your Lagna.`),
+            k === lagnaLord && (hi ? `पहला भाव आपका लग्न है, इसलिए ${P} आपके लग्न के स्वामी हैं।` : `The 1st house is your Lagn, so ${P} is the lord of your Lagn.`),
             r.includes(h) && (hi ? `${P} अपने ही भाव में बैठे हैं।` : `${P} sits in a house that it rules.`),
             ...others.map((q, i) => (hi
               ? (i === 0 ? `यह स्थिति ${HOUSE[q].of.hi} को ${HOUSE[h].of.hi} से जोड़ती है।` : `यह ${HOUSE[q].of.hi} को भी ${HOUSE[h].of.hi} से जोड़ती है।`)
@@ -331,7 +331,7 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
       text: rule
         ? (clean
           ? { quote: rule, note: l === 'hi' ? 'शास्त्र के अपने (पुराने) शब्द — भविष्यवाणी नहीं।' : 'The text’s own, dated words.' }
-          : { quote: null, note: l === 'hi' ? 'इस स्थिति का शास्त्रीय नियम ‘भाव व योग’ खंड में है, शास्त्र के अपने शब्दों में।' : 'The classical rule for this placement is in the Bhāvas & Yogas section, in the text’s own words.' })
+          : { quote: null, note: l === 'hi' ? 'इस स्थिति का शास्त्रीय नियम ‘भाव व योग’ खंड में है, शास्त्र के अपने शब्दों में।' : 'The classical rule for this placement is in the Bhaavs & Yogs section, in the text’s own words.' })
         : null,
     }), {
       main: h,
@@ -363,11 +363,11 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     }
     push('now', (l) => ({
       title: l === 'hi' ? 'अभी क्या चल रहा है' : 'What is running now',
-      chips: [{ label: l === 'hi' ? 'दशा' : 'Daśā', text: l === 'hi' ? 'समय की खिड़की, घटना नहीं' : 'a window of time, not an event' }],
+      chips: [{ label: l === 'hi' ? 'दशा' : 'Dasha', text: l === 'hi' ? 'समय की खिड़की, घटना नहीं' : 'a window of time, not an event' }],
       lines: [
         l === 'hi'
           ? `आप ${name(l, maha.lord)} की महादशा में हैं। यह ${monthYear(maha.start, l)} से ${monthYear(maha.end, l)} तक चलती है।`
-          : `You are in the main period (mahādaśā) of ${named(l, maha.lord)}. It runs from ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
+          : `You are in the main period (Maha-Dasha) of ${named(l, maha.lord)}. It runs from ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
         about(l, maha.lord),
         antar && (l === 'hi'
           ? `उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है।${antar.lord === maha.lord ? '' : ` ${about(l, antar.lord)}`}`
@@ -389,7 +389,7 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     title: l === 'hi' ? 'संकेत, वादे नहीं' : 'Signs, not promises',
     lines: l === 'hi'
       ? ['यह आपकी कुंडली थी, भाव-दर-भाव। हर पंक्ति इस पर टिकी है कि आपके ग्रह कहाँ बैठे हैं।', 'उनके पीछे के शास्त्रीय नियम ‘भाव व योग’ खंड में हैं, शास्त्र के अपने शब्दों में। समय दशाओं से आता है। प्रयास सदा मायने रखता है।']
-      : ['That is your chart, house by house. Every line rests on where your planets stand.', 'The classical rules behind them are in the Bhāvas & Yogas section, in the words of the texts. Timing comes from the daśās. Effort always matters.'],
+      : ['That is your chart, house by house. Every line rests on where your planets stand.', 'The classical rules behind them are in the Bhaavs & Yogs section, in the words of the texts. Timing comes from the Dashas. Effort always matters.'],
   }), { houses: [], grahas: [], lines: [] })
 
   return { steps }

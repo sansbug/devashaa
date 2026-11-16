@@ -36,14 +36,14 @@ const list = (xs, l) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join('
 
 export const HOW = {
   en: [
-    'A daśā is a planetary period. This system (Viṁśottarī) divides 120 years among the nine planets. The count starts from the star the Moon was in at your birth. So the periods fall at different ages for each person.',
-    'Periods nest. A main period (mahādaśā) lasts several years and holds nine sub-periods (antardaśā). Each sub-period lasts from months to a few years. The main period sets the background. The sub-period is in the foreground now.',
+    'A Dasha is a planetary period. This system (Vimsottari) divides 120 years among the nine planets. The count starts from the star the Moon was in at your birth. So the periods fall at different ages for each person.',
+    'Periods nest. A main period (Maha-Dasha) lasts several years and holds nine sub-periods (Antar-Dasha). Each sub-period lasts from months to a few years. The main period sets the background. The sub-period is in the foreground now.',
     'To read a period, look at its planet in your chart. The houses that planet rules and the house it sits in are the areas of life the period brings forward.',
     'A period is judged from where its planet stands. It counts as favourable when the planet is in the ascendant, exalted, in its own sign or in a friend’s sign. It counts as unfavourable when the planet is in the 6th, 8th or 12th house, debilitated or in an enemy’s sign.',
   ],
   hi: [
-    'दशा ग्रह की एक अवधि है। यह पद्धति (विंशोत्तरी) 120 वर्षों को नौ ग्रहों में बाँटती है। गिनती उस नक्षत्र से शुरू होती है जिसमें जन्म के समय चन्द्र था। इसलिए हर व्यक्ति की दशाएँ अलग-अलग आयु पर आती हैं।',
-    'दशाएँ एक-दूसरे के भीतर चलती हैं। महादशा कई वर्षों की होती है और उसके भीतर नौ अन्तर्दशाएँ होती हैं। हर अन्तर्दशा कुछ महीनों से कुछ वर्षों की होती है। महादशा पृष्ठभूमि तय करती है। अन्तर्दशा वह है जो अभी सामने है।',
+    'दशा ग्रह की एक अवधि है। यह पद्धति (विंशोत्तरी) 120 वर्षों को नौ ग्रहों में बाँटती है। गिनती उस नक्षत्र से शुरू होती है जिसमें जन्म के समय चंद्र था। इसलिए हर व्यक्ति की दशाएँ अलग-अलग आयु पर आती हैं।',
+    'दशाएँ एक-दूसरे के भीतर चलती हैं। महादशा कई वर्षों की होती है और उसके भीतर नौ अंतर्दशाएँ होती हैं। हर अंतर्दशा कुछ महीनों से कुछ वर्षों की होती है। महादशा पृष्ठभूमि तय करती है। अंतर्दशा वह है जो अभी सामने है।',
     'दशा पढ़ने के लिए कुंडली में उसके ग्रह को देखें। वह ग्रह जिन भावों का स्वामी है और जिस भाव में बैठा है, जीवन के वही क्षेत्र उस दशा में आगे आते हैं।',
     'दशा उसके ग्रह की स्थिति से आँकी जाती है। ग्रह लग्न में, उच्च, स्वराशि या मित्र राशि में हो तो दशा अनुकूल गिनी जाती है। ग्रह छठे, आठवें या बारहवें भाव में, नीच या शत्रु राशि में हो तो दशा प्रतिकूल गिनी जाती है।',
   ],
@@ -53,7 +53,7 @@ const BASIS = {
   en: ['Which periods are running and the dates they change (calculated from the Moon’s position at birth).',
     'Which houses each period’s planet rules and sits in (calculated). A period brings forward the matters of those houses.',
     'The text’s rule for judging a period by where its planet stands, and which of its conditions your chart meets.'],
-  hi: ['कौन-सी दशाएँ चल रही हैं और किस तिथि को बदलती हैं (जन्म के समय चन्द्र की स्थिति से गणना)।',
+  hi: ['कौन-सी दशाएँ चल रही हैं और किस तिथि को बदलती हैं (जन्म के समय चंद्र की स्थिति से गणना)।',
     'हर दशा का ग्रह किन भावों का स्वामी है और किस भाव में बैठा है (गणना से)। दशा उन्हीं भावों की बातों को आगे लाती है।',
     'ग्रह की स्थिति से दशा आँकने का ग्रंथ का नियम, और आपकी कुंडली उसकी कौन-सी शर्तें पूरी करती है।'],
 }
@@ -146,7 +146,7 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
   const row = (role, node, within) => ({
     role, lord: node.lord, within: within ? within.lord : null, start: node.start, end: node.end,
     title: both((l) => {
-      const w = { maha: ['Main period (mahādaśā)', 'महादशा'], antar: ['Sub-period (antardaśā)', 'अन्तर्दशा'], nextAntar: ['Next sub-period', 'अगली अन्तर्दशा'], nextMaha: ['Next main period', 'अगली महादशा'] }[role]
+      const w = { maha: ['Main period (Maha-Dasha)', 'महादशा'], antar: ['Sub-period (Antar-Dasha)', 'अंतर्दशा'], nextAntar: ['Next sub-period', 'अगली अंतर्दशा'], nextMaha: ['Next main period', 'अगली महादशा'] }[role]
       return `${l === 'hi' ? w[1] : w[0]}: ${nm(l, node.lord)}${within && within.lord !== node.lord && role !== 'maha' && role !== 'nextMaha' ? (l === 'hi' ? ` (${nm(l, within.lord)} की महादशा में)` : ` (within ${nm(l, within.lord)}’s main period)`) : ''}`
     }),
     span: both((l) => (role === 'maha' || role === 'antar'
@@ -196,13 +196,13 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
   }
   const changes = both((l) => [
     antar && nextAntar && (l === 'hi'
-      ? `${monthYear(nextAntar.start, l)} में ${nm(l, antar.lord)} की अन्तर्दशा समाप्त होती है और ${nm(l, nextAntar.lord)} की शुरू होती है। यह ${monthYear(nextAntar.end, l)} तक चलती है। ${moves(l, shift(antar.lord, nextAntar.lord), true)}`
+      ? `${monthYear(nextAntar.start, l)} में ${nm(l, antar.lord)} की अंतर्दशा समाप्त होती है और ${nm(l, nextAntar.lord)} की शुरू होती है। यह ${monthYear(nextAntar.end, l)} तक चलती है। ${moves(l, shift(antar.lord, nextAntar.lord), true)}`
       : `In ${monthYear(nextAntar.start, l)}, ${nm(l, antar.lord)}’s sub-period ends and ${nm(l, nextAntar.lord)}’s begins. ${nm(l, nextAntar.lord)}’s sub-period runs to ${monthYear(nextAntar.end, l)}. ${moves(l, shift(antar.lord, nextAntar.lord), true)}`),
     antar && nextAntar && va === 'not_stated' && vna === 'not_stated' && (l === 'hi'
-      ? `चल रही अन्तर्दशा (${nm(l, antar.lord)}) और अगली (${nm(l, nextAntar.lord)}), दोनों न अनुकूल गिनी जाती हैं, न प्रतिकूल। इस बदलाव में केवल ध्यान का क्षेत्र बदलता है।`
+      ? `चल रही अंतर्दशा (${nm(l, antar.lord)}) और अगली (${nm(l, nextAntar.lord)}), दोनों न अनुकूल गिनी जाती हैं, न प्रतिकूल। इस बदलाव में केवल ध्यान का क्षेत्र बदलता है।`
       : `Both the sub-period running now (${nm(l, antar.lord)}) and the next one (${nm(l, nextAntar.lord)}) are neutral. So what changes is only where your attention goes.`),
     antar && nextAntar && !(va === 'not_stated' && vna === 'not_stated') && (l === 'hi'
-      ? `${counts(l, antar.lord, `चल रही अन्तर्दशा (${nm(l, antar.lord)})`)}। ${counts(l, nextAntar.lord, `अगली (${nm(l, nextAntar.lord)})`)}।`
+      ? `${counts(l, antar.lord, `चल रही अंतर्दशा (${nm(l, antar.lord)})`)}। ${counts(l, nextAntar.lord, `अगली (${nm(l, nextAntar.lord)})`)}।`
       : `${counts(l, antar.lord, `The sub-period running now (${nm(l, antar.lord)})`)}. ${counts(l, nextAntar.lord, `The next one (${nm(l, nextAntar.lord)})`)}.`),
     nextMaha && (!nextAntar || nextAntarIn === maha) && (l === 'hi'
       ? `महादशा ${monthYear(maha.end, l)} तक ${nm(l, maha.lord)} की ही रहती है, इसलिए ${words(l, housesOf(maha.lord))} पूरे समय पृष्ठभूमि में ${housesOf(maha.lord).length > 1 ? 'रहते हैं' : 'रहता है'}।`
@@ -217,16 +217,16 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
   const bgNow = housesOf(maha.lord).filter((h) => !fgNow.includes(h))
   const notes = both((l) => [
     antar && (l === 'hi'
-      ? `अभी अन्तर्दशा आपका ध्यान ${words(l, fgNow)} पर रखती है।${bgNow.length ? ` महादशा ${words(l, bgNow)} को लंबी पृष्ठभूमि में रखती है।` : ''} इन्हीं में निर्णय और प्रयास इस समय सबसे अधिक मायने रखते हैं।`
+      ? `अभी अंतर्दशा आपका ध्यान ${words(l, fgNow)} पर रखती है।${bgNow.length ? ` महादशा ${words(l, bgNow)} को लंबी पृष्ठभूमि में रखती है।` : ''} इन्हीं में निर्णय और प्रयास इस समय सबसे अधिक मायने रखते हैं।`
       : `Right now the sub-period puts your attention on ${words(l, fgNow)}.${bgNow.length ? ` The main period keeps ${words(l, bgNow)} as the longer background.` : ''} Decisions and effort in these areas count most at present.`),
     nextAntar && vna === 'adverse' && (l === 'hi'
-      ? `आने वाली अन्तर्दशा प्रतिकूल गिनी जाती है। ${monthYear(nextAntar.start, l)} से पहले के महीनों में जो खुला है उसे पूरा करें। ${words(l, housesOf(nextAntar.lord))} के मामलों में गुंजाइश बना लें। यह तैयारी का कारण है, चिंता का नहीं।`
+      ? `आने वाली अंतर्दशा प्रतिकूल गिनी जाती है। ${monthYear(nextAntar.start, l)} से पहले के महीनों में जो खुला है उसे पूरा करें। ${words(l, housesOf(nextAntar.lord))} के मामलों में गुंजाइश बना लें। यह तैयारी का कारण है, चिंता का नहीं।`
       : `The coming sub-period counts as unfavourable. Use the months before ${monthYear(nextAntar.start, l)} to finish what is open. Build a margin around ${words(l, housesOf(nextAntar.lord))}. It is a reason to prepare, not a reason to worry.`),
     nextAntar && vna === 'favourable' && (l === 'hi'
-      ? `आने वाली अन्तर्दशा अनुकूल गिनी जाती है। ${words(l, housesOf(nextAntar.lord))} से जुड़ी जो बातें रुकी हैं, उनकी तैयारी अभी करें ताकि ${monthYear(nextAntar.start, l)} से उन्हें आगे बढ़ा सकें।`
+      ? `आने वाली अंतर्दशा अनुकूल गिनी जाती है। ${words(l, housesOf(nextAntar.lord))} से जुड़ी जो बातें रुकी हैं, उनकी तैयारी अभी करें ताकि ${monthYear(nextAntar.start, l)} से उन्हें आगे बढ़ा सकें।`
       : `The coming sub-period counts as favourable. Prepare now whatever has been waiting in ${words(l, housesOf(nextAntar.lord))}, so that it can be moved forward from ${monthYear(nextAntar.start, l)}.`),
     nextAntar && (vna === 'not_stated' || vna === 'contested') && (l === 'hi'
-      ? `आने वाली अन्तर्दशा न अनुकूल गिनी जाती है, न प्रतिकूल। इसलिए न किसी बात से डरने की ज़रूरत है, न किसी पर टिकने की। ${monthYear(nextAntar.start, l)} से बस ${words(l, housesOf(nextAntar.lord))} के मामलों को ध्यान में रखें।`
+      ? `आने वाली अंतर्दशा न अनुकूल गिनी जाती है, न प्रतिकूल। इसलिए न किसी बात से डरने की ज़रूरत है, न किसी पर टिकने की। ${monthYear(nextAntar.start, l)} से बस ${words(l, housesOf(nextAntar.lord))} के मामलों को ध्यान में रखें।`
       : `The coming sub-period is neutral, so there is nothing in particular to brace for or to count on. From ${monthYear(nextAntar.start, l)}, simply keep ${words(l, housesOf(nextAntar.lord))} in view.`),
     nextMaha && yearsTo(nextMaha.start) <= 3 && (l === 'hi'
       ? `महादशा ${monthYear(nextMaha.start, l)} में बदलती है, जो अब दूर नहीं। जो प्रतिबद्धताएँ कई वर्ष चलेंगी, उन्हें इस तिथि को ध्यान में रखकर तय करें। उसके बाद पृष्ठभूमि ${words(l, housesOf(nextMaha.lord))} की हो जाती है।`

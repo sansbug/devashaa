@@ -36,8 +36,8 @@ export default function LifeAreas({ chart, namer, refs, onHouse, goFull }) {
           {areas.map((a) => (
             <button type="button" key={a.key} role="tab" aria-selected={a.key === A.key}
                     className={a.key === A.key ? 'on' : ''} onClick={() => pick(a)}>
-              {a.label[L]}{a.timing.now && <span className="la-now" title={W('in focus now', 'अभी केन्द्र में')} />}
-              <small>{a.timing.now ? W('in focus now', 'अभी केन्द्र में') : a.houses.map((h) => W(`house ${h}`, `भाव ${h}`)).join(' · ')}</small>
+              {a.label[L]}{a.timing.now && <span className="la-now" title={W('in focus now', 'अभी केंद्र में')} />}
+              <small>{a.timing.now ? W('in focus now', 'अभी केंद्र में') : a.houses.map((h) => W(`house ${h}`, `भाव ${h}`)).join(' · ')}</small>
             </button>
           ))}
         </div>

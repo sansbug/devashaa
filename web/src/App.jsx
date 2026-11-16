@@ -52,7 +52,7 @@ const PoojaApp = lazy(() => import('./pooja/PoojaApp.jsx'))
 const ChartWalkthrough = lazy(() => import('./ChartWalkthrough.jsx'))
 
 const VARGA_LABELS = [
-  ['D1', 'Rāśi'], ['D2', 'Horā'], ['D3', 'Drekkāṇa'], ['D4', 'Chaturthāṁśa'],
+  ['D1', 'Raashi'], ['D2', 'Horā'], ['D3', 'Drekkāṇa'], ['D4', 'Chaturthāṁśa'],
   ['D7', 'Saptāṁśa'], ['D9', 'Navāṁśa'], ['D10', 'Daśāṁśa'], ['D12', 'Dvādaśāṁśa'],
   ['D16', 'Ṣoḍaśāṁśa'], ['D20', 'Viṁśāṁśa'], ['D24', 'Chaturviṁśāṁśa'],
   ['D27', 'Saptaviṁśāṁśa'], ['D30', 'Triṁśāṁśa'], ['D40', 'Khavedāṁśa'],
@@ -909,7 +909,7 @@ export default function App() {
             <div className="dk-table-wrap meta-table-wrap">
               {snap ? (
               <table className="dk-table meta-table">
-                <thead><tr><th>Lagna</th><th>{t('share.meta.birth', 'Date · time · place of birth')}</th><th>Ayanāṁśa</th></tr></thead>
+                <thead><tr><th>Lagn</th><th>{t('share.meta.birth', 'Date · time · place of birth')}</th><th>Ayanāṁśa</th></tr></thead>
                 <tbody><tr>
                   <td className="mc-lagna">{namer.rasiFull(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
                   <td>{t('share.meta.hidden', 'not shared by the sender')}</td>
@@ -918,7 +918,7 @@ export default function App() {
               </table>
               ) : (
               <table className="dk-table meta-table">
-                <thead><tr><th>Lagna</th><th>Local</th><th>Zone</th><th>UTC</th><th>JD</th><th>Ayanāṁśa</th></tr></thead>
+                <thead><tr><th>Lagn</th><th>Local</th><th>Zone</th><th>UTC</th><th>JD</th><th>Ayanāṁśa</th></tr></thead>
                 <tbody><tr>
                   <td className="mc-lagna">{namer.rasiFull(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
                   <td className="dk-num">{chart.local_time}</td>
@@ -1337,7 +1337,7 @@ export default function App() {
                 </thead>
                 <tbody>
                   <tr className="lagna-row">
-                    <td className="graha-name">Lagna</td>
+                    <td className="graha-name">Lagn</td>
                     {VARGA_LABELS.map(([k]) => (
                       <td key={k}>{namer.rasi(chart.lagna_vargas[k])}</td>
                     ))}
@@ -1461,7 +1461,7 @@ export default function App() {
           {'  ·  '}
           <a href="/references" className="footer-refs"
              onClick={(e) => { e.preventDefault(); go('/references') }}>
-            {lang === 'hi' ? 'सन्दर्भ' : 'References'}
+            {lang === 'hi' ? 'संदर्भ' : 'References'}
           </a>
         </p>
         <p>

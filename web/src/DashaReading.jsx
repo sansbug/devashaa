@@ -31,7 +31,7 @@ function Branch({ b, L }) {
         </p>
       ) : <blockquote>{b.results}</blockquote>}
       <p className="fd-applies">
-        <i>{W('Applies because the sub-period’s planet is', 'लागू है क्योंकि अन्तर्दशा का ग्रह')}</i>{' '}
+        <i>{W('Applies because the sub-period’s planet is', 'लागू है क्योंकि अंतर्दशा का ग्रह')}</i>{' '}
         {b.met.map((m) => m.predicate).join(W(', and ', ', और '))}.
         {b.polarity_word ? <> {W('The text’s own word for this branch:', 'इस शाखा के लिए ग्रंथ का अपना शब्द:')} “{b.polarity_word}”.</> : null}
       </p>
@@ -45,9 +45,9 @@ function SubResults({ cell, L, refs }) {
   const c = cell.counts
   return (
     <div className="dsr-sub">
-      <h6>{W('What the text lists for this sub-period', 'इस अन्तर्दशा के लिए ग्रंथ क्या गिनाता है')}</h6>
+      <h6>{W('What the text lists for this sub-period', 'इस अंतर्दशा के लिए ग्रंथ क्या गिनाता है')}</h6>
       {cell.applies.length === 0 && (
-        <p className="fd-held">{W('None of the branches the text lists for this sub-period could be confirmed for your chart.', 'इस अन्तर्दशा के लिए ग्रंथ की कोई शाखा आपकी कुंडली पर पक्की नहीं हो सकी।')}</p>
+        <p className="fd-held">{W('None of the branches the text lists for this sub-period could be confirmed for your chart.', 'इस अंतर्दशा के लिए ग्रंथ की कोई शाखा आपकी कुंडली पर पक्की नहीं हो सकी।')}</p>
       )}
       {cell.applies.map((b, i) => <Branch key={i} b={b} L={L} />)}
       {refs && <p className="fd-attr"><b>{cell.citation} — Parāśara, tr. R. Santhanam</b></p>}
@@ -109,11 +109,11 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
   return (
     <section className="dk-card sv-dasha">
       <h4 className="dk-head">
-        <span>{W('Your periods (daśā): now, next, and what it means', 'आपकी दशाएँ: अभी, आगे, और इसका अर्थ')}</span>
+        <span>{W('Your periods (Dasha): now, next, and what it means', 'आपकी दशाएँ: अभी, आगे, और इसका अर्थ')}</span>
       </h4>
       <div className="dk-body">
         <div className="la-step">
-          <h6>{W('How to read a daśā', 'दशा कैसे पढ़ें')}</h6>
+          <h6>{W('How to read a Dasha', 'दशा कैसे पढ़ें')}</h6>
           <p>{R.how[L][0]}</p>
           {how && R.how[L].slice(1).map((s, i) => <p key={i}>{s}</p>)}
           <button type="button" className="sv-link" onClick={() => setHow((x) => !x)}>{how ? W('Show less', 'कम दिखाएँ') : W('How periods nest, and how one is judged', 'दशाएँ कैसे चलती हैं और कैसे आँकी जाती हैं')}</button>
@@ -159,8 +159,8 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
         </div>
 
         <p className="fd-foot">
-          {W('The full analysis has every sub-period of every main period. It gives each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अन्तर्दशा है। साथ में ग्रंथ की हर शर्त है, और यह भी कि वह जाँची जा सकी या नहीं।')}
-          {' '}<button type="button" className="sv-link" onClick={goFull}>{W('Open the full daśā timeline →', 'पूरी दशा समय-रेखा खोलें →')}</button>
+          {W('The full analysis has every sub-period of every main period. It gives each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अंतर्दशा है। साथ में ग्रंथ की हर शर्त है, और यह भी कि वह जाँची जा सकी या नहीं।')}
+          {' '}<button type="button" className="sv-link" onClick={goFull}>{W('Open the full Dasha timeline →', 'पूरी दशा समय-रेखा खोलें →')}</button>
         </p>
       </div>
     </section>

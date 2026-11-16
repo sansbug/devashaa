@@ -30,7 +30,7 @@ export default function SouthDeckChart({
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
   const en = namer.style !== 'english'
   const ruled = vargaKey === 'D1' && !!landmarks
-  const lagnaWord = namer.style === 'devanagari' ? 'लग्न' : 'Lagna'
+  const lagnaWord = namer.style === 'devanagari' ? 'लग्न' : 'Lagn'
 
   return (
     <div className="rc-card">

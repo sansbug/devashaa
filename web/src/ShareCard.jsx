@@ -61,7 +61,7 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
             </div>
             <div className="sh-card-rows">
               <div><span className="dk-rbub">{chart.lagna_rasi + 1}</span><b>{t('deck.ascendant', 'Ascendant (Lagna)')}</b><span>{rasi(chart.lagna_rasi)}</span></div>
-              <div><Bubble lord="moon" size="m" /><b>{t('deck.moonsign', 'Moon Sign (Rāśi)')}</b><span>{rasi(moon.rasi)} · {namer.nakshatra(moon.nakshatra)}</span></div>
+              <div><Bubble lord="moon" size="m" /><b>{t('deck.moonsign', 'Moon Sign (Raashi)')}</b><span>{rasi(moon.rasi)} · {namer.nakshatra(moon.nakshatra)}</span></div>
               <div><Bubble lord="sun" size="m" /><b>{t('deck.sunsign', 'Sun Sign')}</b><span>{rasi(sun.rasi)}</span></div>
             </div>
             <div className="sh-card-foot">{t('share.foot', 'Verified positions · cited readings · nothing sold')}</div>

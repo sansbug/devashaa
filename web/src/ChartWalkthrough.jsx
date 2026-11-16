@@ -204,7 +204,7 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
           {copied ? L('Copied ✓', 'कॉपी हो गया ✓') : L('Copy the script', 'पटकथा कॉपी करें')}
         </button>
       </div>
-      {noVoice && <p className="wt-note">{L('This device has no voice for English. The captions carry it.', 'इस उपकरण में हिन्दी की कोई आवाज़ नहीं है। कैप्शन पढ़ें।')}</p>}
+      {noVoice && <p className="wt-note">{L('This device has no voice for English. The captions carry it.', 'इस उपकरण में हिंदी की कोई आवाज़ नहीं है। कैप्शन पढ़ें।')}</p>}
     </section>
   )
 }

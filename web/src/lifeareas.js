@@ -131,7 +131,7 @@ export function buildLifeAreas(chart, built, namer = makeNamer('common'), now = 
         }
       }
     }
-    const kindWord = (l, k) => (k === 'maha' ? (l === 'hi' ? 'महादशा' : 'main period') : (l === 'hi' ? 'अन्तर्दशा' : 'sub-period'))
+    const kindWord = (l, k) => (k === 'maha' ? (l === 'hi' ? 'महादशा' : 'main period') : (l === 'hi' ? 'अंतर्दशा' : 'sub-period'))
     const timing = {
       now: nowItems.length ? both((l) => nowItems.map((x) => (l === 'hi'
         ? `अभी ${nm(l, x.lord)} की ${kindWord(l, x.kind)} चल रही है, ${monthYear(x.end, l)} तक। ${nm(l, x.lord)} ${tie(l, x.lord)}।`
@@ -147,10 +147,10 @@ export function buildLifeAreas(chart, built, namer = makeNamer('common'), now = 
     const hard = passages.some((t) => t.held)
     const notes = both((l) => [
       nowItems.length && (l === 'hi'
-        ? 'यह क्षेत्र अभी केन्द्र में है। परंपरा इस खिड़की को इस क्षेत्र के निर्णयों और नई शुरुआत से जोड़ती है। जो आप टाल रहे हैं, उस पर अभी ध्यान दें।'
+        ? 'यह क्षेत्र अभी केंद्र में है। परंपरा इस खिड़की को इस क्षेत्र के निर्णयों और नई शुरुआत से जोड़ती है। जो आप टाल रहे हैं, उस पर अभी ध्यान दें।'
         : 'This area is in focus now. The tradition ties this window to decisions and new starts in it. If you have been putting one off, give it your attention now.'),
       !nowItems.length && next && (l === 'hi'
-        ? `यह क्षेत्र अभी केन्द्र में नहीं है। अगली खिड़की ${monthYear(next.start, l)} से है। बड़ी योजनाओं की तैयारी उसी की ओर रखें। तब तक नींव का काम करें।`
+        ? `यह क्षेत्र अभी केंद्र में नहीं है। अगली खिड़की ${monthYear(next.start, l)} से है। बड़ी योजनाओं की तैयारी उसी की ओर रखें। तब तक नींव का काम करें।`
         : `This area is not in focus right now. Its next window opens in ${monthYear(next.start, l)}. Aim the larger plans at that window. Use the time until then for groundwork.`),
       S > 0 && C === 0 && (l === 'hi'
         ? 'ऊपर की बातें समर्थन की ओर हैं। यह आगे बढ़ाने का क्षेत्र है। यहाँ लगाया गया प्रयास सही जगह लगा है।'

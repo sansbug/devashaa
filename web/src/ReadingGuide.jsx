@@ -128,7 +128,7 @@ const STEPS = [
       setTimeout(() => a.scrollTo('.nv-panel'), 260)
     },
     body: (c) => {
-      const nm = (k) => (k === 'lagna' ? 'Lagna' : c.namer.grahaKey(k))
+      const nm = (k) => (k === 'lagna' ? 'Lagn' : c.namer.grahaKey(k))
       const vg = c.navamsa ? c.navamsa.vargottama.items : []
       const tally = c.navamsa ? c.navamsa.bhava_suchaka.tally : null
       return (

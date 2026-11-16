@@ -208,8 +208,8 @@ export default function FindingsPanel({ chart, namer, onHouse, goFull, refs }) {
         )}
         {topic === 'timing' && ranked.length > 0 && (
           <p className="sv-note">
-            {W('Each running lord’s finding includes the text’s verdict on its period (BPHS Vol II ch.47). The text’s detailed results for each sub-period (chs 52 to 60) are in the full analysis.', 'हर चल रहे दशा-स्वामी की बात में उसकी दशा पर ग्रंथ का निर्णय (बृहत् पाराशर, खंड 2, अध्याय 47) शामिल है। हर अन्तर्दशा के विस्तृत फल (अध्याय 52 से 60) पूरे विश्लेषण में हैं।')}
-            {' '}<button type="button" className="sv-link" onClick={() => goFull('dasha')}>{W('Open the daśā results →', 'दशा-फल खोलें →')}</button>
+            {W('Each running lord’s finding includes the text’s verdict on its period (BPHS Vol II ch.47). The text’s detailed results for each sub-period (chs 52 to 60) are in the full analysis.', 'हर चल रहे दशा-स्वामी की बात में उसकी दशा पर ग्रंथ का निर्णय (बृहत् पाराशर, खंड 2, अध्याय 47) शामिल है। हर अंतर्दशा के विस्तृत फल (अध्याय 52 से 60) पूरे विश्लेषण में हैं।')}
+            {' '}<button type="button" className="sv-link" onClick={() => goFull('dasha')}>{W('Open the Dasha results →', 'दशा-फल खोलें →')}</button>
           </p>
         )}
         {topic === 'timing' && !ranked.length && (

@@ -190,8 +190,8 @@ export default function DashaTree({
         conditionsOf={antarCells ? (lord) => antarCells[lord] : undefined}
         onMahaChange={setAntarMaha}
         /* Birth instant, for age. JD(UT) -> epoch ms. Deliberately NOT derived
-           from mahadashas[0].start, which is the NOTIONAL daśā start and
-           precedes birth by the elapsed part of the janma nakṣatra. */
+           from mahadashas[0].start, which is the NOTIONAL Dasha start and
+           precedes birth by the elapsed part of the janma Nakshatr. */
         birthMs={chartMeta?.jd_ut ? (chartMeta.jd_ut - 2440587.5) * 86400000 : undefined}
         legend={verdicts ? <DashaLegend /> : null}
       />

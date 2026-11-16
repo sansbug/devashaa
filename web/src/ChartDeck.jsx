@@ -106,7 +106,7 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
   const setOrder = (k) => { setOrderState(k); try { localStorage.setItem(ORDER_KEY, k) } catch { /* private mode */ } }
   const hover = (sign) => ({ onPointerEnter: () => onHoverSign?.(sign), onPointerLeave: () => onHoverSign?.(null) })
   const degree = (x) => <td className={`dk-num${x.retrograde ? ' rx' : ''}`}>{degOf(x)}{x.retrograde ? ' ℞' : ''}</td>
-  const nakHead = <><th>{t('deck.nakshatra', 'Nakṣatra')}</th><th>{t('deck.pada.head', 'Pāda')}</th><th>{t('deck.nakdeg', 'In nak.')}</th></>
+  const nakHead = <><th>{t('deck.nakshatra', 'Nakshatr')}</th><th>{t('deck.pada.head', 'Pāda')}</th><th>{t('deck.nakdeg', 'In nak.')}</th></>
   const toggle = (
     <span className="dk-order" role="group" aria-label={t('deck.order', 'Start the table with')}>
       {[['planets', t('deck.order.planets', 'Planets')], ['houses', t('deck.order.houses', 'Houses 1–12')]].map(([k, label]) => (
@@ -115,11 +115,11 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
     </span>
   )
   return (
-    <Card title={t('deck.positions', 'Planetary Positions')} right={toggle} tip={t('deck.positions.tip', 'Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna. Nakṣatra classes: the muhūrta tradition’s seven (traditional tier).')}>
+    <Card title={t('deck.positions', 'Planetary Positions')} right={toggle} tip={t('deck.positions.tip', 'Sidereal (Lahiri) longitudes; houses are whole-sign Bhaavs from the lagna. Nakshatr classes: the muhūrta tradition’s seven (traditional tier).')}>
       <table className="dk-table dk-pos">
         {order === 'planets' ? (
           <>
-            <thead><tr><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.sign', 'Sign (Rāśi)')}</th><th>{t('deck.degree', 'Degree')}</th><th>{t('deck.house', 'House')}</th>{nakHead}</tr></thead>
+            <thead><tr><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.sign', 'Sign (Raashi)')}</th><th>{t('deck.degree', 'Degree')}</th><th>{t('deck.house', 'House')}</th>{nakHead}</tr></thead>
             <tbody>
               {ordered.map((x) => (
                 <tr key={x.key} {...hover(x.rasi)}>
@@ -134,7 +134,7 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
           </>
         ) : (
           <>
-            <thead><tr><th>{t('deck.house', 'House')}</th><th>{t('deck.sign', 'Sign (Rāśi)')}</th><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.degree', 'Degree')}</th>{nakHead}</tr></thead>
+            <thead><tr><th>{t('deck.house', 'House')}</th><th>{t('deck.sign', 'Sign (Raashi)')}</th><th>{t('deck.planet', 'Planet')}</th><th>{t('deck.degree', 'Degree')}</th>{nakHead}</tr></thead>
             <tbody>
               {Array.from({ length: 12 }, (_, i) => {
                 const h = i + 1, sign = (lagna + i) % 12
@@ -166,7 +166,7 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
         <span className="dk-nak good">{t('deck.nak.good', 'Soft, light, fixed or mutable')}</span>
         {' · '}<span className="dk-nak mixed">{t('deck.nak.mixed', 'Mixed')}</span>
         {' · '}<span className="dk-nak hard">{t('deck.nak.hard', 'Fierce or sharp')}</span>
-        <small>{t('deck.nak.note', 'The colour is the class of the nakṣatra itself in the muhūrta tradition, not of the planet standing in it.')}</small>
+        <small>{t('deck.nak.note', 'The colour is the class of the Nakshatr itself in the muhūrta tradition, not of the planet standing in it.')}</small>
       </p>
     </Card>
   )
@@ -194,7 +194,7 @@ export function HighlightsCard({ chart, grahas, namer }) {
       {moon && (
         <div className="dk-hl">
           <span className="dk-rbub" aria-hidden="true">{moon.rasi + 1}</span>
-          <span className="dk-hl-title">{t('deck.moonsign', 'Moon Sign (Rāśi)')}</span>
+          <span className="dk-hl-title">{t('deck.moonsign', 'Moon Sign (Raashi)')}</span>
           <span className="dk-hl-text">
             <b>{namer.rasi(moon.rasi)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(moon.rasi)})</span>} — <Planet g={moon} namer={namer} deg size="s" />
             {moon.nakshatra && <i>{namer.nakshatra(moon.nakshatra)} · {t('deck.pada', 'pada')} {moon.nakshatra.pada}</i>}
@@ -308,8 +308,8 @@ export default function ChartDeck({
       </div>
 
       <div className="deck-under">
-        {/* ── Houses — the bhāva texts that used to be the chart's hover card ── */}
-        <Card title={t('deck.houses', 'Houses (Bhāvas)')} className="dk-houses"
+        {/* ── Houses — the Bhaav texts that used to be the chart's hover card ── */}
+        <Card title={t('deck.houses', 'Houses (Bhaavs)')} className="dk-houses"
               tip={t('deck.houses.tip', 'BPHS ch.11 significations, the lord’s place, each occupant’s dignity and cited reading, and the dṛṣṭi on the house (ch.26).')}>
           {Array.from({ length: 12 }, (_, i) => {
             const sign = (vLagna + i) % 12
@@ -332,7 +332,7 @@ export default function ChartDeck({
           })}
         </Card>
 
-        {/* ── Aspects — rāśi dṛṣṭi (ch.8, UNGRADED) + what the subject receives ── */}
+        {/* ── Aspects — Raashi dṛṣṭi (ch.8, UNGRADED) + what the subject receives ── */}
         <Card title={t('deck.aspects', 'Aspects (Drishti)')} tip={aspectsTip || undefined}>
           {d1 ? (
             <>

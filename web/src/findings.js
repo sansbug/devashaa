@@ -28,7 +28,7 @@
  * is a reading order, not a strength and not a prediction. A topic re-sorts the
  * same findings by how directly each one touches that topic's houses.
  */
-import { makeNamer } from './naming.js'
+import { makeNamer, yogaName } from './naming.js'
 import { HOUSE } from './walkthrough.js'
 
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
@@ -47,15 +47,15 @@ export const SENSITIVE = {
 }
 /** Why a ch.13 clause applies to this chart — our words for the verse's own condition (api/dhana_bhava.py). */
 const DHANA_WHY = {
-  lord2_well_placed: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं। श्लोक की शर्त है: दूसरा भाव, केन्द्र या त्रिकोण।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house. The verse’s condition is the 2nd house, an angle or a trine.`),
+  lord2_well_placed: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं। श्लोक की शर्त है: दूसरा भाव, केंद्र या त्रिकोण।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house. The verse’s condition is the 2nd house, an angle or a trine.`),
   lord2_in_6_8_12: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं। श्लोक की शर्त है: छठा, आठवाँ या बारहवाँ भाव।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house. The verse’s condition is the 6th, 8th or 12th house.`),
   benefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव में नैसर्गिक शुभ ग्रह: ${c.grahas.map(n).join(', ')}।` : `A natural benefic is in your 2nd house: ${c.grahas.map(n).join(', ')}.`),
   malefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव में नैसर्गिक पाप ग्रह: ${c.grahas.map(n).join(', ')}।` : `A natural malefic is in your 2nd house: ${c.grahas.map(n).join(', ')}.`),
   jupiter_lord2_in_2nd: (l, n) => (l === 'hi' ? `${n('jupiter')} आपके दूसरे भाव के स्वामी हैं और दूसरे ही भाव में हैं।` : `${n('jupiter')} rules your 2nd house and is in your 2nd house.`),
   jupiter_with_mars: (l, n, o, c) => (l === 'hi' ? `${n('jupiter')} और ${n('mars')} एक ही राशि में हैं (${o(c.houses[0])} भाव)।` : `${n('jupiter')} is with ${n('mars')}, in your ${o(c.houses[0])} house.`),
   lords_2_11_exchange: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव के स्वामी ${n(c.grahas[0])} ग्यारहवें में और ग्यारहवें के स्वामी ${n(c.grahas[1])} दूसरे में हैं।` : `Your 2nd lord ${n(c.grahas[0])} is in the 11th and your 11th lord ${n(c.grahas[1])} is in the 2nd.`),
-  lords_2_11_join_kendra_kona: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी (${c.grahas.map(n).join(', ')}) ${o(c.houses[0])} भाव में साथ हैं। यह भाव केन्द्र या त्रिकोण है।` : `Your 2nd and 11th lords (${c.grahas.map(n).join(', ')}) are together in your ${o(c.houses[0])} house. This house is an angle or a trine.`),
-  lord2_kendra_lord11_trine_from_it: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव के स्वामी ${n(c.grahas[0])} केन्द्र (${o(c.houses[0])} भाव) में हैं और ग्यारहवें के स्वामी ${n(c.grahas[1])} उनसे त्रिकोण में।` : `Your 2nd lord ${n(c.grahas[0])} is in an angle (your ${o(c.houses[0])} house) and your 11th lord ${n(c.grahas[1])} is in a trine from it.`),
+  lords_2_11_join_kendra_kona: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी (${c.grahas.map(n).join(', ')}) ${o(c.houses[0])} भाव में साथ हैं। यह भाव केंद्र या त्रिकोण है।` : `Your 2nd and 11th lords (${c.grahas.map(n).join(', ')}) are together in your ${o(c.houses[0])} house. This house is an angle or a trine.`),
+  lord2_kendra_lord11_trine_from_it: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव के स्वामी ${n(c.grahas[0])} केंद्र (${o(c.houses[0])} भाव) में हैं और ग्यारहवें के स्वामी ${n(c.grahas[1])} उनसे त्रिकोण में।` : `Your 2nd lord ${n(c.grahas[0])} is in an angle (your ${o(c.houses[0])} house) and your 11th lord ${n(c.grahas[1])} is in a trine from it.`),
   lords_in_evil_houses_malefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी दोनों छठे/आठवें/बारहवें में हैं और दूसरे भाव में पाप ग्रह है (${c.grahas.map(n).join(', ')})।` : `Your 2nd and 11th lords are both in the 6th, 8th or 12th and a malefic is in your 2nd house (${c.grahas.map(n).join(', ')}).`),
   lords_2_11_with_malefics: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी दोनों पाप ग्रहों के साथ हैं (${c.grahas.map(n).join(', ')})।` : `Your 2nd and 11th lords are both with malefics (${c.grahas.map(n).join(', ')}).`),
 }
@@ -70,7 +70,7 @@ const withBook = (c) => (c && !/BPHS|Parāśara/.test(c) ? `BPHS ${c}` : c)
 
 const DIG = {
   exalted: { en: 'exalted', hi: 'उच्च का', gloss: { en: 'at its strongest', hi: 'अपनी सबसे बलवान स्थिति में' }, w: 82, good: true },
-  moolatrikona: { en: 'in its mūlatrikoṇa sign', hi: 'मूलत्रिकोण में', gloss: { en: 'very strong', hi: 'बहुत बलवान' }, w: 78, good: true },
+  moolatrikona: { en: 'in its Mul-Trikon sign', hi: 'मूलत्रिकोण में', gloss: { en: 'very strong', hi: 'बहुत बलवान' }, w: 78, good: true },
   own: { en: 'in its own sign', hi: 'स्वराशि में', gloss: { en: 'strong', hi: 'बलवान' }, w: 74, good: true },
   friend: { en: 'in a friend’s sign', hi: 'मित्र की राशि में', gloss: { en: 'comfortable', hi: 'सहज' } },
   neutral: { en: 'in a neutral sign', hi: 'सम राशि में', gloss: null },
@@ -193,7 +193,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       const n = nm(l, k)
       if (role === 'lagnaLord') return l === 'hi' ? `लग्नेश ${n} आपके ${HI_ORD[h]} भाव में` : `Ascendant lord ${n} in your ${EN_ORD(h)} house`
       if (role === 'dignity') return l === 'hi' ? `${n} ${d.hi}, आपके ${HI_ORD[h]} भाव में` : `${n} ${d.en} in your ${EN_ORD(h)} house`
-      if (role === 'yogakaraka') return l === 'hi' ? `योगकारक ${n} आपके ${HI_ORD[h]} भाव में` : `Yogakāraka ${n} in your ${EN_ORD(h)} house`
+      if (role === 'yogakaraka') return l === 'hi' ? `योगकारक ${n} आपके ${HI_ORD[h]} भाव में` : `Yog-Kaarak ${n} in your ${EN_ORD(h)} house`
       return l === 'hi' ? `${n} आपके ${HI_ORD[h]} भाव में` : `${n} in your ${EN_ORD(h)} house`
     })
     const sub = both((l) => of(l, h))
@@ -226,13 +226,13 @@ export function buildFindings(chart, namer = makeNamer('common')) {
         ? `राहु और केतु की अपनी कोई राशि नहीं है। इन्हें उस राशि के स्वामी से पढ़ा जाता है जिसमें वे बैठे हैं। यहाँ वह स्वामी ${nm(l, dispositor)} हैं, जो आपके ${HI_ORD[disp.bhava]} भाव में हैं${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].hi})` : ''}।`
         : `The nodes own no sign. A node is read through the lord of the sign it sits in. Here that lord is ${nm(l, dispositor)}, in your ${EN_ORD(disp.bhava)} house${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].en})` : ''}.`),
       role === 'yogakaraka' && (l === 'hi'
-        ? `इस लग्न के लिए ${nm(l, k)} योगकारक हैं। वे एक केन्द्र और एक त्रिकोण, दोनों के स्वामी हैं।`
-        : `For this ascendant ${nm(l, k)} is the yogakāraka. It rules both an angle and a trine.`),
+        ? `इस लग्न के लिए ${nm(l, k)} योगकारक हैं। वे एक केंद्र और एक त्रिकोण, दोनों के स्वामी हैं।`
+        : `For this ascendant ${nm(l, k)} is the Yog-Kaarak. It rules both an angle and a trine.`),
     ].filter(Boolean))
 
     const supports = both((l) => [
       d && d.good && (l === 'hi' ? `${d.hi} (${d.gloss.hi})` : `${d.en[0].toUpperCase()}${d.en.slice(1)} (${d.gloss.en})`),
-      yks.includes(k) && (l === 'hi' ? 'इस लग्न के लिए योगकारक (एक केन्द्र और एक त्रिकोण के स्वामी)' : 'The yogakāraka for this ascendant (lord of an angle and a trine)'),
+      yks.includes(k) && (l === 'hi' ? 'इस लग्न के लिए योगकारक (एक केंद्र और एक त्रिकोण के स्वामी)' : 'The Yog-Kaarak for this ascendant (lord of an angle and a trine)'),
       p && p.nature === 'benefic' && (l === 'hi' ? 'इस लग्न के लिए शुभ ग्रह गिने जाते हैं (स्वामित्व से)' : 'Counted a benefic for this ascendant, by the houses it rules'),
       ...fullOn.filter((o) => P(o) && P(o).nature === 'benefic').map((o) => (l === 'hi' ? `${nm(l, o)} (इस लग्न के शुभ ग्रह) इस भाव को पूर्ण दृष्टि से देखते हैं` : `${nm(l, o)}, a benefic for this ascendant, looks at this house fully`)),
       !isNode && r.includes(h) && !(d && d.good) && (l === 'hi' ? 'अपने ही भाव में बैठे हैं' : 'Sits in a house it rules'),
@@ -324,7 +324,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       const t = passage({
         says: dv.verse, source: BPHS, cite: withBook(dv.citation), kind: 'translation',
         applies: both((l) => {
-          const which = k === running.maha ? (l === 'hi' ? 'महादशा' : 'main period (mahādaśā)') : (l === 'hi' ? 'अन्तर्दशा' : 'sub-period (antardaśā)')
+          const which = k === running.maha ? (l === 'hi' ? 'महादशा' : 'main period (Maha-Dasha)') : (l === 'hi' ? 'अंतर्दशा' : 'sub-period (Antar-Dasha)')
           return l === 'hi' ? `अभी ${nm(l, k)} की ${which} चल रही है। यह श्लोक दशा के स्वामी की स्थिति से दशा का फल बताता है।` : `${nm(l, k)}’s ${which} is running now. This verse judges a period by where its lord stands.`
         }),
       })
@@ -431,7 +431,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       measured: both((l) => occ.map((x) => `${nm(l, x.key)} ${x.degree}°${x.dignity && DIG[x.dignity.state] ? ` · ${DIG[x.dignity.state][l]}` : ''}`)),
       check: [
         { go: 'strength', label: both((l) => (l === 'hi' ? 'हर ग्रह का बल' : 'Each planet’s strength')) },
-        { go: 'bhava', label: both((l) => (l === 'hi' ? 'इस भाव के योग और शास्त्रीय पाठ' : 'The yogas and classical readings for this house')) },
+        { go: 'bhava', label: both((l) => (l === 'hi' ? 'इस भाव के योग और शास्त्रीय पाठ' : 'The Yogs and classical readings for this house')) },
       ],
       texts: [], inference: null, cite: null,
       touch: (th) => Math.max(h === th ? 3 : 0, keys.some((k) => ruled(k).includes(th)) ? 2 : 0),
@@ -444,18 +444,18 @@ export function buildFindings(chart, namer = makeNamer('common')) {
   yogas.forEach((y, i) => {
     findings.push({
       key: `yoga-${i}`, kind: 'yoga', house: null, weight: 44 - i, tag: 'named',
-      title: both(() => y.name),
-      sub: both((l) => (l === 'hi' ? 'योग' : 'yoga')),
-      fact: both((l) => [l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions of ${y.name}.`]),
+      title: both((l) => (l === 'hi' ? y.name : yogaName(y.name))),
+      sub: both((l) => (l === 'hi' ? 'योग' : 'Yog')),
+      fact: both((l) => [l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions of ${yogaName(y.name)}.`]),
       why: both((l) => [l === 'hi'
         ? 'योग ग्रहों की एक नामित स्थिति है। शर्तें पूरी होना एक बात है। वह कितना फल देगा, यह उसे बनाने वाले ग्रहों के बल और उनकी दशा पर निर्भर है।'
-        : 'A yoga is a named arrangement of planets. Meeting its conditions is one thing. How much it gives depends on the strength of the planets that form it and on their periods.']),
+        : 'A Yog is a named arrangement of planets. Meeting its conditions is one thing. How much it gives depends on the strength of the planets that form it and on their periods.']),
       supports: both(() => []), cautions: both(() => []),
       measured: both(() => (y.strength_note ? [y.strength_note] : [])),
-      check: [{ go: 'bhava', label: both((l) => (l === 'hi' ? 'इसे बनाने वाले ग्रह और पूरा योग-पाठ' : 'The planets that form it, and the full yoga reading')) }],
+      check: [{ go: 'bhava', label: both((l) => (l === 'hi' ? 'इसे बनाने वाले ग्रह और पूरा योग-पाठ' : 'The planets that form it, and the full Yog reading')) }],
       texts: y.effect ? [passage({
         says: y.effect, source: { ...BPHS, tier: y.tier || 'sloka' }, cite: y.citation, kind: 'translation',
-        applies: both((l) => (l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions the text gives for ${y.name}.`)),
+        applies: both((l) => (l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions the text gives for ${yogaName(y.name)}.`)),
       })] : [],
       inference: null, cite: y.citation || null,
       touch: () => 0, touchWord: () => '',
@@ -475,7 +475,7 @@ export function rankFindings({ findings, running }, topicKey = 'overall') {
     const order = [running.maha, running.antar].filter(Boolean)
     return findings.filter((f) => f.kind === 'graha' && order.includes(f.graha))
       .sort((x, y) => order.indexOf(x.graha) - order.indexOf(y.graha))
-      .map((f) => ({ f, because: { en: f.graha === running.maha ? 'lord of the main period running now' : 'lord of the sub-period running now', hi: f.graha === running.maha ? 'अभी चल रही महादशा के स्वामी' : 'अभी चल रही अन्तर्दशा के स्वामी' } }))
+      .map((f) => ({ f, because: { en: f.graha === running.maha ? 'lord of the main period running now' : 'lord of the sub-period running now', hi: f.graha === running.maha ? 'अभी चल रही महादशा के स्वामी' : 'अभी चल रही अंतर्दशा के स्वामी' } }))
   }
   return findings
     .map((f) => {

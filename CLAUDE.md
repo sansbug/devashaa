@@ -175,6 +175,28 @@ edited explanation orphans its recording) and the static pages (Compare, Referen
 Methodology, Privacy, Support).
 Before shipping new wording, print it for a real chart and read it.
 
+## The owner's spellings (docs/spelling-list.md, 2026-11-16)
+
+The owner corrected the list in `docs/spelling-list.md`; that file is the record. In OUR
+English text, default name style:
+- Planets: Surya, Chandra, **Mangal**, **Budh**, Guru, **Shukr**, Shani, Rahu, Ketu
+  (`naming.js` + `api/vedic.py`, `dashas.py`, `vimshottari.py`). A chart cast or shared
+  earlier still carries Mangala / Budha / Shukra: `naming.js` reads those as the same grahas.
+- Terms: **Lagn, Nakshatr, Dasha, Maha-Dasha, Antar-Dasha, Vimsottari, Bhaav, Raashi,
+  Mul-Trikon, Yog-Kaarak, Yog**. Stages: **Bal, Kumar**, Yuva, Vriddha, **Passive** (the
+  owner's word for the last stage). Great-person yogas: **Ruchak**, Bhadra, **Hans**,
+  Malavya, **Shush**.
+- ⚠ A yoga's engine name is its KEY (`"Ruchaka"`, `"Gajakesari Yoga"`): match on it, show
+  `yogaName(name)` from `naming.js`. Never rename the key.
+- ⚠ Do not respell by replacing whole quoted strings across the source: `'yoga'` is also a
+  code value. Change the table VALUES, and marked (diacritic) words in prose files.
+- Words that are one part of a longer Sanskrit compound (Bhāva-phala, navāṁśa, lagneśa,
+  pratyantardaśā), the scholarly name style, the texts' passages and the backend's
+  provenance notes keep their marks.
+- Hindi is COMMON Hindi, not scholarly: a nasal joined to a consonant of its own class is
+  the anusvāra (मंगल, चंद्र, अंतर्दशा, केंद्र, कुंभ, पंचांग, ग्रंथ, संबंध). Not applied to the
+  Pūjā section, the texts' translations, or a regular expression matching Hindi from elsewhere.
+
 ## Chart findings (the simple view's "What would you like to understand?")
 
 `web/src/findings.js` builds them from the chart payload alone; `Findings.jsx` shows them;

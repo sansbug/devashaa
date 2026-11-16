@@ -2,10 +2,10 @@
  * Name styles. The API returns every name in three Latin forms; this picks one,
  * or renders a fourth — Devanāgarī — from tables here.
  *
- *   common      — ordinary spelling people actually write:         Chandra, Mesh
+ *   common      — ordinary spelling people actually write:         Chandra, Mesh, Mangal
  *   iast        — scholarly transliteration with diacritics:       Candra, Meṣa
  *   english     — plain English equivalents:                       Moon, Aries
- *   devanagari  — Devanāgarī script (the Hindi/Sanskrit default):  चन्द्र, मेष
+ *   devanagari  — Devanāgarī script (the Hindi/Sanskrit default):  चंद्र, मेष
  *
  * Nakṣatras and their deities have no English equivalents, so those fall back to
  * the common spelling under the "english" style. The API carries no Devanāgarī
@@ -18,7 +18,7 @@ export const NAME_STYLES = [
   { key: 'common', label: 'Sanskrit', example: 'Chandra · Mesh' },
   { key: 'iast', label: 'Sanskrit (IAST)', example: 'Candra · Meṣa' },
   { key: 'english', label: 'English', example: 'Moon · Aries' },
-  { key: 'devanagari', label: 'देवनागरी', example: 'चन्द्र · मेष' },
+  { key: 'devanagari', label: 'देवनागरी', example: 'चंद्र · मेष' },
 ]
 
 const RASIS = {
@@ -29,7 +29,7 @@ const RASIS = {
   english: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
             'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
   devanagari: ['मेष', 'वृषभ', 'मिथुन', 'कर्क', 'सिंह', 'कन्या',
-               'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुम्भ', 'मीन'],
+               'तुला', 'वृश्चिक', 'धनु', 'मकर', 'कुंभ', 'मीन'],
 }
 
 /** Graha display names by KEY. The chart endpoint returns whole graha objects
@@ -38,8 +38,8 @@ const RASIS = {
  *  describing a placement — so those need this table. Order is the canonical
  *  Sūrya→Ketu, not alphabetical. */
 const GRAHAS = {
-  common: { sun: 'Surya', moon: 'Chandra', mars: 'Mangala', mercury: 'Budha',
-            jupiter: 'Guru', venus: 'Shukra', saturn: 'Shani',
+  common: { sun: 'Surya', moon: 'Chandra', mars: 'Mangal', mercury: 'Budh',
+            jupiter: 'Guru', venus: 'Shukr', saturn: 'Shani',
             rahu: 'Rahu', ketu: 'Ketu' },
   iast: { sun: 'Sūrya', moon: 'Candra', mars: 'Maṅgala', mercury: 'Budha',
           jupiter: 'Guru', venus: 'Śukra', saturn: 'Śani',
@@ -47,7 +47,7 @@ const GRAHAS = {
   english: { sun: 'Sun', moon: 'Moon', mars: 'Mars', mercury: 'Mercury',
              jupiter: 'Jupiter', venus: 'Venus', saturn: 'Saturn',
              rahu: 'Rāhu', ketu: 'Ketu' },   // the nodes have no English names
-  devanagari: { sun: 'सूर्य', moon: 'चन्द्र', mars: 'मङ्गल', mercury: 'बुध',
+  devanagari: { sun: 'सूर्य', moon: 'चंद्र', mars: 'मंगल', mercury: 'बुध',
                 jupiter: 'गुरु', venus: 'शुक्र', saturn: 'शनि',
                 rahu: 'राहु', ketu: 'केतु' },
 }
@@ -68,12 +68,12 @@ const NAK_DEV = {
  *  parentheticals preserved so the rendered value matches the Latin one. */
 const DEITY_DEV = {
   'Dastra (Ashwini Kumara)': 'दस्र (अश्विनीकुमार)', 'Yama': 'यम', 'Agni': 'अग्नि',
-  'Brahma': 'ब्रह्मा', 'Chandra': 'चन्द्र', 'Isha (Rudra)': 'ईश (रुद्र)', 'Aditi': 'अदिति',
+  'Brahma': 'ब्रह्मा', 'Chandra': 'चंद्र', 'Isha (Rudra)': 'ईश (रुद्र)', 'Aditi': 'अदिति',
   'Jiva (Brihaspati)': 'जीव (बृहस्पति)', 'Ahi (Sarpa)': 'अहि (सर्प)', 'Pitara': 'पितर',
   'Bhaga': 'भग', 'Aryama': 'अर्यमा', 'Surya': 'सूर्य', 'Tvashta': 'त्वष्टा', 'Marut': 'मरुत्',
-  'Shakragni': 'शक्राग्नि', 'Mitra': 'मित्र', 'Vasava (Indra)': 'वासव (इन्द्र)',
+  'Shakragni': 'शक्राग्नि', 'Mitra': 'मित्र', 'Vasava (Indra)': 'वासव (इंद्र)',
   'Rakshasa (Nirriti)': 'राक्षस (निरृति)', 'Varuna': 'वरुण', 'Vishvadeva': 'विश्वदेव',
-  'Govinda (Vishnu)': 'गोविन्द (विष्णु)', 'Vasu': 'वसु', 'Ajapa': 'अजैकपाद',
+  'Govinda (Vishnu)': 'गोविंद (विष्णु)', 'Vasu': 'वसु', 'Ajapa': 'अजैकपाद',
   'Ahirbudhanya': 'अहिर्बुध्न्य', 'Pusha': 'पूषा',
 }
 
@@ -83,6 +83,13 @@ const RASI_DEV_BY_COMMON = Object.fromEntries(
   RASIS.common.map((n, i) => [n, RASIS.devanagari[i]]))
 const GRAHA_DEV_BY_COMMON = Object.fromEntries(
   Object.entries(GRAHAS.common).map(([k, n]) => [n, GRAHAS.devanagari[k]]))
+/** The API's common spelling → graha key. A chart cast or shared before the owner's respelling of 2026-11-16
+ *  still carries Mangala / Budha / Shukra: those are read as the same grahas and shown in today's spelling. */
+const GRAHA_KEY_BY_COMMON = {
+  ...Object.fromEntries(Object.entries(GRAHAS.common).map(([k, n]) => [n, k])),
+  Mangala: 'mars', Budha: 'mercury', Shukra: 'venus',
+}
+for (const [old, k] of [['Mangala', 'mars'], ['Budha', 'mercury'], ['Shukra', 'venus']]) GRAHA_DEV_BY_COMMON[old] = GRAHAS.devanagari[k]
 
 /** Field suffix on the API objects for a given style (Devanāgarī has no field). */
 const SUFFIX = { common: '', iast: '_iast', english: '_en' }
@@ -99,15 +106,15 @@ export function makeNamer(style = 'common') {
 
   return {
     style,
-    /** Graha display name, e.g. Chandra / Candra / Moon / चन्द्र. */
+    /** Graha display name, e.g. Chandra / Candra / Moon / चंद्र. */
     graha: (g) => (dev ? (GRAHAS.devanagari[g?.key] ?? GRAHA_DEV_BY_COMMON[g?.name] ?? pick(g, 'name'))
-                       : pick(g, 'name')),
+                       : (style === 'common' && GRAHAS.common[g?.key]) || pick(g, 'name')),
     /** The rāśi a graha occupies. */
     grahaRasi: (g) => (dev ? (RASIS.devanagari[g?.rasi] ?? RASI_DEV_BY_COMMON[g?.rasi_name] ?? pick(g, 'rasi_name'))
                            : pick(g, 'rasi_name')),
     /** Lord of the rāśi a graha occupies. */
     rasiLord: (g) => (dev ? (GRAHA_DEV_BY_COMMON[g?.rasi_lord] ?? pick(g, 'rasi_lord'))
-                          : pick(g, 'rasi_lord')),
+                          : (style === 'common' && GRAHAS.common[GRAHA_KEY_BY_COMMON[g?.rasi_lord]]) || pick(g, 'rasi_lord')),
     /** Rāśi by zodiac index 0-11 (charts index by sign, not by graha). */
     rasi: (i) => (RASIS[style] || RASIS.common)[i],
     /** The rāśi with its English name in brackets — "Singh (Leo)" — for running
@@ -129,3 +136,10 @@ export function makeNamer(style = 'common') {
                        : (style === 'iast' ? n?.deity_iast : n?.deity)),
   }
 }
+
+/** A yoga's name as the reader sees it, in the owner's spelling (2026-11-16): "Yog", Ruchak, Hans, Shush. The
+ *  engine's own name is its key and is never changed: match on that, show this. */
+const YOGA_SHOWN = { Ruchaka: 'Ruchak', Hamsa: 'Hans', Sasa: 'Shush' }
+export const yogaName = (name) => String(name || '')
+  .replace(/\b(Ruchaka|Hamsa|Sasa)\b/g, (m) => YOGA_SHOWN[m])
+  .replace(/\bYoga\b/g, 'Yog').replace(/\byoga\b/g, 'Yog')

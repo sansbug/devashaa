@@ -148,7 +148,7 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
       </div>
 
       <p className="dasha-note">
-        Jaimini Chara Daśā<span className="src"> · {chara.citation}. Lengths validated against the
+        Jaimini Chara Dasha<span className="src"> · {chara.citation}. Lengths validated against the
         source’s worked examples. The sequence direction is user-selected, not
         sourced (book Ch.3)</span>. {chara.rejections?.[0]}
       </p>

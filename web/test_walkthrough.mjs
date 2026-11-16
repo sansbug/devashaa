@@ -11,7 +11,7 @@
  * Run:  node test_walkthrough.mjs   (with the local API on :5174 it also walks the reference chart)
  */
 import { buildWalkthrough, spokenScript, readSeconds, CARE, HOUSE, NATURE, OURS } from './src/walkthrough.js'
-import { makeNamer } from './src/naming.js'
+import { makeNamer, yogaName } from './src/naming.js'
 import { snapshotOf } from './src/shareCodec.js'
 
 let failed = 0
@@ -44,7 +44,7 @@ function checks(label, chart, namer) {
   ok(`${label}: a rule shown behind the click is the chart's own rule, word for word, and carries no care-sensitive verdict`,
     shown.every((s) => { const b = bh.find((x) => `house${x.house}` === s.key); return b && s.text.en.quote === b.lord_rule.effect && !CARE.en.test(s.text.en.quote) && !CARE.hi.test(s.text.en.quote) }),
     `${shown.length} of ${rules.length} shown`)
-  ok(`${label}: a rule held back says where to read it`, steps.filter((s) => s.text && !s.text.en.quote).every((s) => /Bhāvas/.test(s.text.en.note) && /भाव व योग/.test(s.text.hi.note)))
+  ok(`${label}: a rule held back says where to read it`, steps.filter((s) => s.text && !s.text.en.quote).every((s) => /Bhaavs/.test(s.text.en.note) && /भाव व योग/.test(s.text.hi.note)))
   const grahas = new Set(chart.grahas.map((x) => x.key))
   ok(`${label}: every house it lights is a house, every graha the chart's, every line joins two houses`,
     steps.every((s) => s.focus.houses.every((h) => h >= 1 && h <= 12) && s.focus.grahas.every((k) => KEYS.includes(k) && grahas.has(k))
@@ -100,14 +100,15 @@ function checks(label, chart, namer) {
   ok(`${label}: each planet topic states the chart's own sign, house and degree`,
     ps.every((s) => { const x = g(s.key.slice(6)); return s.focus.main === x.bhava && s.lines.en[0].includes(`in your ${EN_ORD(x.bhava)} house`) && s.title.en.includes(`${Math.floor(x.degree)}°`) && s.lines.en[0].includes(namer.rasi(x.rasi)) }))
   const sig = (k) => ((chart.analysis.grahas && chart.analysis.grahas[k]) || []).find((x) => x.name === 'baladi')
-  const STAGES = { bala: 'Bala', kumara: 'Kumara', yuva: 'Yuva', vriddha: 'Vriddha', mrita: 'Mrita' }
+  // the owner's spellings (docs/spelling-list.md, 2026-11-16): Bal, Kumar, and "Passive" for the last stage
+  const STAGES = { bala: 'Bal', kumara: 'Kumar', yuva: 'Yuva', vriddha: 'Vriddha', mrita: 'Passive' }
   ok(`${label}: the stage named is the engine's, and there is none where the chart carries none`,
     ps.every((s) => { const v = sig(s.key.slice(6)), ln = s.lines.en.find((x) => /stage/.test(x)); return v ? !!ln && ln.includes(`the ${STAGES[v.value]} stage`) : !ln }))
   ok(`${label}: a node gets no sign-strength line and no yoga line`,
-    ps.filter((s) => /rahu|ketu/.test(s.key)).every((s) => !s.lines.en.some((x) => /sign (of|for)|exalted in|debilitated in|Yoga/.test(x))))
+    ps.filter((s) => /rahu|ketu/.test(s.key)).every((s) => !s.lines.en.some((x) => /sign (of|for)|exalted in|debilitated in|\bYog\b/.test(x))))
   const det = (chart.analysis.yogas && chart.analysis.yogas.detected) || []
   ok(`${label}: a planet is said to form a yoga only when the engine detected it`,
-    ps.every((s) => s.lines.en.filter((x) => / forms [A-Z]\w+ Yoga/.test(x)).every((x) => det.some((y) => x.includes(String(y.name).split(' ')[0])))))
+    ps.every((s) => s.lines.en.filter((x) => / forms [A-Z]\w+ Yog\b/.test(x)).every((x) => det.some((y) => x.includes(yogaName(String(y.name).split(' ')[0]))))))
   ok(`${label}: the timing topic is there exactly when the chart has a daśā`, keys.includes('now') === !!(chart.dasha && chart.dasha.variants))
   ok(`${label}: a topic stays at least eight seconds on screen`, steps.every((s) => readSeconds(s.say.en) >= 8))
   ok(`${label}: the spoken script is one paragraph a topic`, spokenScript(steps, 'en').split('\n\n').length === steps.length && spokenScript(steps, 'hi').split('\n\n').length === steps.length)

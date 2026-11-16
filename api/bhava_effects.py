@@ -197,14 +197,14 @@ def v12_1_2(c):
         out.append(C(ADV, [l], w_state(l, "in an enemy's sign", "शत्रु की राशि में")))
     b = [g for g in c.ben(c.rasi) if c.kt(g)]
     if b:
-        out.append(C(FAV, b, (f"a benefic is in an angle or a trine: {_gs(b)}", f"केन्द्र/त्रिकोण में शुभ ग्रह: {_gs(b, True)}")))
+        out.append(C(FAV, b, (f"a benefic is in an angle or a trine: {_gs(b)}", f"केंद्र/त्रिकोण में शुभ ग्रह: {_gs(b, True)}")))
     return out
 
 
 def v12_3(c):
     out = []
     for label_en, label_hi, sign, occ in (("your ascendant", "आपका लग्न", c.lagna, c.occ(1)),
-                                          ("your Moon", "आपका चन्द्र", c.rasi.get("moon"), c.with_("moon") if "moon" in c.rasi else [])):
+                                          ("your Moon", "आपका चंद्र", c.rasi.get("moon"), c.with_("moon") if "moon" in c.rasi else [])):
         if sign is None:
             continue
         asp = c._asp.get(sign, set())
@@ -234,14 +234,14 @@ def v12_5_7(c):
     who = [g for g in dict.fromkeys([l, "mercury", "jupiter", "venus"]) if g in c.rasi and c.kt(g)]
     if who:
         out.append(C(FAV, who, (f"{_gs(who)} {'is' if len(who) == 1 else 'are'} in an angle or a trine (the ascendant lord here is {_g(l)})",
-                                f"{_gs(who, True)} केन्द्र/त्रिकोण में हैं (यहाँ लग्नेश {_g(l)} हैं)")))
+                                f"{_gs(who, True)} केंद्र/त्रिकोण में हैं (यहाँ लग्नेश {_g(l)} हैं)")))
     a = c.ben(c.asp_graha(l))
     if c.rasi[l] in MOVABLE and a:
         out.append(C(FAV, [l, *a], (f"the ascendant lord {_g(l)} is in a movable sign", f"लग्नेश {_g(l)} चर राशि में हैं"), w_asp_graha(l, a)))
     bjv = [g for g in ("mercury", "jupiter", "venus") if g in c.rasi]
     k = [g for g in bjv if c.house[g] in KENDRA]
     if k:
-        out.append(C(FAV, k, (f"{_gs(k)} {'is' if len(k) == 1 else 'are'} in an angle from the ascendant", f"{_gs(k, True)} लग्न से केन्द्र में हैं")))
+        out.append(C(FAV, k, (f"{_gs(k)} {'is' if len(k) == 1 else 'are'} in an angle from the ascendant", f"{_gs(k, True)} लग्न से केंद्र में हैं")))
     return out
 
 
@@ -277,7 +277,7 @@ def v14_5_6(c):
         out.append(C(ADV, [l, "mars"], w_in(sorted({l, "mars"}), 8)))
     good = [g for g in dict.fromkeys(["mars", l]) if c.kt(g)]
     if good:
-        out.append(C(FAV, good, (f"{_gs(good)} {'is' if len(good) == 1 else 'are'} in an angle or a trine", f"{_gs(good, True)} केन्द्र/त्रिकोण में हैं")))
+        out.append(C(FAV, good, (f"{_gs(good)} {'is' if len(good) == 1 else 'are'} in an angle or a trine", f"{_gs(good, True)} केंद्र/त्रिकोण में हैं")))
     return out
 
 
@@ -297,7 +297,7 @@ def v15_4(c):
     l4, l10 = c.lord(4), c.lord(10)
     if l4 != l10 and c.rasi[l4] == c.rasi[l10] and c.kt(l4):
         return [C(FAV, [l4, l10], (f"your 10th lord {_g(l10)} joins your 4th lord {_g(l4)} in your {_ord(c.house[l4])} house, an angle or a trine",
-                                   f"आपके दसवें भाव के स्वामी {_g(l10)} और चौथे के स्वामी {_g(l4)} {HI_ORD[c.house[l4]]} भाव (केन्द्र/त्रिकोण) में साथ हैं"))]
+                                   f"आपके दसवें भाव के स्वामी {_g(l10)} और चौथे के स्वामी {_g(l4)} {HI_ORD[c.house[l4]]} भाव (केंद्र/त्रिकोण) में साथ हैं"))]
     return []
 
 
@@ -312,7 +312,7 @@ def v15_5(c):
 def v15_7(c):
     l4 = c.lord(4)
     if c.house[l4] in KENDRA and c.house["venus"] in KENDRA and c.exalted("mercury"):
-        return [C(FAV, [l4, "venus", "mercury"], w_lord_in(4, l4, c.house[l4]), (f"{_g('venus')} is in an angle", f"{_g('venus')} केन्द्र में हैं"), w_state("mercury", "exalted", "उच्च के"))]
+        return [C(FAV, [l4, "venus", "mercury"], w_lord_in(4, l4, c.house[l4]), (f"{_g('venus')} is in an angle", f"{_g('venus')} केंद्र में हैं"), w_state("mercury", "exalted", "उच्च के"))]
     return []
 
 
@@ -334,7 +334,7 @@ def v16_1_3(c):
     ok = lambda g: c.own(g) or c.kt(g)
     if ok(l1) and ok(l5):
         out.append(C(FAV, [l1, l5], (f"the lords of your ascendant ({_g(l1)}) and your 5th ({_g(l5)}) are each in own sign, an angle or a trine",
-                                     f"लग्नेश ({_g(l1)}) और पंचमेश ({_g(l5)}) दोनों स्वराशि या केन्द्र/त्रिकोण में हैं")))
+                                     f"लग्नेश ({_g(l1)}) और पंचमेश ({_g(l5)}) दोनों स्वराशि या केंद्र/त्रिकोण में हैं")))
     if c.house[l5] in DUSTHANA:
         out.append(C(ADV, [l5], w_lord_in(5, l5, c.house[l5])))
     return out
@@ -430,7 +430,7 @@ def v20_31(c):
 
 def v21_3(c):
     if "rahu" in c.house and (c.house["rahu"] in KENDRA or c.house["rahu"] in TRIKONA):
-        return [C(FAV, ["rahu"], (f"{_g('rahu')} is in your {_ord(c.house['rahu'])} house, an angle or a trine", f"{_g('rahu')} आपके {HI_ORD[c.house['rahu']]} भाव (केन्द्र/त्रिकोण) में हैं"))]
+        return [C(FAV, ["rahu"], (f"{_g('rahu')} is in your {_ord(c.house['rahu'])} house, an angle or a trine", f"{_g('rahu')} आपके {HI_ORD[c.house['rahu']]} भाव (केंद्र/त्रिकोण) में हैं"))]
     return []
 
 
@@ -470,7 +470,7 @@ def v21_8_10(c):
         if c.house[l11] == 10 and c.house[l10] == 1:
             out.append(C(FAV, [l10, l11], w_lord_in(11, l11, 10), w_lord_in(10, l10, 1)))
         elif c.rasi[l10] == c.rasi[l11] and c.house[l10] in KENDRA:
-            out.append(C(FAV, [l10, l11], (f"your 10th and 11th lords ({_g(l10)}, {_g(l11)}) are together in an angle", f"दसवें और ग्यारहवें भाव के स्वामी ({_g(l10)}, {_g(l11)}) केन्द्र में साथ हैं")))
+            out.append(C(FAV, [l10, l11], (f"your 10th and 11th lords ({_g(l10)}, {_g(l11)}) are together in an angle", f"दसवें और ग्यारहवें भाव के स्वामी ({_g(l10)}, {_g(l11)}) केंद्र में साथ हैं")))
     return out
 
 
@@ -496,7 +496,7 @@ def v21_14(c):
 def v21_15(c):
     l10, l1 = c.lord(10), c.lord(1)
     if l10 != l1 and c.house[l10] == 1 and c.house[l1] == 1 and c.kt("moon"):
-        return [C(FAV, [l10, l1, "moon"], w_in(sorted({l10, l1}), 1), (f"{_g('moon')} is in an angle or a trine", f"{_g('moon')} केन्द्र/त्रिकोण में हैं"))]
+        return [C(FAV, [l10, l1, "moon"], w_in(sorted({l10, l1}), 1), (f"{_g('moon')} is in an angle or a trine", f"{_g('moon')} केंद्र/त्रिकोण में हैं"))]
     return []
 
 

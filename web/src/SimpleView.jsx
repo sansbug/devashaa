@@ -50,19 +50,19 @@ export function chartTiles(chart, namer, t) {
   const out = [{
     label: t('sv.asc', 'Ascendant'),
     value: namer.rasiFull(chart.lagna_rasi),
-    sub: `${t('sv.asc.sub', 'Lagna')}`,
+    sub: `${t('sv.asc.sub', 'Lagn')}`,
   }]
   if (moon) {
     out.push({
       label: t('sv.moon', 'Moon sign'),
       value: namer.rasiFull(moon.rasi),
-      sub: `${t('sv.moon.sub', 'Janma rāśi')}`,
+      sub: `${t('sv.moon.sub', 'Janma Raashi')}`,
     })
     if (moon.nakshatra) {
       out.push({
         label: t('sv.star', 'Birth star'),
         value: namer.nakshatra(moon.nakshatra),
-        sub: `${t('sv.star.sub', 'Nakṣatra')} · ${t('deck.pada', 'pada')} ${moon.nakshatra.pada}`,
+        sub: `${t('sv.star.sub', 'Nakshatr')} · ${t('deck.pada', 'pada')} ${moon.nakshatra.pada}`,
       })
     }
   }
@@ -73,9 +73,9 @@ export function chartTiles(chart, namer, t) {
 export function LandingHero({ namer, nakNames }) {
   const { t } = useLang()
   const example = [
-    { label: t('sv.asc', 'Ascendant'), value: namer.rasiFull(4), sub: t('sv.asc.sub', 'Lagna') },
-    { label: t('sv.moon', 'Moon sign'), value: namer.rasiFull(1), sub: t('sv.moon.sub', 'Janma rāśi') },
-    { label: t('sv.star', 'Birth star'), value: namer.nakshatra(nakNames[3]), sub: t('sv.star.sub', 'Nakṣatra') },
+    { label: t('sv.asc', 'Ascendant'), value: namer.rasiFull(4), sub: t('sv.asc.sub', 'Lagn') },
+    { label: t('sv.moon', 'Moon sign'), value: namer.rasiFull(1), sub: t('sv.moon.sub', 'Janma Raashi') },
+    { label: t('sv.star', 'Birth star'), value: namer.nakshatra(nakNames[3]), sub: t('sv.star.sub', 'Nakshatr') },
   ]
   return (
     <div className="sv-hero">
@@ -94,9 +94,9 @@ export function RunningCard({ running, namer, onMore }) {
   if (!running) return null
   return (
     <section className="dk-card sv-run">
-      <h4 className="dk-head"><span>{t('sv.run.title', 'Your current Daśā timelines')}</span></h4>
+      <h4 className="dk-head"><span>{t('sv.run.title', 'Your current Dasha timelines')}</span></h4>
       <div className="dk-body">
-        <p className="sv-note">{t('sv.run.note', 'Vedic astrology divides a life into planetary periods (daśā). These are the ones running today.')}</p>
+        <p className="sv-note">{t('sv.run.note', 'Vedic astrology divides a life into planetary periods (Dasha). These are the ones running today.')}</p>
         {running.levels.map((l) => (
           <div className="sv-run-row" key={l.code}>
             <Bubble lord={l.lord} size="m" />
@@ -128,7 +128,7 @@ export function FullCta({ onFull }) {
     <section className="sv-cta">
       <div>
         <h3>{t('sv.cta.title', 'There is much more in this chart')}</h3>
-        <p>{t('sv.cta.body', 'Planetary positions and strengths, houses and yogas, the daśā timeline, the yearly chart, all sixteen divisional charts and the classical readings.')}</p>
+        <p>{t('sv.cta.body', 'Planetary positions and strengths, houses and yogas, the Dasha timeline, the yearly chart, all sixteen divisional charts and the classical readings.')}</p>
       </div>
       <button type="button" className="go" onClick={onFull}>{t('sv.cta.go', 'Open the full analysis →')}</button>
     </section>
@@ -246,11 +246,11 @@ export function WhoCard({ chart, namer, refs }) {
         </div>
         {ch.moon && (
           <div className="sv-who-block">
-            <h5>{W('Your Moon sign', 'आपकी चन्द्र राशि')}: {sign(ch.moon.sign)}</h5>
+            <h5>{W('Your Moon sign', 'आपकी चंद्र राशि')}: {sign(ch.moon.sign)}</h5>
             {same
-              ? <p className="sv-note">{W('Your Moon is in your rising sign, so the same description applies twice over.', 'आपका चन्द्र लग्न की ही राशि में है, इसलिए वही वर्णन दोहरा लागू होता है।')}</p>
+              ? <p className="sv-note">{W('Your Moon is in your rising sign, so the same description applies twice over.', 'आपका चंद्र लग्न की ही राशि में है, इसलिए वही वर्णन दोहरा लागू होता है।')}</p>
               : <blockquote>{ch.moon.gist}</blockquote>}
-            <p className="fd-attr">{refs && <b>{attr(ch.moon)} · </b>}<span>{W('The description of a rising sign is applied to the Moon’s sign as well.', 'लग्न की राशि का वर्णन चन्द्र की राशि पर भी लागू किया जाता है।')}{refs && ch.moon.basis ? ` (${ch.moon.basis.citation})` : ''}</span></p>
+            <p className="fd-attr">{refs && <b>{attr(ch.moon)} · </b>}<span>{W('The description of a rising sign is applied to the Moon’s sign as well.', 'लग्न की राशि का वर्णन चंद्र की राशि पर भी लागू किया जाता है।')}{refs && ch.moon.basis ? ` (${ch.moon.basis.citation})` : ''}</span></p>
             {moonRows.map((r, i) => (
               <div key={i} className="sv-who-more">
                 <blockquote>{r.gist}</blockquote>

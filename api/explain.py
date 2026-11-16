@@ -59,7 +59,7 @@ _GRAHA_ALIASES.update({
     "mangala": "mars", "mangal": "mars", "kuja": "mars", "angaraka": "mars",
     "budha": "mercury", "budh": "mercury",
     "guru": "jupiter", "brihaspati": "jupiter", "brhaspati": "jupiter",
-    "shukra": "venus", "sukra": "venus",
+    "shukra": "venus", "shukr": "venus", "sukra": "venus",
     "shani": "saturn", "sani": "saturn", "manda": "saturn",
 })
 _GRAHA_COMPOUND = {"northnode": "rahu", "dragonshead": "rahu", "dragonhead": "rahu",

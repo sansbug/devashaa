@@ -406,7 +406,7 @@ export default function SkyWheelChart({
           <polygon points={`${ascX - 12},${ascY - 6} ${ascX - 12},${ascY + 6} ${ascX - 2},${ascY}`} />
           <text x={ascX - 16} y={ascY - 8} textAnchor="end">
             <title>{`Lagna — ${namer.rasi(lagnaRasi)} ${(ascLon % 30).toFixed(2)}°`}</title>
-            {namer.style === 'devanagari' ? 'लग्न' : 'Lagna'} {Math.floor(ascLon % 30)}°
+            {namer.style === 'devanagari' ? 'लग्न' : 'Lagn'} {Math.floor(ascLon % 30)}°
           </text>
         </g>
 

@@ -6,7 +6,7 @@ import { useLang } from './LangContext.jsx'
 
 const LANGS = [
   { key: 'en', label: 'English', short: 'EN' },
-  { key: 'hi', label: 'हिन्दी', short: 'हिं' },
+  { key: 'hi', label: 'हिंदी', short: 'हिं' },
 ]
 
 /** The language switch is always in reach; theme and name style sit behind one

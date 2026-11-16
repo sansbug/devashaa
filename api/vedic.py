@@ -67,8 +67,8 @@ RASIS_EN = [
     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
 ]
 RASI_LORDS = [
-    "Mangala", "Shukra", "Budha", "Chandra", "Surya", "Budha",
-    "Shukra", "Mangala", "Guru", "Shani", "Shani", "Guru",
+    "Mangal", "Shukr", "Budh", "Chandra", "Surya", "Budh",
+    "Shukr", "Mangal", "Guru", "Shani", "Shani", "Guru",
 ]
 RASI_LORDS_IAST = [
     "Maṅgala", "Śukra", "Budha", "Candra", "Sūrya", "Budha",
@@ -84,10 +84,10 @@ RASI_LORDS_EN = [
 GRAHAS = [
     ("sun",     "Surya",   "Sūrya",   "Sun",     "☉", swe.SUN),
     ("moon",    "Chandra", "Candra",  "Moon",    "☽", swe.MOON),
-    ("mars",    "Mangala", "Maṅgala", "Mars",    "♂", swe.MARS),
-    ("mercury", "Budha",   "Budha",   "Mercury", "☿", swe.MERCURY),
+    ("mars",    "Mangal",  "Maṅgala", "Mars",    "♂", swe.MARS),
+    ("mercury", "Budh",    "Budha",   "Mercury", "☿", swe.MERCURY),
     ("jupiter", "Guru",    "Guru",    "Jupiter", "♃", swe.JUPITER),
-    ("venus",   "Shukra",  "Śukra",   "Venus",   "♀", swe.VENUS),
+    ("venus",   "Shukr",   "Śukra",   "Venus",   "♀", swe.VENUS),
     ("saturn",  "Shani",   "Śani",    "Saturn",  "♄", swe.SATURN),
     ("rahu",    "Rahu",    "Rāhu",    "Rahu",    "☊", swe.MEAN_NODE),
     ("ketu",    "Ketu",    "Ketu",    "Ketu",    "☋", None),  # = Rahu + 180°

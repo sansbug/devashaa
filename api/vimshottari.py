@@ -28,14 +28,14 @@ import swisseph as swe
 # common spelling, matching vedic.py's "common" system.
 VIMSHOTTARI: list[tuple[str, str, int]] = [
     ("ketu",    "Ketu",    7),
-    ("venus",   "Shukra",  20),
+    ("venus",   "Shukr",  20),
     ("sun",     "Surya",   6),
     ("moon",    "Chandra", 10),
-    ("mars",    "Mangala", 7),
+    ("mars",    "Mangal", 7),
     ("rahu",    "Rahu",    18),
     ("jupiter", "Guru",    16),
     ("saturn",  "Shani",   19),
-    ("mercury", "Budha",   17),
+    ("mercury", "Budh",   17),
 ]
 TOTAL_YEARS = 120
 

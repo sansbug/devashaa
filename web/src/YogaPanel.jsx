@@ -9,6 +9,7 @@
  * effect, never asserted as fate.
  */
 import { useLang } from './LangContext.jsx'
+import { yogaName } from './naming.js'
 
 const FAMILY = {
   nabhasa: 'Nābhasa', mahapurusha: 'Mahāpuruṣa', lunar: 'yoga.family.lunar',
@@ -51,9 +52,9 @@ export default function YogaPanel({ data, namer }) {
     <section className="table-panel yoga-panel" id="rg-yoga">
       <h3>{t('yoga.title')}</h3>
       <p className="rc-note">
-        {dt.length} of {data.catalogued} catalogued BPHS yogas are present. A yoga is
+        {dt.length} of {data.catalogued} catalogued BPHS Yogs are present. A Yog is
         listed only when its geometric condition is met. The effect is the cited
-        śloka, not a fated prediction. There is no per-yoga score.{' '}
+        śloka, not a fated prediction. There is no per-Yog score.{' '}
         {data.strength_resolved
           ? t('yoga.note.resolved')
           : t('yoga.note.unresolved')}
@@ -67,7 +68,7 @@ export default function YogaPanel({ data, namer }) {
                  className={`yoga-card fam-${y.family}`
                    + (y.strength && !y.strength.fructifies ? ' yoga-dormant' : '')}>
               <div className="yoga-head">
-                <span className="yoga-name">{y.name}</span>
+                <span className="yoga-name">{yogaName(y.name)}</span>
                 <span className="yoga-fam">{t(FAMILY[y.family] || y.family)}</span>
                 {y.computability === 'strength_gated' && !y.strength && (
                   <span className="yoga-sg" title={y.strength_note || t('yoga.sg.title')}>

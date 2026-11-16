@@ -81,9 +81,9 @@ class DashaSystem:
 SYSTEMS: dict[str, DashaSystem] = {
     "vimshottari": DashaSystem(
         key="vimshottari", name="Viṁśottarī",
-        lords=(("ketu", "Ketu", 7), ("venus", "Shukra", 20), ("sun", "Surya", 6),
-               ("moon", "Chandra", 10), ("mars", "Mangala", 7), ("rahu", "Rahu", 18),
-               ("jupiter", "Guru", 16), ("saturn", "Shani", 19), ("mercury", "Budha", 17)),
+        lords=(("ketu", "Ketu", 7), ("venus", "Shukr", 20), ("sun", "Surya", 6),
+               ("moon", "Chandra", 10), ("mars", "Mangal", 7), ("rahu", "Rahu", 18),
+               ("jupiter", "Guru", 16), ("saturn", "Shani", 19), ("mercury", "Budh", 17)),
         ref_nakshatra=NAK["ashwini"],
         citation="BPHS Vol II ch.46 vv.12-16",
         example=(NAK["mrigasira"], "mars"),   # Mṛgaśira → Mars (v.16 note)
@@ -91,9 +91,9 @@ SYSTEMS: dict[str, DashaSystem] = {
     ),
     "shodasottari": DashaSystem(
         key="shodasottari", name="Ṣoḍaśottarī",
-        lords=(("sun", "Surya", 11), ("mars", "Mangala", 12), ("jupiter", "Guru", 13),
+        lords=(("sun", "Surya", 11), ("mars", "Mangal", 12), ("jupiter", "Guru", 13),
                ("saturn", "Shani", 14), ("ketu", "Ketu", 15), ("moon", "Chandra", 16),
-               ("mercury", "Budha", 17), ("venus", "Shukra", 18)),
+               ("mercury", "Budh", 17), ("venus", "Shukr", 18)),
         ref_nakshatra=NAK["pushya"],
         citation="BPHS Vol II ch.46 vv.24-26",
         example=(NAK["rohini"], "venus"),     # Rohiṇī → Venus (worked example p.27)
@@ -103,7 +103,7 @@ SYSTEMS: dict[str, DashaSystem] = {
     "dwadasottari": DashaSystem(
         key="dwadasottari", name="Dvādaśottarī",
         lords=(("sun", "Surya", 7), ("jupiter", "Guru", 9), ("ketu", "Ketu", 11),
-               ("mercury", "Budha", 13), ("rahu", "Rahu", 15), ("mars", "Mangala", 17),
+               ("mercury", "Budh", 13), ("rahu", "Rahu", 15), ("mars", "Mangal", 17),
                ("saturn", "Shani", 19), ("moon", "Chandra", 21)),
         ref_nakshatra=NAK["revati"],
         citation="BPHS Vol II ch.46 vv.27-28",
@@ -112,8 +112,8 @@ SYSTEMS: dict[str, DashaSystem] = {
     ),
     "panchottari": DashaSystem(
         key="panchottari", name="Pañcottarī",
-        lords=(("sun", "Surya", 12), ("mercury", "Budha", 13), ("saturn", "Shani", 14),
-               ("mars", "Mangala", 15), ("venus", "Shukra", 16), ("moon", "Chandra", 17),
+        lords=(("sun", "Surya", 12), ("mercury", "Budh", 13), ("saturn", "Shani", 14),
+               ("mars", "Mangal", 15), ("venus", "Shukr", 16), ("moon", "Chandra", 17),
                ("jupiter", "Guru", 18)),
         ref_nakshatra=NAK["anuradha"],
         citation="BPHS Vol II ch.46 vv.29-31",
@@ -122,8 +122,8 @@ SYSTEMS: dict[str, DashaSystem] = {
     ),
     "shatabdika": DashaSystem(
         key="shatabdika", name="Śatābdikā",
-        lords=(("sun", "Surya", 5), ("moon", "Chandra", 5), ("venus", "Shukra", 10),
-               ("mercury", "Budha", 10), ("jupiter", "Guru", 20), ("mars", "Mangala", 20),
+        lords=(("sun", "Surya", 5), ("moon", "Chandra", 5), ("venus", "Shukr", 10),
+               ("mercury", "Budh", 10), ("jupiter", "Guru", 20), ("mars", "Mangal", 20),
                ("saturn", "Shani", 30)),
         ref_nakshatra=NAK["revati"],
         citation="BPHS Vol II ch.46 vv.32-34",
@@ -132,8 +132,8 @@ SYSTEMS: dict[str, DashaSystem] = {
     ),
     "chaturashiti": DashaSystem(
         key="chaturashiti", name="Chaturaśīti-sama",
-        lords=(("sun", "Surya", 12), ("moon", "Chandra", 12), ("mars", "Mangala", 12),
-               ("mercury", "Budha", 12), ("jupiter", "Guru", 12), ("venus", "Shukra", 12),
+        lords=(("sun", "Surya", 12), ("moon", "Chandra", 12), ("mars", "Mangal", 12),
+               ("mercury", "Budh", 12), ("jupiter", "Guru", 12), ("venus", "Shukr", 12),
                ("saturn", "Shani", 12)),
         ref_nakshatra=NAK["swati"],
         citation="BPHS Vol II ch.46 vv.35-36",
@@ -142,8 +142,8 @@ SYSTEMS: dict[str, DashaSystem] = {
     ),
     "dwisaptati": DashaSystem(
         key="dwisaptati", name="Dvisaptati-sama",
-        lords=(("sun", "Surya", 9), ("moon", "Chandra", 9), ("mars", "Mangala", 9),
-               ("mercury", "Budha", 9), ("jupiter", "Guru", 9), ("venus", "Shukra", 9),
+        lords=(("sun", "Surya", 9), ("moon", "Chandra", 9), ("mars", "Mangal", 9),
+               ("mercury", "Budh", 9), ("jupiter", "Guru", 9), ("venus", "Shukr", 9),
                ("saturn", "Shani", 9), ("rahu", "Rahu", 9)),
         ref_nakshatra=NAK["mula"],
         citation="BPHS Vol II ch.46 vv.37-39",
@@ -154,8 +154,8 @@ SYSTEMS: dict[str, DashaSystem] = {
     "shattrimsha": DashaSystem(
         key="shattrimsha", name="Ṣaṭtriṁśat-sama",
         lords=(("moon", "Chandra", 1), ("sun", "Surya", 2), ("jupiter", "Guru", 3),
-               ("mars", "Mangala", 4), ("mercury", "Budha", 5), ("saturn", "Shani", 6),
-               ("venus", "Shukra", 7), ("rahu", "Rahu", 8)),
+               ("mars", "Mangal", 4), ("mercury", "Budh", 5), ("saturn", "Shani", 6),
+               ("venus", "Shukr", 7), ("rahu", "Rahu", 8)),
         ref_nakshatra=NAK["shravana"],
         citation="BPHS Vol II ch.46 vv.42-43",
         example=None,
@@ -295,9 +295,9 @@ def validated_systems() -> list[str]:
 
 ASHTOTTARI = DashaSystem(
     key="ashtottari", name="Aṣṭottarī",
-    lords=(("sun", "Surya", 6), ("moon", "Chandra", 15), ("mars", "Mangala", 8),
-           ("mercury", "Budha", 17), ("saturn", "Shani", 10), ("jupiter", "Guru", 19),
-           ("rahu", "Rahu", 12), ("venus", "Shukra", 21)),
+    lords=(("sun", "Surya", 6), ("moon", "Chandra", 15), ("mars", "Mangal", 8),
+           ("mercury", "Budh", 17), ("saturn", "Shani", 10), ("jupiter", "Guru", 19),
+           ("rahu", "Rahu", 12), ("venus", "Shukr", 21)),
     ref_nakshatra=NAK["ardra"],   # groups begin at Ārdrā
     citation="BPHS Vol II ch.46 vv.17-23",
     example=None,   # validated numerically below, not via the udu count rule

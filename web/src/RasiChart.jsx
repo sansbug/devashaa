@@ -283,7 +283,7 @@ export function SouthIndianChart({
               return (
                 <div className="south-centre" key="centre">
                   <div className="centre-varga">{vargaKey}</div>
-                  <div className="centre-sub">{namer.style === 'devanagari' ? 'लग्न' : 'Lagna'} {namer.rasi(lagna)}</div>
+                  <div className="centre-sub">{namer.style === 'devanagari' ? 'लग्न' : 'Lagn'} {namer.rasi(lagna)}</div>
                 </div>
               )
             }
@@ -311,7 +311,7 @@ export function SouthIndianChart({
                 <span className="cell-sep">·</span>
                 {namer.rasi(sign)}
               </div>
-              {sign === lagna && <div className="asc-mark">{namer.style === 'devanagari' ? 'लग्न' : 'Lagna'}</div>}
+              {sign === lagna && <div className="asc-mark">{namer.style === 'devanagari' ? 'लग्न' : 'Lagn'}</div>}
               <LordMark sign={sign} grahas={grahas} vargaKey={vargaKey} lagna={lagna} namer={namer} size="s" />
               <div className="cell-grahas">
                 {bySign[sign].map((g) => (

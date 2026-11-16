@@ -142,6 +142,60 @@ script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
   the registered texts and are not used.
 - A chart shared without birth details has no daśā: that topic is dropped.
 
+## Chart findings (the simple view's "What would you like to understand?")
+
+`web/src/findings.js` builds them from the chart payload alone; `Findings.jsx` shows them;
+`node web/test_findings.mjs` pins the rules (with the local API up it checks the reference
+chart). The owner's provenance rules for them (2026-11-15) — interpretation is wanted, with
+its source beside it:
+
+1. **Direct**: a passage is shown when it is in the registered library (BPHS ch.24 lord-in-house,
+   ch.34 by ascendant, the yoga chapters; the classical concordance for a graha in a house or a
+   sign), its condition matches the calculated chart, and its text, translator and locus are
+   named. It is always "what the text says" (`texts`), never a fact about the person.
+2. **Derived**: only with its chain of cited steps and the factors on both sides, labelled
+   "our inference" (`inference`). No chain, no inference (the nodes get none).
+3. **Modern**: only from a registered author and passage, on its own tier, never mixed in.
+4. **Unsupported**: left out. A placement with no registered passage says so.
+- Each finding reads: what your chart shows · what the classical texts say (+ why each applies)
+  · how the placement is read · what other factors must be considered · our inference · exact
+  references (the last only with References on — see below).
+- ⚠ `SENSITIVE` (a death, a lifespan, a bereavement, a partner's fidelity) is never shown
+  unasked — rule 2 at the top of this file still governs. The passage is listed with its
+  reference and a "Show the whole passage" button (opt-in). It is shown WHOLE or not at all:
+  never cut down to its favourable clause.
+- ⚠ The reading ORDER and its weights are ours (synthesis), and the panel says so.
+- Registered 2026-11-15 from the scans in `C:\books\astro` (the source books now live there):
+  - `api/dhana_bhava.py` — BPHS ch.13 vv.1-7 (2nd house / wealth), Santhanam's words read
+    from the PAGE IMAGES; each verse is matched on its own stated conditions and returned
+    WHOLE with the clause that fired (`analysis.dhana_bhava`). Its docstring lists what is
+    deliberately not evaluated (vv.4-5 when one planet rules both houses; v.5's ambiguous
+    alternative; v.7's combustion, which has no orb in the text). `test_dhana_bhava.py`.
+  - `api/phaladipika_nodes_rules.py` — Phaladīpikā 8.25-33, Rāhu and Ketu in the bhāvas, with
+    śloka numbers. ⚠ confidence `ocr_text`: read from the scan's text layer, not yet checked
+    against the page images (the Sastri PDF is mixed-raster and nothing here can render it —
+    no poppler / PyMuPDF) nor adversarially verified like the seven-graha entries.
+  - The running daśā lords' findings carry BPHS Vol II ch.47 vv.5-6 (`dasha.verdicts`).
+  - `api/bhava_effects.py` — BPHS chs 12, 14–18, 20–23: 54 verses read from the PAGE IMAGES,
+    each matched on its own condition and returned whole with the clause that fired and a
+    "why it applies" line in EN + HI (`analysis.bhava_effects`; graha names travel as
+    `{g:key}` placeholders the page fills). Its docstring is the register of what is NOT
+    there and why: ch.19 (longevity), every verse that dates an event to an age, verses on
+    a spouse's character / fidelity / number of wives / illegitimate birth, verses needing
+    "strength", a navāṁśa, Māndi or combustion, the counting verses, and ch.15 v.3 (the
+    translation prints "5th lord" where the Sanskrit on the page has the 4th lord).
+    "Aspected" = a FULL graha dṛṣṭi; benefic/malefic = natural (ch.3 v.11).
+    `test_bhava_effects.py`.
+- References: Settings › References (off by default; the same `refs` switch as /references).
+  Off — a passage in a finding reads "A classical text", with no book, verse or page, no
+  tier names and no reference list; on — everything is named. Either way a passage is marked
+  as a text's statement, never as ours.
+- Not yet registered: ch.13 vv.8+; verse numbers for the seven grahas in Phaladīpikā ch.8
+  (still cited to the chapter); Phaladīpikā's daśā chapters (19–21). A web page's machine translation is not a source:
+  extract from the registered edition, verify, then register.
+- To read a scanned page: extract its image with pypdf + Pillow and Read the image (see the
+  BPHS extraction); `Read` on a PDF needs poppler, which is not installed.
+
 ## Sharing a chart (`/c/<id>#<key>`)
 
 By default a link carries the finished chart WITHOUT its birth details

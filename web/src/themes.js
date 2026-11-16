@@ -5,9 +5,10 @@
  * theme while the page is still showing the current one. `swatch` overrides the
  * flat colour where a theme is a blend that a single dot can't convey.
  *
- * Ordered dark-first, then light.
+ * Ordered: the default first, then dark, then the other light themes.
  */
 export const THEMES = [
+  { key: 'clean', label: 'Clean', bg: '#ffffff', accent: '#fc546c' },
   { key: 'midnight', label: 'Midnight', bg: '#0a0f1e', accent: '#e8c46a' },
   {
     key: 'lotus',
@@ -32,11 +33,12 @@ export const THEMES = [
   },
 ]
 
-/** New visitors land on Tulasi. Keep in step with the first-paint script in index.html. */
-export const DEFAULT_THEME = 'tulasi'
+/** New visitors land on Clean. Keep in step with the first-paint script in index.html. */
+export const DEFAULT_THEME = 'clean'
 
-/** The default before Tulasi. A browser still holding it was never asked — see App.jsx. */
+/** The defaults before Clean, newest first. A browser still holding one was never asked — see App.jsx. */
 export const OLD_DEFAULT_THEME = 'midnight'
+export const OLD_DEFAULT_THEME_2 = 'tulasi'
 
 const KEYS = new Set(THEMES.map((t) => t.key))
 

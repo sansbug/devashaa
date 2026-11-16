@@ -172,6 +172,49 @@ function PositionsCard({ ordered, lagna, namer, onHoverSign }) {
   )
 }
 
+/** Key highlights — the ascendant, the Moon's sign and the Sun's sign, each with its
+ *  degree and nakṣatra. Placements only; no trait sentences (uncited). Used in the
+ *  deck and as the first thing in the simple view. */
+export function HighlightsCard({ chart, grahas, namer }) {
+  const { t } = useLang()
+  const lagna = chart.lagna_rasi
+  const sun = grahas.find((x) => x.key === 'sun')
+  const moon = grahas.find((x) => x.key === 'moon')
+  const lagnaDeg = chart.lagna_longitude != null ? chart.lagna_longitude % 30 : null
+  return (
+    <Card title={t('deck.highlights', 'Key Highlights')} className="dk-hl-card">
+      <div className="dk-hl">
+        <span className="dk-rbub" aria-hidden="true">{lagna + 1}</span>
+        <span className="dk-hl-title">{t('deck.ascendant', 'Ascendant (Lagna)')}</span>
+        <span className="dk-hl-text">
+          <b>{namer.rasi(lagna)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(lagna)})</span>}{lagnaDeg != null && <> — {Math.floor(lagnaDeg)}°{pad2(Math.floor((lagnaDeg % 1) * 60))}′</>}
+          {chart.lagna_nakshatra && <i>{namer.nakshatra(chart.lagna_nakshatra)} · {t('deck.pada', 'pada')} {chart.lagna_nakshatra.pada}</i>}
+        </span>
+      </div>
+      {moon && (
+        <div className="dk-hl">
+          <span className="dk-rbub" aria-hidden="true">{moon.rasi + 1}</span>
+          <span className="dk-hl-title">{t('deck.moonsign', 'Moon Sign (Rāśi)')}</span>
+          <span className="dk-hl-text">
+            <b>{namer.rasi(moon.rasi)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(moon.rasi)})</span>} — <Planet g={moon} namer={namer} deg size="s" />
+            {moon.nakshatra && <i>{namer.nakshatra(moon.nakshatra)} · {t('deck.pada', 'pada')} {moon.nakshatra.pada}</i>}
+          </span>
+        </div>
+      )}
+      {sun && (
+        <div className="dk-hl">
+          <span className="dk-rbub" aria-hidden="true">{sun.rasi + 1}</span>
+          <span className="dk-hl-title">{t('deck.sunsign', 'Sun Sign')}</span>
+          <span className="dk-hl-text">
+            <b>{namer.rasi(sun.rasi)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(sun.rasi)})</span>} — <Planet g={sun} namer={namer} deg size="s" />
+            {sun.nakshatra && <i>{namer.nakshatra(sun.nakshatra)} · {t('deck.pada', 'pada')} {sun.nakshatra.pada}</i>}
+          </span>
+        </div>
+      )}
+    </Card>
+  )
+}
+
 export default function ChartDeck({
   chart, drishti, grahas, namer, subject, onPickSubject, onHoverSign, varga, analysis, vargaSig,
 }) {
@@ -182,9 +225,6 @@ export default function ChartDeck({
   const ordered = [...grahas].sort((a, b) => ORDER.indexOf(a.key) - ORDER.indexOf(b.key))
   const bySign = {}
   for (const x of grahas) (bySign[x.rasi] ||= []).push(x)
-  const sun = grahas.find((x) => x.key === 'sun')
-  const moon = grahas.find((x) => x.key === 'moon')
-  const lagnaDeg = chart.lagna_longitude != null ? chart.lagna_longitude % 30 : null
 
   const d1 = varga === 'D1' && drishti
   const g = d1 ? drishti.graha : null
@@ -223,37 +263,7 @@ export default function ChartDeck({
         {/* ── Planetary positions ─────────────────────────────────── */}
         <PositionsCard ordered={ordered} lagna={lagna} namer={namer} onHoverSign={onHoverSign} />
 
-        {/* ── Key highlights — placements only; no trait sentences (uncited) ── */}
-        <Card title={t('deck.highlights', 'Key Highlights')} className="dk-hl-card">
-          <div className="dk-hl">
-            <span className="dk-rbub" aria-hidden="true">{lagna + 1}</span>
-            <span className="dk-hl-title">{t('deck.ascendant', 'Ascendant (Lagna)')}</span>
-            <span className="dk-hl-text">
-              <b>{namer.rasi(lagna)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(lagna)})</span>}{lagnaDeg != null && <> — {Math.floor(lagnaDeg)}°{pad2(Math.floor((lagnaDeg % 1) * 60))}′</>}
-              {chart.lagna_nakshatra && <i>{namer.nakshatra(chart.lagna_nakshatra)} · {t('deck.pada', 'pada')} {chart.lagna_nakshatra.pada}</i>}
-            </span>
-          </div>
-          {moon && (
-            <div className="dk-hl">
-              <span className="dk-rbub" aria-hidden="true">{moon.rasi + 1}</span>
-              <span className="dk-hl-title">{t('deck.moonsign', 'Moon Sign (Rāśi)')}</span>
-              <span className="dk-hl-text">
-                <b>{namer.rasi(moon.rasi)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(moon.rasi)})</span>} — <Planet g={moon} namer={namer} deg size="s" />
-                {moon.nakshatra && <i>{namer.nakshatra(moon.nakshatra)} · {t('deck.pada', 'pada')} {moon.nakshatra.pada}</i>}
-              </span>
-            </div>
-          )}
-          {sun && (
-            <div className="dk-hl">
-              <span className="dk-rbub" aria-hidden="true">{sun.rasi + 1}</span>
-              <span className="dk-hl-title">{t('deck.sunsign', 'Sun Sign')}</span>
-              <span className="dk-hl-text">
-                <b>{namer.rasi(sun.rasi)}</b>{namer.style !== 'english' && <span className="dk-en"> ({namer.rasiEnglish(sun.rasi)})</span>} — <Planet g={sun} namer={namer} deg size="s" />
-                {sun.nakshatra && <i>{namer.nakshatra(sun.nakshatra)} · {t('deck.pada', 'pada')} {sun.nakshatra.pada}</i>}
-              </span>
-            </div>
-          )}
-        </Card>
+        <HighlightsCard chart={chart} grahas={grahas} namer={namer} />
 
         {/* ── Casts — ch.26, GRADED ──────────────────────────────── */}
         <Card title={t('deck.casts', 'Casts (Strengths)')} tip={castsTip || undefined}
@@ -340,7 +350,7 @@ export default function ChartDeck({
                 </span>
               </div>
               {Object.keys(received).length === 0 ? (
-                <p className="dk-note">{t('deck.noneReceived', 'No graha aspects')} {namer.rasi(subjSign)}.</p>
+                <p className="dk-note">{t('deck.noneReceived', 'No graha aspects')} {namer.rasiFull(subjSign)}.</p>
               ) : (
                 Object.entries(received).map(([k, v]) => {
                   const from = g.casts[k]?.from_sign
@@ -351,7 +361,7 @@ export default function ChartDeck({
                     <div key={k} className="dk-asp-row" onPointerEnter={() => onHoverSign?.(from)} onPointerLeave={() => onHoverSign?.(null)}>
                       <Bubble lord={k} size="m" />
                       <span className="dk-asp-text">
-                        <b>{namer.grahaKey(k)}{h ? `’s ${t(ORDINAL[h])}` : ''}</b> → {t('deck.from', 'from')} {namer.rasi(from)} <span className="dk-strength dk-inline"><Meter value={v} /><b>{t(FRACTION[v] ?? String(v))}</b></span>
+                        <b>{namer.grahaKey(k)}{h ? `’s ${t(ORDINAL[h])}` : ''}</b> → {t('deck.from', 'from')} {namer.rasiFull(from)} <span className="dk-strength dk-inline"><Meter value={v} /><b>{t(FRACTION[v] ?? String(v))}</b></span>
                       </span>
                     </div>
                   )

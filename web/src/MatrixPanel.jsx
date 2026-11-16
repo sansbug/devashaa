@@ -1034,7 +1034,7 @@ export default function MatrixPanel({ date, time, place, namer }) {
 
   if (!date || !time || !place) return null
   const nm = (k) => (namer && namer.grahaKey ? namer.grahaKey(k) : k)
-  const rs = (i) => (namer && namer.rasi ? namer.rasi(i) : i + 1)
+  const rs = (i) => (namer && namer.rasi ? namer.rasiFull(i) : i + 1)
   const bandLbl = (b) => t('matrix.band.' + b, b)
 
   return (

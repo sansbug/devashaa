@@ -24,7 +24,7 @@ function groupBySign(grahas, vargaKey) {
 
 export default function SouthDeckChart({
   grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, landmarks, lagnaLongitude, gandanta,
-  active, onHover, onPick, highlightSign,
+  active, onHover, onPick, highlightSign, title, onHouse,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
@@ -34,6 +34,7 @@ export default function SouthDeckChart({
 
   return (
     <div className="rc-card">
+      {title && <div className="rc-banner rc-banner--name"><div className="rc-banner-title">{title}</div></div>}
       <div className="sc-grid rasi-chart" role="img" aria-label="South Indian rāśi chart">
         <span className="rc-corner tl" aria-hidden="true" /><span className="rc-corner tr" aria-hidden="true" />
         <span className="rc-corner bl" aria-hidden="true" /><span className="rc-corner br" aria-hidden="true" />
@@ -55,7 +56,8 @@ export default function SouthDeckChart({
             const bhava = ((sign - lagna + 12) % 12) + 1
             return (
               <div key={`${ri}-${ci}`}
-                   className={`sc-cell${sign === lagna ? ' is-lagna' : ''}${highlightSign === sign ? ' dr-locate' : ''}${lp.own ? ' own' : ''}${occupants.length ? '' : ' empty'}`}
+                   className={`sc-cell${sign === lagna ? ' is-lagna' : ''}${highlightSign === sign ? ' dr-locate' : ''}${lp.own ? ' own' : ''}${occupants.length ? '' : ' empty'}${onHouse ? ' pick-house' : ''}`}
+                   onClick={onHouse ? () => onHouse(bhava) : undefined}
                    style={{ gridRow: ri + 1, gridColumn: ci + 1, '--g': `var(--pc-${lp.lord})` }}>
                 {sign === lagna && <span className="sc-lagna" aria-hidden="true" />}
                 {sign === lagna && <span className="sc-lagna-word">{lagnaWord}</span>}

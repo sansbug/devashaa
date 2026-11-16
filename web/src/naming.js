@@ -2,7 +2,7 @@
  * Name styles. The API returns every name in three Latin forms; this picks one,
  * or renders a fourth — Devanāgarī — from tables here.
  *
- *   common      — ordinary English spelling people actually write: Chandra, Mesha
+ *   common      — ordinary spelling people actually write:         Chandra, Mesh
  *   iast        — scholarly transliteration with diacritics:       Candra, Meṣa
  *   english     — plain English equivalents:                       Moon, Aries
  *   devanagari  — Devanāgarī script (the Hindi/Sanskrit default):  चन्द्र, मेष
@@ -15,15 +15,15 @@
  */
 
 export const NAME_STYLES = [
-  { key: 'common', label: 'Sanskrit', example: 'Chandra · Mesha' },
+  { key: 'common', label: 'Sanskrit', example: 'Chandra · Mesh' },
   { key: 'iast', label: 'Sanskrit (IAST)', example: 'Candra · Meṣa' },
   { key: 'english', label: 'English', example: 'Moon · Aries' },
   { key: 'devanagari', label: 'देवनागरी', example: 'चन्द्र · मेष' },
 ]
 
 const RASIS = {
-  common: ['Mesha', 'Vrishabha', 'Mithuna', 'Karka', 'Simha', 'Kanya',
-           'Tula', 'Vrishchika', 'Dhanu', 'Makara', 'Kumbha', 'Meena'],
+  common: ['Mesh', 'Vrishabh', 'Mithun', 'Kark', 'Singh', 'Kanya',
+           'Tula', 'Vrishchik', 'Dhanu', 'Makar', 'Kumbh', 'Meen'],
   iast: ['Meṣa', 'Vṛṣabha', 'Mithuna', 'Karka', 'Siṁha', 'Kanyā',
          'Tulā', 'Vṛścika', 'Dhanu', 'Makara', 'Kumbha', 'Mīna'],
   english: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -110,6 +110,11 @@ export function makeNamer(style = 'common') {
                           : pick(g, 'rasi_lord')),
     /** Rāśi by zodiac index 0-11 (charts index by sign, not by graha). */
     rasi: (i) => (RASIS[style] || RASIS.common)[i],
+    /** The rāśi with its English name in brackets — "Singh (Leo)" — for running
+     *  text and labels. Plain where the name is already English, or Devanāgarī. */
+    rasiFull: (i) => (style === 'english' || dev
+      ? (RASIS[style] || RASIS.common)[i]
+      : `${(RASIS[style] || RASIS.common)[i]} (${RASIS.english[i]})`),
     /** The plain English name regardless of style — the deck's parenthetical. */
     rasiEnglish: (i) => RASIS.english[i],
     /** Compact rāśi abbreviation by index — always a rāśi, never Western. */

@@ -56,13 +56,17 @@ export default function Privacy({ onBack }) {
 
       <section>
         <h2>What is stored in your browser</h2>
-        <p>Four things, in <code>localStorage</code> — not cookies:</p>
+        <p>These things, in <code>localStorage</code> — not cookies:</p>
         <ul className="privacy-list">
           <li><strong>Your saved charts</strong> — the name you typed, birth
             date, time and place.</li>
           <li><strong>Your user id</strong>, if you made an account, so you do
             not have to retype it. Never your password.</li>
           <li><strong>Your theme</strong> and <strong>name style</strong>.</li>
+          <li><strong>Your display choices</strong> — language, the simple or
+            full view, whether references are shown, how a table is ordered,
+            and which one-time hints you have already seen. None of these
+            holds anything about you or a chart.</li>
         </ul>
         <p>
           Nothing here is sent anywhere on its own. Two of them travel when you

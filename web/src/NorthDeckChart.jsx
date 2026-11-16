@@ -31,7 +31,7 @@ function groupBySign(grahas, vargaKey) {
 }
 
 export default function NorthDeckChart({
-  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, onPick,
+  grahas, lagnaRasi, vargaKey, lagnaVargaSign, namer, highlightSign, onPick, title, onHouse,
 }) {
   const bySign = groupBySign(grahas, vargaKey)
   const lagna = vargaKey === 'D1' ? lagnaRasi : lagnaVargaSign
@@ -39,6 +39,7 @@ export default function NorthDeckChart({
 
   return (
     <div className="rc-card">
+      {title && <div className="rc-banner rc-banner--name"><div className="rc-banner-title">{title}</div></div>}
       <div className="rasi-chart">
         <span className="rc-corner tl" aria-hidden="true" /><span className="rc-corner tr" aria-hidden="true" />
         <span className="rc-corner bl" aria-hidden="true" /><span className="rc-corner br" aria-hidden="true" />
@@ -60,7 +61,8 @@ export default function NorthDeckChart({
           const cx = b.cx ?? r.cx
           const lp = lordPlacement(sign, grahas, vargaKey, lagna)
           return (
-            <div key={i} className={`house h${bhava}${occupants.length ? '' : ' empty'}${lp.own ? ' own' : ''}`}
+            <div key={i} className={`house h${bhava}${occupants.length ? '' : ' empty'}${lp.own ? ' own' : ''}${onHouse ? ' pick-house' : ''}`}
+                 onClick={onHouse ? () => onHouse(bhava) : undefined}
                  style={{ left: `${cx / 4}%`, top: `${r.cy / 4}%`, width: `${b.w}%`, '--g': `var(--pc-${lp.lord})` }}>
               <div className="house-sign" title={`${namer.rasi(sign)} — rāśi ${sign + 1} · bhāva ${bhava}`}>
                 {sign + 1} · {namer.rasi(sign)}

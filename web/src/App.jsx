@@ -17,7 +17,7 @@ import CharaDashaTimeline from './CharaDashaTimeline.jsx'
 import Appearance from './Appearance.jsx'
 import Logo from './Logo.jsx'
 import { makeNamer } from './naming.js'
-import { validTheme, DEFAULT_THEME, OLD_DEFAULT_THEME } from './themes.js'
+import { validTheme, DEFAULT_THEME, OLD_DEFAULT_THEME, OLD_DEFAULT_THEME_2 } from './themes.js'
 import Profiles from './Profiles.jsx'
 import Account from './Account.jsx'
 import References from './References.jsx'
@@ -25,7 +25,7 @@ import Support from './Support.jsx'
 import ComparePage from './ComparePage.jsx'
 import ShareCard from './ShareCard.jsx'
 import { SHARE_ID_RE, openShare } from './share.js'
-import { refsOn, applyRefs, scrubProse } from './refs.js'
+import { REFS_KEY, refsOn, applyRefs, scrubProse } from './refs.js'
 import Privacy from './Privacy.jsx'
 import Methodology from './Methodology.jsx'
 import ValidationPage from './ValidationPage.jsx'
@@ -36,7 +36,9 @@ import SignalStack from './SignalStack.jsx'
 import RasiCard from './RasiCard.jsx'
 import NakshatraCard from './NakshatraCard.jsx'
 import ModernNotes from './ModernNotes.jsx'
-import ChartDeck from './ChartDeck.jsx'
+import ChartDeck, { HighlightsCard } from './ChartDeck.jsx'
+import FindingsPanel from './Findings.jsx'
+import { LandingHero, RunningCard, ChartSummary, HouseExplorer, useStory, FullCta, ModeSwitch, useSlow } from './SimpleView.jsx'
 import NorthDeckChart from './NorthDeckChart.jsx'
 import SouthDeckChart from './SouthDeckChart.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
@@ -100,6 +102,7 @@ function PlaceField({ onPick, place }) {
   const [hits, setHits] = useState([])
   const [busy, setBusy] = useState(false)
   const timer = useRef(null)
+  const slow = useSlow(busy)
 
   // Loading a saved profile sets `place` from outside; without this the input
   // would sit empty while a place was in fact selected. The search effect below
@@ -137,7 +140,7 @@ function PlaceField({ onPick, place }) {
         placeholder={t('form.place')}
         onChange={(e) => setQ(e.target.value)}
       />
-      {busy && <div className="hint">{t('form.searching')}</div>}
+      {busy && <div className="hint">{slow ? t('form.waking', 'Waking the server — the first search can take up to a minute…') : t('form.searching')}</div>}
       {hits.length > 0 && (
         <ul className="hits">
           {hits.map((p, i) => (
@@ -275,6 +278,23 @@ export default function App() {
   const [varga, setVarga] = useState('D1')
   const [style, setStyle] = useState('north')
   const [section, setSection] = useState('projection')
+  // Simple (the default: the chart, three placements, what is running now) or the
+  // full analysis. The choice is remembered in this browser.
+  const [mode, setModeState] = useState(() => {
+    try { return localStorage.getItem('viewMode') === 'full' ? 'full' : 'simple' } catch { return 'simple' }
+  })
+  const setMode = (m) => { setModeState(m); try { localStorage.setItem('viewMode', m) } catch { /* private mode */ } }
+  const simple = mode === 'simple'
+  // The rāśi / nakṣatra reference, opened from the landing page or the simple view.
+  const [refOpen, setRefOpen] = useState(false)
+  // In the simple view the birth form folds away once a chart is showing.
+  const [formOpen, setFormOpen] = useState(false)
+  // The house the reader picked in the simple view (on the chart, or in the list under it).
+  const [houseSel, setHouseSel] = useState(1)
+  const pickHouse = (h) => {
+    setHouseSel(h)
+    setTimeout(() => document.querySelector('.sv-houses')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40)
+  }
   const [explainQuery, setExplainQuery] = useState(null)
   const [health, setHealth] = useState(null)
   // Transit (gochara) overlay: fetched lazily from /api/gochara only while the
@@ -354,7 +374,7 @@ export default function App() {
   // Which step the guide opens on (0 for the header button; the navāṁśa step
   // when reached from the D9 nudge). The guide reads it once, on mount.
   const [guideStep, setGuideStep] = useState(0)
-  const openGuide = () => { setGuideStep(0); setGuideOpen(true); dismissNudge() }
+  const openGuide = () => { setMode('full'); setGuideStep(0); setGuideOpen(true); dismissNudge() }
   // A second first-time nudge, toward the navāṁśa (D9) reading — shown once, when
   // the reader first opens the D9, then remembered separately from the main one.
   const [nvNudgeSeen, setNvNudgeSeen] = useState(
@@ -388,9 +408,13 @@ export default function App() {
     // One-time move to the new default. The theme has always been written back
     // on load, so a browser holding the OLD default may simply never have been
     // asked. Move it once; any pick made after this (Midnight included) stays.
-    if (!localStorage.getItem('themeDefault_v2')) {
+    // (v3: the default moved again, Tulasi → Clean. A Midnight picked after the
+    // v2 move was a real choice and is kept.)
+    if (!localStorage.getItem('themeDefault_v3')) {
+      const askedBefore = localStorage.getItem('themeDefault_v2')
+      localStorage.setItem('themeDefault_v3', '1')
       localStorage.setItem('themeDefault_v2', '1')
-      if (stored === OLD_DEFAULT_THEME) return DEFAULT_THEME
+      if ((stored === OLD_DEFAULT_THEME && !askedBefore) || stored === OLD_DEFAULT_THEME_2) return DEFAULT_THEME
     }
     return validTheme(stored ?? DEFAULT_THEME)
   })
@@ -525,6 +549,7 @@ export default function App() {
       const j = await r.json()
       if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
       setChart(j)
+      setFormOpen(false)
       // Only remember births that actually produced a chart — saving on submit
       // would fill the list with typos and out-of-range dates.
       const saved = saveProfile({ name, date, time, place })
@@ -613,6 +638,14 @@ export default function App() {
   }, [transitOn, transitDate, chart, date, time, place])
 
   const ready = date && time && place
+  const slowCast = useSlow(busy)
+  // The landing page: nothing cast, nothing loading.
+  const landing = !chart && !busy
+  const formHidden = simple && !formOpen && !error && (chart || busy)
+  // In the simple view no analysis section is open.
+  const sec = simple ? null : section
+  const simpleStyle = style === 'south' ? 'south' : 'north'
+  const story = useStory(simple ? chart : null, namer)
   const Chart = style === 'south' ? SouthIndianChart
     : style === 'north' ? NorthIndianChart
     : SkyWheelChart
@@ -654,9 +687,20 @@ export default function App() {
       const d = new Date(String(endISO).replace(' ', 'T'))
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     }
-    const level = (node, code) => (node && node.end
-      ? { code, lord: node.lord, ends: fmtEnd(node.end), remaining: remain(node.end) } : null)
-    const levels = [level(maha, 'MD'), level(antar, 'AD'), level(praty, 'PD')].filter(Boolean)
+    // The period that follows `node` among its siblings; at the end of a parent's
+    // run, the first period of the parent's own successor.
+    const after = (list, node, parentNext) => {
+      const i = list ? list.indexOf(node) : -1
+      if (i >= 0 && list[i + 1]) return list[i + 1]
+      return (parentNext && parentNext.sub && parentNext.sub[0]) || null
+    }
+    const mahaNext = after(tree.mahadashas, maha, null)
+    const antarNext = antar ? after(maha.sub, antar, mahaNext) : null
+    const pratyNext = praty ? after(antar.sub, praty, antarNext) : null
+    const level = (node, code, nxt) => (node && node.end
+      ? { code, lord: node.lord, ends: fmtEnd(node.end), remaining: remain(node.end),
+          next: nxt && nxt.end ? { lord: nxt.lord, ends: fmtEnd(nxt.end) } : null } : null)
+    const levels = [level(maha, 'MD', mahaNext), level(antar, 'AD', antarNext), level(praty, 'PD', pratyNext)].filter(Boolean)
     return levels.length ? { levels } : null
   })()
   // Combust grahas (within their own orb of the Sun) → their separation, for the
@@ -684,32 +728,45 @@ export default function App() {
   return (
     <LangContext.Provider value={langValue}>
     <div className="page">
-      <Appearance
-        theme={theme} setTheme={setTheme}
-        nameStyle={nameStyle} setNameStyle={setNameStyle}
-        lang={lang} setLang={changeLang}
-      />
-      <nav className="site-tabs" aria-label={t('site.sections', 'Sections of the site')}>
-        <a className="on" href="/" aria-current="page">{t('site.jyotisha', 'Jyotiṣa charts')}</a>
-        <a href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}><span aria-hidden="true">🪔</span> {t('site.pooja', 'Pūjā & Havan')}</a>
-      </nav>
-      <header>
+      {/* One bar: the name on the left, the two sections of the site beside it,
+          language and settings on the right. */}
+      <div className="topbar">
         <h1 className="visually-hidden">Devashaa — Jyotiṣa birth charts</h1>
-        <Logo />
-        <p className="sub">
-          {t('header.sub')}
-          <span className="src"><br />{t('header.after')} <em>Bṛhat Parāśara Horā Śāstra</em></span>
-        </p>
-        {health && (
-          <div className={`health ${health.status}`}>
-            {health.status === 'ok'
-              ? t('ephem.ok')
-              : `● ephemeris ${health.status} — charts refused`}
-          </div>
-        )}
-      </header>
+        <a className="topbar-logo" href="/" onClick={(e) => { e.preventDefault(); go('/') }}><Logo /></a>
+        <nav className="site-tabs" aria-label={t('site.sections', 'Sections of the site')}>
+          <a className="on" href="/" aria-current="page">{t('site.jyotisha', 'Jyotiṣa charts')}</a>
+          <a href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}>{t('site.pooja', 'Pūjā & Havan')}</a>
+        </nav>
+        <Appearance
+          theme={theme} setTheme={setTheme}
+          nameStyle={nameStyle} setNameStyle={setNameStyle}
+          lang={lang} setLang={changeLang}
+          refs={refs}
+          setRefs={(on) => { try { localStorage.setItem(REFS_KEY, on ? '1' : '0') } catch { /* private mode */ } setRefs(on) }}
+        />
+        {/* Opens the account panel under the bar (sign in, create an account, sync). */}
+        <button type="button" className="topbar-signin" aria-expanded={savedOpen}
+                onClick={() => {
+                  setSavedOpen(true)
+                  setTimeout(() => document.querySelector('.saved')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+                }}>
+          {acct ? acct.userid : t('topbar.signin', 'Sign in')}
+        </button>
+      </div>
+      <nav className="trust trust--top" aria-label={t('trust.aria', 'What this site stands on')}>
+        <a href="/validation" onClick={(e) => { e.preventDefault(); go('/validation') }}><i>✓</i>{t('trust.verified', 'Positions verified against JPL')}</a>
+        <a href="/references" onClick={(e) => { e.preventDefault(); go('/references') }}><i>§</i>{t('trust.cited', 'Every reading cited to its text')}</a>
+        <a href="/methodology" onClick={(e) => { e.preventDefault(); go('/methodology') }}><i>∅</i>{t('trust.nothingSold', 'No remedies · no fear · nothing sold')}</a>
+        <a href={import.meta.env.VITE_SOURCE_URL || 'https://github.com/sansbug/devashaa'} target="_blank" rel="noreferrer"><i>{'</>'}</i>{t('trust.open', 'Open source')}</a>
+        <a href="/compare" onClick={(e) => { e.preventDefault(); go('/compare') }}><i>≠</i>{t('trust.compare', 'Why charts differ between apps')}</a>
+      </nav>
+      {health && health.status !== 'ok' && (
+        <header className="hdr-meta">
+          <div className={`health ${health.status}`}>{`● ephemeris ${health.status} — charts refused`}</div>
+        </header>
+      )}
 
-      <section className="saved">
+      <section className={`saved${landing ? ' saved--landing' : ''}`}>
         <div className="saved-bar">
           <button type="button" className="saved-toggle" aria-expanded={savedOpen}
                   onClick={() => setSavedOpen((o) => !o)}>
@@ -729,6 +786,13 @@ export default function App() {
             onPick={useProfile}
             onDelete={removeProfile}
           />
+          {simple && chart && !error && (
+            <button type="button" className="saved-toggle sv-new" aria-expanded={formOpen}
+                    onClick={() => setFormOpen((o) => !o)}>
+              <span className="saved-caret" aria-hidden="true">{formOpen ? '−' : '+'}</span>
+              {t('sv.new', 'New chart')}
+            </button>
+          )}
         </div>
         {savedOpen && (
           <Account
@@ -739,8 +803,18 @@ export default function App() {
         )}
       </section>
 
-      <form onSubmit={submit} className="birth-form">
-        <div className="field">
+      {landing && <LandingHero namer={namer} nakNames={NAK_NAMES} />}
+
+      {formHidden && busy && <p className="hint sv-casting">{slowCast ? t('form.wakingCast', 'Waking the server — the first chart can take up to a minute…') : t('form.casting')}</p>}
+      {!formHidden && (
+      <form onSubmit={submit} className={`birth-form${landing ? ' birth-form--landing' : ''}`}>
+        {landing && (
+          <div className="sv-form-head">
+            <b>{t('sv.form.title', 'Create your chart')}</b>
+            <span>{t('sv.form.note', 'Your birth time and place are used to calculate the planetary positions.')}</span>
+          </div>
+        )}
+        <div className="field field-name">
           <label htmlFor="name">{t('form.name')}</label>
           <input id="name" value={name} onChange={(e) => setName(e.target.value)}
                  placeholder={t('form.name.ph')} />
@@ -757,17 +831,19 @@ export default function App() {
         </div>
         <PlaceField onPick={setPlace} place={place} />
         <button type="submit" className="go" disabled={!ready || busy}>
-          {busy ? t('form.casting') : t('form.cast')}
+          {busy ? t('form.casting') : landing ? t('sv.form.go', 'Create my birth chart →') : t('form.cast')}
         </button>
+        {busy && slowCast && <div className="hint sv-form-wait">{t('form.wakingCast', 'Waking the server — the first chart can take up to a minute…')}</div>}
       </form>
+      )}
 
-      <nav className="trust" aria-label={t('trust.aria', 'What this site stands on')}>
-        <a href="/validation" onClick={(e) => { e.preventDefault(); go('/validation') }}><i>✓</i>{t('trust.verified', 'Positions verified against JPL')}</a>
-        <a href="/references" onClick={(e) => { e.preventDefault(); go('/references') }}><i>§</i>{t('trust.cited', 'Every reading cited to its text')}</a>
-        <a href="/methodology" onClick={(e) => { e.preventDefault(); go('/methodology') }}><i>∅</i>{t('trust.nothingSold', 'No remedies · no fear · nothing sold')}</a>
-        <a href={import.meta.env.VITE_SOURCE_URL || 'https://github.com/sansbug/devashaa'} target="_blank" rel="noreferrer"><i>{'</>'}</i>{t('trust.open', 'Open source')}</a>
-        <a href="/compare" onClick={(e) => { e.preventDefault(); go('/compare') }}><i>≠</i>{t('trust.compare', 'Why charts differ between apps')}</a>
-      </nav>
+      {!chart && (
+        <p className="sv-ref-link">
+          <button type="button" className="sv-link" aria-expanded={refOpen} onClick={() => setRefOpen((o) => !o)}>
+            {refOpen ? t('sv.ref.hide', 'Hide the reference') : t('sv.ref.show', 'Browse the 12 rāśis and 27 nakṣatras')}
+          </button>
+        </p>
+      )}
       {error && <div className="error">{error}</div>}
       {sharedIn && chart && (
         <div className="shared-note" role="note">
@@ -796,20 +872,24 @@ export default function App() {
               <ChartWalkthrough chart={chart} namer={namer} onClose={() => setWatchOpen(false)} />
             </Suspense>
           )}
+          {!simple && (
           <section className="meta" id="rg-positions">
             <div className="meta-head">
-              <h2>{chart.name || 'Chart'}</h2>
-              {snap && <div className="rg-open-wrap">{watchButton}</div>}
+              <h2>{chart.name || t('sv.chart', 'Your chart')}</h2>
+              {snap && <div className="rg-open-wrap">{watchButton}<ModeSwitch mode={mode} setMode={setMode} /></div>}
               {!snap && (
               <div className="rg-open-wrap">
+                {!simple && watchButton}
                 <button type="button" className="rg-open sh-open" onClick={() => setShareOpen(true)}>
                   ↗ {t('share.open', 'Share')}
                 </button>
-                {watchButton}
+                {!simple && (
                 <button type="button" className="rg-open" onClick={openGuide}>
                   How to read this chart →
                 </button>
-                {!nudgeSeen && !guideOpen && (
+                )}
+                <ModeSwitch mode={mode} setMode={setMode} />
+                {!simple && !nudgeSeen && !guideOpen && (
                   <div className="rg-nudge" role="note">
                     <button type="button" className="rg-nudge-x" onClick={dismissNudge}
                             aria-label="Dismiss">×</button>
@@ -823,12 +903,13 @@ export default function App() {
               </div>
               )}
             </div>
+            {!simple && (
             <div className="dk-table-wrap meta-table-wrap">
               {snap ? (
               <table className="dk-table meta-table">
                 <thead><tr><th>Lagna</th><th>{t('share.meta.birth', 'Date · time · place of birth')}</th><th>Ayanāṁśa</th></tr></thead>
                 <tbody><tr>
-                  <td className="mc-lagna">{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
+                  <td className="mc-lagna">{namer.rasiFull(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
                   <td>{t('share.meta.hidden', 'not shared by the sender')}</td>
                   <td>{chart.ayanamsa}</td>
                 </tr></tbody>
@@ -837,7 +918,7 @@ export default function App() {
               <table className="dk-table meta-table">
                 <thead><tr><th>Lagna</th><th>Local</th><th>Zone</th><th>UTC</th><th>JD</th><th>Ayanāṁśa</th></tr></thead>
                 <tbody><tr>
-                  <td className="mc-lagna">{namer.rasi(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
+                  <td className="mc-lagna">{namer.rasiFull(chart.lagna_rasi)} · {namer.nakshatra(chart.lagna_nakshatra)} p{chart.lagna_nakshatra.pada}</td>
                   <td className="dk-num">{chart.local_time}</td>
                   <td>{chart.timezone} ({chart.utc_offset_hours >= 0 ? '+' : ''}{chart.utc_offset_hours}h)</td>
                   <td className="dk-num">{chart.utc}</td>
@@ -847,8 +928,89 @@ export default function App() {
               </table>
               )}
             </div>
+            )}
           </section>
+          )}
 
+          {simple && (
+          <section className="chart-panel chart-panel--deck sv-panel">
+            {/* One row: whose chart it is, the way in for a newcomer, then the chart
+                style, sharing, and the simple / full switch. */}
+            <div className="controls sv-bar">
+              <div className="sv-explain-row">
+                <button type="button" className="go" onClick={() => setWatchOpen(true)}>{t('wt.open', '▶ Explain my chart')}</button>
+                <span>
+                  <b>{t('sv.explain.title', 'New to this? Start here.')}</b>
+                  <small>{t('sv.explain.body', 'Your chart, one topic at a time, in plain words.')}</small>
+                </span>
+              </div>
+              <div className="styles">
+                <button type="button" className={simpleStyle === 'north' ? 'on' : ''}
+                        onClick={() => setStyle('north')}>{t('sv.north', 'North')}</button>
+                <button type="button" className={simpleStyle === 'south' ? 'on' : ''}
+                        onClick={() => setStyle('south')}>{t('sv.south', 'South')}</button>
+              </div>
+              {!snap && (
+                <button type="button" className="rg-open sh-open" onClick={() => setShareOpen(true)}>
+                  ↗ {t('share.open', 'Share')}
+                </button>
+              )}
+              <ModeSwitch mode={mode} setMode={setMode} />
+            </div>
+            <div className="chart-figure">
+              {simpleStyle === 'south' ? (
+                <SouthDeckChart grahas={chart.grahas} lagnaRasi={chart.lagna_rasi}
+                  lagnaVargaSign={chart.lagna_vargas.D1} vargaKey="D1" namer={namer}
+                  landmarks={chart.landmarks} lagnaLongitude={chart.lagna_longitude}
+                  gandanta={chart.gandanta} active={marked} onHover={setHovered}
+                  highlightSign={(chart.lagna_rasi + houseSel - 1) % 12} title={chart.name} onHouse={pickHouse} />
+              ) : (
+                <NorthDeckChart grahas={chart.grahas} lagnaRasi={chart.lagna_rasi}
+                  lagnaVargaSign={chart.lagna_vargas.D1} vargaKey="D1" namer={namer}
+                  highlightSign={(chart.lagna_rasi + houseSel - 1) % 12} title={chart.name} onHouse={pickHouse} />
+              )}
+            </div>
+            <div className="deck-side sv-side">
+              <ChartSummary story={story} />
+              <HighlightsCard chart={chart} grahas={chart.grahas} namer={namer} />
+              {!snap && <RunningCard running={runningDasha} namer={namer}
+                                     onMore={() => { setMode('full'); setSection('dasha') }} />}
+              {!snap && (
+              <form className="ask-inline sv-ask" role="search"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const v = e.target.elements.q.value.trim()
+                      if (v) setExplainQuery({ q: v, nonce: Date.now() })
+                    }}>
+                <span className="ask-inline-ic" aria-hidden="true">✦</span>
+                <input name="q" type="text"
+                       placeholder={t('sv.ask.place', 'Ask a question — “my career”, “Jupiter”…')}
+                       aria-label={t('explain.title', 'Ask your chart')} />
+                <button type="submit">{t('explain.ask', 'Ask')}</button>
+              </form>
+              )}
+            </div>
+            <div className="deck-under sv-under">
+              <HouseExplorer story={story} house={houseSel} setHouse={setHouseSel}
+                             onFull={() => { setMode('full'); setSection('bhava'); window.scrollTo(0, 0) }} />
+            </div>
+          </section>
+          )}
+          {simple && !snap && explainQuery && (
+            <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />
+          )}
+          {simple && (
+            <FindingsPanel chart={chart} namer={namer} refs={refs} onHouse={setHouseSel}
+              goFull={(to) => {
+                setMode('full')
+                if (to === 'navamsa') setVarga('D9')
+                else if (['strength', 'dasha', 'classical', 'bhava'].includes(to) && !(snap && to === 'dasha')) setSection(to)
+                window.scrollTo(0, 0)
+              }} />
+          )}
+          {simple && <FullCta onFull={() => { setMode('full'); window.scrollTo(0, 0) }} />}
+
+          {!simple && (<>
           <section className={`chart-panel${style === 'north' || style === 'south' ? ' chart-panel--deck' : ''}`}>
             <div className="controls">
               <div className="styles">
@@ -1018,8 +1180,9 @@ export default function App() {
                       onClick={() => setSection(id)}>{label}</button>
             ))}
           </nav>
+          </>)}
 
-          {section === 'overview' && chart.analysis && !chart.analysis.error && (
+          {sec === 'overview' && chart.analysis && !chart.analysis.error && (
             <section className="table-panel" id="rg-signals">
               <h3>{t('ref.grahaSignals.title')}</h3>
               <div className="graha-picker">
@@ -1039,35 +1202,35 @@ export default function App() {
             </section>
           )}
 
-          {section === 'strength' && chart.shadbala && !chart.shadbala.error && chart.shadbala.grahas && (
+          {sec === 'strength' && chart.shadbala && !chart.shadbala.error && chart.shadbala.grahas && (
             <ShadbalaPanel data={chart.shadbala} namer={namer} />
           )}
 
-          {section === 'strength' && chart.motion && !chart.motion.error && (
+          {sec === 'strength' && chart.motion && !chart.motion.error && (
             <MotionPanel data={chart.motion} namer={namer} />
           )}
 
-          {section === 'bhava' && chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
+          {sec === 'bhava' && chart.analysis && chart.analysis.bhava_phala && !chart.analysis.bhava_phala.error && (
             <BhavaPanel data={chart.analysis.bhava_phala} namer={namer} />
           )}
 
-          {section === 'bhava' && chart.analysis && chart.analysis.yogas && !chart.analysis.yogas.error && (
+          {sec === 'bhava' && chart.analysis && chart.analysis.yogas && !chart.analysis.yogas.error && (
             <YogaPanel data={chart.analysis.yogas} namer={namer} />
           )}
 
-          {section === 'classical' && chart.analysis && chart.analysis.classical && (
+          {sec === 'classical' && chart.analysis && chart.analysis.classical && (
             <ClassicalPanel data={chart.analysis.classical} namer={namer} />
           )}
 
-          {!snap && section === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
+          {!snap && sec === 'projection' && <MatrixPanel date={date} time={time} place={place} namer={namer} />}
 
-          {!snap && section === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
+          {!snap && sec === 'explain' && <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />}
 
-          {!snap && section === 'varsha' && (
+          {!snap && sec === 'varsha' && (
             <VarshaphalPanel date={date} time={time} place={place} namer={namer} chartStyle={style} />
           )}
 
-          {!snap && section === 'dasha' && (
+          {!snap && sec === 'dasha' && (
           <section className="table-panel" id="rg-dasha">
             <h3>{t('dasha.title')}</h3>
             <DashaTree
@@ -1105,7 +1268,7 @@ export default function App() {
           </section>
           )}
 
-          {section === 'overview' && (
+          {sec === 'overview' && (
           <section className="table-panel">
             <h3>{t('ref.grahaTable.title')}</h3>
             <div className="scroll">
@@ -1149,7 +1312,7 @@ export default function App() {
           </section>
           )}
 
-          {section === 'reference' && (
+          {sec === 'reference' && (
           <section className="table-panel">
             <h3>{t('ref.varga.title')}</h3>
             <p className="rc-note varga-caption">
@@ -1190,7 +1353,7 @@ export default function App() {
 
       {/* Rāśi / nakṣatra / Rao reference — shown standalone on the landing page (no
           chart) and inside the Reference tab once a chart is cast. */}
-      {(!chart || section === 'reference') && (<>
+      {(refOpen || sec === 'reference') && (<>
       <section className="table-panel rasi-section">
         <h3>{t('ref.rasi.title')}</h3>
         <p className="rc-note rasi-intro">{t('ref.rasi.intro')}</p>
@@ -1199,7 +1362,7 @@ export default function App() {
             <button type="button" key={i}
                     className={openRasi === i ? 'on' : ''}
                     onClick={() => setOpenRasi(openRasi === i ? null : i)}>
-              {namer.rasi(i)}
+              {namer.rasiFull(i)}
             </button>
           ))}
         </div>

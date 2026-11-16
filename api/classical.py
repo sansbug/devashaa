@@ -48,7 +48,7 @@ GRAHA_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]
 # get bhāva-phala here (Chamatkāra).
 HOUSE_GRAHA_ORDER = GRAHA_ORDER + ["rahu", "ketu"]
 _HOUSE_SOURCES = [m for m in (sv, bj) if getattr(m, "IN_HOUSE", None)]
-for _hmod in ("phaladipika_rules", "chamatkara_rules"):
+for _hmod in ("phaladipika_rules", "phaladipika_nodes_rules", "chamatkara_rules"):
     try:
         _m = __import__(_hmod)
         if getattr(_m, "IN_HOUSE", None):

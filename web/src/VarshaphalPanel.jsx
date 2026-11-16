@@ -228,7 +228,7 @@ export default function VarshaphalPanel({ date, time, place, namer, chartStyle =
 
   if (!date || !time || !place) return null
   const nm = (k) => (k ? namer.grahaKey(k) : '—')
-  const rs = (i) => (namer.rasi ? namer.rasi(i) : i + 1)
+  const rs = (i) => (namer.rasi ? namer.rasiFull(i) : i + 1)
   const Chart = chartStyle === 'south' ? SouthIndianChart : NorthIndianChart
   const themeName = (k) => t('matrix.theme.' + k, (data?.projection?.themeNames?.[k] || k).split(' · ')[0])
   const G = ({ k, s = 14 }) => <><Glyph lord={k} size={s} /> {nm(k)}</>

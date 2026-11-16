@@ -77,12 +77,12 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
         <button type="button" className={direction === 'reverse' ? 'on' : ''}
                 onClick={() => setDirection('reverse')}
                 title={t('cd.btn.reverse.title')}>{t('cd.btn.reverse')}</button>
-        <span className="cd-total">{total}-year cycle · from lagna {namer.rasi(lagna)}</span>
+        <span className="cd-total">{total}-year cycle · from lagna {namer.rasiFull(lagna)}</span>
       </div>
 
       {current && (
         <p className="dt-chain">
-          {t('cd.chain.running_now')} <strong>{namer.rasi(current.sign)}</strong> {t('cd.chain.dasha')}
+          {t('cd.chain.running_now')} <strong>{namer.rasiFull(current.sign)}</strong> {t('cd.chain.dasha')}
           {' '}({t('cd.chain.lord')} {namer.grahaKey(current.lord)}) — {t('cd.chain.age')}{' '}
           {fmtAge(current.start)}–{fmtAge(current.end)}
           {birthMs != null && <span className="dt-chain-end"> · {t('cd.chain.to')} {calYear(current.end)}</span>}
@@ -136,7 +136,7 @@ export default function CharaDashaTimeline({ chara, lagna, jdUt, namer }) {
             {bands.map((b, i) => (
               <tr key={i} className={current && current.sign === b.sign ? 'cd-cur' : ''}>
                 <td>{i + 1}</td>
-                <td>{namer.rasi(b.sign)}{b.own && <span className="cd-own" title={t('cd.own.title')}> ∗</span>}</td>
+                <td>{namer.rasiFull(b.sign)}{b.own && <span className="cd-own" title={t('cd.own.title')}> ∗</span>}</td>
                 <td>{namer.grahaKey(b.lord)}</td>
                 <td>{b.years}</td>
                 <td>{fmtAge(b.start)}–{fmtAge(b.end)}</td>

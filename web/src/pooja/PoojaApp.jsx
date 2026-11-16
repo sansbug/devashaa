@@ -35,6 +35,7 @@ import Scripture, { versesFor } from './Scripture.jsx'
 import Muhurta, { PlacePicker, usePlace } from './Muhurta.jsx'
 import VoiceStudio from './Chants.jsx'
 import Room from './Room.jsx'
+import Logo from '../Logo.jsx'
 import './pooja.css'
 
 const SUPPORT_URL = (import.meta.env.VITE_SUPPORT_URL || '').trim()
@@ -654,24 +655,28 @@ export default function PoojaApp({ route, go, lang = 'en', setLang }) {
   else body = <Card title={L('Not found', 'नहीं मिला')}><p><a href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}>{L('Back to Pūjā & Havan', 'पूजा एवं हवन पर वापस')}</a></p></Card>
   return (
     <div className="page pu-page" lang={lang}>
-      <header className="pu-top">
-        <a className="pu-brand" href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}>
-          <span className="pu-brand-mark" aria-hidden="true">🪔</span>
-          <span><b>devashaa</b><i>{L('Pūjā & Havan', 'पूजा एवं हवन')}</i></span>
-        </a>
+      {/* The same top bar as the chart pages: the name, the two sections of the
+          site, the language switch. The section's own pages sit in the row under it. */}
+      <div className="topbar">
+        <a className="topbar-logo" href="/" onClick={(e) => { e.preventDefault(); go('/') }}><Logo /></a>
+        <nav className="site-tabs" aria-label={L('Sections of the site', 'साइट के अनुभाग')}>
+          <a href="/" onClick={(e) => { e.preventDefault(); go('/') }}>{L('Jyotiṣa charts', 'ज्योतिष कुंडली')}</a>
+          <a className="on" href="/pooja" aria-current="page" onClick={(e) => { e.preventDefault(); go('/pooja') }}>{L('Pūjā & Havan', 'पूजा एवं हवन')}</a>
+        </nav>
+        <div className="appearance">
+          {setLang && (
+            <div className="lang-switch" role="group" aria-label={L('Language', 'भाषा')}>
+              <button type="button" className={`lang-btn${lang === 'en' ? ' on' : ''}`} aria-pressed={lang === 'en'} onClick={() => setLang('en')}>EN</button>
+              <button type="button" className={`lang-btn${lang === 'hi' ? ' on' : ''}`} aria-pressed={lang === 'hi'} onClick={() => setLang('hi')}>हिं</button>
+            </div>
+          )}
+        </div>
+        <a className="topbar-signin" href="/pooja/desk" onClick={(e) => { e.preventDefault(); go('/pooja/desk') }}>{L('For pandits', 'पंडित जी हेतु')}</a>
+      </div>
+      <header className="pu-top pu-top--sub">
         <nav className="pu-nav" aria-label={L('Sections', 'अनुभाग')}>
           {nav.map(([k, p, label]) => <a key={k} className={active === k ? 'on' : ''} href={p} onClick={(e) => { e.preventDefault(); go(p) }}>{label}</a>)}
         </nav>
-        <div className="pu-top-right">
-          {setLang && (
-            <span className="pu-lang">
-              <button type="button" className={lang === 'en' ? 'on' : ''} onClick={() => setLang('en')}>EN</button>
-              <button type="button" className={lang === 'hi' ? 'on' : ''} onClick={() => setLang('hi')}>हिं</button>
-            </span>
-          )}
-          <a className="pu-back" href="/pooja/desk" onClick={(e) => { e.preventDefault(); go('/pooja/desk') }}>{L('For pandits', 'पंडित जी हेतु')}</a>
-          <a className="pu-back" href="/" onClick={(e) => { e.preventDefault(); go('/') }}>{L('Jyotiṣa charts →', 'ज्योतिष कुंडली →')}</a>
-        </div>
       </header>
       <main className="pu-main">{body}</main>
       <footer className="pu-foot">

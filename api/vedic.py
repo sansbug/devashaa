@@ -50,12 +50,13 @@ _configure_thread()
 CALC_FLAGS = swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_SIDEREAL
 
 # Names are carried in three systems and the client chooses. "common" is the
-# ordinary English spelling people actually write (Chandra, Surya, Mesha);
+# ordinary spelling people actually write (Chandra, Surya, Mesh — the rāśis in
+# the owner's Hindi-style spelling: Mesh, Vrishabh, Mithun, Kark, Singh …);
 # "iast" is the scholarly transliteration with diacritics (Candra, Sūrya, Meṣa);
 # "en" is the plain English equivalent (Moon, Sun, Aries).
 RASIS = [
-    "Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
-    "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena",
+    "Mesh", "Vrishabh", "Mithun", "Kark", "Singh", "Kanya",
+    "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen",
 ]
 RASIS_IAST = [
     "Meṣa", "Vṛṣabha", "Mithuna", "Karka", "Siṁha", "Kanyā",

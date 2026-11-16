@@ -311,7 +311,7 @@ def reference():
         ],
         "vargas": [{"key": k, "name_iast": sa, "name": en} for k, sa, en, _ in VARGAS],
         "naming_systems": [
-            {"key": "common", "label": "Sanskrit", "example": "Chandra · Mesha"},
+            {"key": "common", "label": "Sanskrit", "example": "Chandra · Mesh"},
             {"key": "iast", "label": "Sanskrit (IAST)", "example": "Candra · Meṣa"},
             {"key": "english", "label": "English", "example": "Moon · Aries"},
         ],

@@ -76,7 +76,7 @@ export default function ClassicalPanel({ data, namer }) {
           {signReadings.map((r) => (
             <div className="cl-reading" key={`sign-${r.graha}-${r.sign}`}>
               <h4 className="cl-place">
-                {namer.grahaKey(r.graha)} {t('classical.in', 'in')} {namer.rasi(r.sign)}
+                {namer.grahaKey(r.graha)} {t('classical.in', 'in')} {namer.rasiFull(r.sign)}
               </h4>
               {r.sources.map((s, i) => <SourceLine key={i} s={s} />)}
             </div>

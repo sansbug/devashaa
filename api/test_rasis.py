@@ -118,8 +118,8 @@ check("Tulā hosts Saturn's exaltation at 20°",
 check("Tulā hosts Sūrya's debilitation at 10°",
       rasis.rasi(6)["dignities"]["debilitation"] == [{"graha": "sun", "degree": 10.0}])
 empty = [N[s] for s in range(12) if rasis.rasi(s)["dignities"]["empty"]]
-check("exactly 4 signs host no exaltation or fall (Mithuna/Siṁha/Dhanus/Kumbha)",
-      sorted(empty) == sorted(["Mithuna", "Siṁha", "Dhanus", "Kumbha"]), str(empty))
+check("exactly 4 signs host no exaltation or fall (Mithuna/Siṁha/Dhanu/Kumbha)",
+      sorted(empty) == sorted(["Mithuna", "Siṁha", "Dhanu", "Kumbha"]), str(empty))
 
 print("\nThe 'not in BPHS' list is present on every card:")
 check("all 12 carry the absent-attribute list",

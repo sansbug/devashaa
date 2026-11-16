@@ -69,6 +69,10 @@ _RASI_ALIASES: dict[str, int] = {}
 for _i in range(12):
     for _arr in (vedic.RASIS, vedic.RASIS_IAST, vedic.RASIS_EN):
         _RASI_ALIASES[_fold(_arr[_i])] = _i
+# the longer spellings the site used before, and that people still type
+for _i, _old in enumerate(("mesha", "vrishabha", "mithuna", "karka", "simha", "kanya",
+                           "tula", "vrishchika", "dhanu", "makara", "kumbha", "meena")):
+    _RASI_ALIASES.setdefault(_old, _i)
 
 _ORDINAL_WORDS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
                   "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10,

@@ -38,7 +38,7 @@ function BhavaCard({ b, namer, combo }) {
     <div className="bhava-card">
       <button type="button" className="bhava-head" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         <span className="bhava-num">{t(ord(b.house))}</span>
-        <span className="bhava-sign">{namer.rasi(b.sign)}</span>
+        <span className="bhava-sign">{namer.rasiFull(b.sign)}</span>
         <span className="bhava-lordline">
           {t('bhava.lordline.lord')} <strong>{namer.grahaKey(b.lord)}</strong> {t('bhava.lordline.in')} {t(ord(b.lord_in_house))}
         </span>

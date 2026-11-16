@@ -68,12 +68,12 @@ def cited(value, src, ref, *, conflict=None, ocr=None, note=None):
 
 
 NAMES = [
-    ("Meṣa", "Mesha", "Aries"), ("Vṛṣabha", "Vrishabha", "Taurus"),
-    ("Mithuna", "Mithuna", "Gemini"), ("Karka", "Karka", "Cancer"),
-    ("Siṁha", "Simha", "Leo"), ("Kanyā", "Kanya", "Virgo"),
-    ("Tulā", "Tula", "Libra"), ("Vṛścika", "Vrishchika", "Scorpio"),
-    ("Dhanus", "Dhanus", "Sagittarius"), ("Makara", "Makara", "Capricorn"),
-    ("Kumbha", "Kumbha", "Aquarius"), ("Mīna", "Meena", "Pisces"),
+    ("Meṣa", "Mesh", "Aries"), ("Vṛṣabha", "Vrishabh", "Taurus"),
+    ("Mithuna", "Mithun", "Gemini"), ("Karka", "Kark", "Cancer"),
+    ("Siṁha", "Singh", "Leo"), ("Kanyā", "Kanya", "Virgo"),
+    ("Tulā", "Tula", "Libra"), ("Vṛścika", "Vrishchik", "Scorpio"),
+    ("Dhanu", "Dhanu", "Sagittarius"), ("Makara", "Makar", "Capricorn"),
+    ("Kumbha", "Kumbh", "Aquarius"), ("Mīna", "Meen", "Pisces"),
 ]
 
 CH4 = "Vol I ch.4"
@@ -212,7 +212,7 @@ ABSENT_FROM_ALL_RASIS = (
 SYMBOL_NOTE = (
     "BPHS gives an emblem to only five signs — Mithuna (a male and a female, "
     "holding a mace and a lute), Kanyā (a virgin holding grains and fire), "
-    "Dhanus (adores an arch), Kumbha (a man holding a pot) and Mīna (a pair of "
+    "Dhanu (adores an arch), Kumbha (a man holding a pot) and Mīna (a pair of "
     "fish). There is no ram, no bull, no lion, no scorpion and no goat "
     "anywhere in either volume. The familiar animal set is convention, not text."
 )

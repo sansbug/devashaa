@@ -43,6 +43,8 @@ import drishti as dr
 import functional as fn
 import karakas as kar
 import bhava_phala as bhp
+import dhana_bhava
+import bhava_effects
 import yogas as yg
 import classical
 
@@ -351,6 +353,19 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
         out["bhava_phala"] = bhp.bhava_phala(chart_positions, lagna, lang=lang)
     except Exception as e:  # noqa: BLE001
         out["bhava_phala"] = {"error": f"Bhāva-phala failed: {e}"}
+
+    # ch.13 vv.1-7 — the 2nd-house (wealth) verses whose own conditions this chart
+    # meets. The Moon's phase decides her natural nature (ch.3 v.11); when the caller
+    # did not supply it, it is read off the two longitudes.
+    try:
+        mw = moon_waxing
+        if mw is None and "moon" in chart_positions and "sun" in chart_positions:
+            mw = (chart_positions["moon"]["longitude"] - chart_positions["sun"]["longitude"]) % 360.0 < 180.0
+        out["dhana_bhava"] = dhana_bhava.evaluate(chart_positions, lagna, moon_waxing=mw)
+        # chs 12, 14-18, 20-23 — the other house-effect chapters (see bhava_effects.py)
+        out["bhava_effects"] = bhava_effects.evaluate(chart_positions, lagna, moon_waxing=mw)
+    except Exception as e:  # noqa: BLE001
+        out["dhana_bhava"] = {"error": f"ch.13 evaluation failed: {e}"}
 
     # Yogas — which named BPHS yogas the chart forms (chs 35-39 + Vol II ch.75).
     try:

@@ -108,7 +108,7 @@ export default function NavamsaPanel({ data, namer }) {
              empty={t('navamsa.vargottama.empty')}>
         {v.items.map((it) => (
           <li key={it.key}>
-            <strong>{nameOf(it.key)}</strong> in <em>{namer.rasi(it.sign)}</em>
+            <strong>{nameOf(it.key)}</strong> in <em>{namer.rasiFull(it.sign)}</em>
             <span className={`nv-kind nv-k-${it.kind}`}>{t(KIND_LABEL[it.kind] ?? it.kind)}</span>
             {it.result && <span className="nv-note"> — {it.result}</span>}
           </li>
@@ -121,7 +121,7 @@ export default function NavamsaPanel({ data, namer }) {
         {p.items.map((it) => (
           <li key={it.key}>
             <strong>{nameOf(it.key)}</strong>
-            <span className="nv-note"> — {ORD[it.navamsa_index]} navāṁśa of {namer.rasi(it.sign)} → {namer.rasi(it.navamsa_sign)}</span>
+            <span className="nv-note"> — {ORD[it.navamsa_index]} navāṁśa of {namer.rasiFull(it.sign)} → {namer.rasiFull(it.navamsa_sign)}</span>
           </li>
         ))}
       </Group>
@@ -131,7 +131,7 @@ export default function NavamsaPanel({ data, namer }) {
         {k.items.map((it) => (
           <li key={it.key}>
             From <strong>{nameOf(it.key)}</strong> <span className="nv-karaka">({it.karaka})</span> →{' '}
-            <em>{namer.rasi(it.navamsa_sign)}</em> navāṁśa in {namer.rasi(it.rasi_8th)} <span className="nv-dim">(the 8th rāśi)</span>
+            <em>{namer.rasiFull(it.navamsa_sign)}</em> navāṁśa in {namer.rasiFull(it.rasi_8th)} <span className="nv-dim">(the 8th rāśi)</span>
             {it.lord && <>, lord <strong>{namer.grahaKey(it.lord)}</strong>
               {it.lord_house && <span className="nv-dim"> in the {ORD[it.lord_house]} house</span>}
               {it.lord_in_dusthana && <span className="nv-warn">{t('navamsa.khara.dusthana')}</span>}</>}

@@ -39,7 +39,7 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
   const sun = chart.grahas.find((g) => g.key === 'sun')
   const moon = chart.grahas.find((g) => g.key === 'moon')
   const title = `${name || t('share.untitled', 'A birth chart')} — Devashaa`
-  const text = `${title}: ${t('share.text', 'lagna')} ${namer.rasi(chart.lagna_rasi)} · ${t('share.moon', 'Moon')} ${namer.rasi(moon.rasi)} · ${t('share.sun', 'Sun')} ${namer.rasi(sun.rasi)}`
+  const text = `${title}: ${t('share.text', 'lagna')} ${namer.rasiFull(chart.lagna_rasi)} · ${t('share.moon', 'Moon')} ${namer.rasiFull(moon.rasi)} · ${t('share.sun', 'Sun')} ${namer.rasiFull(sun.rasi)}`
   const copy = async () => {
     try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch { /* fall back to selecting */ }
   }

@@ -51,7 +51,7 @@ function Spark({ series, windows }) {
 export default function ExplainPanel({ date, time, place, namer, initialQuery }) {
   const { t, lang } = useLang()
   const nm = (k) => (namer && namer.grahaKey ? namer.grahaKey(k) : k)
-  const rasiName = (i) => (namer && namer.rasi ? namer.rasi(i) : i)
+  const rasiName = (i) => (namer && namer.rasi ? namer.rasiFull(i) : i)
   const facetName = (f) => t('matrix.facet.' + f, f)
 
   const [q, setQ] = useState('')

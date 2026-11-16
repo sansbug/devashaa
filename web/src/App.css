@@ -1,14 +1,52 @@
 /* ============================================================================
    Themes. Every colour in this file is a variable so a theme swap is complete —
    a single hardcoded hex would survive into the light theme and break it.
-   Applied via data-theme on <html>; "tulasi" is the default.
+   Applied via data-theme on <html>; "clean" is the default.
    ========================================================================== */
 
-/* NOTE: bare :root carries Tulasi (the default — see its block), so any property a
+/* NOTE: bare :root carries Clean (the default — see its block), so any property a
    theme does not redefine LEAKS in from it. Every theme below therefore restates the
    full contract. Four themes: Midnight (dark), Lotus, Tulasi and Blossom (light).
    Aarti, Ember and Slate were retired; a browser still holding one of them falls
    back to the default (themes.js validTheme). */
+
+/* Clean — the default. A plain white page, near-black ink, one green accent and
+   hairline rules: no wash behind the page, no glow, no gradients. The hairline
+   (--line) is decorative here, so the charts — where a rule IS the data — get a
+   darker one of their own (see the Clean overrides at the end of this file). */
+:root,
+:root[data-theme='clean'] {
+  color-scheme: light;
+  --glow: none;
+  --text-weight: 400;
+  --label-weight: 600;
+  --strong-weight: 600;
+  --logo-hi: #f28aa5;
+  --bg: #ffffff;
+  --bg-image: none;
+  --panel: #ffffff;
+  --sunken: #f5f6f7;
+  --hover: #eef0f2;
+  --line: #dfe2e6;
+  --dasha-fav: #0b7a55;
+  --dasha-adv: #9a4a12;
+  --ruler-line: #6b7580;  /* 4.7:1 on white */
+  --ink: #0f1419;
+  --dim: #5b6570;         /* 5.9:1 on white */
+  --accent: #c23650;      /* rose text and links: 5.5:1 on white */
+  --on-accent: #ffffff;
+  --accent-soft: #fff1f3;
+  --rx: #b42318;
+  --lagna: #fdecef;
+  --row-hi: #fef5f7;
+  --quote-bg: #f5f6f7;
+  --err-bg: #fdecea;
+  --err-line: #e0796f;
+  --err-ink: #a3211a;
+  --ok-ink: #087f5b;
+  --ok-line: #6cc3a3;
+  --accent-glow: none;
+}
 
 /* Lotus — sun on still water. A light theme glows by tint direction rather than
    by being brighter than the paper: a gold sunbloom overhead, aqua rising off
@@ -141,7 +179,6 @@
    a chart grid, where a rule IS the data — so --line and --ruler-line are
    re-derived for contrast; and the panel is pure white so it sits above every
    gradient stop rather than reading as a hole punched in the wash. */
-:root,
 :root[data-theme='tulasi'] {
   color-scheme: light;
   --glow: none;
@@ -1925,7 +1962,7 @@ footer a:hover { color: var(--accent); }
 
 
 /* ── the chart deck ───────────────────────────────────────────────────────── */
-:root { --deck-gold: #d89b26; --deck-gold-soft: #ead6a5; }
+:root { --deck-gold: #d89b26; --deck-gold-soft: #ead6a5; --deck-wash: #ec5f9a; }  /* the soft glow behind the chart: pink (owner, 2026-11-15) */
 .deck-side { display: grid; gap: 1rem; min-width: 0; }
 .deck-under { display: grid; gap: 1rem; margin-top: 1rem; min-width: 0; }
 @media (min-width: 700px) { .deck-under { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); align-items: start; } }
@@ -1992,7 +2029,7 @@ footer a:hover { color: var(--accent); }
 .dk-banner-title { font-family: Georgia, 'Times New Roman', serif; font-size: 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: color-mix(in oklab, var(--deck-gold-soft) 85%, var(--on-accent)); }
 .dk-banner-sub { font-size: .72rem; opacity: .92; margin-top: .1rem; }
 .chart-panel--deck .north-chart .frame, .chart-panel--deck .south-chart .frame { stroke: color-mix(in oklab, var(--deck-gold) 72%, var(--line)); }
-.chart-panel--deck .north-chart { border: 2px solid color-mix(in oklab, var(--deck-gold) 80%, var(--line)); border-radius: 4px; background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 8%, transparent), transparent 55%); }
+.chart-panel--deck .north-chart { border: 2px solid color-mix(in oklab, var(--deck-gold) 80%, var(--line)); border-radius: 4px; background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-wash) 8%, transparent), transparent 55%); }
 @media (max-width: 650px) { .dk-hl { grid-template-columns: 2.2rem 1fr; } .dk-hl-text { grid-column: 2; padding-top: 0; } }
 
 
@@ -2009,7 +2046,7 @@ footer a:hover { color: var(--accent); }
 .rc-banner-sub { font-size: .74rem; opacity: .92; margin-top: .1rem; }
 .rasi-chart {
   position: relative; container-type: inline-size; width: 100%; max-width: 640px; margin: 0 auto; aspect-ratio: 1 / 1;
-  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 7%, transparent), transparent 55%), var(--panel);
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-wash) 12%, transparent), transparent 55%), var(--panel);
   border: 2px solid var(--deck-gold); overflow: visible;
 }
 .rasi-chart > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -2161,7 +2198,7 @@ html[data-refs="1"] .cl-src-plain { display: none; }
 .sh-modal { width: min(34rem, 100%); max-height: 92vh; overflow: auto; }
 .sh-x { margin-left: auto; font: inherit; font-size: 1.3rem; line-height: 1; background: none; border: 0; color: var(--on-accent); cursor: pointer; }
 .sh-card { border: 2px solid var(--deck-gold); border-radius: 12px; padding: .8rem 1rem; margin: .3rem 0 .8rem;
-  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-gold) 8%, transparent), transparent 60%), var(--panel); }
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--deck-wash) 12%, transparent), transparent 60%), var(--panel); }
 .sh-card-head { display: flex; flex-direction: column; gap: .1rem; margin-bottom: .5rem; }
 .sh-card-brand { font-family: Georgia, 'Times New Roman', serif; letter-spacing: .14em; text-transform: uppercase; font-size: .64rem; color: var(--accent); }
 .sh-card-name { font-family: Georgia, 'Times New Roman', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
@@ -3132,3 +3169,365 @@ html[data-refs="1"] .cl-src-plain { display: none; }
   .dk-pos .gbub { display: none; }
   .dk-pos .dk-en, .dk-nak small { font-size: .56rem; }
 }
+
+/* --- the simple view: landing page, and the first look at a chart ---------
+   Colours are the theme's variables throughout; nothing here is a fixed hex. */
+.a-settings {
+  background: var(--sunken); border: 1px solid var(--line); color: var(--dim);
+  border-radius: 6px; padding: .26rem .6rem; font-size: .74rem; cursor: pointer;
+}
+.a-settings:hover, .a-settings.on { color: var(--ink); border-color: var(--accent); }
+.a-panel {
+  flex: 1 0 100%; display: flex; align-items: center; justify-content: flex-end;
+  gap: .75rem; flex-wrap: wrap;
+}
+
+.sv-hero { max-width: 680px; margin: 0 auto 1.1rem; }
+.sv-hero h2 { margin: 0 0 .4rem; font-size: 1.7rem; line-height: 1.2; color: var(--ink); font-weight: var(--strong-weight, 600); text-wrap: balance; }
+.sv-hero > p { margin: 0 0 1.1rem; color: var(--dim); font-size: .95rem; line-height: 1.5; }
+
+.sv-tiles-wrap { background: var(--sunken); border: 1px solid var(--line); border-radius: 12px; padding: .75rem; }
+.sv-tiles-head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin: 0 .15rem .6rem; }
+.sv-tiles-title { font-weight: var(--strong-weight, 600); font-size: .88rem; color: var(--ink); }
+.sv-tag { font-size: .68rem; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: .12rem .55rem; background: var(--panel); }
+.sv-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+.sv-tile {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem; text-align: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .8rem .5rem; min-width: 0;
+}
+.sv-tile-label { font-size: .76rem; color: var(--dim); }
+.sv-tile-value { font-size: 1.25rem; color: var(--accent); font-weight: var(--strong-weight, 600); overflow-wrap: anywhere; line-height: 1.2; }
+.sv-tile-sub { font-size: .7rem; color: var(--dim); }
+@media (max-width: 480px) {
+  .sv-tiles { gap: .4rem; }
+  .sv-tile { padding: .6rem .3rem; }
+  .sv-tile-value { font-size: 1rem; }
+  .sv-hero h2 { font-size: 1.4rem; }
+}
+
+/* The landing form: stacked, date and time side by side, one full-width button. */
+.birth-form.birth-form--landing {
+  max-width: 680px; margin: 0 auto 1.2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start;
+}
+.birth-form--landing .sv-form-head { grid-column: 1 / -1; display: flex; flex-direction: column; gap: .2rem; }
+.birth-form--landing .sv-form-head b { font-size: .95rem; color: var(--ink); }
+.birth-form--landing .sv-form-head span { font-size: .8rem; color: var(--dim); }
+.birth-form--landing .field label { text-transform: none; letter-spacing: 0; font-size: .82rem; color: var(--ink); }
+.birth-form--landing .place-field { grid-column: 1 / -1; }
+.birth-form--landing .place-field .picked { position: static; margin-top: 0; white-space: normal; }
+.birth-form--landing .field-name { grid-column: 1 / -1; order: 5; }
+.birth-form--landing .go { grid-column: 1 / -1; order: 6; margin: 0; padding: .85rem 1.2rem; font-size: 1rem; }
+.sv-form-wait { grid-column: 1 / -1; order: 7; text-align: center; }
+
+/* The five trust links, as one quiet line. */
+.trust.trust--quiet { margin: 0 0 .6rem; gap: .2rem .9rem; }
+.trust.trust--quiet a { border: 0; background: none; padding: 0; font-size: .74rem; color: var(--dim); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.trust.trust--quiet a:hover { color: var(--accent); }
+.trust.trust--quiet a i { display: none; }
+.sv-ref-link { text-align: center; margin: 0 0 1.4rem; }
+.sv-link { background: none; border: 0; padding: .2rem 0; color: var(--accent); cursor: pointer; font-size: .8rem; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Simple | Full analysis */
+.sv-mode { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--sunken); }
+.sv-mode button { background: none; border: 0; color: var(--dim); padding: .42rem .8rem; font-size: .8rem; cursor: pointer; white-space: nowrap; }
+.sv-mode button.on { background: var(--accent); color: var(--on-accent); font-weight: var(--strong-weight, 600); }
+.meta .sv-tiles-wrap { margin-top: .2rem; }
+
+.sv-panel .controls { justify-content: flex-end; }
+.sv-note { margin: .1rem 0 .6rem; color: var(--dim); font-size: .8rem; line-height: 1.5; }
+.sv-explain .dk-body { padding: 1rem; display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; }
+.sv-explain b { font-size: 1rem; color: var(--ink); }
+.sv-run .dk-body { padding: .7rem .9rem .8rem; }
+.sv-run-row { display: grid; grid-template-columns: auto 1fr auto; gap: .6rem; align-items: center; padding: .5rem 0; border-top: 1px solid var(--line); }
+.sv-run-text { display: flex; flex-direction: column; min-width: 0; font-size: .92rem; }
+.sv-run-level { font-size: .7rem; color: var(--dim); }
+.sv-run-end { text-align: right; font-size: .78rem; font-variant-numeric: tabular-nums; }
+.sv-run-end i { display: block; font-style: normal; color: var(--dim); font-size: .72rem; }
+.sv-run .sv-link { margin-top: .4rem; }
+.ask-inline.sv-ask { margin-top: 0; }
+
+.sv-cta {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: 1.25rem; padding: 1.1rem 1.25rem; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.sv-cta > div { flex: 1 1 320px; min-width: 0; }
+.sv-cta h3 { margin: 0 0 .25rem; font-size: 1rem; color: var(--ink); }
+.sv-cta p { margin: 0; color: var(--dim); font-size: .84rem; line-height: 1.5; }
+header .health { display: block; width: fit-content; margin: .4rem auto 0; }
+.saved.saved--landing { max-width: 680px; margin-left: auto; margin-right: auto; }
+
+/* --- Clean theme: flat surfaces ---------------------------------------------
+   The other themes dress the cards (gradient heads, serif titles, soft shadows).
+   Clean takes that off: a card is a white box with a hairline. */
+:root[data-theme='clean'] .dk-card,
+:root[data-theme='clean'] .rc-card { box-shadow: none; border-radius: 12px; }
+:root[data-theme='clean'] .dk-head {
+  background: none; color: var(--ink); font-family: inherit; font-size: .95rem;
+  font-weight: 600; border-bottom: 1px solid var(--line);
+}
+:root[data-theme='clean'] .dk-head-right { color: var(--dim); }
+:root[data-theme='clean'] .birth-form,
+:root[data-theme='clean'] .meta,
+:root[data-theme='clean'] .chart-panel,
+:root[data-theme='clean'] .table-panel { box-shadow: none; border-radius: 12px; }
+:root[data-theme='clean'] .meta h2 { color: var(--ink); font-weight: 600; }
+:root[data-theme='clean'] .table-panel h3 { color: var(--ink); font-weight: 600; }
+:root[data-theme='clean'] .go,
+:root[data-theme='clean'] .rg-open { border-radius: 999px; box-shadow: none; }
+:root[data-theme='clean'] .rg-open.sh-open { background: var(--panel); color: var(--ink); border-color: var(--line); }
+:root[data-theme='clean'] .sv-mode { border-radius: 999px; }
+:root[data-theme='clean'] .sv-mode button.on { background: var(--ink); color: var(--panel); }
+:root[data-theme='clean'] .site-tabs a.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+:root[data-theme='clean'] .controls button.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+:root[data-theme='clean'] .field input { background: var(--panel); border-radius: 10px; }
+:root[data-theme='clean'] .logo-word { font-family: inherit; font-weight: 700; letter-spacing: 0; color: var(--ink); }
+:root[data-theme='clean'] .sv-tile-value { color: var(--ink); }
+/* the charts keep a rule dark enough to read as data */
+:root[data-theme='clean'] .rasi-chart,
+:root[data-theme='clean'] .north-chart,
+:root[data-theme='clean'] .south-chart,
+:root[data-theme='clean'] .sky-wheel { --line: #8a939d; }
+:root[data-theme='clean'] .dk-nak.hard { color: #b0131e; }
+
+/* controls that sit in a card head were drawn for a dark head */
+:root[data-theme='clean'] .dk-order { border-color: var(--line); }
+:root[data-theme='clean'] .dk-order button { color: var(--dim); }
+:root[data-theme='clean'] .dk-order button.on { background: var(--ink); color: var(--panel); }
+:root[data-theme='clean'] .dk-legend .dk-sb { background: var(--line); }
+:root[data-theme='clean'] .dk-legend .dk-sb.on { background: var(--ink); }
+.sv-casting { text-align: center; margin: 1rem 0; }
+.meta .dk-hl-card { margin-top: .9rem; }
+
+/* simple view: the Explain row sits left of the chart-style toggle */
+.sv-panel .controls { justify-content: space-between; }
+.sv-explain-row { display: flex; align-items: center; gap: .8rem; min-width: 0; flex: 1 1 auto; }
+.sv-explain-row .go { flex: none; padding: .55rem 1.1rem; }
+.sv-explain-row span { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.sv-explain-row b { font-size: .9rem; color: var(--ink); }
+.sv-explain-row small { font-size: .76rem; color: var(--dim); }
+/* compact Key Highlights in the side column */
+.sv-side .dk-hl { grid-template-columns: 1.9rem minmax(6.5rem, 8rem) 1fr; gap: .5rem; padding: .35rem .3rem; }
+.sv-side .dk-hl-title { font-size: .8rem; padding-top: .2rem; }
+.sv-side .dk-hl-text { font-size: .8rem; padding-top: .15rem; line-height: 1.4; }
+.sv-side .dk-rbub { transform: scale(.82); transform-origin: left top; }
+@media (max-width: 650px) { .sv-side .dk-hl { grid-template-columns: 1.9rem 1fr; } }
+.sv-run-next { grid-column: 2 / -1; font-size: .76rem; color: var(--dim); margin-top: -.15rem; }
+.sv-run-next b { color: var(--ink); }
+
+/* the Explain button is the primary action, not one of the chart-style toggles */
+.controls .sv-explain-row .go { background: var(--accent); color: var(--on-accent); border: 0; font-size: .9rem; font-weight: 600; }
+.sv-explain-row { flex-wrap: wrap; }
+.sv-explain-row span { flex: 1 1 11rem; }
+/* Clean: the action buttons are solid rose with white lettering (4.7:1) */
+:root[data-theme='clean'] { --btn: #fc546c; --btn-hover: #f43f5a; --on-btn: #ffffff; }
+:root[data-theme='clean'] .go,
+:root[data-theme='clean'] .controls .sv-explain-row .go,
+:root[data-theme='clean'] .rg-open:not(.sh-open),
+:root[data-theme='clean'] .rg-nudge-go,
+:root[data-theme='clean'] .ask-inline button,
+:root[data-theme='clean'] .wt-play,
+:root[data-theme='clean'] .sec-pill.on { background: var(--btn); color: var(--on-btn); border-color: var(--btn); filter: none; }
+:root[data-theme='clean'] .go:hover:not(:disabled),
+:root[data-theme='clean'] .rg-open:not(.sh-open):hover,
+:root[data-theme='clean'] .ask-inline button:hover { background: var(--btn-hover); border-color: var(--btn-hover); }
+
+/* --- the top bar: logo · sections · language and settings -------------------- */
+.topbar { display: flex; align-items: center; gap: .4rem 1.4rem; flex-wrap: wrap; margin: 0 0 1.4rem; padding: .2rem 0 .8rem; border-bottom: 1px solid var(--line); }
+.topbar-logo { text-decoration: none; display: inline-flex; flex: none; }
+.topbar .logo { margin: 0; gap: .5rem; }
+.topbar .logo-mark { width: 34px; height: 34px; }
+.topbar .logo-word { font-size: 1.35rem; }
+.topbar .logo-tag { display: none; }
+.page .topbar .site-tabs { margin: 0; gap: .25rem; justify-content: flex-start; flex-wrap: wrap; }
+.page .topbar .site-tabs a { border: 0; background: none; color: var(--dim); font-size: .9rem; padding: .42rem .95rem; border-radius: 999px; }
+.page .topbar .site-tabs a:hover { color: var(--ink); background: var(--sunken); }
+.page .topbar .site-tabs a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.topbar .appearance { margin: 0 0 0 auto; }
+header.hdr-meta { margin-bottom: 0; }
+header.hdr-meta:not(:empty) { margin-bottom: 1.2rem; }
+@media (max-width: 560px) {
+  .topbar { gap: .3rem .6rem; }
+  .topbar .logo-word { font-size: 1.15rem; }
+  .page .topbar .site-tabs a { padding: .36rem .7rem; font-size: .84rem; }
+}
+.topbar .appearance { margin: 0 0 0 auto; flex-wrap: nowrap; }
+.topbar .appearance .a-panel { flex: none; }
+.topbar-signin { flex: none; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: .42rem 1.05rem; font-size: .88rem; font-weight: 600; cursor: pointer; max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-signin:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 700px) { .topbar .appearance { flex-wrap: wrap; } .topbar .appearance .a-panel { flex: 1 0 100%; } }
+
+
+/* Clean: the action buttons are a flat coral-pink pill (#fc546c) with a faint halo
+   (the owner's reference, 2026-11-15). Lettering is bold white. */
+:root[data-theme='clean'] .go,
+:root[data-theme='clean'] .controls .sv-explain-row .go,
+:root[data-theme='clean'] .rg-open:not(.sh-open),
+:root[data-theme='clean'] .rg-nudge-go,
+:root[data-theme='clean'] .ask-inline button,
+:root[data-theme='clean'] .wt-play,
+:root[data-theme='clean'] .sec-pill.on {
+  background: #fc546c; border-color: transparent; font-weight: 500; font-size: .875rem; border-radius: 999px; transition: background-color .15s;
+  box-shadow: none;
+}
+:root[data-theme='clean'] .go:hover:not(:disabled),
+:root[data-theme='clean'] .rg-open:not(.sh-open):hover,
+:root[data-theme='clean'] .ask-inline button:hover {
+  background: #f43f5a;
+  box-shadow: none;
+}
+:root[data-theme='clean'] .go:disabled { box-shadow: none; }
+
+/* the main call-to-action buttons take the reference's padding (0.75rem × 1.5rem) */
+:root[data-theme='clean'] .go,
+:root[data-theme='clean'] .controls .sv-explain-row .go { padding: .75rem 1.5rem; font-weight: 500; font-size: .875rem; }
+
+/* Clean: the mark sits on a solid coral badge, drawn in white, so it reads at 34px.
+   (On a white page the hairline wheel all but vanished.) */
+:root[data-theme='clean'] .logo-mark {
+  background: #fc546c; border-radius: 28%;
+  --line: #ffffff; --dim: #ffffff; --accent: #ffffff; --logo-hi: #fff1b8;
+}
+:root[data-theme='clean'] .topbar .logo-mark { width: 38px; height: 38px; }
+
+
+/* the top bar on the Pūjā pages: "For pandits" is a link in the Sign-in slot */
+a.topbar-signin { text-decoration: none; display: inline-block; }
+.pu-top.pu-top--sub { border-bottom: 0; padding-bottom: 0; margin-bottom: 1.1rem; }
+.pu-top--sub .pu-nav { margin-left: 0; }
+
+
+/* simple view: name · Explain · chart style · Share · Simple/Full, in ONE compact row */
+.sv-panel .controls.sv-bar { flex-wrap: nowrap; gap: .6rem; justify-content: flex-start; align-items: center; }
+.sv-bar .sv-name { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--ink); flex: 0 1 auto; min-width: 0; max-width: 11rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-bar .sv-explain-row { flex: 1 1 auto; flex-wrap: nowrap; gap: .6rem; min-width: 0; }
+.sv-bar .sv-explain-row span { flex: 0 1 auto; min-width: 0; }
+.sv-bar .sv-explain-row b, .sv-bar .sv-explain-row small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:root[data-theme='clean'] .controls.sv-bar .sv-explain-row .go,
+.controls.sv-bar .sv-explain-row .go { padding: .5rem 1rem; white-space: nowrap; }
+.sv-bar .styles { flex: none; flex-wrap: nowrap; }
+.sv-bar .rg-open.sh-open { flex: none; padding: .38rem .75rem; font-size: .78rem; }
+.sv-bar .sv-mode { flex: none; }
+.sv-bar .sv-mode button { padding: .38rem .7rem; font-size: .78rem; }
+@media (max-width: 1050px) { .sv-bar .sv-explain-row span { display: none; } }
+@media (max-width: 700px) {
+  .sv-panel .controls.sv-bar { flex-wrap: wrap; }
+  .sv-bar .sv-name { flex: 1 0 100%; max-width: none; }
+  .sv-bar .sv-explain-row { flex: 0 0 auto; }
+}
+
+
+/* the person's name, on a tab hanging from the top centre of the chart */
+.rc-banner--name { padding: .35rem 1.6rem .4rem; max-width: 80%; }
+.rc-banner--name .rc-banner-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:root[data-theme='clean'] .rc-banner--name { background: var(--accent-soft); border: 0; border-radius: 0 0 12px 12px; margin-top: -1rem; }
+:root[data-theme='clean'] .rc-banner--name::before, :root[data-theme='clean'] .rc-banner--name::after { content: none; }
+:root[data-theme='clean'] .rc-banner--name .rc-banner-title { font-family: inherit; text-transform: none; letter-spacing: 0; color: var(--accent); font-size: 1rem; font-weight: 600; }
+
+
+/* the trust links sit under the top bar in every view */
+.trust.trust--top { margin: 0 0 1.1rem; }
+/* room under the one-line form for the picked place's coordinates, so they never
+   run into whatever follows the form */
+@media (min-width: 900px) { .birth-form:not(.birth-form--landing) { padding-bottom: 2.1rem; } }
+
+
+/* --- simple view: the summary, the twelve houses, and tighter spacing -------- */
+.sv-lines { margin: .2rem 0 .3rem; padding-left: 1.1rem; display: grid; gap: .3rem; font-size: .84rem; line-height: 1.5; }
+.sv-sum .dk-body, .sv-houses .dk-body { padding: .6rem .9rem .7rem; }
+.sv-under.deck-under { grid-template-columns: minmax(0, 1fr); margin-top: 0; }
+.sv-house-tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: .3rem; margin-bottom: .7rem; }
+.sv-house-tabs button { display: flex; align-items: center; gap: .4rem; text-align: left; background: var(--sunken); border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; cursor: pointer; color: var(--ink); font-size: .74rem; line-height: 1.25; min-width: 0; }
+.sv-house-tabs button b { flex: none; display: inline-grid; place-items: center; width: 1.35rem; height: 1.35rem; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); font-size: .72rem; }
+.sv-house-tabs button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-house-tabs button:hover { border-color: var(--accent); }
+.sv-house-tabs button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.sv-house-tabs button.on b { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.sv-house-body h5 { margin: 0 0 .3rem; font-size: 1rem; color: var(--ink); }
+.sv-house-chips { margin: 0 0 .4rem; display: flex; flex-wrap: wrap; gap: .3rem .5rem; font-size: .76rem; color: var(--dim); }
+.sv-house-chips span { background: var(--sunken); border-radius: 999px; padding: .12rem .6rem; }
+.sv-house-chips b { color: var(--ink); }
+.rasi-chart .pick-house { cursor: pointer; }
+.rasi-chart .house.pick-house:hover .house-sign, .rasi-chart .sc-cell.pick-house:hover .house-sign { color: var(--accent); }
+/* less air between the blocks, so the summary and the houses fit without a long scroll */
+.sv-panel { gap: .8rem; }
+.sv-panel .controls.sv-bar { margin-bottom: 0; }
+.sv-side.deck-side { gap: .6rem; }
+.sv-side .dk-head, .sv-under .dk-head { padding: .45rem .9rem; }
+.sv-run .dk-body { padding: .5rem .9rem .6rem; }
+.sv-run .sv-note { margin-bottom: .3rem; }
+.sv-run-row { padding: .35rem 0; }
+.trust.trust--top { margin-bottom: .7rem; }
+.topbar { margin-bottom: .8rem; }
+.saved { margin-bottom: .8rem; }
+.sv-cta { margin-top: .8rem; }
+
+
+/* --- chart findings: topics, the ranked list, and each finding's reasoning ---- */
+.sv-find { margin-top: .8rem; }
+.sv-find .dk-body { padding: .7rem .9rem .8rem; }
+.fd-topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .4rem; margin-bottom: .8rem; }
+.fd-topics button { display: flex; flex-direction: column; align-items: flex-start; gap: .05rem; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .45rem .7rem; cursor: pointer; color: var(--ink); min-width: 0; }
+.fd-topics button b { font-size: .84rem; font-weight: 600; }
+.fd-topics button small { font-size: .7rem; color: var(--dim); }
+.fd-topics button:hover { border-color: var(--accent); }
+.fd-topics button.on { background: var(--accent-soft); border-color: var(--accent); }
+.fd-topics button.on b { color: var(--accent); }
+.fd-topics button.fd-full { border-style: dashed; }
+.fd-headline { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin: 0 0 .4rem; }
+.fd-headline h5 { margin: 0; font-size: 1rem; color: var(--ink); }
+.fd-list { list-style: none; margin: 0 0 .4rem; padding: 0; display: grid; gap: .35rem; }
+.fd-item { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); overflow: hidden; }
+.fd-item.open { border-color: var(--accent); }
+.fd-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: .7rem; width: 100%; background: none; border: 0; padding: .5rem .7rem; cursor: pointer; text-align: left; color: var(--ink); font: inherit; }
+.fd-n { font-variant-numeric: tabular-nums; font-size: .8rem; color: var(--dim); font-weight: 600; }
+.fd-main { display: flex; flex-direction: column; min-width: 0; }
+.fd-main b { font-size: .9rem; font-weight: 600; }
+.fd-main small { font-size: .74rem; color: var(--dim); }
+.fd-tag { font-size: .68rem; border-radius: 999px; padding: .14rem .6rem; white-space: nowrap; border: 1px solid var(--line); color: var(--dim); background: var(--sunken); }
+.fd-tag.good { color: var(--dasha-fav); border-color: color-mix(in oklab, var(--dasha-fav) 45%, var(--line)); background: color-mix(in oklab, var(--dasha-fav) 8%, var(--panel)); }
+.fd-tag.hard { color: var(--dasha-adv); border-color: color-mix(in oklab, var(--dasha-adv) 45%, var(--line)); background: color-mix(in oklab, var(--dasha-adv) 8%, var(--panel)); }
+.fd-tag.key { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.fd-tag.mixed { color: var(--ink); }
+.fd-caret { color: var(--dim); font-size: 1rem; width: 1rem; text-align: center; }
+.fd-body { padding: .2rem .9rem .8rem 2.6rem; display: grid; gap: .6rem; font-size: .84rem; line-height: 1.5; }
+.fd-body h6 { margin: 0 0 .2rem; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.fd-body p { margin: 0 0 .25rem; }
+.fd-text { margin-top: .2rem; }
+.fd-text blockquote { margin: .3rem 0; padding: .4rem .7rem; border-left: 3px solid var(--line); background: var(--quote-bg); border-radius: 0 6px 6px 0; font-style: italic; }
+.fd-text small { color: var(--dim); font-size: .74rem; display: block; }
+.fd-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .5rem; }
+.fd-group { background: var(--sunken); border-radius: 8px; padding: .45rem .65rem; border-left: 3px solid var(--line); }
+.fd-group.good { border-left-color: var(--dasha-fav); }
+.fd-group.hard { border-left-color: var(--dasha-adv); }
+.fd-group ul { margin: 0; padding-left: 1rem; display: grid; gap: .15rem; font-size: .8rem; }
+.fd-check-row { display: flex; flex-wrap: wrap; gap: .35rem; }
+.fd-check-row button { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: .25rem .7rem; font-size: .76rem; color: var(--ink); cursor: pointer; }
+.fd-check-row button:hover { border-color: var(--accent); color: var(--accent); }
+.fd-foot { margin: .5rem 0 0; font-size: .74rem; color: var(--dim); line-height: 1.45; }
+@media (max-width: 600px) {
+  .fd-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .fd-tag { grid-column: 2; justify-self: start; }
+  .fd-body { padding-left: .9rem; }
+}
+
+
+/* findings: the texts' passages, their attribution, the inference and the references */
+.fd-tier { margin: .3rem 0 .5rem; }
+.fd-tier-name { font-size: .72rem; font-weight: 600; color: var(--ink); margin-bottom: .25rem; }
+.fd-tier--classical .fd-tier-name { color: var(--dim); }
+.fd-passage { margin: 0 0 .55rem; }
+.fd-passage blockquote { margin: 0 0 .2rem; padding: .4rem .7rem; border-left: 3px solid var(--accent); background: var(--quote-bg); border-radius: 0 6px 6px 0; }
+.fd-tier--classical .fd-passage blockquote { border-left-color: var(--line); }
+.fd-attr { margin: 0 !important; font-size: .74rem; color: var(--dim); }
+.fd-attr b { color: var(--ink); font-weight: 600; }
+.fd-applies { margin: .1rem 0 0 !important; font-size: .76rem; color: var(--dim); }
+.fd-held { font-size: .76rem; color: var(--dim); margin: .2rem 0 !important; }
+.fd-check-row { margin-top: .5rem; align-items: center; }
+.fd-check-label { font-size: .74rem; color: var(--dim); }
+.fd-infer { border: 1px dashed var(--line); border-radius: 8px; padding: .5rem .7rem; }
+.fd-infer ol { margin: 0 0 .3rem; padding-left: 1.1rem; display: grid; gap: .15rem; font-size: .8rem; }
+.fd-cite { color: var(--dim); font-size: .72rem; }
+.fd-refs ul { margin: 0; padding-left: 1rem; font-size: .76rem; color: var(--dim); display: grid; gap: .1rem; }
+

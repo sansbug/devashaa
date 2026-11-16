@@ -49,9 +49,9 @@ const STEPS = [
     enter: (a, c) => { a.scrollTo('#rg-positions'); a.highlightSign(c.lagna) },
     body: (c) => (
       <>A reading hangs on the <strong>lagna</strong> — the sign rising in the
-        east at the moment of birth. Yours is <strong>{c.namer.rasi(c.lagna)}</strong>.
-        Your Moon sits in <strong>{c.namer.rasi(c.moon.rasi)}</strong> (the janma
-        rāśi) and your Sun in <strong>{c.namer.rasi(c.sun.rasi)}</strong>. BPHS
+        east at the moment of birth. Yours is <strong>{c.namer.rasiFull(c.lagna)}</strong>.
+        Your Moon sits in <strong>{c.namer.rasiFull(c.moon.rasi)}</strong> (the janma
+        rāśi) and your Sun in <strong>{c.namer.rasiFull(c.sun.rasi)}</strong>. BPHS
         keys its rules to the <em>lagna</em> — that is the anchor, not a "sun sign".</>
     ),
   },
@@ -60,9 +60,9 @@ const STEPS = [
     cite: 'rg.step2.cite',
     enter: (a, c) => { a.setStyle('south'); a.scrollTo('.chart-panel'); a.highlightSign(c.seventh) },
     body: (c) => (
-      <>Because <strong>{c.namer.rasi(c.lagna)}</strong> rises, it is your{' '}
+      <>Because <strong>{c.namer.rasiFull(c.lagna)}</strong> rises, it is your{' '}
         <strong>1st bhāva</strong>, and each following sign is the next house. So
-        your 7th house — partnership — is <strong>{c.namer.rasi(c.seventh)}</strong>{' '}
+        your 7th house — partnership — is <strong>{c.namer.rasiFull(c.seventh)}</strong>{' '}
         (highlighted). Every sign in the chart carries its bhāva number.</>
     ),
   },
@@ -73,7 +73,7 @@ const STEPS = [
     body: (c) => (
       <>A graha's power turns on the sign it occupies — its own, exalted, a
         friend's, an enemy's, or fallen. Take <strong>{c.namer.graha(c.dign)}</strong>:
-        it is in <strong>{c.namer.rasi(c.dign.rasi)}</strong>,{' '}
+        it is in <strong>{c.namer.rasiFull(c.dign.rasi)}</strong>,{' '}
         <strong>{DIGNITY_WORD[c.dign.dignity?.state] ?? c.dign.dignity?.state ?? 'placed'}</strong>.
         The signal-stack below names this for every graha, each line cited.</>
     ),

@@ -244,7 +244,7 @@ MARAKA_IS_NOT_A_NATURE = (
     "maraka verdict is therefore NEVER promoted to a benefic/malefic "
     "nature here. It is recorded in LAGNA_MARAKA and the nature cell is "
     "left None. Cells that fall to this policy: Mithuna/Candra, "
-    "Vṛṣabha/Maṅgala, Siṁha/Candra, Kumbha/Sūrya, Dhanus/Śani."
+    "Vṛṣabha/Maṅgala, Siṁha/Candra, Kumbha/Sūrya, Dhanu/Śani."
 )
 
 DHANUS_SATURN_AMBIGUOUS = (

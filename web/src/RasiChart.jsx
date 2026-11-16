@@ -196,7 +196,7 @@ export function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer,
   }
   return (
     <div className="bhava-hover-card" aria-hidden="true">
-      <div className="bhc-head"><b>{t('chart.bhava', 'Bhāva')} {bhava}</b> · {namer.rasi(sign)}
+      <div className="bhc-head"><b>{t('chart.bhava', 'Bhāva')} {bhava}</b> · {namer.rasiFull(sign)}
         {kind && <span className="bhc-kind"> · {kind}</span>}</div>
       {!isD1 && vargaSig && (
         <div className="bhc-line bhc-dim">{vargaKey} · {t('chart.readFor', 'read for')} {vargaSig}</div>

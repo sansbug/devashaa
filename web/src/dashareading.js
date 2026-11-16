@@ -122,12 +122,12 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
       if (state === 'favourable') return `${subject} अनुकूल गिनी जाती है, क्योंकि ${nm(l, k)} ${fav.join(and)} हैं`
       if (state === 'adverse') return `${subject} प्रतिकूल गिनी जाती है, क्योंकि ${nm(l, k)} ${adv.join(and)} हैं`
       if (state === 'contested') return `${subject} मिली-जुली है: ${nm(l, k)} ${fav.join(and)} हैं, पर साथ ही ${adv.join(and)} भी`
-      return `${subject} न अनुकूल गिनी जाती है, न प्रतिकूल: दशा आँकने का शास्त्रीय नियम इस पर कुछ नहीं कहता`
+      return `${subject} न अनुकूल गिनी जाती है, न प्रतिकूल`
     }
     if (state === 'favourable') return `${subject} counts as favourable, because ${nm(l, k)} is ${fav.join(and)}`
     if (state === 'adverse') return `${subject} counts as unfavourable, because ${nm(l, k)} is ${adv.join(and)}`
     if (state === 'contested') return `${subject} is mixed: ${nm(l, k)} is ${fav.join(and)}, but also ${adv.join(and)}`
-    return `${subject} is neutral: the classical rule for judging a period says nothing about it either way`
+    return `${subject} is neutral — it counts as neither favourable nor unfavourable`
   }
   const verdict = (k) => {
     const v = verdicts[k]
@@ -199,7 +199,10 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
     antar && nextAntar && (l === 'hi'
       ? `${monthYear(nextAntar.start, l)} में ${nm(l, antar.lord)} की अन्तर्दशा समाप्त होती है और ${nm(l, nextAntar.lord)} की शुरू होती है, जो ${monthYear(nextAntar.end, l)} तक चलती है। ${moves(l, shift(antar.lord, nextAntar.lord), true)}`
       : `In ${monthYear(nextAntar.start, l)}, ${nm(l, antar.lord)}’s sub-period ends and ${nm(l, nextAntar.lord)}’s begins, running to ${monthYear(nextAntar.end, l)}. ${moves(l, shift(antar.lord, nextAntar.lord), true)}`),
-    antar && nextAntar && (l === 'hi'
+    antar && nextAntar && va === 'not_stated' && vna === 'not_stated' && (l === 'hi'
+      ? `चल रही अन्तर्दशा (${nm(l, antar.lord)}) और अगली (${nm(l, nextAntar.lord)}), दोनों न अनुकूल गिनी जाती हैं, न प्रतिकूल — इस बदलाव में केवल ध्यान का क्षेत्र बदलता है।`
+      : `Both the sub-period running now (${nm(l, antar.lord)}) and the next one (${nm(l, nextAntar.lord)}) are neutral, counting as neither favourable nor unfavourable — so what changes is only where your attention goes.`),
+    antar && nextAntar && !(va === 'not_stated' && vna === 'not_stated') && (l === 'hi'
       ? `${counts(l, antar.lord, `चल रही अन्तर्दशा (${nm(l, antar.lord)})`)}। ${counts(l, nextAntar.lord, `अगली (${nm(l, nextAntar.lord)})`)}।`
       : `${counts(l, antar.lord, `The sub-period running now (${nm(l, antar.lord)})`)}. ${counts(l, nextAntar.lord, `The next one (${nm(l, nextAntar.lord)})`)}.`),
     nextMaha && (!nextAntar || nextAntarIn === maha) && (l === 'hi'

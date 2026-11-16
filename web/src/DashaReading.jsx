@@ -133,7 +133,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
 
         {R.rule && (
           <div className="la-step">
-            <h6>{W('The text’s rule for judging a period', 'दशा आँकने का ग्रंथ का नियम')}</h6>
+            <h6>{W('The classical rule for judging a period', 'दशा आँकने का शास्त्रीय नियम')}</h6>
             <div className="fd-passage">
               <blockquote>{R.rule.verse}</blockquote>
               {refs && <p className="fd-attr"><b>{R.rule.cite} — Parāśara, tr. R. Santhanam</b></p>}

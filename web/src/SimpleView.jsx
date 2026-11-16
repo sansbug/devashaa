@@ -230,7 +230,7 @@ export function WhoCard({ chart, namer, refs }) {
   const ch = a && a.character && !a.character.error ? a.character : null
   if (!ch || !ch.lagna) return null
   const src = ch.source || {}
-  const attr = (e) => (refs ? `${e.citation} — ${[src.author, src.translator && `tr. ${src.translator}`].filter(Boolean).join(', ')}` : W('A classical text', 'एक शास्त्रीय ग्रंथ'))
+  const attr = (e) => `${e.citation} — ${[src.author, src.translator && `tr. ${src.translator}`].filter(Boolean).join(', ')}`
   const sign = (i) => (namer.rasiFull ? namer.rasiFull(i) : namer.rasi(i))
   // the other registered texts on the Moon in this sign (already in the payload's concordance)
   const moonRows = ((a.classical && a.classical.readings) || []).filter((r) => r.graha === 'moon' && ch.moon && r.sign === ch.moon.sign).flatMap((r) => r.sources || [])
@@ -242,7 +242,7 @@ export function WhoCard({ chart, namer, refs }) {
         <div className="sv-who-block">
           <h5>{W('Your ascendant', 'आपका लग्न')}: {sign(ch.lagna.sign)}</h5>
           <blockquote>{ch.lagna.gist}</blockquote>
-          <p className="fd-attr"><b>{attr(ch.lagna)}</b><span>{W(' · our rendering of the passage', ' · पाठ का हमारा भावार्थ')}</span></p>
+          {refs && <p className="fd-attr"><b>{attr(ch.lagna)}</b><span>{W(' · our rendering of the passage', ' · पाठ का हमारा भावार्थ')}</span></p>}
         </div>
         {ch.moon && (
           <div className="sv-who-block">
@@ -250,11 +250,11 @@ export function WhoCard({ chart, namer, refs }) {
             {same
               ? <p className="sv-note">{W('Your Moon is in your rising sign, so the same description applies twice over.', 'आपका चन्द्र लग्न की ही राशि में है, इसलिए वही वर्णन दोहरा लागू होता है।')}</p>
               : <blockquote>{ch.moon.gist}</blockquote>}
-            <p className="fd-attr"><b>{attr(ch.moon)}</b><span>{W(' · the same text applies a sign’s description to the Moon’s sign as well', ' · वही ग्रंथ राशि का वर्णन चन्द्र की राशि पर भी लागू करता है')}{refs && ch.moon.basis ? ` (${ch.moon.basis.citation})` : ''}</span></p>
+            <p className="fd-attr">{refs && <b>{attr(ch.moon)} · </b>}<span>{W('The description of a rising sign is applied to the Moon’s sign as well.', 'लग्न की राशि का वर्णन चन्द्र की राशि पर भी लागू किया जाता है।')}{refs && ch.moon.basis ? ` (${ch.moon.basis.citation})` : ''}</span></p>
             {moonRows.map((r, i) => (
               <div key={i} className="sv-who-more">
                 <blockquote>{r.gist}</blockquote>
-                <p className="fd-attr"><b>{refs ? `${r.citation} — ${[r.source && r.source.author, r.source && r.source.translator && `tr. ${r.source.translator}`].filter(Boolean).join(', ')}` : W('A classical text', 'एक शास्त्रीय ग्रंथ')}</b></p>
+                {refs && <p className="fd-attr"><b>{`${r.citation} — ${[r.source && r.source.author, r.source && r.source.translator && `tr. ${r.source.translator}`].filter(Boolean).join(', ')}`}</b></p>}
               </div>
             ))}
           </div>

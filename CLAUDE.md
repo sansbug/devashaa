@@ -193,9 +193,18 @@ its source beside it:
     verses. ⚠ The descriptions are shown WHOLE — these texts are often unflattering
     ("a doer of wrong in secret"); do not trim them into praise. English only so far.
 - References: Settings › References (off by default; the same `refs` switch as /references).
-  Off — a passage in a finding reads "A classical text", with no book, verse or page, no
-  tier names and no reference list; on — everything is named. Either way a passage is marked
-  as a text's statement, never as ours.
+  Off — a passage carries NO attribution line at all (the owner asked for the "A classical
+  text" label to go), no tier names and no reference list; on — everything is named. Either
+  way a passage sits under a "What the classical texts say" heading, never as ours.
+- Life areas (`web/src/lifeareas.js` + `LifeAreas.jsx`, `node web/test_lifeareas.mjs`): the
+  simple view's "Your life, area by area" — you, career, wealth, marriage, home, children
+  and learning. Per area: what the chart shows · the registered passages tied to its houses
+  (each passage carries `house`) · the factors on the house lords · when a period tied to
+  the area runs or next begins · PRACTICAL NOTES. ⚠ The notes are OURS, the owner's choice
+  for "what you can do" (2026-11-16) over the texts' remedies: attention, planning and
+  timing only — never a ritual, gem or charity (the site still says "No remedies"), never
+  medical / legal / financial instructions, never what will happen. No health area; the
+  8th house is in no area. The test pins all of this.
 - Not yet registered: ch.13 vv.8+; verse numbers for the seven grahas in Phaladīpikā ch.8
   (still cited to the chapter); Phaladīpikā's daśā chapters (19–21). A web page's machine translation is not a source:
   extract from the registered edition, verify, then register.

@@ -99,7 +99,7 @@ export const TOPICS = [
 const list = (xs, l) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} ${l === 'hi' ? 'और' : 'and'} ${xs[xs.length - 1]}`)
 const year = (s) => (/^(\d{4})/.exec(String(s || '')) || [])[1] || ''
 
-function dashaTree(chart) {
+export function dashaTree(chart) {
   const dv = chart.dasha && chart.dasha.variants
   if (!dv) return null
   return dv[String(chart.dasha.default_year_days)] || dv[String(chart.dasha.default_year_days).replace('.0', '')] || dv['360'] || Object.values(dv)[0] || null
@@ -269,6 +269,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
           ? `${nm(l, k)} आपके ${HI_ORD[rh]} भाव के स्वामी हैं और ${HI_ORD[h]} भाव में बैठे हैं — यह ${HI_ORD[rh]} भाव के स्वामी के ${HI_ORD[h]} भाव में होने का नियम है।`
           : `${nm(l, k)} rules your ${EN_ORD(rh)} house and sits in your ${EN_ORD(h)}: this is the text’s statement for the ${EN_ORD(rh)} lord in the ${EN_ORD(h)} house.`)),
       }))
+      texts[texts.length - 1].house = rh
       if (b.lord_rule.lagna_exception) {
         // the text's own exception for this ascendant qualifies the rule
         texts[texts.length - 1].exception = b.lord_rule.lagna_exception
@@ -292,6 +293,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       } else if (m.verse === '6-7') {
         t.qualifier = both((l) => DHANA_NOT.combustion_has_no_orb_in_the_text[l])
       }
+      t.house = 2
       texts.push(t)
     }
     // BPHS chs 12, 14-18, 20-23: the house-effect verses this graha is part of — whole, with the clause that fired

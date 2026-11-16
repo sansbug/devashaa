@@ -38,7 +38,7 @@ function Group({ title, items, tone }) {
 /** "Sārāvalī 30.11 — Kalyāṇa Varma, tr. R. Santhanam" */
 const attribution = (t) => [t.cite || (t.source && t.source.text), t.source && [t.source.author, t.source.translator && `tr. ${t.source.translator}`].filter(Boolean).join(', ')].filter(Boolean).join(' — ')
 
-function Passage({ t, L, refs }) {
+export function Passage({ t, L, refs }) {
   const W = (en, hi) => (L === 'hi' ? hi : en)
   // A passage that also speaks of a loss, a death or a partner's fidelity is shown only when the reader asks for
   // it — and then whole, never with the hard clause cut out (a verse's good and bad halves belong together).
@@ -54,10 +54,12 @@ function Passage({ t, L, refs }) {
             {t.full && <> <button type="button" className="sv-link" onClick={() => setAsked(true)}>{W('Show the whole passage', 'पूरा पाठ दिखाएँ')}</button></>}
           </p>
         )}
+      {refs && (
       <p className="fd-attr">
-        <b>{refs ? attribution(t) : W('A classical text', 'एक शास्त्रीय ग्रंथ')}</b>
+        <b>{attribution(t)}</b>
         {body && <span>{t.kind === 'rendering' ? W(' · our rendering of the cited passage', ' · उद्धृत पाठ का हमारा भावार्थ') : W(' · the translator’s words', ' · अनुवादक के शब्द')}</span>}
       </p>
+      )}
       <p className="fd-applies"><i>{W('Why it applies:', 'यह क्यों लागू है:')}</i> {t.applies[L]}</p>
       {t.qualifier && t.qualifier[L] && <p className="fd-applies"><i>{W('Which part applies:', 'कौन-सा भाग लागू है:')}</i> {t.qualifier[L]}</p>}
       {t.exception && <p className="fd-applies"><i>{W('The text’s own exception for this ascendant:', 'इस लग्न के लिए पाठ का अपना अपवाद:')}</i> {t.exception}</p>}

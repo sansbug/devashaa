@@ -3540,3 +3540,26 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .sv-who-more { margin-top: .45rem; }
 .sv-who-more blockquote { border-left-color: var(--line); }
 .sv-who-foot { margin: .6rem 0 0; }
+
+/* --- life areas: one area of life at a time, ending in practical notes --------- */
+.sv-areas { margin-top: .8rem; }
+.sv-areas .dk-body { padding: .7rem .9rem .8rem; }
+.la-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .4rem; margin-bottom: .8rem; }
+.la-tabs button { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: .45rem .7rem; cursor: pointer; color: var(--ink); font-size: .84rem; font-weight: 600; min-width: 0; }
+.la-tabs button small { display: block; font-weight: 400; font-size: .7rem; color: var(--dim); }
+.la-tabs button:hover { border-color: var(--accent); }
+.la-tabs button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.la-tabs button .la-now { display: inline-block; width: .5rem; height: .5rem; border-radius: 50%; background: var(--accent); margin-left: .35rem; vertical-align: middle; }
+.la-grid { display: grid; gap: .8rem; }
+@media (min-width: 900px) { .la-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; } }
+.la-step { font-size: .84rem; line-height: 1.5; }
+.la-step + .la-step { margin-top: .7rem; }
+.la-step h6 { margin: 0 0 .25rem; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.la-step p { margin: 0 0 .25rem; }
+.la-notes { border: 1px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; background: var(--accent-soft); }
+.la-notes h6 { color: var(--accent); }
+.la-notes ul { margin: 0; padding-left: 1.05rem; display: grid; gap: .35rem; }
+.la-basis { margin-top: .5rem; font-size: .74rem; color: var(--dim); }
+.la-basis summary { cursor: pointer; }
+.la-basis ol { margin: .3rem 0 0; padding-left: 1.1rem; display: grid; gap: .15rem; }
+.la-when { background: var(--sunken); border-radius: 8px; padding: .45rem .65rem; }

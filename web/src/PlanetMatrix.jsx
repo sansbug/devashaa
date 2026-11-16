@@ -86,7 +86,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
             <tr>
               <th>{W('Bhaav', 'भाव')}</th>
               <th>{W('Raashi', 'राशि')}</th>
-              <th>{W('Lord', 'स्वामी')}</th>
+              <th>{W('Raashi lord', 'राशि स्वामी')}</th>
               <th>{W('Planets in it', 'इसमें बैठे ग्रह')}</th>
               <th>{W('Nakshatr and its lord', 'नक्षत्र और उसका स्वामी')}</th>
               <th>{W('Full aspect from', 'पूर्ण दृष्टि')}</th>

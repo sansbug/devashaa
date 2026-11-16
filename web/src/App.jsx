@@ -483,9 +483,15 @@ export default function App() {
 
   // Re-cast when the language changes so the generated readings switch too
   // (the birth params are unchanged; only `lang` on the request differs).
-  const langFirstRun = useRef(true)
+  // Every chart is stamped with the language it was asked for (`_lang`). A chart that
+  // arrives in the other language is cast again: the reader changed the language while
+  // the first cast was still on its way, and no chart was on the page to re-cast then.
+  const langSeen = useRef({ lang, refs })
+  const castLang = chart && !chart.error ? chart._lang : null
   useEffect(() => {
-    if (langFirstRun.current) { langFirstRun.current = false; return }
+    const changed = langSeen.current.lang !== lang || langSeen.current.refs !== refs
+    langSeen.current = { lang, refs }
+    if (!changed && (!castLang || castLang === lang)) return
     if (!chart || chart.error || !place || !date || !time) return
     let cancelled = false
     ;(async () => {
@@ -496,11 +502,11 @@ export default function App() {
             latitude: place.latitude, longitude: place.longitude, timezone: place.timezone }),
         })
         const j = await r.json()
-        if (!cancelled && r.ok) setChart(j)
+        if (!cancelled && r.ok) setChart({ ...j, _lang: lang })
       } catch { /* keep the current chart on a failed re-cast */ }
     })()
     return () => { cancelled = true }
-  }, [lang, refs])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lang, refs, castLang])  // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch(`${API}/api/health`)
@@ -553,7 +559,7 @@ export default function App() {
       })
       const j = await r.json()
       if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
-      setChart(j)
+      setChart({ ...j, _lang: lang })
       setFormOpen(false)
       // Only remember births that actually produced a chart — saving on submit
       // would fill the list with typos and out-of-range dates.
@@ -596,7 +602,7 @@ export default function App() {
       })
       const j = await r.json()
       if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
-      setChart(j)
+      setChart({ ...j, _lang: lang })
     } catch (err) {
       setError(err.message)
     } finally {

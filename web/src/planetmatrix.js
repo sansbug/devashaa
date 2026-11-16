@@ -110,6 +110,10 @@ export function notes(n, L, conjunct = []) {
   return L === 'hi' ? hi : en
 }
 
+/** The lord of a Nakshatr, by its number 1-27 (Ashwini = 1): the nine Dasha lords, three times over. */
+export const NAKSHATRA_LORDS = ['ketu', 'venus', 'sun', 'moon', 'mars', 'rahu', 'jupiter', 'saturn', 'mercury']
+export const nakshatraLord = (number) => (Number.isInteger(number) && number >= 1 && number <= 27 ? NAKSHATRA_LORDS[(number - 1) % 9] : null)
+
 export const OURS = { en: 'Our words, not from a classical text.', hi: 'ये हमारे शब्द हैं, किसी शास्त्रीय ग्रंथ के नहीं।' }
 
 /** One sentence per house: what helps and what hinders it, by the planets' nature. */

@@ -9,7 +9,7 @@
  */
 import { useLang } from './LangContext.jsx'
 import { refsOn } from './refs.js'
-import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, WHY, houseLine, notes } from './planetmatrix.js'
+import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, WHY, houseLine, nakshatraLord, notes } from './planetmatrix.js'
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
@@ -27,6 +27,17 @@ export default function PlanetMatrix({ data, namer, grahas }) {
   // the Nakshatr's name comes from the chart's own planet rows (the matrix carries its index and lord)
   const G = Object.fromEntries((grahas || []).map((g) => [g.key, g]))
   const nakName = (k) => (G[k] && G[k].nakshatra ? namer.nakshatra(G[k].nakshatra) : null)
+  // The lord and the relation come with the matrix. A chart cast before the server carried them still has its
+  // Nakshatr, so the lord is read from that and the relation from the friendship table: a row never shows a
+  // Nakshatr without its lord.
+  const nakLord = (row) => row.nakshatra_lord || (G[row.graha] && G[row.graha].nakshatra ? nakshatraLord(G[row.graha].nakshatra.index) : null)
+  const nakRel = (row) => {
+    if (row.to_nakshatra_lord !== undefined) return row.to_nakshatra_lord
+    const lord = nakLord(row), me = P[row.graha]
+    if (!lord || !me) return null
+    if (lord === row.graha) return 'own'
+    return (me.in_chart && me.in_chart[lord] && me.in_chart[lord].compound) || null
+  }
   const relMark = (k, title) => {
     const r = k && RELATION[k]
     return r ? <i className={'pm-rel pm-' + r.tone} title={title ? `${title}: ${r[L]}` : r[L]}>{r.mark}</i> : null
@@ -64,7 +75,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                 <td>{namer.rasi(p.sign)}</td>
                 <td className="pm-num">{p.house}</td>
                 <td>{nakName(p.graha) || '·'}</td>
-                <td className="pm-name">{p.nakshatra_lord ? <>{n(p.nakshatra_lord)}{relMark(p.to_nakshatra_lord, W(`${n(p.graha)} towards ${n(p.nakshatra_lord)}`, `${n(p.graha)} का ${n(p.nakshatra_lord)} से संबंध`))}</> : '·'}</td>
+                <td className="pm-name">{nakLord(p) ? <>{n(nakLord(p))}{relMark(nakRel(p), W(`${n(p.graha)} towards ${n(nakLord(p))}`, `${n(p.graha)} का ${n(nakLord(p))} से संबंध`))}</> : '·'}</td>
                 <td className={tone(p.natural)}>{nature(p.natural)}{p.natural_why && WHY[p.natural_why] ? <small> ({WHY[p.natural_why][L]})</small> : null}</td>
                 <td className={tone(p.functional)}>{nature(p.functional)}</td>
                 <td>{p.is_node
@@ -109,7 +120,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                   }) : '·'}</td>
                   <td>{h.occupants.length ? h.occupants.map((o) => (
                     <div key={o.graha} className="pm-nak">
-                      <b>{n(o.graha)}</b>: {nakName(o.graha) || '·'}{o.nakshatra_lord ? <>, {W('lord', 'स्वामी')} {n(o.nakshatra_lord)}{relMark(o.to_nakshatra_lord, W(`${n(o.graha)} towards ${n(o.nakshatra_lord)}`, `${n(o.graha)} का ${n(o.nakshatra_lord)} से संबंध`))}</> : null}
+                      {W(`${n(o.graha)} in ${nakName(o.graha) || '·'}`, `${n(o.graha)} ${nakName(o.graha) || '·'} में`)}{nakLord(o) ? <>, {W('its lord', 'उसका स्वामी')} <b>{n(nakLord(o))}</b>{relMark(nakRel(o), W(`${n(o.graha)} towards ${n(nakLord(o))}`, `${n(o.graha)} का ${n(nakLord(o))} से संबंध`))}</> : null}
                     </div>
                   )) : '·'}</td>
                   <td>{list(h.full_aspects)}</td>

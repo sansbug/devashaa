@@ -1,5 +1,5 @@
 // The planet and house matrix: the words (planetmatrix.js) and the payload they are laid over.
-import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine } from './src/planetmatrix.js'
+import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord } from './src/planetmatrix.js'
 import { makeNamer } from './src/naming.js'
 
 let fails = 0
@@ -35,6 +35,15 @@ console.log('The words:')
   ok('the three part aspects have a sign', FRACTION[0.25] === '¼' && FRACTION[0.5] === '½' && FRACTION[0.75] === '¾')
 }
 
+console.log('\nThe lord of a Nakshatr:')
+{
+  ok('Ashwini (1), Magha (10) and Mula (19) belong to Ketu', [1, 10, 19].every((i) => nakshatraLord(i) === 'ketu'))
+  ok('Revati (27) belongs to Budh, not to Guru (the lord of its Raashi)', nakshatraLord(27) === 'mercury')
+  ok('Punarvasu (7), Vishakha (16) and Purva Bhadrapada (25) belong to Guru', [7, 16, 25].every((i) => nakshatraLord(i) === 'jupiter'))
+  ok('each of the nine lords holds three', ['ketu', 'venus', 'sun', 'moon', 'mars', 'rahu', 'jupiter', 'saturn', 'mercury'].every((g) => Array.from({ length: 27 }, (_, i) => nakshatraLord(i + 1)).filter((x) => x === g).length === 3))
+  ok('no number, no lord', nakshatraLord(undefined) === null && nakshatraLord(0) === null && nakshatraLord(28) === null)
+}
+
 console.log('\nA house line:')
 {
   const h = { benefic: { occupants: ['venus'], aspects: ['jupiter'] }, malefic: { occupants: [], aspects: ['mars', 'saturn'] } }
@@ -57,6 +66,7 @@ try {
   ok('the Nakshatr index is the one the chart gives the planet', m.planets.every((p) => chart.grahas.find((g) => g.key === p.graha).nakshatra.index - 1 === p.nakshatra),
     m.planets.map((p) => `${p.graha}:${p.nakshatra}/${chart.grahas.find((g) => g.key === p.graha).nakshatra.index}`).join(' '))
   ok('a relation to the Nakshatr lord is given only between the seven planets', m.planets.every((p) => (p.is_node || ['rahu', 'ketu'].includes(p.nakshatra_lord)) === (p.to_nakshatra_lord == null)))
+  ok('the page\'s own lord table agrees with the server for every planet', m.planets.every((p) => nakshatraLord(chart.grahas.find((g) => g.key === p.graha).nakshatra.index) === p.nakshatra_lord))
   ok('every relation to a Nakshatr lord has a word', m.planets.every((p) => !p.to_nakshatra_lord || RELATION[p.to_nakshatra_lord]))
   ok('every nature and relation the chart uses has a word', m.planets.every((p) => (!p.natural || NATURE[p.natural]) && (!p.functional || NATURE[p.functional])
     && Object.values(p.in_chart || {}).every((c) => !c.compound || RELATION[c.compound])) && m.houses.every((h) => h.occupants.every((o) => !o.to_lord || RELATION[o.to_lord])))

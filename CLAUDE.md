@@ -184,7 +184,7 @@ English text, default name style:
   earlier still carries Mangala / Budha / Shukra: `naming.js` reads those as the same grahas.
 - Terms: **Lagn, Nakshatr, Dasha, Maha-Dasha, Antar-Dasha, Vimsottari, Bhaav, Raashi,
   Mul-Trikon, Yog-Kaarak, Yog**. Stages: **Bal, Kumar**, Yuva, Vriddha, **Passive** (the
-  owner's word for the last stage). Great-person yogas: **Ruchak**, Bhadra, **Hans**,
+  owner’s word for the last stage; Hindi निष्क्रिय). Great-person yogas: **Ruchak**, Bhadra, **Hans**,
   Malavya, **Shush**.
 - ⚠ A yoga's engine name is its KEY (`"Ruchaka"`, `"Gajakesari Yoga"`): match on it, show
   `yogaName(name)` from `naming.js`. Never rename the key.

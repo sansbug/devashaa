@@ -71,7 +71,7 @@ const STAGE = {
   kumara: { en: 'Kumar', hi: 'कुमार', nth: { en: 'second', hi: 'दूसरी' } },
   yuva: { en: 'Yuva', hi: 'युवा', nth: { en: 'third', hi: 'तीसरी' } },
   vriddha: { en: 'Vriddha', hi: 'वृद्ध', nth: { en: 'fourth', hi: 'चौथी' } },
-  mrita: { en: 'Passive', hi: 'मृत', nth: { en: 'last', hi: 'अंतिम' } },
+  mrita: { en: 'Passive', hi: 'निष्क्रिय', nth: { en: 'last', hi: 'अंतिम' } },
 }
 /** The grade of results the text gives each stage (ch.45 v.4), in its own words: "a planet in this stage gives …". */
 const GRADE = {

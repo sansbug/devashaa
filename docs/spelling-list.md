@@ -91,7 +91,7 @@ Hindi deity names: दस्र (अश्विनीकुमार), यम, 
 |stage 2 of 5|Kumara|कुमार|Kumar|
 |stage 3 of 5|Yuva|युवा||
 |stage 4 of 5|Vriddha|वृद्ध||
-|stage 5 of 5|Mrita|मृत|Passive|
+|stage 5 of 5|Mrita|मृत|Passive (Hindi: निष्क्रिय)|
 |Mars's great-person yoga|Ruchaka|रुचक|Ruchak|
 |Mercury's|Bhadra|भद्र||
 |Jupiter's|Hamsa|हंस|Hans|

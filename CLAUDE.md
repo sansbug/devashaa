@@ -141,6 +141,9 @@ script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
   (`NATURE`) and the area its house holds. Every sentence of it carries "usually"; qualities
   only, never an event or a verdict; a planet word never repeats a house word. No other planet
   sentence states a trait. The nodes get no sign-standing and no yoga line. The test pins all of this.
+- The same style holds for EVERY topic since 2026-11-16 (opening, houses, timing, close): the
+  test splits every English line into sentences and fails on more than 25 words, a semicolon
+  or a dash. A house lord sitting in its own house is named once, not again as an occupant.
 - House labels (`HOUSE`) are BPHS ch.11's significations, shortened; longevity
   (8th) and one's own death (12th) are left out of the plain labels on purpose.
 - ⚠ The BPHS ch.24 lord-in-house rule is NEVER in the plain lines: it is behind a

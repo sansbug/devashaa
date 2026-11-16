@@ -174,15 +174,19 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
       say: { en: [per.en.title, ...per.en.lines].join('. ').replace(/\.\./g, '.'), hi: [per.hi.title, ...per.hi.lines].join('। ').replace(/।।/g, '।') },
     })
   }
-  /** "Guru there is in its own sign — strong, in Revatī, a soft nakṣatra." */
+  /** A planet's standing where it sits, a sentence an idea: sign strength, retrograde, its nakṣatra and the nakṣatra's class. */
   const standing = (l, x) => {
-    const d = x.dignity && DIGNITY[x.dignity.state] ? DIGNITY[x.dignity.state][l] : ''
-    const rx = x.retrograde ? (l === 'hi' ? ', वक्री' : ', retrograde') : ''
-    const c = cls(l, x)
-    const [place, gloss] = d.split(' — ')
-    return l === 'hi'
-      ? `वहाँ ${name(l, x.key)} ${d ? `${place} हैं${gloss ? ` (${gloss})` : ''}${rx}` : `${sign(l, x.rasi)} राशि में हैं${rx}`}, ${nak(l, x)} नक्षत्र में${c ? ` (${c})` : ''}`
-      : `${name(l, x.key)} there is ${d ? `${d}${rx}` : `in ${sign(l, x.rasi)}${rx}`}, in ${nak(l, x)}${c ? ` — a ${c} nakṣatra` : ''}`
+    const P = name(l, x.key), S = N[l].rasi(x.rasi), c = cls(l, x)
+    const st = x.dignity && SIGN_STANDING[x.dignity.state]
+    return [
+      st ? st[l](P, S) : (l === 'hi' ? `${P} ${S} राशि में हैं।` : `${P} is in ${S}.`),
+      x.retrograde && x.key !== 'rahu' && x.key !== 'ketu' && (l === 'hi' ? `${P} वक्री हैं।` : `${P} is retrograde.`),
+      x.nakshatra && (l === 'hi' ? `${P} ${nak(l, x)} नक्षत्र में हैं।` : `${P} is in the nakṣatra ${nak(l, x)}.`),
+      x.nakshatra && c && (l === 'hi' ? `यह ${c} नक्षत्र है।` : `This is a ${c} nakṣatra.`),
+    ].filter(Boolean).join(' ')
+  }
+  const strongWord = {
+    exalted: { en: 'is exalted', hi: 'उच्च के हैं' }, moolatrikona: { en: 'is in its mūlatrikoṇa', hi: 'अपने मूलत्रिकोण में हैं' }, own: { en: 'is in its own sign', hi: 'अपनी राशि में हैं' },
   }
 
   // ── 1. the chart in one minute ──────────────────────────────────────────────
@@ -198,18 +202,18 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     ],
     lines: [
       l === 'hi'
-        ? `आपका लग्न — जन्म के समय पूर्व में उदित राशि — ${sign(l, lagna)} है${nk ? `, ${N.hi.nakshatra(nk)} नक्षत्र में` : ''}। यही आपका पहला भाव है; बाकी ग्यारह भाव इसी से गिने जाते हैं।`
-        : `Your lagna — the sign rising at your birth — is ${sign(l, lagna)}${nk ? `, in the nakṣatra ${namer.nakshatra(nk)}` : ''}. It is your 1st house; the other eleven are counted from it.`,
+        ? `आपका लग्न ${sign(l, lagna)} है। लग्न वह राशि है जो आपके जन्म के समय पूर्व में उदित थी। यह आपका पहला भाव है। बाकी भाव इसी से गिने जाते हैं।${nk ? ` लग्न ${N.hi.nakshatra(nk)} नक्षत्र में है।` : ''}`
+        : `Your Lagna is ${sign(l, lagna)}. The Lagna is the sign that was rising at your birth. It is your 1st house. The other houses are counted from it.${nk ? ` The Lagna is in the nakṣatra ${namer.nakshatra(nk)}.` : ''}`,
       mo && (l === 'hi'
-        ? `आपका चन्द्र ${sign(l, mo.rasi)} राशि में है, ${nak(l, mo)} नक्षत्र में — यही आपकी जन्म-राशि और जन्म-नक्षत्र है।`
-        : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in ${nak(l, mo)} — your birth sign (rāśi) and birth nakṣatra.`),
-      su && (l === 'hi' ? `आपका सूर्य ${sign(l, su.rasi)} राशि में है, ${HI_ORD[su.bhava]} भाव में।` : `Your ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in your ${EN_ORD(su.bhava)} house.`),
+        ? `आपका चन्द्र ${sign(l, mo.rasi)} राशि में, ${nak(l, mo)} नक्षत्र में है। ये आपकी जन्म-राशि और आपका जन्म-नक्षत्र हैं।`
+        : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in the nakṣatra ${nak(l, mo)}. These are your birth sign and your birth nakṣatra.`),
+      su && (l === 'hi' ? `आपका सूर्य ${sign(l, su.rasi)} राशि में, आपके ${HI_ORD[su.bhava]} भाव में है।` : `Your ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in your ${EN_ORD(su.bhava)} house.`),
       strong.length > 0 && (l === 'hi'
-        ? `सबसे बलवान ग्रह: ${strong.map((x) => `${name(l, x.key)} (${DIGNITY[x.dignity.state].hi.split(' — ')[0]})`).join(', ')}।`
-        : `Strongest placements: ${strong.map((x) => `${name(l, x.key)}, ${DIGNITY[x.dignity.state].en.split(' — ')[0]}`).join('; ')}.`),
+        ? `ये ग्रह अपनी राशि से बलवान हैं। ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].hi}।`).join(' ')}`
+        : `These planets are strong by sign. ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].en}.`).join(' ')}`),
       weak.length > 0 && (l === 'hi'
-        ? `सबसे दुर्बल: ${weak.map((x) => `${name(l, x.key)} (नीच)`).join(', ')}।`
-        : `Weakest: ${weak.map((x) => `${name(l, x.key)}, debilitated`).join('; ')}.`),
+        ? weak.map((x) => `${name(l, x.key)} नीच के हैं। यह उनकी सबसे दुर्बल राशि है।`).join(' ')
+        : weak.map((x) => `${name(l, x.key)} is debilitated. This is its weakest sign.`).join(' ')),
     ].filter(Boolean),
   }), { houses: [1, mo && mo.bhava, su && su.bhava].filter(Boolean), main: 1, grahas: ['moon', 'sun', ...strong.map((x) => x.key)], lines: [] })
 
@@ -292,6 +296,7 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
     if (!T) continue
     const lord = g(b.lord), lh = b.lord_in_house
     const occ = (b.occupants || []).map(g).filter(Boolean)
+    const rest = occ.filter((x) => !(lh === h && x.key === b.lord))
     // fully and three-quarters only: the lighter graded aspects (½, ¼) are on the Aspects card, not in a plain summary
     const full = (b.aspects_in || []).filter((x) => x.strength >= 1).map((x) => x.graha)
     const part = (b.aspects_in || []).filter((x) => x.strength >= 0.75 && x.strength < 1).map((x) => x.graha)
@@ -306,27 +311,31 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
       ],
       lines: [
         l === 'hi'
-          ? `आपका ${HI_ORD_N[h]} भाव ${sign(l, b.sign)} राशि है; इसके स्वामी ${name(l, b.lord)} हैं।`
-          : `Your ${EN_ORD(h)} house is ${sign(l, b.sign)}, ruled by ${named(l, b.lord)}.`,
+          ? `आपका ${HI_ORD_N[h]} भाव ${sign(l, b.sign)} राशि है। इसके स्वामी ${name(l, b.lord)} हैं।`
+          : `Your ${EN_ORD(h)} house is ${sign(l, b.sign)}. ${named(l, b.lord)} rules this sign.`,
         lh === h
-          ? (l === 'hi' ? `${name(l, b.lord)} इसी भाव में बैठे हैं — भाव का स्वामी अपने ही घर में है।` : `${name(l, b.lord)} sits right here, in your ${EN_ORD(h)} house — the house’s lord is at home.`)
+          ? (l === 'hi' ? `${name(l, b.lord)} इसी भाव में बैठे हैं। भाव का स्वामी अपने ही घर में है।` : `${name(l, b.lord)} sits in this house. The lord of the house is in its own house.`)
           : (l === 'hi'
-            ? `${name(l, b.lord)} आपके ${HI_ORD[lh]} भाव में बैठे हैं — ${HOUSE[lh].of.hi} का भाव। इसलिए यह भाव (${T.of.hi}) ${HOUSE[lh].of.hi} से जुड़ता है।`
-            : `${name(l, b.lord)} sits in your ${EN_ORD(lh)} house — the house of ${HOUSE[lh].of.en}. So your ${T.of.en} are tied to ${HOUSE[lh].of.en}.`),
-        lord && `${standing(l, lord)}${l === 'hi' ? '।' : '.'}`,
-        occ.length
+            ? `${name(l, b.lord)} आपके ${HI_ORD[lh]} भाव में बैठे हैं। ${HI_ORD_N[lh]} भाव ${HOUSE[lh].of.hi} का भाव है। यह ${T.of.hi} को ${HOUSE[lh].of.hi} से जोड़ता है।`
+            : `${name(l, b.lord)} sits in your ${EN_ORD(lh)} house. The ${EN_ORD(lh)} house is the house of ${HOUSE[lh].of.en}. This ties ${T.of.en} to ${HOUSE[lh].of.en}.`),
+        lord && standing(l, lord),
+        // the lord at home was just named: it is not said twice
+        rest.length
           ? (l === 'hi'
-            ? `इस भाव में बैठे ग्रह: ${list(occ.map((x) => `${name(l, x.key)} (${nak(l, x)}${cls(l, x) ? `, ${cls(l, x)}` : ''})`), l)}।`
-            : `Planets in this house: ${list(occ.map((x) => `${name(l, x.key)} (in ${nak(l, x)}${cls(l, x) ? `, ${cls(l, x)}` : ''})`), l)}.`)
-          : (l === 'hi' ? 'इस भाव में कोई ग्रह नहीं बैठा।' : 'No planet sits in this house.'),
+            ? `${list(rest.map((x) => name(l, x.key)), l)} ${lh === h ? 'भी ' : ''}इस भाव में बैठे हैं।`
+            : `${list(rest.map((x) => name(l, x.key)), l)} ${lh === h ? 'also ' : ''}${rest.length > 1 ? 'sit' : 'sits'} in this house.`)
+          : lh === h
+            ? (l === 'hi' ? 'इस भाव में और कोई ग्रह नहीं बैठा।' : 'No other planet sits in this house.')
+            : (l === 'hi' ? 'इस भाव में कोई ग्रह नहीं बैठा।' : 'No planet sits in this house.'),
         full.length || part.length
-          ? (l === 'hi'
-            ? `इस भाव पर दृष्टि: ${full.length ? `पूर्ण — ${list(full.map((k) => name(l, k)), l)}` : ''}${full.length && part.length ? '; ' : ''}${part.length ? `तीन-चौथाई — ${list(part.map((k) => name(l, k)), l)}` : ''}।`
-            : `Looking at this house: ${full.length ? `fully, ${list(full.map((k) => name(l, k)), l)}` : ''}${full.length && part.length ? '; ' : ''}${part.length ? `three-quarters, ${list(part.map((k) => name(l, k)), l)}` : ''}.`)
+          ? [
+            full.length && (l === 'hi' ? `${list(full.map((k) => name(l, k)), l)} इस भाव को पूर्ण दृष्टि से देखते हैं।` : `${list(full.map((k) => name(l, k)), l)} ${full.length > 1 ? 'look' : 'looks'} at this house with a full aspect.`),
+            part.length && (l === 'hi' ? `${list(part.map((k) => name(l, k)), l)} इस भाव को तीन-चौथाई दृष्टि से देखते हैं।` : `${list(part.map((k) => name(l, k)), l)} ${part.length > 1 ? 'look' : 'looks'} at this house with a three-quarter aspect.`),
+          ].filter(Boolean).join(' ')
           : (l === 'hi' ? 'कोई ग्रह इस भाव को पूर्ण दृष्टि से नहीं देखता।' : 'No planet looks at this house fully.'),
         kar && (l === 'hi'
-          ? `इस भाव के नैसर्गिक कारक ${name(l, kar.key)} आपके ${HI_ORD[kar.bhava]} भाव में, ${sign(l, kar.rasi)} राशि में हैं।`
-          : `${named(l, kar.key)}, the natural significator of this house, sits in your ${EN_ORD(kar.bhava)} house, in ${sign(l, kar.rasi)}.`),
+          ? `${name(l, kar.key)} इस भाव के नैसर्गिक कारक हैं। वे आपके ${HI_ORD[kar.bhava]} भाव में, ${sign(l, kar.rasi)} राशि में हैं।`
+          : `${named(l, kar.key)} is the natural significator of this house. It sits in your ${EN_ORD(kar.bhava)} house, in ${sign(l, kar.rasi)}.`),
       ].filter(Boolean),
       text: rule
         ? (clean
@@ -355,26 +364,26 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
       if (!x) return ''
       return l === 'hi'
         ? (r.length
-          ? `${name(l, k)} आपके ${list(r.map((h) => HI_ORD[h]), l)} भाव (${r.map((h) => HOUSE[h].of.hi).join('; ')}) के स्वामी हैं और ${HI_ORD[x.bhava]} भाव में बैठे हैं।`
-          : `${name(l, k)} किसी राशि के स्वामी नहीं; वे आपके ${HI_ORD[x.bhava]} भाव में बैठे हैं।`)
+          ? `${name(l, k)} आपके ${list(r.map((h) => HI_ORD[h]), l)} भाव के स्वामी हैं। वे आपके ${HI_ORD[x.bhava]} भाव में बैठे हैं।`
+          : `${name(l, k)} किसी राशि के स्वामी नहीं हैं। वे आपके ${HI_ORD[x.bhava]} भाव में बैठे हैं।`)
         : (r.length
-          ? `${name(l, k)} rules your ${list(r.map(EN_ORD), l)} ${r.length > 1 ? 'houses' : 'house'} (${r.map((h) => HOUSE[h].of.en).join('; ')}) and sits in your ${EN_ORD(x.bhava)}.`
-          : `${name(l, k)} rules no sign; it sits in your ${EN_ORD(x.bhava)} house.`)
+          ? `${name(l, k)} rules your ${r.map((h) => `${EN_ORD(h)} house`).join(' and your ')}. It sits in your ${EN_ORD(x.bhava)} house.`
+          : `${name(l, k)} rules no sign. It sits in your ${EN_ORD(x.bhava)} house.`)
     }
     push('now', (l) => ({
       title: l === 'hi' ? 'अभी क्या चल रहा है' : 'What is running now',
       chips: [{ label: l === 'hi' ? 'दशा' : 'Daśā', text: l === 'hi' ? 'समय की खिड़की, घटना नहीं' : 'a window of time, not an event' }],
       lines: [
         l === 'hi'
-          ? `आप ${name(l, maha.lord)} की महादशा में हैं — ${monthYear(maha.start, l)} से ${monthYear(maha.end, l)} तक।`
-          : `You are in the period (mahādaśā) of ${named(l, maha.lord)} — ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
+          ? `आप ${name(l, maha.lord)} की महादशा में हैं। यह ${monthYear(maha.start, l)} से ${monthYear(maha.end, l)} तक चलती है।`
+          : `You are in the main period (mahādaśā) of ${named(l, maha.lord)}. It runs from ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
         about(l, maha.lord),
         antar && (l === 'hi'
           ? `उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है। ${about(l, antar.lord)}`
           : `Within it, the sub-period of ${named(l, antar.lord)} runs until ${monthYear(antar.end, l)}. ${about(l, antar.lord)}`),
         l === 'hi'
-          ? 'दशा अपने ग्रह के भावों — जिनका वह स्वामी है और जिसमें वह बैठा है — की बातों को आगे लाती है।'
-          : 'A period brings forward the matters of the houses its planet rules and sits in.',
+          ? 'दशा अपने ग्रह के भावों की बातों को आगे लाती है। ये वे भाव हैं जिनका वह स्वामी है और जिसमें वह बैठा है।'
+          : 'A period brings forward the matters of the houses that its planet rules and sits in.',
       ].filter(Boolean),
     }), {
       main: g(maha.lord)?.bhava,
@@ -388,8 +397,8 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
   push('close', (l) => ({
     title: l === 'hi' ? 'संकेत, वादे नहीं' : 'Signs, not promises',
     lines: l === 'hi'
-      ? ['यह आपकी कुंडली थी, भाव-दर-भाव। हर पंक्ति इस पर टिकी है कि आपके ग्रह कहाँ बैठे हैं।', 'उनके पीछे के शास्त्रीय नियम ‘भाव व योग’ खंड में हैं, शास्त्र के अपने शब्दों में। समय दशाओं से आता है, और प्रयास सदा मायने रखता है।']
-      : ['That is your chart, house by house. Every line rests on where your planets stand.', 'The classical rules behind them are in the Bhāvas & Yogas section, in the texts’ own words. Timing comes from the daśās, and effort always matters.'],
+      ? ['यह आपकी कुंडली थी, भाव-दर-भाव। हर पंक्ति इस पर टिकी है कि आपके ग्रह कहाँ बैठे हैं।', 'उनके पीछे के शास्त्रीय नियम ‘भाव व योग’ खंड में हैं, शास्त्र के अपने शब्दों में। समय दशाओं से आता है। प्रयास सदा मायने रखता है।']
+      : ['That is your chart, house by house. Every line rests on where your planets stand.', 'The classical rules behind them are in the Bhāvas & Yogas section, in the words of the texts. Timing comes from the daśās. Effort always matters.'],
   }), { houses: [], grahas: [], lines: [] })
 
   return { steps }

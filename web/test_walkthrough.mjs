@@ -55,21 +55,21 @@ function checks(label, chart, namer) {
       const s = steps.find((x) => x.key === `house${b.house}`)
       const lord = SIGN_LORD[b.sign], at = g(lord).bhava
       return b.lord === lord && b.lord_in_house === at && s.focus.main === b.house && s.focus.grahas[0] === lord
-        && s.lines.en[1].includes(at === b.house ? 'right here' : `your ${EN_ORD(at)} house`)
+        && s.lines.en[1].includes(at === b.house ? 'sits in this house' : `sits in your ${EN_ORD(at)} house`)
         && (at === b.house || s.focus.lines.some((l) => l.kind === 'lord' && l.from === b.house && l.to === at))
     }))
   ok(`${label}: the planets it says sit in a house are the ones that do`,
     bh.every((b) => {
       const s = steps.find((x) => x.key === `house${b.house}`)
       const occ = chart.grahas.filter((x) => x.bhava === b.house)
-      return occ.length ? occ.every((x) => s.lines.hi.some((ln) => ln.includes(makeNamer('devanagari').grahaKey(x.key)))) && s.lines.en.some((ln) => ln.startsWith('Planets in this house'))
+      return occ.length ? occ.every((x) => s.lines.hi.some((ln) => ln.includes(makeNamer('devanagari').grahaKey(x.key)))) && occ.every((x) => s.lines.en.flatMap((ln) => ln.split(/(?<=\.)\s+/)).filter((q) => /\bsits? in this house\.$/.test(q) && q.includes(namer.grahaKey(x.key))).length === 1)
         : s.lines.en.includes('No planet sits in this house.')
     }))
   ok(`${label}: only the full and three-quarter aspects are named, and they are the chart's`,
     bh.every((b) => {
       const s = steps.find((x) => x.key === `house${b.house}`)
       const want = (b.aspects_in || []).filter((x) => x.strength >= 0.75).map((x) => x.graha)
-      const line = s.lines.en.find((ln) => ln.startsWith('Looking at') || ln.startsWith('No planet looks'))
+      const line = s.lines.en.find((ln) => /looks? at this house with|^No planet looks/.test(ln))
       const E = makeNamer('english'), C = namer
       return want.length ? want.every((k) => line.includes(C.grahaKey(k))) : line === 'No planet looks at this house fully.'
     }))
@@ -78,11 +78,12 @@ function checks(label, chart, namer) {
   const lagnaLord = SIGN_LORD[chart.lagna_rasi]
   ok(`${label}: one topic per planet, the Lagna's lord first, between the basics and the houses`,
     ps.length === chart.grahas.length && ps[0].key === `graha_${lagnaLord}` && keys.indexOf(ps[0].key) === 1 && keys.indexOf(ps[ps.length - 1].key) < keys.indexOf('house1'), ps.map((s) => s.key).join(' '))
-  const sent = ps.flatMap((s) => s.lines.en.flatMap((ln) => ln.split(/(?<=\.)\s+/)))
+  // the style holds for EVERY topic (the houses, the opening, the timing and the close too)
+  const sent = steps.flatMap((s) => s.lines.en.flatMap((ln) => ln.split(/(?<=\.)\s+/)))
   const long = sent.find((x) => x.split(/\s+/).length > 25)
-  ok(`${label}: a planet sentence has at most 25 words`, !long, long)
+  ok(`${label}: a sentence has at most 25 words`, !long, long)
   const joined = sent.find((x) => /[;—–]|\band\b.*\bbut\b|, which\b/.test(x))
-  ok(`${label}: a planet sentence carries one idea — no semicolon, no dash, no trailing clause`, !joined, joined)
+  ok(`${label}: a sentence carries one idea — no semicolon, no dash, no trailing clause`, !joined, joined)
   // one line a planet is OURS and says so; outside it no sentence states a trait, and nowhere a prediction
   const oursOf = (s, l) => s.lines[l].filter((x) => x.startsWith(OURS[l]))
   ok(`${label}: each planet has exactly one line of ours, labelled as ours, in both languages`, ps.every((s) => oursOf(s, 'en').length === 1 && oursOf(s, 'hi').length === 1))
@@ -92,7 +93,7 @@ function checks(label, chart, namer) {
   const trait = rest.find((x) => /\b(usually|shows|stands for|tends?|personality|mind)\b/i.test(x))
   ok(`${label}: outside the line of ours, no planet sentence states a trait`, !trait, trait)
   const will = sent.find((x) => /\bwill\b/i.test(x))
-  ok(`${label}: no planet sentence predicts ("will …")`, !will, will)
+  ok(`${label}: no sentence predicts ("will …")`, !will, will)
   ok(`${label}: each planet topic states the chart's own sign, house and degree`,
     ps.every((s) => { const x = g(s.key.slice(6)); return s.focus.main === x.bhava && s.lines.en[0].includes(`in your ${EN_ORD(x.bhava)} house`) && s.title.en.includes(`${Math.floor(x.degree)}°`) && s.lines.en[0].includes(namer.rasi(x.rasi)) }))
   const sig = (k) => ((chart.analysis.grahas && chart.analysis.grahas[k]) || []).find((x) => x.name === 'baladi')
@@ -145,7 +146,7 @@ console.log('\na chart drawn for the test')
   const steps = checks('drawn', chart, makeNamer('common'))
   const h1 = steps.find((s) => s.key === 'house1'), h2 = steps.find((s) => s.key === 'house2'), h7 = steps.find((s) => s.key === 'house7')
   ok('drawn: a rule that speaks of a lost child is held back; a clean one is shown', h1.text.en.quote === null && h2.text.en.quote.startsWith('If the 2 lord'))
-  ok('drawn: the 7th names its full and three-quarter aspects, not the quarter one', h7.lines.en.some((ln) => ln === 'Looking at this house: fully, Shani; three-quarters, Chandra.'))
+  ok('drawn: the 7th names its full and three-quarter aspects, not the quarter one', h7.lines.en.some((ln) => ln === 'Shani looks at this house with a full aspect. Chandra looks at this house with a three-quarter aspect.'))
   ok('drawn: in English a Sanskrit name carries its English one', h1.lines.en[0].includes('Surya (Sun)'))
   ok('drawn: no doubled names — not in the English style, not for the nodes', !buildWalkthrough(chart, makeNamer('english')).steps.some((s) => /Sun \(Sun\)/.test(s.lines.en.join(' '))) && !steps.some((s) => /Rahu \(R/.test(s.lines.en.join(' '))))
 }

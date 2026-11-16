@@ -209,8 +209,8 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
         : `Your ${named(l, 'moon')} is in ${sign(l, mo.rasi)}, in the nakṣatra ${nak(l, mo)}. These are your birth sign and your birth nakṣatra.`),
       su && (l === 'hi' ? `आपका सूर्य ${sign(l, su.rasi)} राशि में, आपके ${HI_ORD[su.bhava]} भाव में है।` : `Your ${named(l, 'sun')} is in ${sign(l, su.rasi)}, in your ${EN_ORD(su.bhava)} house.`),
       strong.length > 0 && (l === 'hi'
-        ? `ये ग्रह अपनी राशि से बलवान हैं। ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].hi}।`).join(' ')}`
-        : `These planets are strong by sign. ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].en}.`).join(' ')}`),
+        ? `${strong.length > 1 ? 'ये ग्रह अपनी राशि से बलवान हैं।' : 'एक ग्रह अपनी राशि से बलवान है।'} ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].hi}।`).join(' ')}`
+        : `${strong.length > 1 ? 'These planets are strong by sign.' : 'One planet is strong by sign.'} ${strong.map((x) => `${name(l, x.key)} ${strongWord[x.dignity.state].en}.`).join(' ')}`),
       weak.length > 0 && (l === 'hi'
         ? weak.map((x) => `${name(l, x.key)} नीच के हैं। यह उनकी सबसे दुर्बल राशि है।`).join(' ')
         : weak.map((x) => `${name(l, x.key)} is debilitated. This is its weakest sign.`).join(' ')),
@@ -379,8 +379,8 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
           : `You are in the main period (mahādaśā) of ${named(l, maha.lord)}. It runs from ${monthYear(maha.start, l)} to ${monthYear(maha.end, l)}.`,
         about(l, maha.lord),
         antar && (l === 'hi'
-          ? `उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है। ${about(l, antar.lord)}`
-          : `Within it, the sub-period of ${named(l, antar.lord)} runs until ${monthYear(antar.end, l)}. ${about(l, antar.lord)}`),
+          ? `उसके भीतर ${name(l, antar.lord)} की अंतर्दशा ${monthYear(antar.end, l)} तक है।${antar.lord === maha.lord ? '' : ` ${about(l, antar.lord)}`}`
+          : `Within it, the sub-period of ${named(l, antar.lord)} runs until ${monthYear(antar.end, l)}.${antar.lord === maha.lord ? '' : ` ${about(l, antar.lord)}`}`),
         l === 'hi'
           ? 'दशा अपने ग्रह के भावों की बातों को आगे लाती है। ये वे भाव हैं जिनका वह स्वामी है और जिसमें वह बैठा है।'
           : 'A period brings forward the matters of the houses that its planet rules and sits in.',

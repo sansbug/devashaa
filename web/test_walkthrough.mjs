@@ -92,6 +92,9 @@ function checks(label, chart, namer) {
   const rest = ps.flatMap((s) => s.lines.en.filter((x) => !x.startsWith(OURS.en)).flatMap((ln) => ln.split(/(?<=\.)\s+/)))
   const trait = rest.find((x) => /\b(usually|shows|stands for|tends?|personality|mind)\b/i.test(x))
   ok(`${label}: outside the line of ours, no planet sentence states a trait`, !trait, trait)
+  // a topic never says the same sentence twice (one planet running both periods is described once)
+  const twice = steps.find((s) => { const q = s.lines.en.flatMap((ln) => ln.split(/(?<=\.)\s+/)); return new Set(q).size !== q.length })
+  ok(`${label}: no topic says the same sentence twice`, !twice, twice && twice.key)
   const will = sent.find((x) => /\bwill\b/i.test(x))
   ok(`${label}: no sentence predicts ("will …")`, !will, will)
   ok(`${label}: each planet topic states the chart's own sign, house and degree`,

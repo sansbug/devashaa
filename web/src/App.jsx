@@ -25,6 +25,7 @@ import Support from './Support.jsx'
 import ComparePage from './ComparePage.jsx'
 import ShareCard from './ShareCard.jsx'
 import Report from './Report.jsx'
+import Conclusions from './Conclusions.jsx'
 import { SHARE_ID_RE, openShare } from './share.js'
 import { REFS_KEY, refsOn, applyRefs, scrubProse } from './refs.js'
 import Privacy from './Privacy.jsx'
@@ -1009,6 +1010,7 @@ export default function App() {
             </div>
           </section>
           )}
+          {simple && <Conclusions chart={chart} namer={namer} date={snap ? null : date} time={snap ? null : time} place={snap ? null : place} />}
           {simple && !snap && explainQuery && (
             <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />
           )}

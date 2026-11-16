@@ -3642,3 +3642,23 @@ body.rp-open { overflow: hidden; }
   .rp-charts, .rp-two, .rp-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @page { margin: 14mm 12mm; }
 }
+
+/* ── "What this means for you" (Conclusions.jsx) ─────────────────────────────────────────────── */
+.cn-card { margin-top: 14px; }
+.cn-summary { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+.cn-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cn-group { border: 1px solid var(--line, #e8e8e8); border-left-width: 4px; border-radius: 10px; padding: 8px 12px; }
+.cn-group h6 { margin: 2px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; opacity: .75; }
+.cn-good { border-left-color: #2e9e6b; }
+.cn-hard { border-left-color: #d0524a; }
+.cn-mixed { border-left-color: #c9962b; }
+.cn-plain { border-left-color: var(--line, #bbb); }
+.cn-item + .cn-item { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line, #e8e8e8); }
+.cn-head { margin: 0; font-weight: 600; line-height: 1.4; }
+.cn-item ul, .cn-now ul { margin: 4px 0 0; padding-left: 18px; }
+.cn-item li, .cn-now li { margin: 2px 0; line-height: 1.45; font-size: 13.5px; }
+.cn-now { margin-top: 12px; }
+.cn-now h6 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; opacity: .75; }
+.cn-link { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+@media (max-width: 700px) { .cn-grid { grid-template-columns: minmax(0, 1fr); } }
+@media print { .cn-group, .cn-item { break-inside: avoid; } }

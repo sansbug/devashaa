@@ -285,6 +285,22 @@ its source beside it:
 - To read a scanned page: extract its image with pypdf + Pillow and Read the image (see the
   BPHS extraction); `Read` on a PDF needs poppler, which is not installed.
 
+## "What this means for you" (`web/src/conclusions.js` + `Conclusions.jsx`)
+
+The owner (2026-11-16): a reader wants what the chart says for them, not calculations. The
+block sits first under the chart in the simple view and first in the report. Per life area:
+- THREE readings of the area's own houses decide the verdict: the ruler's strength by sign,
+  where the ruler sits (angle or trine + · 6/8/12 −), and the matched verses that state a
+  favourable or adverse result. Two or more agreeing and none against = strength / care; one
+  alone = a lean; any on each side = mixed; none = quiet.
+- TWO readings are reported beside it ("On the other side:") and NEVER decide it: the
+  ruler's nature for this ascendant (ch.34 — about the planet's own periods, not its houses)
+  and our weighted projection (`/api/matrix`, fetched when the birth details are on the page).
+  ⚠ The projection is largely built on that nature: letting both vote counts one signal
+  twice. The first version did, and real charts came out "0 strengths, 4 mixed".
+- "Now and next" is the daśā reading's first two notes; "What you can do" is ours, under the
+  life-area notes' rules. `node web/test_conclusions.mjs` pins the rule and the wording.
+
 ## The full report (`web/src/Report.jsx`) — a page to read, print or save as a PDF
 
 The owner asked (2026-11-16) for a PDF "of all texts with charts and everything" when sharing,

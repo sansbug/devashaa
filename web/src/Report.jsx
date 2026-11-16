@@ -21,6 +21,7 @@ import SouthDeckChart from './SouthDeckChart.jsx'
 import { HighlightsCard } from './ChartDeck.jsx'
 import { WhoCard } from './SimpleView.jsx'
 import DashaReading from './DashaReading.jsx'
+import Conclusions from './Conclusions.jsx'
 import { Passage } from './Findings.jsx'
 import { buildWalkthrough } from './walkthrough.js'
 import { buildFindings, rankFindings, TAGS } from './findings.js'
@@ -130,6 +131,9 @@ export default function Report({ chart, name, date, time, place, namer, refs, sn
             </div>
           </div>
         </section>
+
+        {/* the conclusions first: what the chart means, before how it is worked out */}
+        <section className="rp-sec"><Conclusions chart={shown} namer={namer} date={snap ? null : date} time={snap ? null : time} place={snap ? null : place} /></section>
 
         <section className="rp-sec"><WhoCard chart={chart} namer={namer} refs={refs} /></section>
 

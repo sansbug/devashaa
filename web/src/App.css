@@ -3702,6 +3702,7 @@ body.rp-open { overflow: hidden; }
 .pm-rel.pm-b { background: rgba(208, 82, 74, .16); }
 .pm-rel.pm-bb { background: rgba(208, 82, 74, .34); }
 .pm-rel.pm-n { background: var(--sunken, #f1f1f1); }
+.pm-nak { white-space: nowrap; }
 .pm-key { font-size: .74rem; color: var(--dim); margin: .4rem 0 0; }
 .pm-legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; font-size: .74rem; margin: .5rem 0 0; }
 .pm-notes { margin: .2rem 0 0; padding-left: 1.1rem; font-size: .82rem; }

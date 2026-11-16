@@ -1209,7 +1209,7 @@ export default function App() {
           </>)}
 
           {sec === 'overview' && chart.analysis && !chart.analysis.error && (
-            <PlanetMatrix data={chart.analysis.planet_matrix} namer={namer} />
+            <PlanetMatrix data={chart.analysis.planet_matrix} namer={namer} grahas={chart.grahas} />
           )}
 
           {sec === 'overview' && chart.analysis && !chart.analysis.error && (

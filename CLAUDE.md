@@ -320,6 +320,11 @@ each house, friends and enemies in this chart, what each planet carries.
   natural nature (ch.3 v.11), with the nature for the Lagn (ch.34) beside it, never blended. Do not
   add a good/bad-by-distance column. (Friendly 3/5/9/11 and hostile 1/4/7/10 is Tajika, annual chart only.)
 - **Rahu and Ketu cast no aspect here**: ch.26 does not name them. The page says so.
+- Each planet also shows its **Nakshatr, the Nakshatr's lord (ch.46 vv.12-14, the Dasha order) and the
+  planet's five-fold relation towards that lord**. The registered texts state no result for that
+  relation: it is a fact of the chart and the page says so. No relation when the planet or the lord
+  is Rahu or Ketu (the nodes have no friendship). The payload's Nakshatr index is 0-26; the chart's
+  own `nakshatra.index` is 1-27.
 - "What each planet carries" is the owner's table. It is ours and is labelled so.
 - Tests: `api/test_planet_matrix.py`, `web/test_planetmatrix.mjs` (the second needs the local API).
 

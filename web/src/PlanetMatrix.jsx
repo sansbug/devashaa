@@ -13,7 +13,7 @@ import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, WHY,
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
-export default function PlanetMatrix({ data, namer }) {
+export default function PlanetMatrix({ data, namer, grahas }) {
   const { lang } = useLang()
   const L = lang === 'hi' ? 'hi' : 'en'
   const W = (en, hi) => (L === 'hi' ? hi : en)
@@ -24,6 +24,13 @@ export default function PlanetMatrix({ data, namer }) {
   const tone = (k) => (k === 'benefic' || k === 'yogakaraka' ? 'pm-g' : k === 'malefic' ? 'pm-b' : 'pm-n')
   const ord = (h) => (L === 'hi' ? h : EN_ORD(h))
   const refs = refsOn()
+  // the Nakshatr's name comes from the chart's own planet rows (the matrix carries its index and lord)
+  const G = Object.fromEntries((grahas || []).map((g) => [g.key, g]))
+  const nakName = (k) => (G[k] && G[k].nakshatra ? namer.nakshatra(G[k].nakshatra) : null)
+  const relMark = (k, title) => {
+    const r = k && RELATION[k]
+    return r ? <i className={'pm-rel pm-' + r.tone} title={title ? `${title}: ${r[L]}` : r[L]}>{r.mark}</i> : null
+  }
   const P = Object.fromEntries(data.planets.map((p) => [p.graha, p]))
 
   return (
@@ -40,6 +47,8 @@ export default function PlanetMatrix({ data, namer }) {
               <th>{W('Planet', 'ग्रह')}</th>
               <th>{W('Raashi', 'राशि')}</th>
               <th>{W('Bhaav', 'भाव')}</th>
+              <th>{W('Nakshatr', 'नक्षत्र')}</th>
+              <th>{W('Nakshatr lord', 'नक्षत्र स्वामी')}</th>
               <th>{W('Nature', 'स्वभाव')}</th>
               <th>{W('For your Lagn', 'आपके लग्न के लिए')}</th>
               <th>{W('Full aspect on Bhaav', 'पूर्ण दृष्टि वाले भाव')}</th>
@@ -54,6 +63,8 @@ export default function PlanetMatrix({ data, namer }) {
                 <td className="pm-name">{n(p.graha)}</td>
                 <td>{namer.rasi(p.sign)}</td>
                 <td className="pm-num">{p.house}</td>
+                <td>{nakName(p.graha) || '·'}</td>
+                <td className="pm-name">{p.nakshatra_lord ? <>{n(p.nakshatra_lord)}{relMark(p.to_nakshatra_lord, W(`${n(p.graha)} towards ${n(p.nakshatra_lord)}`, `${n(p.graha)} का ${n(p.nakshatra_lord)} से संबंध`))}</> : '·'}</td>
                 <td className={tone(p.natural)}>{nature(p.natural)}{p.natural_why && WHY[p.natural_why] ? <small> ({WHY[p.natural_why][L]})</small> : null}</td>
                 <td className={tone(p.functional)}>{nature(p.functional)}</td>
                 <td>{p.is_node
@@ -77,6 +88,7 @@ export default function PlanetMatrix({ data, namer }) {
               <th>{W('Raashi', 'राशि')}</th>
               <th>{W('Lord', 'स्वामी')}</th>
               <th>{W('Planets in it', 'इसमें बैठे ग्रह')}</th>
+              <th>{W('Nakshatr and its lord', 'नक्षत्र और उसका स्वामी')}</th>
               <th>{W('Full aspect from', 'पूर्ण दृष्टि')}</th>
               <th>{W('Part aspect from', 'आंशिक दृष्टि')}</th>
               <th>{W('Benefic influence', 'शुभ प्रभाव')}</th>
@@ -95,6 +107,11 @@ export default function PlanetMatrix({ data, namer }) {
                     const r = o.to_lord && RELATION[o.to_lord]
                     return <span key={o.graha} title={r ? W(`${n(o.graha)} towards the lord of this sign: ${r.en}`, `${n(o.graha)} का इस राशि के स्वामी से संबंध: ${r.hi}`) : ''}>{i ? ', ' : ''}{n(o.graha)}{r ? <i className={'pm-rel pm-' + r.tone}>{r.mark}</i> : null}</span>
                   }) : '·'}</td>
+                  <td>{h.occupants.length ? h.occupants.map((o) => (
+                    <div key={o.graha} className="pm-nak">
+                      <b>{n(o.graha)}</b>: {nakName(o.graha) || '·'}{o.nakshatra_lord ? <>, {W('lord', 'स्वामी')} {n(o.nakshatra_lord)}{relMark(o.to_nakshatra_lord, W(`${n(o.graha)} towards ${n(o.nakshatra_lord)}`, `${n(o.graha)} का ${n(o.nakshatra_lord)} से संबंध`))}</> : null}
+                    </div>
+                  )) : '·'}</td>
                   <td>{list(h.full_aspects)}</td>
                   <td className="pm-dim">{h.partial_aspects.length ? h.partial_aspects.map((a) => `${n(a.graha)} ${FRACTION[a.fraction] || a.fraction}`).join(', ') : '·'}</td>
                   <td className={line.benefic ? 'pm-g' : ''}>{line.benefic || '·'}</td>
@@ -105,7 +122,7 @@ export default function PlanetMatrix({ data, namer }) {
           </tbody>
         </table>
       </div>
-      <p className="pm-key">{W('The mark after a planet in a house shows how it stands towards the lord of that sign.', 'भाव में बैठे ग्रह के बाद का चिह्न बताता है कि वह उस राशि के स्वामी के प्रति कैसा है।')}</p>
+      <p className="pm-key">{W('The mark after a planet in a house shows how it stands towards the lord of that sign. The mark after a Nakshatr lord shows how the planet stands towards that lord.', 'भाव में बैठे ग्रह के बाद का चिह्न बताता है कि वह उस राशि के स्वामी के प्रति कैसा है। नक्षत्र स्वामी के बाद का चिह्न बताता है कि ग्रह उस स्वामी के प्रति कैसा है।')}</p>
 
       <h4 className="pm-h">{W('3. Friends and enemies in this chart', '3. इस कुंडली में मित्र और शत्रु')}</h4>
       <p className="pm-key">{W('Read across. Each row shows how that planet stands towards the planet in the column.', 'पंक्ति के साथ पढ़ें। हर पंक्ति बताती है कि वह ग्रह स्तंभ वाले ग्रह के प्रति कैसा है।')}</p>
@@ -159,7 +176,7 @@ export default function PlanetMatrix({ data, namer }) {
       </ul>
       {refs && data.citations && (
         <p className="pm-key">
-          {W('Nature', 'स्वभाव')}: {data.citations.natural} · {W('For the Lagn', 'लग्न के लिए')}: {data.citations.functional} · {W('Friendship', 'मित्रता')}: {data.citations.friendship} · {W('Aspects', 'दृष्टि')}: {data.citations.aspects}
+          {W('Nature', 'स्वभाव')}: {data.citations.natural} · {W('For the Lagn', 'लग्न के लिए')}: {data.citations.functional} · {W('Friendship', 'मित्रता')}: {data.citations.friendship} · {W('Aspects', 'दृष्टि')}: {data.citations.aspects} · {W('Nakshatr lord', 'नक्षत्र स्वामी')}: {data.citations.nakshatra_lord}
         </p>
       )}
     </section>

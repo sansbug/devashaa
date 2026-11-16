@@ -376,7 +376,8 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
         if pmw is None and "moon" in chart_positions and "sun" in chart_positions:
             pmw = (chart_positions["moon"]["longitude"] - chart_positions["sun"]["longitude"]) % 360.0 < 180.0
         out["planet_matrix"] = planet_matrix.build(
-            rasi_positions, lagna, pmw, profile, out["relationships"], out["drishti"]["graha"])
+            rasi_positions, lagna, pmw, profile, out["relationships"], out["drishti"]["graha"],
+            longitudes={g: p["longitude"] for g, p in chart_positions.items() if "longitude" in p})
     except Exception as e:  # noqa: BLE001
         out["planet_matrix"] = {"error": f"planet matrix failed: {e}"}
 

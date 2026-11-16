@@ -97,6 +97,12 @@ export function notes(n, L, conjunct = []) {
     `${n('moon')} बढ़ते समय शुभ और घटते समय पाप होता है। ${n('mercury')} पाप ग्रह के साथ बैठने पर पाप होता है।`,
     'मित्रता के दो भाग हैं। एक सभी कुंडलियों के लिए स्थिर है। दूसरा इस कुंडली में ग्रहों की स्थिति से बनता है। तालिका दोनों को मिलाकर दिखाती है।',
   ]
+  en.push('Each planet sits in a Nakshatr, and each Nakshatr has a lord. The mark shows how the planet stands towards that lord in this chart.',
+    'The texts on this site state no result for that relation. It is shown as a fact of the chart.',
+    `No friendship is given for ${n('rahu')} and ${n('ketu')}. So no mark shows when one of them is the planet or the lord.`)
+  hi.push('हर ग्रह एक नक्षत्र में बैठा है, और हर नक्षत्र का एक स्वामी है। चिह्न बताता है कि इस कुंडली में ग्रह उस स्वामी के प्रति कैसा है।',
+    'इस साइट के ग्रंथ इस संबंध का कोई फल नहीं बताते। इसे कुंडली के एक तथ्य के रूप में दिखाया गया है।',
+    `${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है। इसलिए जब ग्रह या स्वामी इनमें से एक हो, तब कोई चिह्न नहीं दिखता।`)
   if (conjunct.length) {
     en.push('Planets that share a sign count as enemies for the part that comes from this chart. The verse lists six friendly houses and the same sign is not one of them. Some books count such planets as friends.')
     hi.push('एक ही राशि में बैठे ग्रह इस कुंडली वाले भाग में शत्रु गिने जाते हैं। श्लोक छह मित्र भाव बताता है और वही राशि उनमें नहीं है। कुछ पुस्तकें ऐसे ग्रहों को मित्र गिनती हैं।')

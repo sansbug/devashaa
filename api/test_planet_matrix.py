@@ -26,9 +26,16 @@ POS = {"sun": 8, "moon": 10, "mars": 7, "mercury": 9, "jupiter": 2, "venus": 9, 
 LAGNA = 11
 
 
-def make(waxing=True, pos=POS, lagna=LAGNA):
+# longitudes inside those signs: Sun 16°52' Dhanus (Purva Ashadha), Moon 0°30' Kumbha (Dhanishta), Mars 5° Vrischika
+# (Anuradha), Mercury 28° Makara (Dhanishta), Jupiter 10° Mithuna (Ardra), Venus 12° Makara (Shravana),
+# Saturn 22° Dhanus (Purva Ashadha), Rahu 25° Makara (Dhanishta), Ketu 25° Karka (Ashlesha)
+LON = {"sun": 256.86, "moon": 300.5, "mars": 215.0, "mercury": 298.0, "jupiter": 70.0, "venus": 282.0,
+       "saturn": 262.0, "rahu": 295.0, "ketu": 115.0}
+
+
+def make(waxing=True, pos=POS, lagna=LAGNA, lon=LON):
     return pm.build(pos, lagna, waxing, fn.lagna_profile(lagna, moon_waxing=waxing),
-                    rel.relationship_matrix(pos), dr.graha_drishti_chart(pos))
+                    rel.relationship_matrix(pos), dr.graha_drishti_chart(pos), longitudes=lon)
 
 
 m = make()
@@ -101,6 +108,31 @@ check("a node has no friendship row", "friends" not in P["rahu"])
 check("an occupant's relation to the house lord is given", H[10]["occupants"][0]["to_lord"] == "sama", H[10]["occupants"])
 check("planets that share a sign are named for the conjunction caveat",
       set(m["conjunction_affected"]) == {"sun", "saturn", "mercury", "venus", "rahu"})
+
+print("\nNakshatr, its lord, and the planet's relation to that lord: ch.46 vv.12-14 + ch.3 vv.55-58")
+check("Ashwini, Magha and Mula belong to Ketu", all(pm.nakshatra_lord(i) == "ketu" for i in (0, 9, 18)))
+check("the nine lords in Dasha order", [pm.nakshatra_lord(i) for i in range(9)] ==
+      ["ketu", "venus", "sun", "moon", "mars", "rahu", "jupiter", "saturn", "mercury"])
+check("each lord holds three of the 27", all([pm.nakshatra_lord(i) for i in range(27)].count(g) == 3 for g in pm.ORDER))
+check("0 deg is Ashwini, 13 deg 20 min starts Bharani, 359.9 is Revati",
+      pm.nakshatra_of(0) == 0 and pm.nakshatra_of(13.34) == 1 and pm.nakshatra_of(359.9) == 26 and pm.nakshatra_of(360) == 0)
+check("Sun in Purva Ashadha (Venus), an enemy by nature and a temporary friend: neutral",
+      (P["sun"]["nakshatra"], P["sun"]["nakshatra_lord"], P["sun"]["to_nakshatra_lord"]) == (19, "venus", "sama"), P["sun"])
+check("Mars in Anuradha, lord Saturn", (P["mars"]["nakshatra"], P["mars"]["nakshatra_lord"]) == (16, "saturn"))
+check("the relation is the chart's five-fold one, planet towards lord",
+      all(P[g]["to_nakshatra_lord"] == P[g]["in_chart"][P[g]["nakshatra_lord"]]["compound"]
+          for g in pm.SEVEN if P[g]["nakshatra_lord"] in pm.SEVEN and P[g]["nakshatra_lord"] != g))
+check("a lord that is a node gives no relation (Jupiter in Ardra, lord Rahu)",
+      P["jupiter"]["nakshatra_lord"] == "rahu" and P["jupiter"]["to_nakshatra_lord"] is None)
+check("a node as the planet gives no relation (Ketu in Ashlesha, lord Mercury)",
+      P["ketu"]["nakshatra_lord"] == "mercury" and P["ketu"]["to_nakshatra_lord"] is None)
+own = {r["graha"]: r for r in make(lon=dict(LON, moon=45.0))["planets"]}     # Rohini, the Moon's own
+check("a planet in its own Nakshatr is marked own", own["moon"]["nakshatra_lord"] == "moon" and own["moon"]["to_nakshatra_lord"] == "own")
+check("the house rows carry the same three for every occupant",
+      all(o["nakshatra"] == P[o["graha"]]["nakshatra"] and o["nakshatra_lord"] == P[o["graha"]]["nakshatra_lord"]
+          and o["to_nakshatra_lord"] == P[o["graha"]]["to_nakshatra_lord"] for h in m["houses"] for o in h["occupants"]))
+bare = pm.build(POS, LAGNA, True, fn.lagna_profile(LAGNA, moon_waxing=True), rel.relationship_matrix(POS), dr.graha_drishti_chart(POS))
+check("without longitudes the three are None, nothing is guessed", all(r["nakshatra"] is None for r in bare["planets"]))
 
 print()
 print("ALL PASS ✓" if not fails else f"FAILED: {fails}")

@@ -1,5 +1,5 @@
 // The planet and house matrix: the words (planetmatrix.js) and the payload they are laid over.
-import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE, parts, partsLine } from './src/planetmatrix.js'
+import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE, parts, partsLine, lordEffect, effectLine, EFFECT } from './src/planetmatrix.js'
 import { makeNamer } from './src/naming.js'
 
 let fails = 0
@@ -80,6 +80,28 @@ console.log('\nThe two parts behind a relation (Guru and Budh):')
   ok('no parts for a node or for a planet towards itself', parts('jupiter', 'rahu', P) === null && parts('rahu', 'jupiter', P) === null && parts('jupiter', 'jupiter', P) === null)
 }
 
+console.log('\nThe Nakshatr lord\'s effect on the planet (the owner\'s rule):')
+{
+  const P = {
+    jupiter: { friends: ['sun', 'moon', 'mars'], neutrals: ['saturn'], enemies: ['mercury', 'venus'], in_chart: { mercury: { temporary: 'friend', compound: 'sama' } } },
+    mercury: { friends: ['sun', 'venus'], neutrals: ['mars', 'jupiter', 'saturn'], enemies: ['moon'] },
+    sun: {}, saturn: {}, rahu: { is_node: true }, ketu: { is_node: true },
+  }
+  ok('Guru in Revati: the lord Budh is its enemy by nature, so it reduces Guru', lordEffect('jupiter', 'mercury', P) === 'reduce')
+  ok('the place in the chart does not soften it (the sum there is neutral)', P.jupiter.in_chart.mercury.compound === 'sama' && lordEffect('jupiter', 'mercury', P) === 'reduce')
+  ok('a lord that is a friend by nature supports', lordEffect('jupiter', 'sun', P) === 'support')
+  ok('a lord that is neutral by nature changes nothing', lordEffect('jupiter', 'saturn', P) === 'none')
+  ok('the other direction is its own: Budh in a Nakshatr of Guru is not reduced', lordEffect('mercury', 'jupiter', P) === 'none')
+  ok('a planet in its own Nakshatr is supported', lordEffect('jupiter', 'jupiter', P) === 'support')
+  ok('nothing is said when the planet or the lord is a node', lordEffect('jupiter', 'rahu', P) === null && lordEffect('rahu', 'jupiter', P) === null && lordEffect('ketu', 'ketu', P) === null)
+  const lines = [effectLine('reduce', false, 'Guru', 'Budh', 'en'), effectLine('support', false, 'Guru', 'Surya', 'en'), effectLine('support', true, 'Guru', 'Guru', 'en')]
+  ok('the house line says who and what', lines[0] === 'Budh is an enemy of Guru by nature. This reduces the strength of Guru here.', lines[0])
+  ok('the lines are short sentences', !styleBreak(lines) && !styleBreak([effectLine('reduce', false, 'गुरु', 'बुध', 'hi'), effectLine('support', true, 'गुरु', 'गुरु', 'hi')]))
+  ok('no line for no change', effectLine('none', false, 'Guru', 'Shani', 'en') === '')
+  ok('the three effects have both languages', Object.values(EFFECT).every((x) => x.en && x.hi && x.tone))
+  ok('the rules state the effect and that it uses the fixed friendship', notes((k) => k, 'en').some((s) => /reduces its strength/.test(s)) && notes((k) => k, 'en').some((s) => /fixed friendship only/.test(s)))
+}
+
 console.log('\nA house line:')
 {
   const h = { benefic: { occupants: ['venus'], aspects: ['jupiter'] }, malefic: { occupants: [], aspects: ['mars', 'saturn'] } }
@@ -117,6 +139,11 @@ try {
       const pt = parts(a.graha, b.graha, P)
       return pt && SUM[`${pt.natural}+${pt.temporary}`] === a.in_chart[b.graha].compound
     })))
+    ok('every effect in the chart follows the planet\'s fixed friendship towards the lord', states.every(([p, s]) => {
+      if (p.is_node || P[s.lord].is_node) return s.effect === null
+      if (s.lord === p.graha) return s.effect === 'support'
+      return s.effect === (p.friends.includes(s.lord) ? 'support' : p.enemies.includes(s.lord) ? 'reduce' : 'none')
+    }), states.map(([p, s]) => `${p.graha}:${s.effect}`).join(' '))
     ok('the Nakshatr lord rows carry the parts wherever they carry a relation', states.every(([, s]) => (s.towards && s.towards !== 'own') ? !!s.towards_parts : true))
     ok('the lord never moves a planet between the benefic and malefic columns', m.houses.every((h) => [...h.benefic.occupants, ...h.benefic.aspects].every((g) => P[g].natural === 'benefic') && [...h.malefic.occupants, ...h.malefic.aspects].every((g) => P[g].natural === 'malefic')))
     for (const [p, s] of states) console.log(`     ${p.graha.padEnd(8)} lord ${s.lord.padEnd(8)} house ${String(s.house).padStart(2)}  ${String(s.dignity).padEnd(12)} ${String(s.natural).padEnd(8)} → ${s.towards || '·'}  ← ${s.back || '·'}`)

@@ -9,7 +9,7 @@
  */
 import { useLang } from './LangContext.jsx'
 import { refsOn } from './refs.js'
-import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
+import { EFFECT, effectLine, CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
@@ -107,12 +107,13 @@ export default function PlanetMatrix({ data, namer, grahas }) {
               <th>{W('Lord for your Lagn', 'आपके लग्न के लिए स्वामी')}</th>
               <th>{W('Planet towards lord', 'ग्रह का स्वामी से संबंध')}</th>
               <th>{W('Lord towards planet', 'स्वामी का ग्रह से संबंध')}</th>
+              <th>{W('Effect on the planet', 'ग्रह के बल पर प्रभाव')}</th>
             </tr>
           </thead>
           <tbody>
             {data.planets.map((p) => {
               const st = state(p)
-              if (!st) return <tr key={p.graha}><td className="pm-name">{n(p.graha)}</td><td>{nakName(p.graha) || '·'}</td><td colSpan={7}>·</td></tr>
+              if (!st) return <tr key={p.graha}><td className="pm-name">{n(p.graha)}</td><td>{nakName(p.graha) || '·'}</td><td colSpan={8}>·</td></tr>
               const tw = st.towards && RELATION[st.towards], bk = st.back && RELATION[st.back]
               return (
                 <tr key={p.graha}>
@@ -125,6 +126,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                   <td className={tone(st.functional)}>{nature(st.functional)}</td>
                   <td className={tw ? 'pm-' + tw.tone : ''}>{tw ? tw[L] : '·'}{st.towards_parts ? <div><small>{partsLine(st.towards_parts, L)}</small></div> : null}</td>
                   <td className={bk ? 'pm-' + bk.tone : ''}>{bk ? bk[L] : '·'}{st.back_parts ? <div><small>{partsLine(st.back_parts, L)}</small></div> : null}</td>
+                  <td className={st.effect ? 'pm-' + EFFECT[st.effect].tone : ''}>{st.effect ? <b>{EFFECT[st.effect][L]}</b> : '·'}</td>
                 </tr>
               )
             })}
@@ -166,7 +168,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                       {(() => {
                         const st = state(o)
                         if (!st) return null
-                        return <div className="pm-lord"><small>{W(`${n(st.lord)} is in the ${ord(st.house)} Bhaav`, `${n(st.lord)} भाव ${st.house} में`)}{st.dignity && SIGN_STATE[st.dignity] ? `, ${SIGN_STATE[st.dignity][L]}` : ''}{st.natural ? `, ${nature(st.natural)}` : ''}</small></div>
+                        return <div className="pm-lord"><small>{W(`${n(st.lord)} is in the ${ord(st.house)} Bhaav`, `${n(st.lord)} भाव ${st.house} में`)}{st.dignity && SIGN_STATE[st.dignity] ? `, ${SIGN_STATE[st.dignity][L]}` : ''}{st.natural ? `, ${nature(st.natural)}` : ''}</small>{st.effect && st.effect !== 'none' ? <div className={'pm-effect pm-' + EFFECT[st.effect].tone}>{effectLine(st.effect, st.lord === o.graha, n(o.graha), n(st.lord), L)}</div> : null}</div>
                       })()}
                     </div>
                   )) : '·'}</td>

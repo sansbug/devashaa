@@ -3705,6 +3705,9 @@ body.rp-open { overflow: hidden; }
 .pm-nak { white-space: nowrap; }
 .pm-nak + .pm-nak { margin-top: .3rem; }
 .pm-lord { opacity: .85; }
+.pm-effect { display: inline-block; margin-top: .15rem; padding: .05rem .35rem; border-radius: 4px; font-size: .74rem; white-space: normal; }
+.pm-effect.pm-g { background: rgba(46, 158, 107, .16); }
+.pm-effect.pm-b { background: rgba(208, 82, 74, .16); }
 span.pm-rel { margin-left: 0; font-size: .76rem; padding: .05rem .35rem; }
 .pm-key { font-size: .74rem; color: var(--dim); margin: .4rem 0 0; }
 .pm-legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; font-size: .74rem; margin: .5rem 0 0; }

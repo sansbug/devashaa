@@ -332,6 +332,11 @@ each house, friends and enemies in this chart, what each planet carries.
   **later than the registered classical texts**, which use the Nakshatr lord for the Dasha only. The
   page says so, and the lord **never moves a planet between the benefic and malefic columns** (a
   test pins it). Do not let it decide a verdict without a registered source.
+- **Effect on the planet** (owner's rule, same day: Guru in Meen but in Revati, lord Budh its enemy,
+  "reduces the strength of Guru"). `lordEffect`: the planet's **fixed** friendship towards the lord
+  decides. Friend or own Nakshatr = Supports, enemy = Reduces, neutral = No change, a node on either
+  side = nothing. It does NOT use the chart's five-fold sum (that Guru's sum is neutral, and the owner
+  still reads it as reduced). Shown as a column in table 2 and a line in the house table.
 - The page also reads the lord from the chart's own Nakshatr number when the payload lacks it, so
   a Nakshatr is never shown without its lord.
 - "What each planet carries" is the owner's table. It is ours and is labelled so.

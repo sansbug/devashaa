@@ -105,6 +105,8 @@ export function notes(n, L, conjunct = []) {
     'A later teaching says a Nakshatr takes its strength from its own lord, not from the lord of the Raashi.',
     'So the matrix shows where that lord sits, how strong it is by sign, and its nature.',
     'It also shows how the planet and the lord stand towards each other in this chart.',
+    'By this teaching, a lord that the planet counts a friend by nature supports the planet. A lord that it counts an enemy by nature reduces its strength.',
+    'This uses the fixed friendship only, not the place in the chart. A planet in its own Nakshatr is supported.',
     'The classical texts on this site do not state this teaching. So the lord does not change the benefic and malefic columns.',
     `No friendship is given for ${n('rahu')} and ${n('ketu')}. So no mark shows when one of them is the planet or the lord.`,
     `No strength by sign is given for ${n('rahu')} and ${n('ketu')} either.`)
@@ -112,6 +114,8 @@ export function notes(n, L, conjunct = []) {
     'एक बाद की शिक्षा कहती है कि नक्षत्र अपना बल अपने स्वामी से लेता है, राशि के स्वामी से नहीं।',
     'इसलिए तालिका दिखाती है कि वह स्वामी कहाँ बैठा है, राशि से कितना बलवान है, और उसका स्वभाव क्या है।',
     'यह भी दिखता है कि इस कुंडली में ग्रह और वह स्वामी एक-दूसरे के प्रति कैसे हैं।',
+    'इस शिक्षा के अनुसार, जिस स्वामी को ग्रह स्वभाव से मित्र मानता है, वह ग्रह को बल देता है। जिसे वह स्वभाव से शत्रु मानता है, वह उसका बल घटाता है।',
+    'इसमें केवल स्थिर मित्रता ली जाती है, कुंडली में स्थान नहीं। अपने ही नक्षत्र में बैठे ग्रह को बल मिलता है।',
     'इस साइट के शास्त्रीय ग्रंथ यह शिक्षा नहीं बताते। इसलिए यह स्वामी शुभ और पाप प्रभाव के स्तंभ नहीं बदलता।',
     `${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है। इसलिए जब ग्रह या स्वामी इनमें से एक हो, तब कोई चिह्न नहीं दिखता।`,
     `${n('rahu')} और ${n('ketu')} का राशि से बल भी नहीं दिया गया है।`)
@@ -158,6 +162,42 @@ export const partsLine = (p, L) => (!p ? '' : L === 'hi'
   : `${PART[p.natural].en} by nature, ${PART[p.temporary].en} by place`)
 
 /**
+ * What the Nakshatr lord does to the strength of the planet in its Nakshatr (owner, 2026-11-16: Guru in its own
+ * sign Meen but in Revati, whose lord Budh is Guru's enemy, "reduces the strength of Guru").
+ *
+ * THE RULE, which is the owner's and belongs to the later teaching, not to the registered classical texts:
+ *   the planet's FIXED friendship towards the lord decides (the owner's "Budh and Guru are enemies"), not the
+ *   chart's five-fold sum (which for that Guru is neutral):
+ *     the planet is its own Nakshatr lord, or counts the lord a friend  → 'support'
+ *     counts the lord an enemy                                           → 'reduce'
+ *     counts the lord neutral                                            → 'none'
+ *     the planet or the lord is Rahu or Ketu (no friendship is given)    → null
+ * It is a statement about the planet's strength. It never moves the planet between the benefic and malefic
+ * columns: Guru weakened is still Guru.
+ */
+export function lordEffect(graha, lord, P) {
+  if (!lord || !P[graha] || !P[lord]) return null
+  if (graha === lord) return P[graha].is_node ? null : 'support'
+  const row = P[graha]
+  if ((row.friends || []).includes(lord)) return 'support'
+  if ((row.enemies || []).includes(lord)) return 'reduce'
+  if ((row.neutrals || []).includes(lord)) return 'none'
+  return null
+}
+export const EFFECT = {
+  support: { tone: 'g', en: 'Supports', hi: 'बल देता है' },
+  reduce: { tone: 'b', en: 'Reduces', hi: 'बल घटाता है' },
+  none: { tone: 'n', en: 'No change', hi: 'कोई बदलाव नहीं' },
+}
+/** One short sentence for a house row. `P`, `Ld` are the planet's and the lord's names. */
+export function effectLine(effect, own, P, Ld, L) {
+  if (effect === 'support' && own) return L === 'hi' ? `${P} अपने ही नक्षत्र में है। इससे ${P} को बल मिलता है।` : `${P} is in its own Nakshatr. This supports ${P}.`
+  if (effect === 'support') return L === 'hi' ? `${Ld} स्वभाव से ${P} का मित्र है। इससे ${P} को बल मिलता है।` : `${Ld} is a friend of ${P} by nature. This supports ${P}.`
+  if (effect === 'reduce') return L === 'hi' ? `${Ld} स्वभाव से ${P} का शत्रु है। इससे यहाँ ${P} का बल घटता है।` : `${Ld} is an enemy of ${P} by nature. This reduces the strength of ${P} here.`
+  return ''
+}
+
+/**
  * The state of the lord of the Nakshatr a planet sits in (owner, 2026-11-16: "a Nakshatr draws its energy from
  * its lord, not the Raashi lord"). That teaching is LATER than the registered classical texts, which use the
  * Nakshatr lord for the Dasha only. So this reports chart facts about the lord and decides nothing: it never
@@ -176,6 +216,7 @@ export function lordState(graha, lord, P, G) {
     same_house: !!me && me.house === lp.house,
     towards: rel(graha, lord), back: rel(lord, graha),
     towards_parts: parts(graha, lord, P), back_parts: parts(lord, graha, P),
+    effect: lordEffect(graha, lord, P),
   }
 }
 

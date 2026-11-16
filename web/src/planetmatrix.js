@@ -81,6 +81,8 @@ export function notes(n, L, conjunct = []) {
     'The two natures can differ. They are shown side by side and are not mixed.',
     `${n('moon')} is a benefic when it grows and a malefic when it wanes. ${n('mercury')} is a malefic when it sits with a malefic.`,
     'Friendship has two parts. One is fixed for all charts. One comes from where the planets sit in this chart. The table shows the two together.',
+    'An enemy by nature that is a friend by place counts as neutral. A friend by nature that is an enemy by place counts as neutral too.',
+    'Friendship is not always the same in both directions. One planet can count the other an enemy while the other counts it neutral.',
   ]
   const hi = [
     'हर ग्रह की अपने से सातवें भाव पर पूर्ण दृष्टि होती है।',
@@ -96,6 +98,8 @@ export function notes(n, L, conjunct = []) {
     'दोनों स्वभाव अलग हो सकते हैं। उन्हें साथ-साथ दिखाया गया है, मिलाया नहीं गया।',
     `${n('moon')} बढ़ते समय शुभ और घटते समय पाप होता है। ${n('mercury')} पाप ग्रह के साथ बैठने पर पाप होता है।`,
     'मित्रता के दो भाग हैं। एक सभी कुंडलियों के लिए स्थिर है। दूसरा इस कुंडली में ग्रहों की स्थिति से बनता है। तालिका दोनों को मिलाकर दिखाती है।',
+    'स्वभाव से शत्रु और स्थान से मित्र मिलकर सम गिना जाता है। स्वभाव से मित्र और स्थान से शत्रु भी सम गिना जाता है।',
+    'मित्रता दोनों दिशाओं में हमेशा एक जैसी नहीं होती। एक ग्रह दूसरे को शत्रु मान सकता है जबकि दूसरा उसे सम मानता है।',
   ]
   en.push('Each planet sits in a Nakshatr, and each Nakshatr has a lord.',
     'A later teaching says a Nakshatr takes its strength from its own lord, not from the lord of the Raashi.',
@@ -134,6 +138,26 @@ export const SIGN_STATE = {
 }
 
 /**
+ * The two parts behind the relation one planet holds towards another: the fixed one (the same in all charts) and
+ * the one from where the two sit in this chart. The matrix shows their sum; a reader who knows only the fixed
+ * one ("Guru and Budh are enemies") needs to see both, or the sum looks wrong. null when either is a node.
+ */
+export function parts(from, to, P) {
+  const row = P[from]
+  if (!row || from === to || !row.in_chart || !row.in_chart[to]) return null
+  const natural = (row.friends || []).includes(to) ? 'friend' : (row.enemies || []).includes(to) ? 'enemy' : (row.neutrals || []).includes(to) ? 'neutral' : null
+  const temporary = row.in_chart[to].temporary || null
+  return natural && temporary ? { natural, temporary } : null
+}
+export const PART = {
+  friend: { en: 'friend', hi: 'मित्र' }, neutral: { en: 'neutral', hi: 'सम' }, enemy: { en: 'enemy', hi: 'शत्रु' },
+}
+/** "enemy by nature, friend by place" */
+export const partsLine = (p, L) => (!p ? '' : L === 'hi'
+  ? `स्वभाव से ${PART[p.natural].hi}, स्थान से ${PART[p.temporary].hi}`
+  : `${PART[p.natural].en} by nature, ${PART[p.temporary].en} by place`)
+
+/**
  * The state of the lord of the Nakshatr a planet sits in (owner, 2026-11-16: "a Nakshatr draws its energy from
  * its lord, not the Raashi lord"). That teaching is LATER than the registered classical texts, which use the
  * Nakshatr lord for the Dasha only. So this reports chart facts about the lord and decides nothing: it never
@@ -151,6 +175,7 @@ export function lordState(graha, lord, P, G) {
     dignity: (G && G[lord] && G[lord].dignity && G[lord].dignity.state) || null,
     same_house: !!me && me.house === lp.house,
     towards: rel(graha, lord), back: rel(lord, graha),
+    towards_parts: parts(graha, lord, P), back_parts: parts(lord, graha, P),
   }
 }
 

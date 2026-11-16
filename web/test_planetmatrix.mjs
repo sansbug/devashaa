@@ -1,5 +1,5 @@
 // The planet and house matrix: the words (planetmatrix.js) and the payload they are laid over.
-import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE } from './src/planetmatrix.js'
+import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE, parts, partsLine } from './src/planetmatrix.js'
 import { makeNamer } from './src/naming.js'
 
 let fails = 0
@@ -64,6 +64,22 @@ console.log('\nThe state of a Nakshatr lord:')
   ok('every strength by sign has both languages', Object.values(SIGN_STATE).every((x) => x.en && x.hi && x.tone))
 }
 
+console.log('\nThe two parts behind a relation (Guru and Budh):')
+{
+  // Guru in Meen, Budh in Vrishabh: Budh is in the 3rd from Guru, Guru in the 11th from Budh: friends by place.
+  const P = {
+    jupiter: { friends: ['sun', 'moon', 'mars'], neutrals: ['saturn'], enemies: ['mercury', 'venus'], in_chart: { mercury: { temporary: 'friend', compound: 'sama' } } },
+    mercury: { friends: ['sun', 'venus'], neutrals: ['mars', 'jupiter', 'saturn'], enemies: ['moon'], in_chart: { jupiter: { temporary: 'friend', compound: 'mitra' } } },
+    rahu: {},
+  }
+  const a = parts('jupiter', 'mercury', P), b = parts('mercury', 'jupiter', P)
+  ok('Guru counts Budh an enemy by nature and a friend by place', a.natural === 'enemy' && a.temporary === 'friend')
+  ok('Budh counts Guru neutral by nature: the two directions differ', b.natural === 'neutral' && b.temporary === 'friend')
+  ok('the line says both parts', partsLine(a, 'en') === 'enemy by nature, friend by place', partsLine(a, 'en'))
+  ok('the Hindi line too', partsLine(a, 'hi') === 'स्वभाव से शत्रु, स्थान से मित्र')
+  ok('no parts for a node or for a planet towards itself', parts('jupiter', 'rahu', P) === null && parts('rahu', 'jupiter', P) === null && parts('jupiter', 'jupiter', P) === null)
+}
+
 console.log('\nA house line:')
 {
   const h = { benefic: { occupants: ['venus'], aspects: ['jupiter'] }, malefic: { occupants: [], aspects: ['mars', 'saturn'] } }
@@ -94,6 +110,14 @@ try {
     ok('the lord\'s house and sign are the lord\'s own row', states.every(([p, s]) => s.house === P[p.nakshatra_lord].house && s.sign === P[p.nakshatra_lord].sign))
     ok('every strength by sign the chart uses has a word', states.every(([, s]) => !s.dignity || SIGN_STATE[s.dignity]), states.map(([, s]) => s.dignity).join(' '))
     ok('the planet-to-lord relation is the one the server gives', states.every(([p, s]) => (s.towards || null) === (p.to_nakshatra_lord || null)))
+    const SUM = { 'friend+friend': 'adhimitra', 'neutral+friend': 'mitra', 'enemy+friend': 'sama', 'friend+enemy': 'sama', 'neutral+enemy': 'satru', 'enemy+enemy': 'adhisatru' }
+    const seven = m.planets.filter((p) => !p.is_node)
+    ok('every relation in the chart is the sum of its two parts, as the verse gives it', seven.every((a) => seven.every((b) => {
+      if (a === b) return true
+      const pt = parts(a.graha, b.graha, P)
+      return pt && SUM[`${pt.natural}+${pt.temporary}`] === a.in_chart[b.graha].compound
+    })))
+    ok('the Nakshatr lord rows carry the parts wherever they carry a relation', states.every(([, s]) => (s.towards && s.towards !== 'own') ? !!s.towards_parts : true))
     ok('the lord never moves a planet between the benefic and malefic columns', m.houses.every((h) => [...h.benefic.occupants, ...h.benefic.aspects].every((g) => P[g].natural === 'benefic') && [...h.malefic.occupants, ...h.malefic.aspects].every((g) => P[g].natural === 'malefic')))
     for (const [p, s] of states) console.log(`     ${p.graha.padEnd(8)} lord ${s.lord.padEnd(8)} house ${String(s.house).padStart(2)}  ${String(s.dignity).padEnd(12)} ${String(s.natural).padEnd(8)} → ${s.towards || '·'}  ← ${s.back || '·'}`)
   }

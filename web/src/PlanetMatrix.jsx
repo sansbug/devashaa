@@ -9,7 +9,7 @@
  */
 import { useLang } from './LangContext.jsx'
 import { refsOn } from './refs.js'
-import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes } from './planetmatrix.js'
+import { CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
@@ -123,8 +123,8 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                   <td>{signState(st.dignity)}</td>
                   <td className={tone(st.natural)}>{nature(st.natural)}</td>
                   <td className={tone(st.functional)}>{nature(st.functional)}</td>
-                  <td className={tw ? 'pm-' + tw.tone : ''}>{tw ? tw[L] : '·'}</td>
-                  <td className={bk ? 'pm-' + bk.tone : ''}>{bk ? bk[L] : '·'}</td>
+                  <td className={tw ? 'pm-' + tw.tone : ''}>{tw ? tw[L] : '·'}{st.towards_parts ? <div><small>{partsLine(st.towards_parts, L)}</small></div> : null}</td>
+                  <td className={bk ? 'pm-' + bk.tone : ''}>{bk ? bk[L] : '·'}{st.back_parts ? <div><small>{partsLine(st.back_parts, L)}</small></div> : null}</td>
                 </tr>
               )
             })}
@@ -198,7 +198,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
                   const c = P[a].in_chart && P[a].in_chart[b]
                   const r = c && RELATION[c.compound]
                   if (!r) return <td key={b}>·</td>
-                  return <td key={b} className={'pm-' + r.tone} title={`${n(a)} → ${n(b)}: ${r[L]}`}>{r.mark}</td>
+                  return <td key={b} className={'pm-' + r.tone} title={`${n(a)} → ${n(b)}: ${r[L]}${parts(a, b, P) ? ` (${partsLine(parts(a, b, P), L)})` : ''}`}>{r.mark}</td>
                 })}
               </tr>
             ))}

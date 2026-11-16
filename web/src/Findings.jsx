@@ -50,7 +50,7 @@ export function Passage({ t, L, refs }) {
         ? <blockquote>{body}</blockquote>
         : (
           <p className="fd-held">
-            {W('This passage matches your chart, but part of it speaks of a death, a lifespan, a bereavement or a partner’s fidelity, so it is not shown unasked. It is an old text’s statement about a placement, not a forecast for you.', 'यह पाठ आपकी कुंडली पर लागू होता है, पर इसका एक अंश मृत्यु, आयु, वियोग या जीवनसाथी की निष्ठा की बात करता है, इसलिए बिना पूछे नहीं दिखाया जाता। यह एक पुराने ग्रंथ का एक स्थिति पर कथन है, आपके लिए भविष्यवाणी नहीं।')}
+            {W('This passage matches your chart. Part of it speaks of a death, a lifespan, a bereavement or a partner’s fidelity, so it is not shown unasked. It is an old text’s statement about a placement, not a forecast for you.', 'यह पाठ आपकी कुंडली पर लागू होता है। इसका एक अंश मृत्यु, आयु, वियोग या जीवनसाथी की निष्ठा की बात करता है, इसलिए बिना पूछे नहीं दिखाया जाता। यह एक पुराने ग्रंथ का एक स्थिति पर कथन है, आपके लिए भविष्यवाणी नहीं।')}
             {t.full && <> <button type="button" className="sv-link" onClick={() => setAsked(true)}>{W('Show the whole passage', 'पूरा पाठ दिखाएँ')}</button></>}
           </p>
         )}
@@ -102,7 +102,7 @@ function Finding({ n, f, because, L, open, onToggle, goFull, refs }) {
               </div>
             ))}
             {byTier.length > 0 && (
-              <p className="fd-held">{W('These are the texts’ statements, some of them many centuries old. They are reported here as what each text says about this placement, not as facts about your life.', 'ये ग्रंथों के कथन हैं, जिनमें कुछ सदियों पुराने हैं। इन्हें यहाँ इस रूप में दिया गया है कि हर ग्रंथ इस स्थिति के बारे में क्या कहता है — आपके जीवन के तथ्य के रूप में नहीं।')}</p>
+              <p className="fd-held">{W('These are the texts’ statements, some of them many centuries old. They are reported here as what each text says about this placement, not as facts about your life.', 'ये ग्रंथों के कथन हैं, जिनमें कुछ सदियों पुराने हैं। इन्हें यहाँ इस रूप में दिया गया है कि हर ग्रंथ इस स्थिति के बारे में क्या कहता है, आपके जीवन के तथ्य के रूप में नहीं।')}</p>
             )}
           </div>
 
@@ -128,7 +128,7 @@ function Finding({ n, f, because, L, open, onToggle, goFull, refs }) {
 
           {f.inference && (
             <div className="fd-step fd-infer">
-              <h6>{W('Our inference — not a statement of any text', 'हमारा अनुमान — किसी ग्रंथ का कथन नहीं')}</h6>
+              <h6>{W('Our inference, not a statement of any text', 'हमारा अनुमान, किसी ग्रंथ का कथन नहीं')}</h6>
               <ol>
                 {f.inference.chain.map((c, i) => <li key={i}>{c.line[L]}{refs && c.cite ? <span className="fd-cite"> [{c.cite}]</span> : null}</li>)}
               </ol>
@@ -192,7 +192,7 @@ export default function FindingsPanel({ chart, namer, onHouse, goFull, refs }) {
           <h5>
             {topic === 'overall' ? W('Findings worth exploring', 'देखने योग्य मुख्य बातें')
               : topic === 'timing' ? W('The planets whose periods are running', 'जिन ग्रहों की दशा चल रही है')
-                : `${T.label[L]} — ${W('what touches it in your chart', 'आपकी कुंडली में इससे जुड़ी बातें')}`}
+                : `${T.label[L]}: ${W('what touches it in your chart', 'आपकी कुंडली में इससे जुड़ी बातें')}`}
           </h5>
           <span className="sv-tag">{W('in reading order', 'पढ़ने के क्रम में')}</span>
         </div>
@@ -208,7 +208,7 @@ export default function FindingsPanel({ chart, namer, onHouse, goFull, refs }) {
         )}
         {topic === 'timing' && ranked.length > 0 && (
           <p className="sv-note">
-            {W('Each running lord’s finding includes the text’s verdict on its period (BPHS Vol II ch.47). The text’s detailed results for each sub-period (chs 52–60) are in the full analysis.', 'हर चल रहे दशा-स्वामी की बात में उसकी दशा पर ग्रंथ का निर्णय (बृहत् पाराशर, खंड 2, अध्याय 47) शामिल है। हर अन्तर्दशा के विस्तृत फल (अध्याय 52–60) पूरे विश्लेषण में हैं।')}
+            {W('Each running lord’s finding includes the text’s verdict on its period (BPHS Vol II ch.47). The text’s detailed results for each sub-period (chs 52 to 60) are in the full analysis.', 'हर चल रहे दशा-स्वामी की बात में उसकी दशा पर ग्रंथ का निर्णय (बृहत् पाराशर, खंड 2, अध्याय 47) शामिल है। हर अन्तर्दशा के विस्तृत फल (अध्याय 52 से 60) पूरे विश्लेषण में हैं।')}
             {' '}<button type="button" className="sv-link" onClick={() => goFull('dasha')}>{W('Open the daśā results →', 'दशा-फल खोलें →')}</button>
           </p>
         )}
@@ -231,8 +231,8 @@ export default function FindingsPanel({ chart, namer, onHouse, goFull, refs }) {
           <p className="fd-foot">{W('Book names, chapter-and-verse and page numbers are hidden. Turn on References in Settings to see the exact source of every passage.', 'ग्रंथों के नाम, अध्याय-श्लोक और पृष्ठ संख्या छिपी हैं। हर पाठ का सटीक स्रोत देखने के लिए सेटिंग में “संदर्भ” चालू करें।')}</p>
         )}
         <p className="fd-foot">
-          {W('Each finding gives what your chart shows, what the registered classical texts say about it, and the factors that qualify it. The texts’ statements are reported as theirs, not as facts about a life. The order is ours, a way to decide what to read first; the texts do not rank placements.',
-            'हर बात में दिया है कि आपकी कुंडली क्या दिखाती है, पंजीकृत शास्त्रीय ग्रंथ उस पर क्या कहते हैं, और कौन-सी बातें उसे सीमित करती हैं। ग्रंथों के कथन उन्हीं के कथन के रूप में दिए गए हैं, जीवन के तथ्य के रूप में नहीं। क्रम हमारा है — पहले क्या पढ़ें, यह तय करने का तरीका; शास्त्र स्थितियों को क्रम नहीं देते।')}
+          {W('Each finding gives what your chart shows, what the registered classical texts say about it, and the factors that qualify it. The texts’ statements are reported as theirs, not as facts about a life. The order is ours, a way to decide what to read first. The texts do not rank placements.',
+            'हर बात में दिया है कि आपकी कुंडली क्या दिखाती है, पंजीकृत शास्त्रीय ग्रंथ उस पर क्या कहते हैं, और कौन-सी बातें उसे सीमित करती हैं। ग्रंथों के कथन उन्हीं के कथन के रूप में दिए गए हैं, जीवन के तथ्य के रूप में नहीं। क्रम हमारा है। यह तय करने का तरीका है कि पहले क्या पढ़ें। शास्त्र स्थितियों को क्रम नहीं देते।')}
         </p>
       </div>
     </section>

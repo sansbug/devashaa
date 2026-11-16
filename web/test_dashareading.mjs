@@ -8,6 +8,20 @@ import { buildDashaReading, HOW } from './src/dashareading.js'
 import { makeNamer } from './src/naming.js'
 
 let fail = 0
+
+// The owner's style for every sentence of ours (2026-11-16, after ASD-STE100): one idea a sentence, at most 25
+// words, no semicolon and no dash. A passage quoted from a text is the text's and is not checked. A yoga's name
+// is the engine's key and may carry a dash.
+const styleBreak = (lines, names = []) => {
+  for (const raw of lines.flat(Infinity).filter(Boolean)) {
+    const s = names.reduce((x, n) => x.split(n).join('X'), String(raw))
+    for (const q of s.split(/(?<=[.?])\s+/)) {
+      if (q.split(/\s+/).length > 25) return `too long: ${q}`
+      if (/[;—–]/.test(q)) return `semicolon or dash: ${q}`
+    }
+  }
+  return null
+}
 const ok = (name, cond, extra = '') => { console.log(`  ${cond ? 'OK' : 'FAIL'} ${name} ${cond ? '' : extra}`); if (!cond) fail++ }
 
 console.log('How to read a daśā:')
@@ -62,7 +76,9 @@ if (!chart) {
   const repeated = sentences.find((s) => AREA.some((w) => (s.toLowerCase().match(new RegExp(`\\b${w}\\b`, 'g')) || []).length > 1))
   ok('no sentence names the same area twice', !repeated, repeated)
   ok('no line uses the jargon "lean" or "the text’s rule"', !ours.some((s) => /\blean\b|text’s rule|stated verdict/i.test(s)), ours.find((s) => /\blean\b|text’s rule|stated verdict/i.test(s)))
-  ok('a period’s verdict is said in plain words', R.rows.every((r) => /counts as (un)?favourable, because|is neutral —|is mixed:/.test(r.verdict.line.en)))
+  ok('a period’s verdict is said in plain words', R.rows.every((r) => /counts as (un)?favourable, because|is neutral\.|is mixed\./.test(r.verdict.line.en)))
+  const br = styleBreak([HOW.en, R.basis.en, R.changes.en, R.notes.en, R.rows.map((r) => [r.span.en, r.brings.en, r.verdict.line.en])])
+  ok('every sentence of ours is short and carries one idea', !br, br)
   ok('no change line says the same clause twice', R.changes.en.every((s) => { const parts = s.split(/(?<=\.)\s+/).map((x) => x.replace(/\([^)]*\)/g, '').replace(/^(The sub-period running now|The next one)\s*/, '')); return new Set(parts).size === parts.length }))
   console.log('')
   R.rows.forEach((r) => console.log(`  ${r.title.en} · ${r.span.en} · ${r.verdict.state}`))

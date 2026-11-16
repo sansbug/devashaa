@@ -34,7 +34,7 @@ const HI_ORD_N = ['', 'पहला', 'दूसरा', 'तीसरा', 'च
 /** What each house stands for, shortened from BPHS ch.11 (vv.2-13). Longevity (8th) and one's own death (12th) are
  *  left out on purpose; "wife" is the spouse. `of` completes "the house of …"; `chip` is the one-line meaning. */
 export const HOUSE = {
-  1: { title: { en: 'You — body and nature', hi: 'आप — शरीर और स्वभाव' }, of: { en: 'self and body', hi: 'स्वयं और शरीर' }, chip: { en: 'body, looks, nature, happiness', hi: 'शरीर, रूप, स्वभाव, सुख' } },
+  1: { title: { en: 'You: body and nature', hi: 'आप: शरीर और स्वभाव' }, of: { en: 'self and body', hi: 'स्वयं और शरीर' }, chip: { en: 'body, looks, nature, happiness', hi: 'शरीर, रूप, स्वभाव, सुख' } },
   2: { title: { en: 'Wealth and family', hi: 'धन और परिवार' }, of: { en: 'wealth and family', hi: 'धन और परिवार' }, chip: { en: 'wealth, food, family, gems', hi: 'धन, अन्न, परिवार, रत्न' } },
   3: { title: { en: 'Courage and siblings', hi: 'पराक्रम और भाई-बहन' }, of: { en: 'courage and siblings', hi: 'पराक्रम और भाई-बहन' }, chip: { en: 'courage, brothers and sisters, helpers, journeys', hi: 'पराक्रम, भाई-बहन, सहायक, यात्रा' } },
   4: { title: { en: 'Home and mother', hi: 'घर और माता' }, of: { en: 'home and mother', hi: 'घर और माता' }, chip: { en: 'home, mother, vehicles, land, happiness', hi: 'घर, माता, वाहन, भूमि, सुख' } },

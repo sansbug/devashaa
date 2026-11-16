@@ -69,7 +69,7 @@ NOT_STATED = "not_stated"
 # assumed silently, because a transit reading would give different answers.
 FRAME_NOTE = (
     "Read from the daśā lord's NATAL placement. The verse says 'at the "
-    "commencement of the Dasa'; BPHS gives no transit rule in these chapters, "
+    "commencement of the Dasa'. BPHS gives no transit rule in these chapters, "
     "so the natal position is used. A transit reading would differ."
 )
 

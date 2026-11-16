@@ -32,7 +32,7 @@ function Branch({ b, L }) {
       ) : <blockquote>{b.results}</blockquote>}
       <p className="fd-applies">
         <i>{W('Applies because the sub-period’s planet is', 'लागू है क्योंकि अन्तर्दशा का ग्रह')}</i>{' '}
-        {b.met.map((m) => m.predicate).join(W('; and ', '; और '))}.
+        {b.met.map((m) => m.predicate).join(W(', and ', ', और '))}.
         {b.polarity_word ? <> {W('The text’s own word for this branch:', 'इस शाखा के लिए ग्रंथ का अपना शब्द:')} “{b.polarity_word}”.</> : null}
       </p>
     </div>
@@ -52,10 +52,10 @@ function SubResults({ cell, L, refs }) {
       {cell.applies.map((b, i) => <Branch key={i} b={b} L={L} />)}
       {refs && <p className="fd-attr"><b>{cell.citation} — Parāśara, tr. R. Santhanam</b></p>}
       <p className="fd-held">
-        {W(`Of the ${c.branches} branches the text gives here, ${c.apply} ${c.apply === 1 ? 'applies' : 'apply'} to your chart`, `ग्रंथ की ${c.branches} शाखाओं में से ${c.apply} आपकी कुंडली पर लागू`)}
-        {c.not_met ? W(`, ${c.not_met} ${c.not_met === 1 ? 'does' : 'do'} not`, `, ${c.not_met} नहीं`) : ''}
-        {c.undetermined ? W(`, and ${c.undetermined} could not be checked (they turn on a navāṁśa, an aspect or a house the text counts from no stated point)`, `, और ${c.undetermined} जाँची नहीं जा सकीं (वे नवांश, दृष्टि या ऐसे भाव पर टिकी हैं जिसकी गिनती का आधार ग्रंथ नहीं बताता)`) : ''}
-        {W('. These are the text’s lists of what such a period can bring, not a verdict and not a forecast.', '। ये ग्रंथ की सूचियाँ हैं कि ऐसी दशा क्या ला सकती है — निर्णय या भविष्यवाणी नहीं।')}
+        {W(`Of the ${c.branches} branches the text gives here, ${c.apply} ${c.apply === 1 ? 'applies' : 'apply'} to your chart.`, `ग्रंथ की ${c.branches} शाखाओं में से ${c.apply} आपकी कुंडली पर लागू ${c.apply === 1 ? 'है' : 'हैं'}।`)}
+        {c.not_met ? W(` ${c.not_met} ${c.not_met === 1 ? 'does' : 'do'} not apply.`, ` ${c.not_met} लागू नहीं ${c.not_met === 1 ? 'है' : 'हैं'}।`) : ''}
+        {c.undetermined ? W(` ${c.undetermined} could not be checked. ${c.undetermined === 1 ? 'It turns' : 'They turn'} on a navāṁśa, an aspect or a house that the text counts from no stated point.`, ` ${c.undetermined} जाँची नहीं जा सकीं। वे नवांश, दृष्टि या ऐसे भाव पर टिकी हैं जिसकी गिनती का आधार ग्रंथ नहीं बताता।`) : ''}
+        {W(' These are the text’s lists of what such a period can bring. They are not a verdict and not a forecast.', ' ये ग्रंथ की सूचियाँ हैं कि ऐसी दशा क्या ला सकती है। ये निर्णय या भविष्यवाणी नहीं हैं।')}
       </p>
     </div>
   )
@@ -137,7 +137,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
             <div className="fd-passage">
               <blockquote>{R.rule.verse}</blockquote>
               {refs && <p className="fd-attr"><b>{R.rule.cite} — Parāśara, tr. R. Santhanam</b></p>}
-              <p className="fd-applies">{W('It is read from where each period’s planet stood at your birth. It says whether a period counts as favourable or not. It does not say what happens in it.', 'इसे जन्म के समय हर दशा के ग्रह की स्थिति से पढ़ा जाता है। यह बताता है कि दशा अनुकूल गिनी जाए या नहीं; उसमें क्या घटता है, यह नहीं बताता।')}</p>
+              <p className="fd-applies">{W('It is read from where each period’s planet stood at your birth. It says whether a period counts as favourable or not. It does not say what happens in it.', 'इसे जन्म के समय हर दशा के ग्रह की स्थिति से पढ़ा जाता है। यह बताता है कि दशा अनुकूल गिनी जाए या नहीं। उसमें क्या घटता है, यह नहीं बताता।')}</p>
             </div>
           </div>
         )}
@@ -148,7 +148,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
             <ul className="sv-lines">{R.changes[L].map((s, i) => <li key={i}>{s}</li>)}</ul>
           </div>
           <div className="la-step la-notes">
-            <h6>{W('How it affects you — practical notes (ours, not from any text)', 'आप पर इसका असर — व्यावहारिक सुझाव (हमारे, किसी ग्रंथ के नहीं)')}</h6>
+            <h6>{W('How it affects you: practical notes (ours, not from any text)', 'आप पर इसका असर: व्यावहारिक सुझाव (हमारे, किसी ग्रंथ के नहीं)')}</h6>
             <ul>{R.notes[L].map((s, i) => <li key={i}>{s}</li>)}</ul>
             <details className="la-basis">
               <summary>{W('What these notes rest on', 'ये सुझाव किस पर टिके हैं')}</summary>
@@ -159,7 +159,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
         </div>
 
         <p className="fd-foot">
-          {W('The full analysis has every sub-period of every main period, with each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अन्तर्दशा है — ग्रंथ की हर शर्त के साथ, और यह भी कि वह जाँची जा सकी या नहीं।')}
+          {W('The full analysis has every sub-period of every main period. It gives each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अन्तर्दशा है। साथ में ग्रंथ की हर शर्त है, और यह भी कि वह जाँची जा सकी या नहीं।')}
           {' '}<button type="button" className="sv-link" onClick={goFull}>{W('Open the full daśā timeline →', 'पूरी दशा समय-रेखा खोलें →')}</button>
         </p>
       </div>

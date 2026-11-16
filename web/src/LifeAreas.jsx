@@ -28,7 +28,7 @@ export default function LifeAreas({ chart, namer, refs, onHouse, goFull }) {
   return (
     <section className="dk-card sv-areas">
       <h4 className="dk-head">
-        <span>{W('Your life, area by area', 'आपका जीवन — क्षेत्र-दर-क्षेत्र')}</span>
+        <span>{W('Your life, area by area', 'आपका जीवन, क्षेत्र-दर-क्षेत्र')}</span>
         <span className="dk-head-right">{W('what the chart shows, what the texts say, and what you can do', 'कुंडली क्या दिखाती है, ग्रंथ क्या कहते हैं, और आप क्या कर सकते हैं')}</span>
       </h4>
       <div className="dk-body">
@@ -94,7 +94,7 @@ export default function LifeAreas({ chart, namer, refs, onHouse, goFull }) {
             </div>
 
             <div className="la-step la-notes">
-              <h6>{W('What you can do — practical notes (ours, not from any text)', 'आप क्या कर सकते हैं — व्यावहारिक सुझाव (हमारे, किसी ग्रंथ के नहीं)')}</h6>
+              <h6>{W('What you can do: practical notes (ours, not from any text)', 'आप क्या कर सकते हैं: व्यावहारिक सुझाव (हमारे, किसी ग्रंथ के नहीं)')}</h6>
               <ul>{A.notes[L].map((s, i) => <li key={i}>{s}</li>)}</ul>
               <details className="la-basis">
                 <summary>{W('What these notes rest on', 'ये सुझाव किस पर टिके हैं')}</summary>

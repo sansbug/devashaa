@@ -12,6 +12,20 @@ import { buildLifeAreas, AREAS } from './src/lifeareas.js'
 import { makeNamer } from './src/naming.js'
 
 let fail = 0
+
+// The owner's style for every sentence of ours (2026-11-16, after ASD-STE100): one idea a sentence, at most 25
+// words, no semicolon and no dash. A passage quoted from a text is the text's and is not checked. A yoga's name
+// is the engine's key and may carry a dash.
+const styleBreak = (lines, names = []) => {
+  for (const raw of lines.flat(Infinity).filter(Boolean)) {
+    const s = names.reduce((x, n) => x.split(n).join('X'), String(raw))
+    for (const q of s.split(/(?<=[.?])\s+/)) {
+      if (q.split(/\s+/).length > 25) return `too long: ${q}`
+      if (/[;—–]/.test(q)) return `semicolon or dash: ${q}`
+    }
+  }
+  return null
+}
 const ok = (name, cond, extra = '') => { console.log(`  ${cond ? 'OK' : 'FAIL'} ${name} ${cond ? '' : extra}`); if (!cond) fail++ }
 
 console.log('The areas:')
@@ -38,6 +52,10 @@ if (!chart) {
   const namer = makeNamer('common')
   const NOW = new Date('2026-11-16T00:00:00').getTime()
   const areas = buildLifeAreas(chart, buildFindings(chart, namer), namer, NOW)
+  {
+    const br = styleBreak(areas.map((A) => [A.shows.en, A.supports.en, A.cautions.en, A.notes.en, A.basis.en, A.timing.now && A.timing.now.en, A.timing.next && A.timing.next.en]))
+    ok('every sentence of ours is short and carries one idea', !br, br)
+  }
   ok('one entry per area', areas.length === AREAS.length)
   ok('every area says what the chart shows, in both languages', areas.every((a) => a.shows.en.length && a.shows.en.length === a.shows.hi.length && a.shows.hi.every(Boolean)))
   ok('every area has practical notes in both languages', areas.every((a) => a.notes.en.length >= 1 && a.notes.en.length === a.notes.hi.length && a.notes.hi.every(Boolean)))

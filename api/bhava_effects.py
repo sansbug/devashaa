@@ -159,9 +159,10 @@ def w_state(g, en, hi):
 
 
 def _join(parts):
-    en = "; ".join(p[0] for p in parts)
-    hi = "; ".join(p[1] for p in parts)
-    return {"en": en[0].upper() + en[1:] + ".", "hi": hi + "।"}
+    # one condition a sentence (the site's style: no semicolons)
+    en = ". ".join(p[0][0].upper() + p[0][1:] for p in parts)
+    hi = "। ".join(p[1] for p in parts)
+    return {"en": en + ".", "hi": hi + "।"}
 
 
 def C(polarity, grahas, *parts):

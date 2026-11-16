@@ -156,6 +156,17 @@ script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
   the registered texts and are not used.
 - A chart shared without birth details has no daśā: that topic is dropped.
 
+## The site's sentence style (owner, 2026-11-16, after ASD-STE100)
+
+Every sentence WE write for a reader, in the walkthrough and in every simple-view section
+(findings, life areas, daśā reading, the backend's "why this verse applies" lines): one idea
+a sentence, at most 25 words, no semicolon and no dash, each term used one way, a line left
+out when the chart has no value for it. A passage quoted from a text is the text's and is
+left exactly as registered. `test_walkthrough.mjs`, `test_findings.mjs`,
+`test_lifeareas.mjs` and `test_dashareading.mjs` each split our English lines into sentences
+and fail on a break (`styleBreak`). Hindi follows the same shape but is not machine-checked.
+Before shipping new wording, print it for a real chart and read it.
+
 ## Chart findings (the simple view's "What would you like to understand?")
 
 `web/src/findings.js` builds them from the chart payload alone; `Findings.jsx` shows them;

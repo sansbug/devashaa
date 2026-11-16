@@ -237,7 +237,7 @@ export function WhoCard({ chart, namer, refs }) {
   const same = ch.moon && ch.moon.sign === ch.lagna.sign
   return (
     <section className="dk-card sv-who">
-      <h4 className="dk-head"><span>{W('Who you are, as the texts describe it', 'आप कैसे हैं — ग्रंथों के शब्दों में')}</span></h4>
+      <h4 className="dk-head"><span>{W('Who you are, as the texts describe it', 'आप कैसे हैं, ग्रंथों के शब्दों में')}</span></h4>
       <div className="dk-body">
         <div className="sv-who-block">
           <h5>{W('Your ascendant', 'आपका लग्न')}: {sign(ch.lagna.sign)}</h5>
@@ -260,8 +260,8 @@ export function WhoCard({ chart, namer, refs }) {
           </div>
         )}
         <p className="sv-note sv-who-foot">
-          {W('These are old texts describing a type of person by one factor each. They are shown whole, the unflattering with the flattering, and they are not a verdict on you: the rest of the chart changes how much of each applies.',
-            'ये पुराने ग्रंथ हैं जो एक-एक कारक से व्यक्ति के एक प्रकार का वर्णन करते हैं। इन्हें पूरा दिखाया गया है — अच्छा और अप्रिय, दोनों — और ये आप पर निर्णय नहीं हैं: कुंडली के बाकी कारक तय करते हैं कि इनमें से कितना लागू होता है।')}
+          {W('These are old texts describing a type of person by one factor each. They are shown whole, the unflattering with the flattering. They are not a verdict on you. The rest of the chart changes how much of each applies.',
+            'ये पुराने ग्रंथ हैं जो एक-एक कारक से व्यक्ति के एक प्रकार का वर्णन करते हैं। इन्हें पूरा दिखाया गया है, अच्छा और अप्रिय दोनों। ये आप पर निर्णय नहीं हैं। कुंडली के बाकी कारक तय करते हैं कि इनमें से कितना लागू होता है।')}
         </p>
       </div>
     </section>

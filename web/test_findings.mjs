@@ -12,6 +12,20 @@ import { buildFindings, rankFindings, TOPICS, TAGS, SENSITIVE } from './src/find
 import { makeNamer } from './src/naming.js'
 
 let fail = 0
+
+// The owner's style for every sentence of ours (2026-11-16, after ASD-STE100): one idea a sentence, at most 25
+// words, no semicolon and no dash. A passage quoted from a text is the text's and is not checked. A yoga's name
+// is the engine's key and may carry a dash.
+const styleBreak = (lines, names = []) => {
+  for (const raw of lines.flat(Infinity).filter(Boolean)) {
+    const s = names.reduce((x, n) => x.split(n).join('X'), String(raw))
+    for (const q of s.split(/(?<=[.?])\s+/)) {
+      if (q.split(/\s+/).length > 25) return `too long: ${q}`
+      if (/[;—–]/.test(q)) return `semicolon or dash: ${q}`
+    }
+  }
+  return null
+}
 const ok = (name, cond, extra = '') => { console.log(`  ${cond ? 'OK' : 'FAIL'} ${name} ${cond ? '' : extra}`); if (!cond) fail++ }
 
 console.log('Static tables:')
@@ -35,6 +49,14 @@ if (!chart) {
 } else {
   console.log('\nThe reference chart:')
   const built = buildFindings(chart, makeNamer('common'))
+  {
+    const yogaNames = built.findings.filter((f) => f.kind === 'yoga').map((f) => f.title.en)
+    const ours = built.findings.map((f) => [f.fact.en, f.why.en, f.supports.en, f.cautions.en, f.check.map((c) => c.label.en),
+      f.kind === 'yoga' ? [] : f.measured.en,
+      f.texts.map((t) => [t.applies && t.applies.en, t.qualifier && t.qualifier.en]), f.inference ? [f.inference.chain.map((c) => c.line.en), f.inference.conclusion.en] : []])
+    const br = styleBreak(ours, yogaNames)
+    ok('every sentence of ours is short and carries one idea', !br, br)
+  }
   const { findings } = built
   ok('one finding per graha', findings.filter((f) => f.kind === 'graha').length === chart.grahas.length)
   ok('the ascendant lord leads the overall order', rankFindings(built, 'overall')[0].f.role === 'lagnaLord')

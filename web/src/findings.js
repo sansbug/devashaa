@@ -34,6 +34,7 @@ import { HOUSE } from './walkthrough.js'
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 const EN_ORD = (n) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`
 const HI_ORD = ['', 'पहले', 'दूसरे', 'तीसरे', 'चौथे', 'पाँचवें', 'छठे', 'सातवें', 'आठवें', 'नौवें', 'दसवें', 'ग्यारहवें', 'बारहवें']
+const HI_ORD_N = ['', 'पहला', 'दूसरा', 'तीसरा', 'चौथा', 'पाँचवाँ', 'छठा', 'सातवाँ', 'आठवाँ', 'नौवाँ', 'दसवाँ', 'ग्यारहवाँ', 'बारहवाँ']
 const NODES = ['rahu', 'ketu']
 const HARD_HOUSES = [6, 8, 12]
 const KENDRA = [1, 4, 7, 10]
@@ -46,21 +47,21 @@ export const SENSITIVE = {
 }
 /** Why a ch.13 clause applies to this chart — our words for the verse's own condition (api/dhana_bhava.py). */
 const DHANA_WHY = {
-  lord2_well_placed: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं — श्लोक की शर्त: दूसरे भाव में, या केन्द्र/त्रिकोण में।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house — the verse’s condition: in the 2nd, or in an angle or a trine.`),
-  lord2_in_6_8_12: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं — श्लोक की शर्त: छठे, आठवें या बारहवें में।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house — the verse’s condition: in the 6th, 8th or 12th.`),
+  lord2_well_placed: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं। श्लोक की शर्त है: दूसरा भाव, केन्द्र या त्रिकोण।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house. The verse’s condition is the 2nd house, an angle or a trine.`),
+  lord2_in_6_8_12: (l, n, o, c) => (l === 'hi' ? `आपके दूसरे भाव के स्वामी ${n(c.grahas[0])} ${o(c.houses[0])} भाव में हैं। श्लोक की शर्त है: छठा, आठवाँ या बारहवाँ भाव।` : `Your 2nd lord, ${n(c.grahas[0])}, is in your ${o(c.houses[0])} house. The verse’s condition is the 6th, 8th or 12th house.`),
   benefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव में नैसर्गिक शुभ ग्रह: ${c.grahas.map(n).join(', ')}।` : `A natural benefic is in your 2nd house: ${c.grahas.map(n).join(', ')}.`),
   malefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव में नैसर्गिक पाप ग्रह: ${c.grahas.map(n).join(', ')}।` : `A natural malefic is in your 2nd house: ${c.grahas.map(n).join(', ')}.`),
   jupiter_lord2_in_2nd: (l, n) => (l === 'hi' ? `${n('jupiter')} आपके दूसरे भाव के स्वामी हैं और दूसरे ही भाव में हैं।` : `${n('jupiter')} rules your 2nd house and is in your 2nd house.`),
   jupiter_with_mars: (l, n, o, c) => (l === 'hi' ? `${n('jupiter')} और ${n('mars')} एक ही राशि में हैं (${o(c.houses[0])} भाव)।` : `${n('jupiter')} is with ${n('mars')}, in your ${o(c.houses[0])} house.`),
   lords_2_11_exchange: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव के स्वामी ${n(c.grahas[0])} ग्यारहवें में और ग्यारहवें के स्वामी ${n(c.grahas[1])} दूसरे में हैं।` : `Your 2nd lord ${n(c.grahas[0])} is in the 11th and your 11th lord ${n(c.grahas[1])} is in the 2nd.`),
-  lords_2_11_join_kendra_kona: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी (${c.grahas.map(n).join(', ')}) ${o(c.houses[0])} भाव में साथ हैं — एक केन्द्र/त्रिकोण।` : `Your 2nd and 11th lords (${c.grahas.map(n).join(', ')}) are together in your ${o(c.houses[0])} house — an angle or a trine.`),
+  lords_2_11_join_kendra_kona: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी (${c.grahas.map(n).join(', ')}) ${o(c.houses[0])} भाव में साथ हैं। यह भाव केन्द्र या त्रिकोण है।` : `Your 2nd and 11th lords (${c.grahas.map(n).join(', ')}) are together in your ${o(c.houses[0])} house. This house is an angle or a trine.`),
   lord2_kendra_lord11_trine_from_it: (l, n, o, c) => (l === 'hi' ? `दूसरे भाव के स्वामी ${n(c.grahas[0])} केन्द्र (${o(c.houses[0])} भाव) में हैं और ग्यारहवें के स्वामी ${n(c.grahas[1])} उनसे त्रिकोण में।` : `Your 2nd lord ${n(c.grahas[0])} is in an angle (your ${o(c.houses[0])} house) and your 11th lord ${n(c.grahas[1])} is in a trine from it.`),
   lords_in_evil_houses_malefic_in_2nd: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी दोनों छठे/आठवें/बारहवें में हैं और दूसरे भाव में पाप ग्रह है (${c.grahas.map(n).join(', ')})।` : `Your 2nd and 11th lords are both in the 6th, 8th or 12th and a malefic is in your 2nd house (${c.grahas.map(n).join(', ')}).`),
   lords_2_11_with_malefics: (l, n, o, c) => (l === 'hi' ? `दूसरे और ग्यारहवें भाव के स्वामी दोनों पाप ग्रहों के साथ हैं (${c.grahas.map(n).join(', ')})।` : `Your 2nd and 11th lords are both with malefics (${c.grahas.map(n).join(', ')}).`),
 }
 const DHANA_NOT = {
-  one_planet_rules_both: { en: 'Verses 4–5 describe a relation between the 2nd lord and the 11th lord. In this chart one planet rules both houses, so they are not applied.', hi: 'श्लोक 4–5 दूसरे और ग्यारहवें भाव के स्वामियों के आपसी संबंध की बात करते हैं। इस कुंडली में दोनों भावों का स्वामी एक ही ग्रह है, इसलिए वे लागू नहीं किए गए।' },
-  alternative_ambiguous: { en: 'Verse 5’s alternative (aspect or conjunction of Jupiter and Venus) is ambiguous in the translation and is not evaluated.', hi: 'श्लोक 5 का विकल्प (गुरु और शुक्र की दृष्टि या युति) अनुवाद में अस्पष्ट है; उसे नहीं जाँचा गया।' },
+  one_planet_rules_both: { en: 'Verses 4 and 5 describe a relation between the 2nd lord and the 11th lord. In this chart one planet rules both houses, so they are not applied.', hi: 'श्लोक 4 और 5 दूसरे और ग्यारहवें भाव के स्वामियों के आपसी संबंध की बात करते हैं। इस कुंडली में दोनों भावों का स्वामी एक ही ग्रह है, इसलिए वे लागू नहीं किए गए।' },
+  alternative_ambiguous: { en: 'Verse 5’s alternative (aspect or conjunction of Jupiter and Venus) is ambiguous in the translation and is not evaluated.', hi: 'श्लोक 5 का विकल्प (गुरु और शुक्र की दृष्टि या युति) अनुवाद में अस्पष्ट है। उसे नहीं जाँचा गया।' },
   combustion_has_no_orb_in_the_text: { en: 'Verse 7’s “combust” is not evaluated: the text gives no orb for combustion.', hi: 'श्लोक 7 का “अस्त” नहीं जाँचा गया: ग्रंथ अस्त की कोई अंश-सीमा नहीं देता।' },
 }
 const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
@@ -81,7 +82,7 @@ export const TAGS = {
   key: { en: 'Key placement', hi: 'मुख्य स्थिति', tone: 'key' },
   strong: { en: 'Favourable dignity', hi: 'अनुकूल बल', tone: 'good' },
   weak: { en: 'Weak by sign', hi: 'राशि से दुर्बल', tone: 'hard' },
-  mixed: { en: 'Mixed — read closely', hi: 'मिश्रित — ध्यान से पढ़ें', tone: 'mixed' },
+  mixed: { en: 'Mixed: read closely', hi: 'मिश्रित: ध्यान से पढ़ें', tone: 'mixed' },
   context: { en: 'Needs context', hi: 'संदर्भ चाहिए', tone: 'mixed' },
   named: { en: 'Named combination', hi: 'नामित योग', tone: 'key' },
   plain: { en: 'Placement', hi: 'स्थिति', tone: 'plain' },
@@ -163,7 +164,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
   const maha = tree && (tree.mahadashas || []).find((m) => m.is_current)
   const antar = maha && (maha.sub || []).find((x) => x.is_current)
   const running = { maha: maha ? maha.lord : null, antar: antar ? antar.lord : null }
-  const period = (k) => (tree ? (tree.mahadashas || []).filter((m) => m.lord === k).map((m) => `${year(m.start)}–${year(m.end)}`) : [])
+  const period = (k, l) => (tree ? (tree.mahadashas || []).filter((m) => m.lord === k).map((m) => (l === 'hi' ? `${year(m.start)} से ${year(m.end)}` : `${year(m.start)} to ${year(m.end)}`)) : [])
 
   const both = (f) => ({ en: f('en'), hi: f('hi') })
   const findings = []
@@ -197,47 +198,51 @@ export function buildFindings(chart, namer = makeNamer('common')) {
     })
     const sub = both((l) => of(l, h))
 
+    /** "This ties X to Y." for each house the planet rules other than the one it sits in */
+    const ties = (l) => r.filter((n) => n !== h).map((n, i) => (l === 'hi'
+      ? (i === 0 ? `यह ${of(l, n)} को ${of(l, h)} से जोड़ता है।` : `यह ${of(l, n)} को भी ${of(l, h)} से जोड़ता है।`)
+      : (i === 0 ? `This ties ${of(l, n)} to ${of(l, h)}.` : `It also ties ${of(l, n)} to ${of(l, h)}.`))).join(' ')
     const fact = both((l) => [
       isNode
         ? (l === 'hi'
-          ? `${nm(l, k)} किसी राशि के स्वामी नहीं; वे ${sign(l, x.rasi)} राशि में, आपके ${HI_ORD[h]} भाव में हैं — ${of(l, h)} का भाव।`
-          : `${named(l, k)} rules no sign. It sits in ${sign(l, x.rasi)}, your ${EN_ORD(h)} house — the house of ${of(l, h)}.`)
+          ? `${nm(l, k)} किसी राशि के स्वामी नहीं हैं। वे ${sign(l, x.rasi)} राशि में, आपके ${HI_ORD[h]} भाव में हैं। ${HI_ORD_N[h]} भाव ${of(l, h)} का भाव है।`
+          : `${named(l, k)} rules no sign. It sits in ${sign(l, x.rasi)}, in your ${EN_ORD(h)} house. The ${EN_ORD(h)} house is the house of ${of(l, h)}.`)
         : (l === 'hi'
-          ? `${nm(l, k)} आपके ${list(r.map((n) => HI_ORD[n]), l)} भाव (${r.map((n) => of(l, n)).join('; ')}) के स्वामी हैं और ${sign(l, x.rasi)} राशि में, आपके ${HI_ORD[h]} भाव में बैठे हैं — ${of(l, h)} का भाव।`
-          : `${named(l, k)} rules your ${list(r.map(EN_ORD), l)} ${r.length > 1 ? 'houses' : 'house'} (${r.map((n) => of(l, n)).join('; ')}) and sits in ${sign(l, x.rasi)}, your ${EN_ORD(h)} house — the house of ${of(l, h)}.`),
+          ? `${nm(l, k)} आपके ${list(r.map((n) => HI_ORD[n]), l)} भाव के स्वामी हैं। वे ${sign(l, x.rasi)} राशि में, आपके ${HI_ORD[h]} भाव में बैठे हैं। ${HI_ORD_N[h]} भाव ${of(l, h)} का भाव है।`
+          : `${named(l, k)} rules your ${r.map((n) => `${EN_ORD(n)} house`).join(' and your ')}. It sits in ${sign(l, x.rasi)}, in your ${EN_ORD(h)} house. The ${EN_ORD(h)} house is the house of ${of(l, h)}.`),
       d && (l === 'hi'
-        ? `वहाँ ${nm(l, k)} ${d.hi} हैं${d.gloss ? ` (${d.gloss.hi})` : ''}${x.retrograde ? ', वक्री' : ''}।`
-        : `${nm(l, k)} there is ${d.en}${d.gloss ? ` — ${d.gloss.en}` : ''}${x.retrograde ? ', and retrograde' : ''}.`),
+        ? `वहाँ ${nm(l, k)} ${d.hi} हैं।${d.gloss ? ` यहाँ ${nm(l, k)} ${d.gloss.hi} हैं।` : ''}${x.retrograde ? ` ${nm(l, k)} वक्री हैं।` : ''}`
+        : `${nm(l, k)} is ${d.en} there.${d.gloss ? ` Here ${nm(l, k)} is ${d.gloss.en}.` : ''}${x.retrograde ? ` ${nm(l, k)} is retrograde.` : ''}`),
     ].filter(Boolean))
 
     const why = both((l) => [
       role === 'lagnaLord' && (l === 'hi'
-        ? `भाव को उसके स्वामी की स्थिति से पढ़ा जाता है। आपका पहला भाव — आप स्वयं — इसलिए ${HI_ORD[h]} भाव (${of(l, h)}) से पढ़ा जाता है। यह पूरी कुंडली की नींव है।`
-        : `A house is read through where its lord sits. Your 1st house — you — is therefore read through your ${EN_ORD(h)} house: ${of(l, h)}. This is the foundation of the whole chart.`),
+        ? `भाव को उसके स्वामी की स्थिति से पढ़ा जाता है। आपका पहला भाव आप स्वयं हैं। इसलिए वह ${HI_ORD[h]} भाव से पढ़ा जाता है, जो ${of(l, h)} का भाव है। यह पूरी कुंडली की नींव है।`
+        : `A house is read through where its lord sits. Your 1st house stands for you. So it is read through your ${EN_ORD(h)} house, the house of ${of(l, h)}. This is the foundation of the whole chart.`),
       !isNode && role !== 'lagnaLord' && r.length > 0 && (l === 'hi'
-        ? `जिन भावों के ${nm(l, k)} स्वामी हैं (${r.map((n) => of(l, n)).join('; ')}), वे इसी स्थिति से पढ़े जाते हैं${r.includes(h) ? '' : ` — यानी ${of(l, h)} से जुड़कर`}।`
-        : `The houses ${nm(l, k)} rules (${r.map((n) => of(l, n)).join('; ')}) are read through this placement${r.includes(h) ? '' : ` — that is, through ${of(l, h)}`}.`),
+        ? `जिन भावों के ${nm(l, k)} स्वामी हैं, वे इसी स्थिति से पढ़े जाते हैं।${ties(l) ? ` ${ties(l)}` : ''}`
+        : `The houses that ${nm(l, k)} rules are read through this placement.${ties(l) ? ` ${ties(l)}` : ''}`),
       isNode && disp && (l === 'hi'
-        ? `राहु-केतु की अपनी कोई राशि नहीं; इन्हें उस राशि के स्वामी से पढ़ा जाता है जिसमें वे बैठे हैं — यहाँ ${nm(l, dispositor)}, जो आपके ${HI_ORD[disp.bhava]} भाव में हैं${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].hi})` : ''}।`
-        : `The nodes own no sign; a node is read through the lord of the sign it sits in — here ${nm(l, dispositor)}, in your ${EN_ORD(disp.bhava)} house${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].en})` : ''}.`),
+        ? `राहु और केतु की अपनी कोई राशि नहीं है। इन्हें उस राशि के स्वामी से पढ़ा जाता है जिसमें वे बैठे हैं। यहाँ वह स्वामी ${nm(l, dispositor)} हैं, जो आपके ${HI_ORD[disp.bhava]} भाव में हैं${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].hi})` : ''}।`
+        : `The nodes own no sign. A node is read through the lord of the sign it sits in. Here that lord is ${nm(l, dispositor)}, in your ${EN_ORD(disp.bhava)} house${disp.dignity && DIG[disp.dignity.state] ? ` (${DIG[disp.dignity.state].en})` : ''}.`),
       role === 'yogakaraka' && (l === 'hi'
-        ? `इस लग्न के लिए ${nm(l, k)} योगकारक हैं — एक केन्द्र और एक त्रिकोण, दोनों के स्वामी।`
-        : `For this ascendant ${nm(l, k)} is the yogakāraka — it rules both an angle and a trine.`),
+        ? `इस लग्न के लिए ${nm(l, k)} योगकारक हैं। वे एक केन्द्र और एक त्रिकोण, दोनों के स्वामी हैं।`
+        : `For this ascendant ${nm(l, k)} is the yogakāraka. It rules both an angle and a trine.`),
     ].filter(Boolean))
 
     const supports = both((l) => [
-      d && d.good && (l === 'hi' ? `${d.hi} — ${d.gloss.hi}` : `${d.en[0].toUpperCase()}${d.en.slice(1)} — ${d.gloss.en}`),
-      yks.includes(k) && (l === 'hi' ? 'इस लग्न के लिए योगकारक — एक केन्द्र और एक त्रिकोण के स्वामी' : 'The yogakāraka for this ascendant — lord of an angle and a trine'),
+      d && d.good && (l === 'hi' ? `${d.hi} (${d.gloss.hi})` : `${d.en[0].toUpperCase()}${d.en.slice(1)} (${d.gloss.en})`),
+      yks.includes(k) && (l === 'hi' ? 'इस लग्न के लिए योगकारक (एक केन्द्र और एक त्रिकोण के स्वामी)' : 'The yogakāraka for this ascendant (lord of an angle and a trine)'),
       p && p.nature === 'benefic' && (l === 'hi' ? 'इस लग्न के लिए शुभ ग्रह गिने जाते हैं (स्वामित्व से)' : 'Counted a benefic for this ascendant, by the houses it rules'),
       ...fullOn.filter((o) => P(o) && P(o).nature === 'benefic').map((o) => (l === 'hi' ? `${nm(l, o)} (इस लग्न के शुभ ग्रह) इस भाव को पूर्ण दृष्टि से देखते हैं` : `${nm(l, o)}, a benefic for this ascendant, looks at this house fully`)),
       !isNode && r.includes(h) && !(d && d.good) && (l === 'hi' ? 'अपने ही भाव में बैठे हैं' : 'Sits in a house it rules'),
     ].filter(Boolean))
 
     const cautions = both((l) => [
-      d && d.bad && (l === 'hi' ? `${d.hi}${d.gloss ? ` — ${d.gloss.hi}` : ''}` : `${d.en[0].toUpperCase()}${d.en.slice(1)}${d.gloss ? ` — ${d.gloss.en}` : ''}`),
-      HARD_HOUSES.includes(h) && (l === 'hi' ? `${HI_ORD[h]} भाव में — छठा, आठवाँ और बारहवाँ वे तीन भाव हैं जिन्हें परंपरा कठिन गिनती है` : `Sits in the ${EN_ORD(h)} house — one of the three houses (6th, 8th, 12th) the tradition counts as difficult`),
+      d && d.bad && (l === 'hi' ? `${d.hi}${d.gloss ? ` (${d.gloss.hi})` : ''}` : `${d.en[0].toUpperCase()}${d.en.slice(1)}${d.gloss ? ` (${d.gloss.en})` : ''}`),
+      HARD_HOUSES.includes(h) && (l === 'hi' ? `${HI_ORD[h]} भाव में, जो परंपरा के तीन कठिन भावों में से एक है (छठा, आठवाँ, बारहवाँ)` : `Sits in the ${EN_ORD(h)} house, one of the three houses the tradition counts as difficult (6th, 8th, 12th)`),
       p && p.nature === 'malefic' && (l === 'hi' ? 'इस लग्न के लिए पाप ग्रह गिने जाते हैं (स्वामित्व से)' : 'Counted a malefic for this ascendant, by the houses it rules'),
-      combust[k] && (l === 'hi' ? 'सूर्य के बहुत निकट — अस्त' : 'Very close to the Sun — combust'),
+      combust[k] && (l === 'hi' ? 'अस्त (सूर्य के बहुत निकट)' : 'Combust (very close to the Sun)'),
       ...fullOn.filter((o) => P(o) && P(o).nature === 'malefic').map((o) => (l === 'hi' ? `${nm(l, o)} (इस लग्न के पाप ग्रह) इस भाव को पूर्ण दृष्टि से देखते हैं` : `${nm(l, o)}, a malefic for this ascendant, looks at this house fully`)),
     ].filter(Boolean))
 
@@ -245,16 +250,16 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       ...(dhana && k === dhana.lord2 ? (dhana.not_applied || []).filter((x) => x.reason !== 'combustion_has_no_orb_in_the_text' && DHANA_NOT[x.reason]).map((x) => DHANA_NOT[x.reason][l]) : []),
       vim && (l === 'hi'
         ? `सोलह वर्ग-कुंडलियों में बल (विंशोपक): 20 में से ${vim.value}`
-        : `Strength across the sixteen divisional charts (Viṁśopaka): ${vim.value} of 20 — “${vim.label}”`),
+        : `Strength across the sixteen divisional charts (Viṁśopaka): ${vim.value} of 20. The text’s band for this is “${vim.label}”.`),
       x.retrograde && !d && (l === 'hi' ? 'वक्री' : 'Retrograde'),
       fullOn.length > 0 && (l === 'hi' ? `इस भाव पर पूर्ण दृष्टि: ${list(fullOn.map((o) => nm(l, o)), l)}` : `Looking at this house fully: ${list(fullOn.map((o) => nm(l, o)), l)}`),
     ].filter(Boolean))
 
-    const pr = period(k)
+    const pr = period(k, 'en')
     const check = [
       { go: 'navamsa', label: both((l) => (l === 'hi' ? `नवांश (D9) में ${nm(l, k)} की राशि` : `${nm(l, k)}’s sign in the navāṁśa (D9)`)) },
       { go: 'strength', label: both((l) => (l === 'hi' ? `${nm(l, k)} का पूरा बल` : `${nm(l, k)}’s full strength`)) },
-      ...(pr.length ? [{ go: 'dasha', label: both((l) => (l === 'hi' ? `${nm(l, k)} की महादशा: ${pr.join(', ')}` : `When ${nm(l, k)}’s main period runs: ${pr.join(', ')}`)) }] : []),
+      ...(pr.length ? [{ go: 'dasha', label: both((l) => (l === 'hi' ? `${nm(l, k)} की महादशा: ${period(k, l).join(', ')}` : `When ${nm(l, k)}’s main period runs: ${period(k, l).join(', ')}`)) }] : []),
       { go: 'classical', label: both((l) => (l === 'hi' ? 'इस स्थिति के शास्त्रीय पाठ' : 'The classical readings for this placement')) },
     ]
 
@@ -266,8 +271,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       texts.push(passage({
         says: b.lord_rule.effect, source: BPHS, cite: withBook(b.lord_rule.citation), kind: 'translation',
         applies: both((l) => (l === 'hi'
-          ? `${nm(l, k)} आपके ${HI_ORD[rh]} भाव के स्वामी हैं और ${HI_ORD[h]} भाव में बैठे हैं — यह ${HI_ORD[rh]} भाव के स्वामी के ${HI_ORD[h]} भाव में होने का नियम है।`
-          : `${nm(l, k)} rules your ${EN_ORD(rh)} house and sits in your ${EN_ORD(h)}: this is the text’s statement for the ${EN_ORD(rh)} lord in the ${EN_ORD(h)} house.`)),
+          ? `${nm(l, k)} आपके ${HI_ORD[rh]} भाव के स्वामी हैं और ${HI_ORD[h]} भाव में बैठे हैं। यह ${HI_ORD[rh]} भाव के स्वामी के ${HI_ORD[h]} भाव में होने का नियम है।`
+          : `${nm(l, k)} rules your ${EN_ORD(rh)} house and sits in your ${EN_ORD(h)} house. This is the text’s statement for the ${EN_ORD(rh)} lord in the ${EN_ORD(h)} house.`)),
       }))
       texts[texts.length - 1].house = rh
       if (b.lord_rule.lagna_exception) {
@@ -288,8 +293,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
         const fav = all.some((c) => c.polarity === 'favourable'), adv = all.some((c) => c.polarity === 'adverse')
         t.qualifier = both((l) => (fav && adv
           ? (l === 'hi' ? 'यह कुंडली इस श्लोक की अनुकूल और प्रतिकूल, दोनों शर्तें पूरी करती है।' : 'This chart meets both a favourable and an adverse condition of this verse.')
-          : fav ? (l === 'hi' ? 'यह कुंडली इस श्लोक की अनुकूल शर्तें पूरी करती है; प्रतिकूल शर्तें (स्वामी छठे/आठवें/बारहवें में, दूसरे भाव में पाप ग्रह) नहीं।' : 'This chart meets the verse’s favourable conditions. Its adverse ones (the lord in the 6th, 8th or 12th; a malefic in the 2nd) are not met.')
-            : (l === 'hi' ? 'यह कुंडली इस श्लोक की प्रतिकूल शर्तें पूरी करती है; अनुकूल शर्तें नहीं।' : 'This chart meets the verse’s adverse conditions, not its favourable ones.')))
+          : fav ? (l === 'hi' ? 'यह कुंडली इस श्लोक की अनुकूल शर्तें पूरी करती है। प्रतिकूल शर्तें पूरी नहीं होतीं: स्वामी छठे, आठवें या बारहवें में, या दूसरे भाव में पाप ग्रह।' : 'This chart meets the verse’s favourable conditions. It does not meet the adverse ones: the lord in the 6th, 8th or 12th house, or a malefic in the 2nd.')
+            : (l === 'hi' ? 'यह कुंडली इस श्लोक की प्रतिकूल शर्तें पूरी करती है, अनुकूल शर्तें नहीं।' : 'This chart meets the verse’s adverse conditions, not its favourable ones.')))
       } else if (m.verse === '6-7') {
         t.qualifier = both((l) => DHANA_NOT.combustion_has_no_orb_in_the_text[l])
       }
@@ -320,15 +325,15 @@ export function buildFindings(chart, namer = makeNamer('common')) {
         says: dv.verse, source: BPHS, cite: withBook(dv.citation), kind: 'translation',
         applies: both((l) => {
           const which = k === running.maha ? (l === 'hi' ? 'महादशा' : 'main period (mahādaśā)') : (l === 'hi' ? 'अन्तर्दशा' : 'sub-period (antardaśā)')
-          return l === 'hi' ? `अभी ${nm(l, k)} की ${which} चल रही है; यह श्लोक दशा के स्वामी की स्थिति से दशा का फल बताता है।` : `${nm(l, k)}’s ${which} is running now; this verse judges a period by where its lord stands.`
+          return l === 'hi' ? `अभी ${nm(l, k)} की ${which} चल रही है। यह श्लोक दशा के स्वामी की स्थिति से दशा का फल बताता है।` : `${nm(l, k)}’s ${which} is running now. This verse judges a period by where its lord stands.`
         }),
       })
       t.qualifier = both((l) => {
         const head = fav.length && adv.length
-          ? (l === 'hi' ? `श्लोक की दोनों ओर की शर्तें पूरी होती हैं — अनुकूल: ${fav.join('; ')}; प्रतिकूल: ${adv.join('; ')}। ग्रंथ यह नहीं बताता कि दोनों हों तो क्या माना जाए।` : `Conditions on both sides are met — favourable: ${fav.join('; ')}; unfavourable: ${adv.join('; ')}. The text does not say how to weigh the two.`)
-          : fav.length ? (l === 'hi' ? `श्लोक की अनुकूल शर्त पूरी होती है: ${fav.join('; ')}।` : `The favourable condition is met: ${fav.join('; ')}.`)
-            : adv.length ? (l === 'hi' ? `श्लोक की प्रतिकूल शर्त पूरी होती है: ${adv.join('; ')}।` : `The unfavourable condition is met: ${adv.join('; ')}.`)
-              : (l === 'hi' ? 'श्लोक की कोई शर्त पूरी नहीं होती: इस दशा पर ग्रंथ कोई निर्णय नहीं देता।' : 'None of the verse’s conditions is met either way: the text states no verdict for this period.')
+          ? (l === 'hi' ? `श्लोक की दोनों ओर की शर्तें पूरी होती हैं। अनुकूल: ${fav.join(', ')}। प्रतिकूल: ${adv.join(', ')}। ग्रंथ यह नहीं बताता कि दोनों हों तो क्या माना जाए।` : `Conditions on both sides are met. Favourable: ${fav.join(', ')}. Unfavourable: ${adv.join(', ')}. The text does not say how to weigh the two.`)
+          : fav.length ? (l === 'hi' ? `श्लोक की अनुकूल शर्त पूरी होती है: ${fav.join(', ')}।` : `The favourable condition is met: ${fav.join(', ')}.`)
+            : adv.length ? (l === 'hi' ? `श्लोक की प्रतिकूल शर्त पूरी होती है: ${adv.join(', ')}।` : `The unfavourable condition is met: ${adv.join(', ')}.`)
+              : (l === 'hi' ? 'श्लोक की कोई शर्त पूरी नहीं होती। इस दशा पर ग्रंथ कोई निर्णय नहीं देता।' : 'None of the verse’s conditions is met either way. The text states no verdict for this period.')
         return [head, ...((dv.caveats || []).slice(0, 2))].join(' ')
       })
       texts.push(t)
@@ -338,7 +343,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       texts.push(passage({
         says: p.quote, source: BPHS, cite: withBook(p.citation), kind: 'translation',
         applies: both((l) => (l === 'hi'
-          ? `यह ${sign(l, lagna)} लग्न के लिए ग्रहों के शुभ-पाप होने का श्लोक है; आपका लग्न यही है।`
+          ? `यह ${sign(l, lagna)} लग्न के लिए ग्रहों के शुभ-पाप होने का श्लोक है। आपका लग्न यही है।`
           : `This is the verse on which planets are favourable for a ${sign(l, lagna)} ascendant, which is yours.`)),
       }))
     }
@@ -361,7 +366,7 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       chain: [
         { line: both((l) => (l === 'hi' ? `${shown} पंजीकृत पाठ इस स्थिति के बारे में कहते हैं (ऊपर)।` : `${shown} registered passage${shown > 1 ? 's speak' : ' speaks'} of this placement (above).`)), cite: null },
         d && { line: both((l) => (l === 'hi' ? `राशि-बल: ${nm(l, k)} ${d.hi} हैं।` : `Dignity by sign: ${nm(l, k)} is ${d.en}.`)), cite: dig ? withBook(dig.citation) : null },
-        vim && { line: both((l) => (l === 'hi' ? `वर्ग-बल (विंशोपक): 20 में से ${vim.value}।` : `Strength across the divisional charts (Viṁśopaka): ${vim.value} of 20 — the text’s band for this is “${vim.label}”.`)), cite: withBook(vim.citation) },
+        vim && { line: both((l) => (l === 'hi' ? `वर्ग-बल (विंशोपक): 20 में से ${vim.value}।` : `Strength across the divisional charts (Viṁśopaka): ${vim.value} of 20. The text’s band for this is “${vim.label}”.`)), cite: withBook(vim.citation) },
         p && p.nature && { line: both((l) => (l === 'hi' ? `इस लग्न के लिए: ${p.nature === 'benefic' ? 'शुभ' : p.nature === 'malefic' ? 'पाप' : 'सम'} ग्रह।` : `For this ascendant it is counted ${p.nature === 'benefic' ? 'a benefic' : p.nature === 'malefic' ? 'a malefic' : 'neutral'}.`)), cite: withBook(p.citation) },
       ].filter(Boolean),
       conclusion: both((l) => {
@@ -369,13 +374,13 @@ export function buildFindings(chart, namer = makeNamer('common')) {
         if (l === 'hi') {
           return s && !c ? `इस ग्रह की अपनी स्थिति पाठों के कथन का समर्थन करती है (${s} समर्थक बात, विपरीत कोई नहीं)।`
             : !s && c ? `इस ग्रह की अपनी स्थिति पाठों के कथन को कमज़ोर करती है (${c} विपरीत बात, समर्थक कोई नहीं)।`
-              : s && c ? `दोनों ओर की बातें हैं (${s} समर्थक, ${c} विपरीत): पाठों के कथन को इन्हीं शर्तों के साथ पढ़ें।`
-                : 'न समर्थक, न विपरीत कोई विशेष बात मिली: पाठों का कथन जैसा है वैसा पढ़ें।'
+              : s && c ? `दोनों ओर की बातें हैं (${s} समर्थक, ${c} विपरीत)। पाठों के कथन को इन्हीं शर्तों के साथ पढ़ें।`
+                : 'न समर्थक, न विपरीत कोई विशेष बात मिली। पाठों का कथन जैसा है वैसा पढ़ें।'
         }
         return s && !c ? `The planet’s own condition supports what the passages say (${s} supporting factor${s > 1 ? 's' : ''}, none against).`
           : !s && c ? `The planet’s own condition weakens what the passages say (${c} factor${c > 1 ? 's' : ''} against, none supporting).`
-            : s && c ? `There are factors on both sides (${s} supporting, ${c} against): read the passages as qualified by them.`
-              : 'Nothing notable supports or counts against it: read the passages as they stand.'
+            : s && c ? `There are factors on both sides (${s} supporting, ${c} against). Read the passages as qualified by them.`
+              : 'Nothing notable supports or counts against it. Read the passages as they stand.'
       }),
     } : null
     // with nothing measured to weigh the passages by (the nodes), there is no chain, so no inference
@@ -414,11 +419,14 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       title: both((l) => (l === 'hi' ? `${list(keys.map((k) => nm(l, k)), l)} साथ-साथ, आपके ${HI_ORD[h]} भाव में` : `${list(keys.map((k) => nm(l, k)), l)} together in your ${EN_ORD(h)} house`)),
       sub: both((l) => of(l, h)),
       fact: both((l) => [l === 'hi'
-        ? `${keys.map((k) => `${nm(l, k)} (${list(ruled(k).map((n) => HI_ORD[n]), l)} भाव के स्वामी)`).join(', ')} — सब ${sign(l, occ[0].rasi)} राशि में, आपके ${HI_ORD[h]} भाव में हैं।`
+        ? `${keys.map((k) => `${nm(l, k)} (${list(ruled(k).map((n) => HI_ORD[n]), l)} भाव के स्वामी)`).join(', ')}, सब ${sign(l, occ[0].rasi)} राशि में, आपके ${HI_ORD[h]} भाव में हैं।`
         : `${keys.map((k) => `${nm(l, k)} (lord of your ${list(ruled(k).map(EN_ORD), l)})`).join(', ')} all sit in ${sign(l, occ[0].rasi)}, your ${EN_ORD(h)} house.`]),
-      why: both((l) => [l === 'hi'
-        ? `जब दो भावों के स्वामी एक ही भाव में बैठते हैं, तो उन भावों की बातें (${[...new Set(keys.flatMap(ruled))].map((n) => of(l, n)).join('; ')}) ${of(l, h)} के भाव में मिलती हैं। यह अच्छा है या कठिन, यह हर ग्रह के बल और अंश-दूरी से तय होता है।`
-        : `When the lords of different houses share one house, the matters of those houses (${[...new Set(keys.flatMap(ruled))].map((n) => of(l, n)).join('; ')}) meet in the house of ${of(l, h)}. Whether that helps or strains depends on each planet’s strength and how close they stand.`]),
+      why: both((l) => {
+        const others = [...new Set(keys.flatMap(ruled))].filter((n) => n !== h).map((n) => of(l, n))
+        return [l === 'hi'
+          ? `जब अलग-अलग भावों के स्वामी एक ही भाव में बैठते हैं, तो उन भावों की बातें वहीं मिलती हैं।${others.length ? ` यहाँ ${others.join(', ')} की बातें ${of(l, h)} के भाव में मिलती हैं।` : ''} यह अच्छा है या कठिन, यह हर ग्रह के बल और अंश-दूरी से तय होता है।`
+          : `When the lords of different houses share one house, the matters of those houses meet there.${others.length ? ` Here ${others.join(', ')} meet in the house of ${of(l, h)}.` : ''} Whether that helps or strains depends on each planet’s strength and how close they stand.`]
+      }),
       supports: both(() => []), cautions: both(() => []),
       measured: both((l) => occ.map((x) => `${nm(l, x.key)} ${x.degree}°${x.dignity && DIG[x.dignity.state] ? ` · ${DIG[x.dignity.state][l]}` : ''}`)),
       check: [
@@ -440,8 +448,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       sub: both((l) => (l === 'hi' ? 'योग' : 'yoga')),
       fact: both((l) => [l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions of ${y.name}.`]),
       why: both((l) => [l === 'hi'
-        ? 'योग ग्रहों की एक नामित स्थिति है। शर्तें पूरी होना एक बात है; वह कितना फल देगा, यह उसे बनाने वाले ग्रहों के बल और उनकी दशा पर निर्भर है।'
-        : 'A yoga is a named arrangement of planets. Meeting its conditions is one thing; how much it gives depends on the strength of the planets that form it and on their periods.']),
+        ? 'योग ग्रहों की एक नामित स्थिति है। शर्तें पूरी होना एक बात है। वह कितना फल देगा, यह उसे बनाने वाले ग्रहों के बल और उनकी दशा पर निर्भर है।'
+        : 'A yoga is a named arrangement of planets. Meeting its conditions is one thing. How much it gives depends on the strength of the planets that form it and on their periods.']),
       supports: both(() => []), cautions: both(() => []),
       measured: both(() => (y.strength_note ? [y.strength_note] : [])),
       check: [{ go: 'bhava', label: both((l) => (l === 'hi' ? 'इसे बनाने वाले ग्रह और पूरा योग-पाठ' : 'The planets that form it, and the full yoga reading')) }],

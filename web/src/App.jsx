@@ -39,6 +39,7 @@ import ModernNotes from './ModernNotes.jsx'
 import ChartDeck, { HighlightsCard } from './ChartDeck.jsx'
 import FindingsPanel from './Findings.jsx'
 import LifeAreas from './LifeAreas.jsx'
+import DashaReading from './DashaReading.jsx'
 import { LandingHero, RunningCard, ChartSummary, WhoCard, HouseExplorer, useStory, FullCta, ModeSwitch, useSlow } from './SimpleView.jsx'
 import NorthDeckChart from './NorthDeckChart.jsx'
 import SouthDeckChart from './SouthDeckChart.jsx'
@@ -1001,6 +1002,8 @@ export default function App() {
           {simple && !snap && explainQuery && (
             <ExplainPanel date={date} time={time} place={place} namer={namer} initialQuery={explainQuery} />
           )}
+          {simple && !snap && <DashaReading chart={chart} namer={namer} refs={refs}
+                                       goFull={() => { setMode('full'); setSection('dasha'); window.scrollTo(0, 0) }} />}
           {simple && <LifeAreas chart={chart} namer={namer} refs={refs} onHouse={setHouseSel}
                                goFull={() => { setMode('full'); if (!snap) setSection('dasha'); window.scrollTo(0, 0) }} />}
           {simple && (

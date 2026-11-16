@@ -196,6 +196,15 @@ its source beside it:
   Off — a passage carries NO attribution line at all (the owner asked for the "A classical
   text" label to go), no tier names and no reference list; on — everything is named. Either
   way a passage sits under a "What the classical texts say" heading, never as ours.
+- Daśā reading (`web/src/dashareading.js` + `DashaReading.jsx`, `node web/test_dashareading.mjs`):
+  the simple view's "Your periods (daśā): now, next, and what it means" — how to read a
+  daśā · the running main and sub-period · the next sub-period and the next main period (each:
+  dates, which houses its planet rules and sits in, and the lean by BPHS Vol II ch.47 vv.5-6
+  from `dasha.verdicts`) · the verse itself · what is going to change · practical notes.
+  "What changes" and the notes are OURS, under the life-area notes' rules. The ch.52-60
+  antardaśā clauses are NOT used here (no verdict, a third without a frame): they stay in
+  the full analysis and the section says so. ⚠ Its CSS classes are `dsr-*` — `dr-*` is the
+  dṛṣṭi ledger's and clashes.
 - Life areas (`web/src/lifeareas.js` + `LifeAreas.jsx`, `node web/test_lifeareas.mjs`): the
   simple view's "Your life, area by area" — you, career, wealth, marriage, home, children
   and learning. Per area: what the chart shows · the registered passages tied to its houses

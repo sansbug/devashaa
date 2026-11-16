@@ -3563,3 +3563,21 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .la-basis summary { cursor: pointer; }
 .la-basis ol { margin: .3rem 0 0; padding-left: 1.1rem; display: grid; gap: .15rem; }
 .la-when { background: var(--sunken); border-radius: 8px; padding: .45rem .65rem; }
+
+/* --- the daśā reading: now, next, what changes, practical notes ---------------- */
+.sv-dasha { margin-top: .8rem; }
+.sv-dasha .dk-body { padding: .7rem .9rem .8rem; }
+.dsr-grid { display: grid; gap: .8rem; margin-top: .7rem; }
+@media (min-width: 900px) { .dsr-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.dsr-grid > .la-step + .la-step { margin-top: 0; }
+.dsr-row { border: 1px solid var(--line); border-left: 3px solid var(--line); border-radius: 10px; padding: .5rem .7rem; background: var(--panel); font-size: .84rem; line-height: 1.5; }
+.dsr-row + .dsr-row { margin-top: .45rem; }
+.dsr-row.dsr-good { border-left-color: var(--dasha-fav); }
+.dsr-row.dsr-hard { border-left-color: var(--dasha-adv); }
+.dsr-row-head { display: flex; align-items: center; gap: .55rem; margin-bottom: .25rem; }
+.dsr-row-head span { display: flex; flex-direction: column; min-width: 0; }
+.dsr-row-head b { font-size: .9rem; }
+.dsr-row-head small { font-size: .74rem; color: var(--dim); }
+.dsr-row p { margin: 0 0 .2rem; }
+.dsr-verdict { color: var(--dim); font-size: .8rem; }
+

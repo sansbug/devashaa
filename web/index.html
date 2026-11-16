@@ -27,6 +27,11 @@
     <!-- The theme, before the first paint — so the page never flashes the wrong palette.
          Keep the list and the default in step with src/themes.js. -->
     <script>(function(){var d='clean',t=d;try{var s=localStorage.getItem('theme'),v=localStorage.getItem('themeDefault_v3');if(s==='lotus'||s==='blossom'||(s==='midnight'&&(v||localStorage.getItem('themeDefault_v2')))||(s==='tulasi'&&v))t=s}catch(e){}document.documentElement.dataset.theme=t})()</script>
+    <!-- A deploy replaces the hashed script files. A page that still points at the old ones (an open tab, or the
+         first moments after a deploy) is answered with this HTML page instead of the script, and would stay blank.
+         When one of OUR scripts fails to load, the page is loaded afresh: twice at most in a minute, so a real
+         outage cannot loop. Vite reports a failed lazy chunk as "vite:preloadError". -->
+    <script>(function(){function again(){try{var k='reloadAfterDeploy',n=Date.now(),a=JSON.parse(sessionStorage.getItem(k)||'[]').filter(function(t){return n-t<60000});if(a.length>=2)return;a.push(n);sessionStorage.setItem(k,JSON.stringify(a))}catch(e){return}setTimeout(function(){location.reload()},a.length>1?2500:400)}window.addEventListener('error',function(e){var t=e&&e.target;if(t&&t.tagName==='SCRIPT'&&t.src&&t.src.indexOf(location.origin+'/assets/')===0)again()},true);window.addEventListener('vite:preloadError',function(e){if(e&&e.preventDefault)e.preventDefault();again()})})();</script>
     <link rel="canonical" href="https://devashaa.com/" />
 
     <!-- Installable PWA: manifest, theme + iOS home-screen support. -->

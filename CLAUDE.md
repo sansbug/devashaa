@@ -345,6 +345,14 @@ real reference chart).
 
 ## Gotchas that have cost real time
 
+- **A deploy can leave a page blank.** Cloudflare answers a path it does not have with
+  index.html (200, text/html), and each deploy drops the old hashed files. A page that still
+  points at them (an open tab, the first moments after a deploy) gets HTML for a script. Two
+  guards: the inline script at the top of index.html reloads the page when one of our
+  /assets scripts fails or Vite reports a failed lazy chunk (twice a minute at most), and
+  public/sw.js never caches or serves an HTML answer for a file (v3). When checking a deploy,
+  reload before judging.
+
 - `matrix.py` has **two** copies of the ensemble math (`timeline()` and
   `_project_at()`). A parity test pins them bit-for-bit — change both or it fails.
 - Yoga catalog keys contain **spaces** ("Gajakesari Yoga"); rāśi indexes are

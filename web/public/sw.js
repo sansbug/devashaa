@@ -16,8 +16,13 @@
  *     is keyed by URL and not by who is signed in, one person's answer could be
  *     handed to the next person on the same browser. v2 exists to purge any
  *     such responses the v1 cache had collected.
+ *   - A MISSING FILE IS ANSWERED WITH THE HOME PAGE. The host serves index.html
+ *     (200, text/html) for any path it does not have, so after a deploy a request
+ *     for an old /assets/x-HASH.js comes back as HTML. Such an answer is never
+ *     cached under the file's address, and a cached copy that is HTML is not
+ *     served for a script or a style. v3 exists to purge any that v2 had kept.
  */
-const VERSION = 'devashaa-v2';
+const VERSION = 'devashaa-v3';
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -33,6 +38,12 @@ self.addEventListener('activate', (event) => {
       .then(() => self.clients.claim()),
   );
 });
+
+// The single-page fallback (text/html) standing in for a file that is not a page.
+const wrongKind = (request, res) => {
+  const type = (res.headers.get('content-type') || '').toLowerCase();
+  return type.includes('text/html') && !/\.html?$/.test(new URL(request.url).pathname);
+};
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -62,14 +73,14 @@ self.addEventListener('fetch', (event) => {
     caches.match(request).then((cached) => {
       const network = fetch(request)
         .then((res) => {
-          if (res && res.status === 200 && res.type === 'basic') {
+          if (res && res.status === 200 && res.type === 'basic' && !wrongKind(request, res)) {
             const copy = res.clone();
             caches.open(VERSION).then((c) => c.put(request, copy));
           }
           return res;
         })
         .catch(() => cached);
-      return cached || network;
+      return (cached && !wrongKind(request, cached)) ? cached : network;
     }),
   );
 });

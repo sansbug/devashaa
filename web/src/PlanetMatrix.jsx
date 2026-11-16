@@ -9,11 +9,12 @@
  */
 import { useLang } from './LangContext.jsx'
 import { refsOn } from './refs.js'
-import { EFFECT, effectLine, CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
+import { HOUSE, STAGE, GRADE } from './walkthrough.js'
+import { BAND, LAYERS_LEAD, aspectBand, houseLayers, EFFECT, effectLine, CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
-export default function PlanetMatrix({ data, namer, grahas }) {
+export default function PlanetMatrix({ data, namer, grahas, chart }) {
   const { lang } = useLang()
   const L = lang === 'hi' ? 'hi' : 'en'
   const W = (en, hi) => (L === 'hi' ? hi : en)
@@ -24,6 +25,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
   const tone = (k) => (k === 'benefic' || k === 'yogakaraka' ? 'pm-g' : k === 'malefic' ? 'pm-b' : 'pm-n')
   const ord = (h) => (L === 'hi' ? h : EN_ORD(h))
   const refs = refsOn()
+  const P = Object.fromEntries(data.planets.map((p) => [p.graha, p]))
   // the Nakshatr's name comes from the chart's own planet rows (the matrix carries its index and lord)
   const G = Object.fromEntries((grahas || []).map((g) => [g.key, g]))
   const nakName = (k) => (G[k] && G[k].nakshatra ? namer.nakshatra(G[k].nakshatra) : null)
@@ -40,11 +42,15 @@ export default function PlanetMatrix({ data, namer, grahas }) {
   }
   const state = (row) => lordState(row.graha, nakLord(row), P, G)
   const signState = (k) => (k && SIGN_STATE[k] ? <span className={'pm-rel pm-' + SIGN_STATE[k].tone}>{SIGN_STATE[k][L]}</span> : '·')
+  const ctx = { P, G, signals: chart && chart.analysis ? chart.analysis.grahas : null,
+    shadbala: chart && chart.shadbala && !chart.shadbala.error ? chart.shadbala.grahas : null,
+    motion: chart && chart.motion && !chart.motion.error ? chart.motion.grahas : null }
+  const deg = (x) => (x && x.degree != null ? `${x.degree}°${x.minute != null ? `${String(x.minute).padStart(2, '0')}′` : ''}` : '')
+  const nat = (k) => (k ? <span className={'pm-rel ' + tone(k)}>{nature(k)}</span> : null)
   const relMark = (k, title) => {
     const r = k && RELATION[k]
     return r ? <i className={'pm-rel pm-' + r.tone} title={title ? `${title}: ${r[L]}` : r[L]}>{r.mark}</i> : null
   }
-  const P = Object.fromEntries(data.planets.map((p) => [p.graha, p]))
 
   return (
     <section className="table-panel pm-panel" id="rg-planetmatrix">
@@ -184,7 +190,67 @@ export default function PlanetMatrix({ data, namer, grahas }) {
       </div>
       <p className="pm-key">{W('The mark after a planet in a house shows how it stands towards the lord of that sign. The mark after a Nakshatr lord shows how the planet stands towards that lord. The small line under it shows the state of that lord.', 'भाव में बैठे ग्रह के बाद का चिह्न बताता है कि वह उस राशि के स्वामी के प्रति कैसा है। नक्षत्र स्वामी के बाद का चिह्न बताता है कि ग्रह उस स्वामी के प्रति कैसा है। उसके नीचे की छोटी पंक्ति उस स्वामी की स्थिति बताती है।')}</p>
 
-      <h4 className="pm-h">{W('4. Friends and enemies in this chart', '4. इस कुंडली में मित्र और शत्रु')}</h4>
+      <h4 className="pm-h">{W('4. Each house, part by part', '4. हर भाव, भाग-भाग करके')}</h4>
+      <p className="pm-key">{LAYERS_LEAD[L].join(' ')}</p>
+      <div className="pm-cards">
+        {data.houses.map((h) => {
+          const y = houseLayers(h, ctx)
+          const ld = y.lord, nk = y.nakshatra, st = nk && nk.state
+          return (
+            <div className="pm-card" key={h.house}>
+              <h5>{W(`Bhaav ${h.house}`, `भाव ${h.house}`)} · {namer.rasi(h.sign)}{HOUSE[h.house] ? <span> · {HOUSE[h.house].title[L]}</span> : null}</h5>
+
+              <h6>{W('In the house', 'भाव में')}</h6>
+              <ul>
+                {y.itself.occupants.length
+                  ? y.itself.occupants.map((o) => <li key={o.graha}><b>{n(o.graha)}</b> {W(`sits here at ${deg(o)}`, `यहाँ ${deg(o)} पर बैठा है`)}{nakName(o.graha) ? W(`, in ${nakName(o.graha)}`, `, ${nakName(o.graha)} में`) : ''} {nat(o.natural)}</li>)
+                  : <li>{W('No planet sits here.', 'यहाँ कोई ग्रह नहीं बैठा है।')}</li>}
+                {y.itself.full.length
+                  ? <li>{W('Full aspect from', 'पूर्ण दृष्टि')}: {y.itself.full.map((a, i) => <span key={a.graha}>{i ? ', ' : ''}{n(a.graha)} {nat(a.natural)}</span>)}</li>
+                  : <li>{W('No planet has a full aspect on it.', 'इस पर किसी ग्रह की पूर्ण दृष्टि नहीं है।')}</li>}
+                {y.itself.partial.length ? <li className="pm-dim">{W('Part aspect from', 'आंशिक दृष्टि')}: {y.itself.partial.map((a) => `${n(a.graha)} ${FRACTION[a.fraction] || a.fraction}`).join(', ')}</li> : null}
+              </ul>
+
+              <h6>{W('Its lord', 'इसका स्वामी')}: {n(h.lord)}</h6>
+              {ld ? (
+                <ul>
+                  <li>{ld.in_own_house
+                    ? W(`${n(h.lord)} sits in this house, in ${namer.rasi(ld.sign)}, at ${deg(ld)}.`, `${n(h.lord)} इसी भाव में, ${namer.rasi(ld.sign)} में, ${deg(ld)} पर बैठा है।`)
+                    : W(`${n(h.lord)} sits in Bhaav ${ld.house}, in ${namer.rasi(ld.sign)}, at ${deg(ld)}.`, `${n(h.lord)} भाव ${ld.house} में, ${namer.rasi(ld.sign)} में, ${deg(ld)} पर बैठा है।`)}</li>
+                  <li>{W('Strength by sign', 'राशि से बल')}: {signState(ld.dignity)}</li>
+                  {ld.stage && STAGE[ld.stage] ? <li>{W('Stage by degree', 'अंश से अवस्था')}: <b>{STAGE[ld.stage][L]}</b>{ld.grade && GRADE[ld.grade] ? W(` (gives ${GRADE[ld.grade].en})`, ` (${GRADE[ld.grade].hi})`) : ''}</li> : null}
+                  {ld.shadbala ? <li>{W('Six-fold strength', 'षड्बल')}: <b>{ld.shadbala.ratio.toFixed(2)}</b> {W('times the amount it needs', 'गुना, आवश्यक मात्रा का')} <span className={'pm-rel ' + (ld.shadbala.strong ? 'pm-g' : 'pm-b')}>{ld.shadbala.strong ? W('strong', 'बलवान') : W('weak', 'दुर्बल')}</span></li> : null}
+                  {ld.retrograde ? <li>{W('It is retrograde.', 'यह वक्री है।')}</li> : null}
+                  {ld.combust ? <li>{W('It is combust (too near Surya).', 'यह अस्त है (सूर्य के बहुत पास)।').replace('Surya', n('sun'))}</li> : null}
+                </ul>
+              ) : null}
+
+              <h6>{W('The lord’s Nakshatr', 'स्वामी का नक्षत्र')}</h6>
+              {nk && nk.lord ? (
+                <ul>
+                  <li>{W(`${n(h.lord)} is in ${nakName(h.lord) || '·'}${nk.pada ? `, quarter ${nk.pada}` : ''}. Its lord is `, `${n(h.lord)} ${nakName(h.lord) || '·'} में है${nk.pada ? `, चरण ${nk.pada}` : ''}। उसका स्वामी `)}<b>{n(nk.lord)}</b>{W('.', ' है।')}</li>
+                  {st && nk.lord !== h.lord ? <li>{W(`${n(nk.lord)} sits in Bhaav ${st.house}, in ${namer.rasi(st.sign)}.`, `${n(nk.lord)} भाव ${st.house} में, ${namer.rasi(st.sign)} में बैठा है।`)} {st.dignity ? signState(st.dignity) : null} {nat(st.natural)}</li> : null}
+                  {st && st.effect && st.effect !== 'none'
+                    ? <li><span className={'pm-effect pm-' + EFFECT[st.effect].tone}>{effectLine(st.effect, nk.lord === h.lord, n(h.lord), n(nk.lord), L)}</span></li>
+                    : st && st.effect === 'none' ? <li className="pm-dim">{W(`${n(nk.lord)} is neutral to ${n(h.lord)} by nature. No change.`, `${n(nk.lord)} स्वभाव से ${n(h.lord)} के लिए सम है। कोई बदलाव नहीं।`)}</li> : null}
+                </ul>
+              ) : <ul><li>·</li></ul>}
+
+              <h6>{W('Aspects on the lord', 'स्वामी पर दृष्टि')}</h6>
+              <ul>
+                {y.aspects == null ? <li>·</li>
+                  : y.aspects.length ? y.aspects.map((a) => (
+                    <li key={a.graha}><b>{n(a.graha)}</b>: {W(`${Math.round(a.virupa)} of 60`, `60 में से ${Math.round(a.virupa)}`)} <small>({BAND[aspectBand(a.virupa)][L]})</small> {nat(a.natural)}{a.functional ? <small> · {W('for your Lagn', 'आपके लग्न के लिए')}: {nature(a.functional)}</small> : null}</li>
+                  ))
+                    : <li>{W(`No planet aspects ${n(h.lord)}.`, `${n(h.lord)} पर किसी ग्रह की दृष्टि नहीं है।`)}</li>}
+              </ul>
+            </div>
+          )
+        })}
+      </div>
+      <p className="pm-key">{W('An aspect on the lord is measured by degree, from 0 to 60. An aspect on the house is counted by sign.', 'स्वामी पर दृष्टि अंश से मापी जाती है, 0 से 60 तक। भाव पर दृष्टि राशि से गिनी जाती है।')}</p>
+
+      <h4 className="pm-h">{W('5. Friends and enemies in this chart', '5. इस कुंडली में मित्र और शत्रु')}</h4>
       <p className="pm-key">{W('Read across. Each row shows how that planet stands towards the planet in the column.', 'पंक्ति के साथ पढ़ें। हर पंक्ति बताती है कि वह ग्रह स्तंभ वाले ग्रह के प्रति कैसा है।')}</p>
       <div className="pm-wrap">
         <table className="pm-table pm-grid">
@@ -211,7 +277,7 @@ export default function PlanetMatrix({ data, namer, grahas }) {
         {RELATION_ORDER.map((k) => <span key={k}><i className={'pm-rel pm-' + RELATION[k].tone}>{RELATION[k].mark}</i> {RELATION[k][L]}</span>)}
       </p>
 
-      <h4 className="pm-h">{W('5. What each planet carries', '5. हर ग्रह क्या लाता है')}</h4>
+      <h4 className="pm-h">{W('6. What each planet carries', '6. हर ग्रह क्या लाता है')}</h4>
       <div className="pm-wrap">
         <table className="pm-table">
           <thead>

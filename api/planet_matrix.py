@@ -16,6 +16,10 @@ NOTHING HERE IS A NEW RULE. Every column is read from a module that already carr
                                         the chart, and the page says so. A node has no friendship
                                         (relationships.NODES_UNAVAILABLE), so the relation is None when
                                         the planet or the lord is Rahu or Ketu.
+  aspects on a       BPHS I ch.26       drishti.drishti_virupa — the SAME aspect doctrine counted from the
+  planet, by degree  vv.6-12            degree, 0-60 virupas (60 = full). Given for every planet as
+                                        `aspected_by`, so the page can show how strongly a house LORD is
+                                        aspected. The sign-count fraction (vv.2-5) travels beside it.
   aspects            BPHS I ch.26       drishti.graha_drishti_chart
                      vv.2-5             every planet aspects the 7th fully; Mars the 4th and 8th,
                                         Jupiter the 5th and 9th, Saturn the 3rd and 10th fully as well.
@@ -53,6 +57,7 @@ CITATIONS = {
     "friendship": "BPHS I ch.3 vv.55-58",
     "aspects": "BPHS I ch.26 vv.2-5",
     "nakshatra_lord": "BPHS I ch.46 vv.12-14",
+    "aspects_by_degree": "BPHS I ch.26 vv.6-12",
 }
 
 NAKSHATRA_ARC = 360.0 / 27.0
@@ -110,6 +115,20 @@ def build(rasi_positions: dict, lagna: int, moon_waxing, profile: dict, relation
         to = "own" if lord == g else (cmp_rel.get(g) or {}).get(lord)
         return {"nakshatra": i, "nakshatra_lord": lord, "to_nakshatra_lord": to}
 
+    def aspected_by(g):
+        """The seven planets' aspect on `g` by degree (ch.26 vv.6-12), strongest first. The nodes cast none."""
+        if not longitudes or g not in longitudes:
+            return None
+        out = []
+        for c in SEVEN:
+            if c == g or c not in longitudes or c not in rasi:
+                continue
+            v = dr.drishti_virupa(longitudes[c], longitudes[g], c)
+            if v > 1e-9:
+                out.append({"graha": c, "virupa": round(v, 2),
+                            "fraction": dr.graha_drishti(rasi[c], rasi[g], c)})
+        return sorted(out, key=lambda r: (-r["virupa"], SEVEN.index(r["graha"])))
+
     planets = []
     for g in present:
         h = _house(rasi[g], lagna)
@@ -124,6 +143,7 @@ def build(rasi_positions: dict, lagna: int, moon_waxing, profile: dict, relation
             "aspect_houses": [(h + d - 2) % 12 + 1 for d in dist],
             "is_node": g in NODES,
             **nak(g),
+            "aspected_by": aspected_by(g),
         }
         if g in SEVEN:
             others = [o for o in SEVEN if o != g]

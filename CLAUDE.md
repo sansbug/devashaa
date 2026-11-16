@@ -337,6 +337,14 @@ each house, friends and enemies in this chart, what each planet carries.
   decides. Friend or own Nakshatr = Supports, enemy = Reduces, neutral = No change, a node on either
   side = nothing. It does NOT use the chart's five-fold sum (that Guru's sum is neutral, and the owner
   still reads it as reduced). Shown as a column in table 2 and a line in the house table.
+- **"Each house, part by part"** (owner, 2026-11-16: "we cant net all and say net impact … associate
+  dynamics of aspects on house lord than its own lord dynamics with its nakshatra and its lord, with
+  their degree and other constituents deciding strength"). `houseLayers` gives each house FOUR parts
+  that are **never added together**, each with its own measure of strength: the house itself
+  (planets with degree, aspects by sign count), its lord (place, degree, strength by sign, stage by
+  degree, six-fold strength, retrograde, combust), the lord's Nakshatr (its lord, that lord's state,
+  supports/reduces), and the aspects ON THE LORD by degree (`aspected_by`, ch.26 vv.6-12, 0-60).
+  **Do not add a net, score or verdict to it**: a test fails if such a key appears.
 - The page also reads the lord from the chart's own Nakshatr number when the payload lacks it, so
   a Nakshatr is never shown without its lord.
 - "What each planet carries" is the owner's table. It is ours and is labelled so.

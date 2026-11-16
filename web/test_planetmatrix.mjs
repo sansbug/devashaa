@@ -1,5 +1,6 @@
 // The planet and house matrix: the words (planetmatrix.js) and the payload they are laid over.
-import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE, parts, partsLine, lordEffect, effectLine, EFFECT } from './src/planetmatrix.js'
+import { CARRIES, NATURE, RELATION, RELATION_ORDER, WHY, OURS, FRACTION, notes, houseLine, nakshatraLord, lordState, SIGN_STATE, parts, partsLine, lordEffect, effectLine, EFFECT, houseLayers, aspectBand, BAND, LAYERS_LEAD } from './src/planetmatrix.js'
+import { STAGE, GRADE } from './src/walkthrough.js'
 import { makeNamer } from './src/naming.js'
 
 let fails = 0
@@ -102,6 +103,12 @@ console.log('\nThe Nakshatr lord\'s effect on the planet (the owner\'s rule):')
   ok('the rules state the effect and that it uses the fixed friendship', notes((k) => k, 'en').some((s) => /reduces its strength/.test(s)) && notes((k) => k, 'en').some((s) => /fixed friendship only/.test(s)))
 }
 
+console.log('\nThe house parts, in words:')
+{
+  ok('the lead says the parts are not added', LAYERS_LEAD.en.some((x) => /not added into one result/.test(x)) && !styleBreak(LAYERS_LEAD.en) && !styleBreak(LAYERS_LEAD.hi))
+  ok('an aspect by degree has a word for its strength', aspectBand(60) === 'strong' && aspectBand(45) === 'strong' && aspectBand(30) === 'medium' && aspectBand(10) === 'weak' && Object.values(BAND).every((b) => b.en && b.hi))
+}
+
 console.log('\nA house line:')
 {
   const h = { benefic: { occupants: ['venus'], aspects: ['jupiter'] }, malefic: { occupants: [], aspects: ['mars', 'saturn'] } }
@@ -145,6 +152,19 @@ try {
       return s.effect === (p.friends.includes(s.lord) ? 'support' : p.enemies.includes(s.lord) ? 'reduce' : 'none')
     }), states.map(([p, s]) => `${p.graha}:${s.effect}`).join(' '))
     ok('the Nakshatr lord rows carry the parts wherever they carry a relation', states.every(([, s]) => (s.towards && s.towards !== 'own') ? !!s.towards_parts : true))
+    const ctx = { P, G, signals: chart.analysis.grahas, shadbala: chart.shadbala.grahas, motion: chart.motion.grahas }
+    const Y = m.houses.map((h) => houseLayers(h, ctx))
+    ok('twelve houses, each in four parts', Y.length === 12 && Y.every((y) => y.itself && y.lord && y.nakshatra && Array.isArray(y.aspects)))
+    ok('NO net, score or verdict anywhere in a house (the owner: the parts are not netted)', !/"(net|score|verdict|total|sum|overall)"/i.test(JSON.stringify(Y)))
+    ok('the lord\'s place and degree are the chart\'s', Y.every((y, i) => { const g = G[m.houses[i].lord]; return y.lord.house === g.bhava && y.lord.sign === g.rasi && y.lord.degree === g.degree }))
+    ok('the lord carries its own measures: strength by sign, stage by degree, six-fold strength', Y.every((y) => y.lord.dignity && STAGE[y.lord.stage] && GRADE[y.lord.grade] && y.lord.shadbala && y.lord.shadbala.ratio > 0), Y.map((y) => `${y.lord.dignity}/${y.lord.stage}/${y.lord.grade}`).join(' '))
+    ok('the aspects on the lord are by degree, strongest first, within 0-60', Y.every((y) => y.aspects.every((a, i) => a.virupa > 0 && a.virupa <= 60 && (i === 0 || y.aspects[i - 1].virupa >= a.virupa))))
+    ok('the aspects on the lord are the lord\'s own, not the house\'s', Y.every((y, i) => JSON.stringify(y.aspects.map((a) => a.graha)) === JSON.stringify(P[m.houses[i].lord].aspected_by.filter((a) => a.virupa >= 0.5).map((a) => a.graha))))
+    ok('no aspect prints as 0 of 60', Y.every((y) => y.aspects.every((a) => Math.round(a.virupa) >= 1)))
+    ok('each caster comes with its nature', Y.every((y) => y.aspects.every((a) => a.natural === P[a.graha].natural)))
+    ok('the lord\'s Nakshatr part carries the Nakshatr lord and its state', Y.every((y) => y.nakshatra.lord && y.nakshatra.state && y.nakshatra.pada >= 1 && y.nakshatra.pada <= 4))
+    ok('the house part lists the planets in it with their degree', Y.every((y, i) => y.itself.occupants.length === m.houses[i].occupants.length && y.itself.occupants.every((o) => o.degree === G[o.graha].degree)))
+    for (const y of Y) console.log(`     ${String(y.house).padStart(2)} lord ${m.houses[y.house - 1].lord.padEnd(8)} h${String(y.lord.house).padStart(2)} ${String(y.lord.dignity).padEnd(11)} ${String(y.lord.stage).padEnd(8)} sb ${y.lord.shadbala.ratio.toFixed(2)}  nak-lord ${String(y.nakshatra.lord).padEnd(8)} ${String(y.nakshatra.state.effect).padEnd(8)} aspects: ${y.aspects.map((a) => `${a.graha} ${Math.round(a.virupa)}`).join(', ') || '·'}`)
     ok('the lord never moves a planet between the benefic and malefic columns', m.houses.every((h) => [...h.benefic.occupants, ...h.benefic.aspects].every((g) => P[g].natural === 'benefic') && [...h.malefic.occupants, ...h.malefic.aspects].every((g) => P[g].natural === 'malefic')))
     for (const [p, s] of states) console.log(`     ${p.graha.padEnd(8)} lord ${s.lord.padEnd(8)} house ${String(s.house).padStart(2)}  ${String(s.dignity).padEnd(12)} ${String(s.natural).padEnd(8)} → ${s.towards || '·'}  ← ${s.back || '·'}`)
   }

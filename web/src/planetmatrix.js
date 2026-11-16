@@ -220,6 +220,69 @@ export function lordState(graha, lord, P, G) {
   }
 }
 
+/**
+ * ONE HOUSE, LAYER BY LAYER (owner, 2026-11-16). The owner's instruction, which is the design:
+ *   "we cant net all and say net impact after all considerations. we have to associate dynamics of aspects on
+ *    house lord than its own lord dynamics with its nakshatra and its lord. with their degree and other
+ *    constituents deciding strength of impact"
+ * So a house is read in FOUR PARTS THAT ARE NEVER ADDED TOGETHER, each with the measure of its own strength:
+ *   itself      the planets in the house (with their degree) and the aspects on the house (by sign count)
+ *   lord        where the house lord sits, its degree, and the measures of ITS strength: strength by sign, the
+ *               stage by degree, the six-fold strength, retrograde, combust
+ *   nakshatra   the lord's Nakshatr, that Nakshatr's lord and its state, and the support / reduce effect
+ *   aspects     the aspects ON THE LORD, each with its strength by degree (0-60) and the caster's two natures
+ * There is no `net`, `score` or `verdict` key here and none may be added: test_planetmatrix.mjs pins that.
+ *   ctx: { P, G, signals (chart.analysis.grahas), shadbala (chart.shadbala.grahas), motion (chart.motion.grahas) }
+ */
+export function houseLayers(h, ctx) {
+  const { P, G } = ctx
+  const lord = h.lord, lp = P[lord], lg = (G && G[lord]) || null
+  const sig = ((ctx.signals && ctx.signals[lord]) || []).find((x) => x && x.name === 'baladi' && x.available !== false)
+  const sb = ctx.shadbala && ctx.shadbala[lord]
+  const mo = (ctx.motion || []).find((x) => x && x.key === lord)
+  const nakLord = lp ? (lp.nakshatra_lord || (lg && lg.nakshatra ? nakshatraLord(lg.nakshatra.index) : null)) : null
+  const place = (g) => {
+    const c = (G && G[g]) || null
+    return { graha: g, degree: c ? c.degree : null, minute: c ? c.minute : null }
+  }
+  return {
+    house: h.house, sign: h.sign,
+    itself: {
+      occupants: h.occupants.map((o) => ({ ...place(o.graha), natural: P[o.graha] ? P[o.graha].natural : null })),
+      full: h.full_aspects.map((g) => ({ graha: g, natural: P[g] ? P[g].natural : null })),
+      partial: h.partial_aspects.map((a) => ({ graha: a.graha, fraction: a.fraction, natural: P[a.graha] ? P[a.graha].natural : null })),
+    },
+    lord: lp ? {
+      ...place(lord), house: lp.house, sign: lp.sign,
+      in_own_house: lp.house === h.house,
+      dignity: (lg && lg.dignity && lg.dignity.state) || null,
+      stage: sig ? sig.value : null,
+      grade: sig ? ((sig.detail && sig.detail.grade) || null) : null,
+      shadbala: sb && typeof sb.ratio === 'number' ? { ratio: sb.ratio, strong: !!sb.strong } : null,
+      retrograde: !!(lg && lg.retrograde),
+      combust: !!(mo && mo.combustion && mo.combustion.combust),
+    } : null,
+    nakshatra: lp ? {
+      pada: lg && lg.nakshatra ? lg.nakshatra.pada : null,
+      lord: nakLord,
+      state: lordState(lord, nakLord, P, G),
+    } : null,
+    aspects: lp && Array.isArray(lp.aspected_by)
+      // an aspect under half a point of 60 would print as "0 of 60": it is left out
+      ? lp.aspected_by.filter((a) => a.virupa >= 0.5).map((a) => ({ graha: a.graha, virupa: a.virupa, fraction: a.fraction, natural: P[a.graha] ? P[a.graha].natural : null, functional: P[a.graha] ? P[a.graha].functional : null }))
+      : null,
+  }
+}
+/** how strong an aspect by degree is, in a word (the number is shown beside it) */
+export const aspectBand = (v) => (v >= 45 ? 'strong' : v >= 20 ? 'medium' : 'weak')
+export const BAND = {
+  strong: { en: 'strong', hi: 'प्रबल' }, medium: { en: 'medium', hi: 'मध्यम' }, weak: { en: 'weak', hi: 'हल्की' },
+}
+export const LAYERS_LEAD = {
+  en: ['Each house is read in four parts.', 'The parts are shown apart. They are not added into one result.', 'Each part has its own measure of strength.'],
+  hi: ['हर भाव चार भागों में पढ़ा जाता है।', 'ये भाग अलग-अलग दिखाए गए हैं। इन्हें जोड़कर एक परिणाम नहीं बनाया गया है।', 'हर भाग के बल का अपना माप है।'],
+}
+
 export const OURS = { en: 'Our words, not from a classical text.', hi: 'ये हमारे शब्द हैं, किसी शास्त्रीय ग्रंथ के नहीं।' }
 
 /** One sentence per house: what helps and what hinders it, by the planets' nature. */

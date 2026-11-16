@@ -3706,9 +3706,21 @@ body.rp-open { overflow: hidden; }
 .pm-nak + .pm-nak { margin-top: .3rem; }
 .pm-lord { opacity: .85; }
 .pm-effect { display: inline-block; margin-top: .15rem; padding: .05rem .35rem; border-radius: 4px; font-size: .74rem; white-space: normal; }
+/* in the house table the cell does not wrap, so the line must widen its own column and never spill over the next */
+.pm-nak .pm-effect { display: block; width: max-content; white-space: nowrap; margin-top: .2rem; }
 .pm-effect.pm-g { background: rgba(46, 158, 107, .16); }
 .pm-effect.pm-b { background: rgba(208, 82, 74, .16); }
 span.pm-rel { margin-left: 0; font-size: .76rem; padding: .05rem .35rem; }
+.pm-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin-top: .4rem; }
+.pm-card { border: 1px solid var(--line, #e8e8e8); border-radius: 10px; padding: .55rem .7rem; font-size: .8rem; }
+.pm-card h5 { margin: 0 0 .3rem; font-size: .86rem; font-weight: 600; }
+.pm-card h5 span { font-weight: 400; opacity: .8; }
+.pm-card h6 { margin: .5rem 0 .15rem; font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); font-weight: var(--label-weight, 600); }
+.pm-card ul { margin: 0; padding-left: 1rem; }
+.pm-card li { margin: .12rem 0; line-height: 1.45; }
+.pm-card .pm-effect { margin-top: 0; }
+@media (max-width: 800px) { .pm-cards { grid-template-columns: minmax(0, 1fr); } }
+@media print { .pm-card { break-inside: avoid; } }
 .pm-key { font-size: .74rem; color: var(--dim); margin: .4rem 0 0; }
 .pm-legend { display: flex; flex-wrap: wrap; gap: .35rem .9rem; font-size: .74rem; margin: .5rem 0 0; }
 .pm-notes { margin: .2rem 0 0; padding-left: 1.1rem; font-size: .82rem; }

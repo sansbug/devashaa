@@ -134,6 +134,20 @@ check("the house rows carry the same three for every occupant",
 bare = pm.build(POS, LAGNA, True, fn.lagna_profile(LAGNA, moon_waxing=True), rel.relationship_matrix(POS), dr.graha_drishti_chart(POS))
 check("without longitudes the three are None, nothing is guessed", all(r["nakshatra"] is None for r in bare["planets"]))
 
+print("\nAspects on a planet by degree: ch.26 vv.6-12")
+ab = {g: {r["graha"]: r for r in (P[g]["aspected_by"] or [])} for g in P}
+check("every planet carries the list", all(P[g]["aspected_by"] is not None for g in P))
+check("no planet aspects itself and no node casts", all(g not in ab[g] and "rahu" not in ab[g] and "ketu" not in ab[g] for g in P))
+check("every strength is above 0 and at most 60", all(0 < r["virupa"] <= 60 for g in P for r in P[g]["aspected_by"]))
+check("strongest first", all([r["virupa"] for r in P[g]["aspected_by"]] == sorted((r["virupa"] for r in P[g]["aspected_by"]), reverse=True) for g in P))
+check("the value is the degree engine's", all(abs(r["virupa"] - dr.drishti_virupa(LON[r["graha"]], LON[g], r["graha"])) < 0.006
+                                              for g in P for r in P[g]["aspected_by"]))
+# Jupiter at 70 deg, Sun at 256.86: 186.86 deg apart, just past the exact opposition
+check("Jupiter aspects the Sun almost fully (near the exact 7th)", ab["sun"]["jupiter"]["virupa"] > 50 and ab["sun"]["jupiter"]["fraction"] == 1.0, ab["sun"].get("jupiter"))
+check("the sign-count fraction travels beside the degree value", all(r["fraction"] in (0.0, 0.25, 0.5, 0.75, 1.0) for g in P for r in P[g]["aspected_by"]))
+check("a node can be aspected (Ketu by its opposite planets)", len(P["ketu"]["aspected_by"]) > 0)
+check("without longitudes the list is None", all(r["aspected_by"] is None for r in bare["planets"]))
+
 print()
 print("ALL PASS ✓" if not fails else f"FAILED: {fails}")
 sys.exit(1 if fails else 0)

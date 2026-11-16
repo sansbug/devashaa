@@ -66,7 +66,7 @@ const SIGN_STANDING = {
   debilitated: { en: (P, S) => `${P} is debilitated in ${S}. This is its weakest sign.`, hi: (P, S) => `${P} ${S} में नीच के हैं। यह उनकी सबसे दुर्बल राशि है।` },
 }
 /** The five Bālādi stages, in the order the text names them (BPHS ch.45 v.3). */
-const STAGE = {
+export const STAGE = {
   bala: { en: 'Bal', hi: 'बाल', nth: { en: 'first', hi: 'पहली' } },
   kumara: { en: 'Kumar', hi: 'कुमार', nth: { en: 'second', hi: 'दूसरी' } },
   yuva: { en: 'Yuva', hi: 'युवा', nth: { en: 'third', hi: 'तीसरी' } },
@@ -74,7 +74,7 @@ const STAGE = {
   mrita: { en: 'Passive', hi: 'निष्क्रिय', nth: { en: 'last', hi: 'अंतिम' } },
 }
 /** The grade of results the text gives each stage (ch.45 v.4), in its own words: "a planet in this stage gives …". */
-const GRADE = {
+export const GRADE = {
   one_fourth: { en: 'one fourth of its results', hi: 'चौथाई फल देता है' },
   half: { en: 'half of its results', hi: 'आधा फल देता है' },
   full: { en: 'its full results', hi: 'पूरा फल देता है' },

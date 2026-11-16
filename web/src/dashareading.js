@@ -18,9 +18,10 @@
  * instructions, never a death or a lifespan. An unfavourable verdict is "a reason
  * to prepare, not a reason to worry". test_dashareading.mjs pins this.
  *
- * Not used here: the antardaśā chapters (ch.52-60). Their engine fires single
- * conditions, a third of which state no reference frame, and it gives no verdict;
- * that detail stays in the full analysis, and this reading says so.
+ * The sub-period chapters (ch.52-60) are NOT built here: DashaReading.jsx fetches
+ * them from /api/antardasa/plain (api/antardasa_plain.py) for the running and the
+ * next sub-period and shows the branches that apply, as the text's own lists.
+ * They carry no verdict, and neither "what changes" nor the notes draw on them.
  */
 import { makeNamer } from './naming.js'
 import { HOUSE } from './walkthrough.js'
@@ -115,7 +116,7 @@ export function buildDashaReading(chart, namer = makeNamer('common'), now = Date
     }
   }
   const row = (role, node, within) => ({
-    role, lord: node.lord, start: node.start, end: node.end,
+    role, lord: node.lord, within: within ? within.lord : null, start: node.start, end: node.end,
     title: both((l) => {
       const w = { maha: ['Main period (mahādaśā)', 'महादशा'], antar: ['Sub-period (antardaśā)', 'अन्तर्दशा'], nextAntar: ['Next sub-period', 'अगली अन्तर्दशा'], nextMaha: ['Next main period', 'अगली महादशा'] }[role]
       return `${l === 'hi' ? w[1] : w[0]}: ${nm(l, node.lord)}${within && within.lord !== node.lord && role !== 'maha' && role !== 'nextMaha' ? (l === 'hi' ? ` (${nm(l, within.lord)} की महादशा में)` : ` (within ${nm(l, within.lord)}’s main period)`) : ''}`

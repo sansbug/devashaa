@@ -296,6 +296,36 @@ def antardasa_cells():
     })
 
 
+@app.post("/api/antardasa/plain")
+def antardasa_plain_cells():
+    """The branches of the text's sub-period sections that a chart meets, with the
+    results listed for each — for the simple view (see antardasa_plain.py).
+
+    Body: {"pairs": [{"maha": "jupiter", "antar": "mars"}, ...],
+           "positions": {graha: {"rasi": int, "longitude": float}}, "lagna": int}
+    """
+    import antardasa_plain
+    body = request.get_json(silent=True) or {}
+    pairs = body.get("pairs")
+    positions = body.get("positions")
+    lagna = body.get("lagna")
+    if not isinstance(pairs, list) or not pairs or len(pairs) > 6:
+        return jsonify({"error": "need 1-6 pairs of {maha, antar}"}), 400
+    if not isinstance(positions, dict) or not isinstance(lagna, int) or not all(
+            isinstance(p, dict) and isinstance(p.get("rasi"), int) for p in positions.values()):
+        return jsonify({"error": "need positions {graha: {rasi, longitude}} and lagna (0-11)"}), 400
+    out = []
+    try:
+        for pr in pairs:
+            maha, antar = (pr or {}).get("maha"), (pr or {}).get("antar")
+            if maha not in antardasa.rules.CHAPTER_OF or antar not in antardasa.rules.CHAPTER_OF:
+                return jsonify({"error": f"unknown pair {maha!r}/{antar!r}"}), 400
+            out.append(antardasa_plain.plain_cell(maha, antar, positions, lagna))
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"Sub-period evaluation failed: {e}"}), 500
+    return jsonify({"cells": out, "citation": antardasa.rules.CITATION})
+
+
 @app.get("/api/reference")
 def reference():
     """Static tables the UI needs to render a chart."""

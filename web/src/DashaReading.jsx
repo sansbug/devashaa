@@ -2,20 +2,95 @@
  * "Your periods (daśā): now, next, and what it means" — the simple view's daśā
  * reading. See dashareading.js for what each part may say: the verse is the
  * text's; the changes and the practical notes are ours and are labelled so.
+ *
+ * The running and the next sub-period also carry the text's own result lists
+ * (BPHS Vol II chs 52-60), fetched from /api/antardasa/plain: only the branches
+ * whose conditions this chart meets, shown as the text's words. A list that
+ * speaks of a death, a lifespan or a bereavement is shown only on request, whole.
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLang } from './LangContext.jsx'
 import { Bubble } from './DashaGlyphs.jsx'
 import { buildDashaReading } from './dashareading.js'
+import { SENSITIVE } from './findings.js'
+import { API } from './config.js'
+
+const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
+
+/** One branch of the text's sub-period section that this chart meets. */
+function Branch({ b, L }) {
+  const W = (en, hi) => (L === 'hi' ? hi : en)
+  const [asked, setAsked] = useState(false)
+  const held = sensitive(b.results)
+  return (
+    <div className="dsr-branch">
+      {held && !asked ? (
+        <p className="fd-held">
+          {W('The text’s list for this branch speaks of a death, a lifespan or a bereavement, so it is not shown unasked.', 'इस शाखा की सूची मृत्यु, आयु या वियोग की बात करती है, इसलिए बिना पूछे नहीं दिखाई जाती।')}
+          {' '}<button type="button" className="sv-link" onClick={() => setAsked(true)}>{W('Show the whole list', 'पूरी सूची दिखाएँ')}</button>
+        </p>
+      ) : <blockquote>{b.results}</blockquote>}
+      <p className="fd-applies">
+        <i>{W('Applies because the sub-period’s planet is', 'लागू है क्योंकि अन्तर्दशा का ग्रह')}</i>{' '}
+        {b.met.map((m) => m.predicate).join(W('; and ', '; और '))}.
+        {b.polarity_word ? <> {W('The text’s own word for this branch:', 'इस शाखा के लिए ग्रंथ का अपना शब्द:')} “{b.polarity_word}”.</> : null}
+      </p>
+    </div>
+  )
+}
+
+function SubResults({ cell, L, refs }) {
+  const W = (en, hi) => (L === 'hi' ? hi : en)
+  if (!cell) return null
+  const c = cell.counts
+  return (
+    <div className="dsr-sub">
+      <h6>{W('What the text lists for this sub-period', 'इस अन्तर्दशा के लिए ग्रंथ क्या गिनाता है')}</h6>
+      {cell.applies.length === 0 && (
+        <p className="fd-held">{W('None of the branches the text lists for this sub-period could be confirmed for your chart.', 'इस अन्तर्दशा के लिए ग्रंथ की कोई शाखा आपकी कुंडली पर पक्की नहीं हो सकी।')}</p>
+      )}
+      {cell.applies.map((b, i) => <Branch key={i} b={b} L={L} />)}
+      {refs && <p className="fd-attr"><b>{cell.citation} — Parāśara, tr. R. Santhanam</b></p>}
+      <p className="fd-held">
+        {W(`Of the ${c.branches} branches the text gives here, ${c.apply} ${c.apply === 1 ? 'applies' : 'apply'} to your chart`, `ग्रंथ की ${c.branches} शाखाओं में से ${c.apply} आपकी कुंडली पर लागू`)}
+        {c.not_met ? W(`, ${c.not_met} ${c.not_met === 1 ? 'does' : 'do'} not`, `, ${c.not_met} नहीं`) : ''}
+        {c.undetermined ? W(`, and ${c.undetermined} could not be checked (they turn on a navāṁśa, an aspect or a house the text counts from no stated point)`, `, और ${c.undetermined} जाँची नहीं जा सकीं (वे नवांश, दृष्टि या ऐसे भाव पर टिकी हैं जिसकी गिनती का आधार ग्रंथ नहीं बताता)`) : ''}
+        {W('. These are the text’s lists of what such a period can bring, not a verdict and not a forecast.', '। ये ग्रंथ की सूचियाँ हैं कि ऐसी दशा क्या ला सकती है — निर्णय या भविष्यवाणी नहीं।')}
+      </p>
+    </div>
+  )
+}
 
 export default function DashaReading({ chart, namer, refs, goFull }) {
   const { lang } = useLang()
   const L = lang === 'hi' ? 'hi' : 'en'
   const W = (en, hi) => (L === 'hi' ? hi : en)
   const [how, setHow] = useState(false)
+  const [cells, setCells] = useState({})
   const R = useMemo(() => {
     try { return buildDashaReading(chart, namer) } catch { return null }
   }, [chart, namer.style])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // the text's result lists for the running and the next sub-period
+  const pairs = useMemo(() => (R ? R.rows.filter((r) => (r.role === 'antar' || r.role === 'nextAntar') && r.within).map((r) => ({ role: r.role, maha: r.within, antar: r.lord })) : []), [R])
+  const pairKey = pairs.map((p) => `${p.maha}-${p.antar}`).join('|')
+  useEffect(() => {
+    if (!pairs.length) { setCells({}); return undefined }
+    let dead = false
+    const positions = Object.fromEntries((chart.grahas || []).map((g) => [g.key, { rasi: g.rasi, longitude: g.longitude }]))
+    fetch(`${API}/api/antardasa/plain`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pairs: pairs.map(({ maha, antar }) => ({ maha, antar })), positions, lagna: chart.lagna_rasi }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (dead || !j || !Array.isArray(j.cells)) return
+        setCells(Object.fromEntries(pairs.map((p, i) => [p.role, j.cells[i]]).filter(([, c]) => c)))
+      })
+      .catch(() => { /* the reading stands without the lists */ })
+    return () => { dead = true }
+  }, [pairKey, lang, refs])  // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!R) return null
   const now = R.rows.filter((r) => r.role === 'maha' || r.role === 'antar')
   const next = R.rows.filter((r) => r.role === 'nextAntar' || r.role === 'nextMaha')
@@ -27,6 +102,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
       </div>
       <p>{r.brings[L]}</p>
       <p className="dsr-verdict">{r.verdict.line[L]}</p>
+      <SubResults cell={cells[r.role]} L={L} refs={refs} />
     </div>
   )
 
@@ -83,7 +159,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
         </div>
 
         <p className="fd-foot">
-          {W('The texts also list detailed results for each sub-period. Those are conditions that fire one by one and carry no overall verdict, so they are kept in the full analysis.', 'ग्रंथ हर अन्तर्दशा के विस्तृत फल भी देते हैं। वे एक-एक करके लागू होने वाली शर्तें हैं और उनका कोई समग्र निर्णय नहीं होता, इसलिए वे पूरे विश्लेषण में रखे गए हैं।')}
+          {W('The full analysis has every sub-period of every main period, with each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अन्तर्दशा है — ग्रंथ की हर शर्त के साथ, और यह भी कि वह जाँची जा सकी या नहीं।')}
           {' '}<button type="button" className="sv-link" onClick={goFull}>{W('Open the full daśā timeline →', 'पूरी दशा समय-रेखा खोलें →')}</button>
         </p>
       </div>

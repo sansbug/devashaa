@@ -3581,3 +3581,8 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .dsr-row p { margin: 0 0 .2rem; }
 .dsr-verdict { color: var(--dim); font-size: .8rem; }
 
+/* the text's result lists for a sub-period */
+.dsr-sub { margin-top: .45rem; padding-top: .45rem; border-top: 1px dashed var(--line); }
+.dsr-sub h6 { margin: 0 0 .25rem; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.dsr-branch blockquote { margin: 0 0 .15rem; padding: .4rem .7rem; border-left: 3px solid var(--accent); background: var(--quote-bg); border-radius: 0 6px 6px 0; font-size: .82rem; }
+.dsr-branch + .dsr-branch { margin-top: .4rem; }

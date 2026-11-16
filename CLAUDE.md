@@ -201,9 +201,16 @@ its source beside it:
   daśā · the running main and sub-period · the next sub-period and the next main period (each:
   dates, which houses its planet rules and sits in, and the lean by BPHS Vol II ch.47 vv.5-6
   from `dasha.verdicts`) · the verse itself · what is going to change · practical notes.
-  "What changes" and the notes are OURS, under the life-area notes' rules. The ch.52-60
-  antardaśā clauses are NOT used here (no verdict, a third without a frame): they stay in
-  the full analysis and the section says so. ⚠ Its CSS classes are `dsr-*` — `dr-*` is the
+  "What changes" and the notes are OURS, under the life-area notes' rules.
+  The running and the next sub-period also show the text's own result lists (chs 52-60),
+  from `POST /api/antardasa/plain` (`api/antardasa_plain.py`, `test_antardasa_plain.py`):
+  the cell's rows grouped into BRANCHES (a row with its own list + the rows marked "as
+  above"), a branch applying only when an alternative AND every required conjunct is met;
+  the four plain sign-dignity conditions are tested there (the raw engine marks them
+  unavailable); the māraka clause and the remedy never travel. Still no verdict, and neither
+  "what changes" nor the notes draw on these lists. ⚠ The ch.52-60 result texts carry OCR
+  slips from the original mining ("acquidtion", "rl'ife"); they are shown as registered —
+  re-verify against the Vol II page images (now in `C:\books\astro`) rather than hand-fix. ⚠ Its CSS classes are `dsr-*` — `dr-*` is the
   dṛṣṭi ledger's and clashes.
 - Life areas (`web/src/lifeareas.js` + `LifeAreas.jsx`, `node web/test_lifeareas.mjs`): the
   simple view's "Your life, area by area" — you, career, wealth, marriage, home, children

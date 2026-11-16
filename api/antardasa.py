@@ -42,6 +42,10 @@ from __future__ import annotations
 import re
 
 import antardasa_rules as rules
+import antardasa_corrections
+
+# scanning slips in the mined corpus, corrected against the page images (see the module)
+antardasa_corrections.apply(rules.MATRIX)
 from dasha_effects import bhava_from
 
 FIRED = "fired"

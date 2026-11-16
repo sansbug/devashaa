@@ -137,7 +137,7 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
             <div className="fd-passage">
               <blockquote>{R.rule.verse}</blockquote>
               {refs && <p className="fd-attr"><b>{R.rule.cite} — Parāśara, tr. R. Santhanam</b></p>}
-              <p className="fd-applies">{W('It is read from where each period’s planet stood at your birth. It judges the lean of a period, not what happens in it.', 'इसे जन्म के समय हर दशा के ग्रह की स्थिति से पढ़ा जाता है। यह दशा का झुकाव आँकता है, उसमें क्या घटता है, यह नहीं।')}</p>
+              <p className="fd-applies">{W('It is read from where each period’s planet stood at your birth. It says whether a period counts as favourable or not. It does not say what happens in it.', 'इसे जन्म के समय हर दशा के ग्रह की स्थिति से पढ़ा जाता है। यह बताता है कि दशा अनुकूल गिनी जाए या नहीं; उसमें क्या घटता है, यह नहीं बताता।')}</p>
             </div>
           </div>
         )}

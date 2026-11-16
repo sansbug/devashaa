@@ -55,6 +55,14 @@ if (!chart) {
   ok('no line gives medical, legal or investment instructions', !ours.some((s) => /\b(doctor|medic\w*|treatment|lawyer|invest\w*|buy|sell|stocks?|loan)\b/i.test(s)))
   ok('no line speaks of a death or a lifespan', !ours.some((s) => /\b(death|die|dead|lifespan|longevity|short-lived)\b/i.test(s)))
   ok('every date named is a month and a year', [...R.changes.en, ...R.rows.map((r) => r.span.en)].every((s) => !/\d{4}/.test(s) || /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (19|20|21)\d\d/.test(s)))
+  // the owner's complaint, 2026-11-16: "moves from (courage and siblings; career and status) to (career and status)"
+  // — a sentence that names the same area on both sides of a change says nothing. An area is named once per sentence.
+  const AREA = ['yourself', 'money', 'initiative', 'home', 'children', 'rivals', 'partnership', 'inheritance', 'fortune', 'career', 'income', 'expenses']
+  const sentences = [...R.changes.en, ...R.notes.en].flatMap((s) => s.split(/(?<=\.)\s+/))
+  const repeated = sentences.find((s) => AREA.some((w) => (s.toLowerCase().match(new RegExp(`\\b${w}\\b`, 'g')) || []).length > 1))
+  ok('no sentence names the same area twice', !repeated, repeated)
+  ok('no line uses the jargon "lean" or "the text’s rule"', !ours.some((s) => /\blean\b|text’s rule|stated verdict/i.test(s)), ours.find((s) => /\blean\b|text’s rule|stated verdict/i.test(s)))
+  ok('a period’s verdict is said in plain words', R.rows.every((r) => /counts as (un)?favourable, because|is neutral:|is mixed:/.test(r.verdict.line.en)))
   console.log('')
   R.rows.forEach((r) => console.log(`  ${r.title.en} · ${r.span.en} · ${r.verdict.state}`))
   console.log('\n  changes:'); R.changes.en.forEach((s) => console.log('   ·', s))

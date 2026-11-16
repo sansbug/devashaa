@@ -90,6 +90,22 @@ const GRADE = {
   negligible: { en: 'negligible results', hi: 'नगण्य फल देता है' },
   nil: { en: 'no results', hi: 'कोई फल नहीं देता' },
 }
+/** What each planet usually stands for — OUR words (synthesis), the owner's choice of 2026-11-16 ("Our words,
+ *  labelled"). It is from no registered text, so the line that uses it always opens by saying so and every claim
+ *  carries "usually". Qualities only: never an event, a date, a person's fate or anything the CARE list holds back. */
+export const NATURE = {
+  sun: { en: 'authority, confidence and recognition', hi: 'अधिकार, आत्मविश्वास और मान' },
+  moon: { en: 'feelings, care and peace of mind', hi: 'भावना, स्नेह और मन की शांति' },
+  mars: { en: 'energy, drive and action', hi: 'ऊर्जा, जोश और पहल' },
+  mercury: { en: 'thinking, speech and skill', hi: 'सोच, वाणी और कौशल' },
+  jupiter: { en: 'knowledge, guidance and growth', hi: 'ज्ञान, मार्गदर्शन और वृद्धि' },
+  venus: { en: 'comfort, affection and art', hi: 'सुख, स्नेह और कला' },
+  saturn: { en: 'discipline, patience and slow, steady work', hi: 'अनुशासन, धैर्य और धीमे, स्थिर काम' },
+  rahu: { en: 'ambition, restlessness and unusual paths', hi: 'महत्वाकांक्षा, बेचैनी और अलग राह' },
+  ketu: { en: 'detachment, inward focus and letting go', hi: 'विरक्ति, अंतर्मुखता और त्याग' },
+}
+export const OURS = { en: 'Our reading, not from a classical text:', hi: 'हमारा पाठ, किसी ग्रंथ का नहीं:' }
+
 /** The five "great person" yogas: a planet in its own or exalted sign, in a kendra (BPHS ch.75 vv.1-2). */
 const MAHA = {
   mars: { en: 'Ruchaka', hi: 'रुचक' }, mercury: { en: 'Bhadra', hi: 'भद्र' }, jupiter: { en: 'Hamsa', hi: 'हंस' },
@@ -200,9 +216,9 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
   // ── 1b. the nine planets, one topic each ────────────────────────────────────
   // Written to fixed sentence patterns (the owner's brief, 2026-11-16, after ASD-STE100): one idea a sentence, at
   // most 25 words, each term used one way, a line left out when the chart gives no value for it. Every slot is
-  // filled from the payload. There is NO "this placement shows <trait>" slot: no registered text gives one for
-  // these lines, so the placement is read the way the house topics read it (what the planet rules is tied to
-  // where it sits). The stage (Bālādi) and its grade are the engine's, from analysis.grahas.
+  // filled from the payload. The placement is read the way the house topics read it (what the planet rules is
+  // tied to where it sits). ONE line is ours and says so (OURS + NATURE): what the planet usually stands for and
+  // the area of life its house holds — no registered text gives a trait for these lines. The stage (Bālādi) and its grade are the engine's, from analysis.grahas.
   const lagnaLord = SIGN_LORD[lagna]
   const ORDER = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn', 'rahu', 'ketu']
   const stageOf = (k) => {
@@ -247,6 +263,9 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
               ? (i === 0 ? `यह स्थिति ${HOUSE[q].of.hi} को ${HOUSE[h].of.hi} से जोड़ती है।` : `यह ${HOUSE[q].of.hi} को भी ${HOUSE[h].of.hi} से जोड़ती है।`)
               : (i === 0 ? `This placement ties ${HOUSE[q].of.en} to ${HOUSE[h].of.en}.` : `It also ties ${HOUSE[q].of.en} to ${HOUSE[h].of.en}.`))),
           ].filter(Boolean).join(' '),
+          NATURE[k] && (hi
+            ? `${OURS.hi} ${P} प्रायः ${NATURE[k].hi} के सूचक हैं। आपके ${HI_ORD[h]} भाव में यह प्रायः ${HOUSE[h].of.hi} में दिखता है।`
+            : `${OURS.en} ${P} usually stands for ${NATURE[k].en}. In your ${EN_ORD(h)} house, this usually shows in ${HOUSE[h].of.en}.`),
           dg && SIGN_STANDING[dg][l](P, S),
           !node && x.retrograde && (hi ? `${P} वक्री हैं।` : `${P} is retrograde.`),
           st && [

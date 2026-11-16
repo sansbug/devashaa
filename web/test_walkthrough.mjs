@@ -10,7 +10,7 @@
  *
  * Run:  node test_walkthrough.mjs   (with the local API on :5174 it also walks the reference chart)
  */
-import { buildWalkthrough, spokenScript, readSeconds, CARE, HOUSE } from './src/walkthrough.js'
+import { buildWalkthrough, spokenScript, readSeconds, CARE, HOUSE, NATURE, OURS } from './src/walkthrough.js'
 import { makeNamer } from './src/naming.js'
 import { snapshotOf } from './src/shareCodec.js'
 
@@ -83,8 +83,16 @@ function checks(label, chart, namer) {
   ok(`${label}: a planet sentence has at most 25 words`, !long, long)
   const joined = sent.find((x) => /[;—–]|\band\b.*\bbut\b|, which\b/.test(x))
   ok(`${label}: a planet sentence carries one idea — no semicolon, no dash, no trailing clause`, !joined, joined)
-  const trait = sent.find((x) => /\b(usually|shows|tends?|personality|mind|will)\b/i.test(x))
-  ok(`${label}: no planet sentence states a trait or a prediction`, !trait, trait)
+  // one line a planet is OURS and says so; outside it no sentence states a trait, and nowhere a prediction
+  const oursOf = (s, l) => s.lines[l].filter((x) => x.startsWith(OURS[l]))
+  ok(`${label}: each planet has exactly one line of ours, labelled as ours, in both languages`, ps.every((s) => oursOf(s, 'en').length === 1 && oursOf(s, 'hi').length === 1))
+  ok(`${label}: every sentence of ours carries "usually" and names the planet's own house`,
+    ps.every((s) => { const x = g(s.key.slice(6)), parts = oursOf(s, 'en')[0].split(/(?<=\.)\s+/); return parts.length === 2 && parts.every((p) => /\busually\b/.test(p)) && parts[1].includes(`In your ${EN_ORD(x.bhava)} house`) && parts[0].includes(NATURE[x.key].en) }))
+  const rest = ps.flatMap((s) => s.lines.en.filter((x) => !x.startsWith(OURS.en)).flatMap((ln) => ln.split(/(?<=\.)\s+/)))
+  const trait = rest.find((x) => /\b(usually|shows|stands for|tends?|personality|mind)\b/i.test(x))
+  ok(`${label}: outside the line of ours, no planet sentence states a trait`, !trait, trait)
+  const will = sent.find((x) => /\bwill\b/i.test(x))
+  ok(`${label}: no planet sentence predicts ("will …")`, !will, will)
   ok(`${label}: each planet topic states the chart's own sign, house and degree`,
     ps.every((s) => { const x = g(s.key.slice(6)); return s.focus.main === x.bhava && s.lines.en[0].includes(`in your ${EN_ORD(x.bhava)} house`) && s.title.en.includes(`${Math.floor(x.degree)}°`) && s.lines.en[0].includes(namer.rasi(x.rasi)) }))
   const sig = (k) => ((chart.analysis.grahas && chart.analysis.grahas[k]) || []).find((x) => x.name === 'baladi')
@@ -105,6 +113,16 @@ function checks(label, chart, namer) {
 console.log('\nthe plain labels')
 ok('twelve houses, each with a title, a meaning and a chip, in both languages', Object.keys(HOUSE).length === 12 && Object.values(HOUSE).every((h) => ['title', 'of', 'chip'].every((f) => h[f].en && h[f].hi)))
 ok('no house is labelled with longevity or death', Object.values(HOUSE).every((h) => !VERDICT.test(h.chip.en) && !VERDICT.test(h.chip.hi) && !VERDICT.test(h.of.en)))
+
+ok('what each planet stands for is in both languages, and holds no verdict, remedy or prediction', Object.keys(NATURE).length === 9
+  && Object.values(NATURE).every((n) => n.en && n.hi && !/[A-Za-z]/.test(n.hi) && !VERDICT.test(n.en) && !VERDICT.test(n.hi) && !/\b(will|illness|disease|divorce|wealthy|poor|mantra|gem)\b/i.test(n.en)))
+
+{
+  // "courage … shows in courage and siblings" says nothing: a planet's words never repeat a house's
+  const words = (s) => s.toLowerCase().split(/[^a-zऀ-ॿ]+/).filter((w) => w.length > 2 && w !== 'and' && w !== 'और')
+  const clash = ['en', 'hi'].flatMap((l) => Object.values(NATURE).flatMap((n) => Object.values(HOUSE).flatMap((h) => words(n[l]).filter((w) => words(h.of[l]).includes(w)))))
+  ok('no planet word repeats a house word', clash.length === 0, clash.join(' '))
+}
 
 console.log('\na chart drawn for the test')
 {

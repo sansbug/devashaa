@@ -136,8 +136,11 @@ script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
   Place and house · what it rules and what that ties together · sign standing · retrograde ·
   degree, Bālādi stage and the text's grade (ch.45 vv.3-4, from `analysis.grahas`) · companions
   · the great-person yoga (said only when the engine detected it; a near miss names the missing
-  condition). ⚠ There is NO "this placement usually shows <trait>" slot: no registered text
-  supplies one. The nodes get no sign-standing and no yoga line. The test pins all of this.
+  condition). ⚠ ONE line per planet is OURS (the owner's choice, "Our words, labelled"): it
+  opens "Our reading, not from a classical text:" and says what the planet usually stands for
+  (`NATURE`) and the area its house holds. Every sentence of it carries "usually"; qualities
+  only, never an event or a verdict; a planet word never repeats a house word. No other planet
+  sentence states a trait. The nodes get no sign-standing and no yoga line. The test pins all of this.
 - House labels (`HOUSE`) are BPHS ch.11's significations, shortened; longevity
   (8th) and one's own death (12th) are left out of the plain labels on purpose.
 - ⚠ The BPHS ch.24 lord-in-house rule is NEVER in the plain lines: it is behind a

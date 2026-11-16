@@ -16,7 +16,7 @@ import { useLang } from './LangContext.jsx'
 import { Bubble } from './DashaGlyphs.jsx'
 import { makeShareLink } from './share.js'
 
-export default function ShareCard({ chart, name, date, time, place, namer, onClose }) {
+export default function ShareCard({ chart, name, date, time, place, namer, onClose, onReport }) {
   const { t, lang } = useLang()
   const [details, setDetails] = useState(false)
   const [link, setLink] = useState('')
@@ -66,6 +66,13 @@ export default function ShareCard({ chart, name, date, time, place, namer, onClo
             </div>
             <div className="sh-card-foot">{t('share.foot', 'Verified positions · cited readings · nothing sold')}</div>
           </div>
+
+          {onReport && (
+            <div className="sh-report">
+              <button type="button" className="go" onClick={onReport}>⎙ {t('report.make', 'Make the full report (page or PDF)')}</button>
+              <i>{t('report.make.note', 'Charts, positions and every reading on one page. Save it as a PDF and send the file. It is made in this browser.')}</i>
+            </div>
+          )}
 
           <label className="sh-details">
             <input type="checkbox" checked={details} onChange={(e) => setDetails(e.target.checked)} />

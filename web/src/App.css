@@ -3586,3 +3586,59 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .dsr-sub h6 { margin: 0 0 .25rem; font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
 .dsr-branch blockquote { margin: 0 0 .15rem; padding: .4rem .7rem; border-left: 3px solid var(--accent); background: var(--quote-bg); border-radius: 0 6px 6px 0; font-size: .82rem; }
 .dsr-branch + .dsr-branch { margin-top: .4rem; }
+
+/* ── The full report (Report.jsx): a page to read, print or save as a PDF ───────────────────────── */
+.rp { position: fixed; inset: 0; z-index: 400; overflow: auto; background: var(--bg, #fff); color: var(--ink, #1c1c1c); }
+.rp-bar { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 16px;
+  background: var(--card, #fff); border-bottom: 1px solid var(--line, #e6e6e6); }
+.rp-bar .go { width: auto; padding: 9px 18px; }
+.rp-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.rp-hint { flex: 1 1 220px; font-size: 12px; opacity: .75; }
+.rp-x { margin-left: auto; border: 1px solid var(--line, #ddd); background: none; border-radius: 999px; padding: 7px 14px; cursor: pointer; color: inherit; font: inherit; }
+.rp-page { max-width: 980px; margin: 0 auto; padding: 22px 16px 60px; }
+.rp-head { text-align: center; margin-bottom: 18px; }
+.rp-head h1 { margin: 4px 0; font-size: 28px; }
+.rp-head p { margin: 2px 0; }
+.rp-brand { font-weight: 700; letter-spacing: .04em; color: var(--accent, #c23650); }
+.rp-sub { font-size: 12px; opacity: .7; }
+.rp-sec { margin: 22px 0; }
+.rp-sec > h2 { font-size: 20px; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--accent-soft, #fff1f3); }
+.rp-sec h3 { font-size: 16px; margin: 16px 0 6px; }
+.rp-sec h3 small { font-weight: 500; font-size: 12px; opacity: .7; margin-left: 6px; }
+.rp-sec h6 { margin: 10px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.rp-sec p { margin: 4px 0; line-height: 1.5; }
+.rp-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.rp-charts figure { margin: 0; }
+.rp-charts figcaption { text-align: center; font-size: 12px; opacity: .7; margin-top: 4px; }
+.rp-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; align-items: start; }
+.rp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.rp-table th, .rp-table td { text-align: left; padding: 5px 6px; border-bottom: 1px solid var(--line, #eee); }
+.rp-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 22px; }
+.rp-step { break-inside: avoid; margin-bottom: 10px; }
+.rp-step h5 { margin: 8px 0 4px; font-size: 14px; }
+.rp-step .sv-lines { margin: 0; padding-left: 20px; }
+.rp-step .sv-lines li { margin: 3px 0; line-height: 1.45; }
+.rp-quote { font-size: 13px; opacity: .9; }
+.rp-area, .rp-finding { border-top: 1px solid var(--line, #eee); padding-top: 6px; margin-top: 14px; }
+.rp-infer { margin-top: 8px; }
+.rp-foot { margin-top: 28px; padding-top: 10px; border-top: 1px solid var(--line, #eee); font-size: 12px; opacity: .8; text-align: center; }
+.sh-report { display: grid; gap: 6px; margin: 12px 0 4px; }
+.sh-report i { font-size: 12px; opacity: .75; }
+body.rp-open { overflow: hidden; }
+@media (max-width: 700px) {
+  .rp-charts, .rp-two, .rp-cols { grid-template-columns: minmax(0, 1fr); }
+  .rp-head h1 { font-size: 22px; }
+}
+@media print {
+  body.rp-open { overflow: visible; }
+  body.rp-open > *:not(.rp) { display: none !important; }
+  .rp { position: static; overflow: visible; inset: auto; }
+  .rp-bar { display: none; }
+  .rp-page { max-width: none; padding: 0; }
+  .rp, .rp * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rp .sv-link { display: none; }
+  .rp-step, .rp .fd-passage, .rp-charts figure, .rp .dk-card, .rp-table tr { break-inside: avoid; }
+  .rp-sec > h2, .rp-sec h3, .rp-sec h6 { break-after: avoid; }
+  .rp-charts, .rp-two, .rp-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @page { margin: 14mm 12mm; }
+}

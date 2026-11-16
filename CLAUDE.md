@@ -194,8 +194,11 @@ English text, default name style:
   pratyantardaśā), the scholarly name style, the texts' passages and the backend's
   provenance notes keep their marks.
 - Hindi is COMMON Hindi, not scholarly: a nasal joined to a consonant of its own class is
-  the anusvāra (मंगल, चंद्र, अंतर्दशा, केंद्र, कुंभ, पंचांग, ग्रंथ, संबंध). Not applied to the
-  Pūjā section, the texts' translations, or a regular expression matching Hindi from elsewhere.
+  the anusvāra (मंगल, चंद्र, अंतर्दशा, केंद्र, कुंभ, पंचांग, ग्रंथ, संबंध). In the Pūjā section this
+  covers interface labels and explanations only: a mantra (`dev` / `iast` / `roman`), a
+  verse's Sanskrit, the Cālīsā's text, a word quoted from a mantra ("शान्तिः") and
+  `voices.js` (it matches a DEVICE's voice name, e.g. "Google हिन्दी") are never respelled.
+  Not applied to the texts' translations, or a regular expression matching Hindi from elsewhere.
 
 ## Chart findings (the simple view's "What would you like to understand?")
 
@@ -281,6 +284,23 @@ its source beside it:
   extract from the registered edition, verify, then register.
 - To read a scanned page: extract its image with pypdf + Pillow and Read the image (see the
   BPHS extraction); `Read` on a PDF needs poppler, which is not installed.
+
+## The full report (`web/src/Report.jsx`) — a page to read, print or save as a PDF
+
+The owner asked (2026-11-16) for a PDF "of all texts with charts and everything" when sharing,
+"or at least an HTML page". It is one page made in the browser from the chart already
+loaded: both charts, key facts, positions, Who you are, the walkthrough's planet and house
+topics, the daśā reading (with `report` it is fully open), every life area and every finding.
+Doors: "PDF" in the simple view's top row, and "Make the full report" in the share card.
+- "Save as PDF" is `window.print()`; `.rp` print rules in App.css hide the rest of the site.
+  No PDF library, no server, nothing uploaded, no running cost.
+- It is rendered by a portal into `document.body`, and `body.rp-open` is what the print rule
+  keys on. The page title is set to the person's name while it is open (the PDF file name).
+- "Include the birth details and the dated periods" (on for one's own chart; a chart that
+  arrived without birth details has no such box). Off → the builders get the chart WITHOUT
+  its daśā, so no date, time, place or dated period can be written.
+- It only calls the simple view's builders, so their rules hold (a sensitive passage is not
+  shown unasked; references follow the switch). New wording belongs in those builders.
 
 ## Sharing a chart (`/c/<id>#<key>`)
 

@@ -61,7 +61,7 @@ function SubResults({ cell, L, refs }) {
   )
 }
 
-export default function DashaReading({ chart, namer, refs, goFull }) {
+export default function DashaReading({ chart, namer, refs, goFull, report = false }) {
   const { lang } = useLang()
   const L = lang === 'hi' ? 'hi' : 'en'
   const W = (en, hi) => (L === 'hi' ? hi : en)
@@ -115,8 +115,8 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
         <div className="la-step">
           <h6>{W('How to read a Dasha', 'दशा कैसे पढ़ें')}</h6>
           <p>{R.how[L][0]}</p>
-          {how && R.how[L].slice(1).map((s, i) => <p key={i}>{s}</p>)}
-          <button type="button" className="sv-link" onClick={() => setHow((x) => !x)}>{how ? W('Show less', 'कम दिखाएँ') : W('How periods nest, and how one is judged', 'दशाएँ कैसे चलती हैं और कैसे आँकी जाती हैं')}</button>
+          {(how || report) && R.how[L].slice(1).map((s, i) => <p key={i}>{s}</p>)}
+          {!report && <button type="button" className="sv-link" onClick={() => setHow((x) => !x)}>{how ? W('Show less', 'कम दिखाएँ') : W('How periods nest, and how one is judged', 'दशाएँ कैसे चलती हैं और कैसे आँकी जाती हैं')}</button>}
         </div>
 
         <div className="dsr-grid">
@@ -158,10 +158,12 @@ export default function DashaReading({ chart, namer, refs, goFull }) {
           </div>
         </div>
 
+        {!report && (
         <p className="fd-foot">
           {W('The full analysis has every sub-period of every main period. It gives each condition the text lists and whether it could be evaluated.', 'पूरे विश्लेषण में हर महादशा की हर अंतर्दशा है। साथ में ग्रंथ की हर शर्त है, और यह भी कि वह जाँची जा सकी या नहीं।')}
           {' '}<button type="button" className="sv-link" onClick={goFull}>{W('Open the full Dasha timeline →', 'पूरी दशा समय-रेखा खोलें →')}</button>
         </p>
+        )}
       </div>
     </section>
   )

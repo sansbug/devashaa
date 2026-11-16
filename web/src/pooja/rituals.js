@@ -184,7 +184,7 @@ export const RITUALS = [
       { en: 'A dīpa with ghee or sesame oil, cotton wicks, and incense', hi: 'घी या तिल के तेल का दीपक, रुई की बत्तियाँ, और धूप / अगरबत्ती' },
       { en: 'Red flowers; sindūra and jasmine oil where the family offers them', hi: 'लाल फूल; सिंदूर और चमेली का तेल, जहाँ चढ़ाने की रीति हो' },
       { en: 'Prasāda: būndī or laḍḍū, or jaggery with roasted gram', hi: 'प्रसाद: बूंदी या लड्डू, या गुड़-चना' },
-      { en: 'The text for each reader — it is given in full here, in Hindi and in roman letters', hi: 'हर पढ़ने वाले के लिए पाठ — यहाँ पूरा दिया है, हिन्दी और रोमन अक्षरों में' },
+      { en: 'The text for each reader — it is given in full here, in Hindi and in roman letters', hi: 'हर पढ़ने वाले के लिए पाठ — यहाँ पूरा दिया है, हिंदी और रोमन अक्षरों में' },
     ],
     when: ['hanuman-jayanti'],
   },

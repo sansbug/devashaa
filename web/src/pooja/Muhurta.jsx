@@ -140,7 +140,7 @@ export default function Muhurta({ ritual, place, setPlace, date, setDate, time, 
                 <tr>
                   <th>{L('The day', 'दिन')}</th>
                   <td>
-                    <b>{N(m.panchang.vara)}</b> · {N(m.masa)}{m.masa.purnimanta && <span className="dk-en"> ({L('amānta', 'अमान्त')}; {hi ? m.masa.purnimanta_hi : m.masa.purnimanta} {L('by pūrṇimānta', 'पूर्णिमान्त से')})</span>} · {N(m.panchang.tithi)} <span className="dk-en">({m.panchang.tithi.paksha === 'śukla' ? L('śukla', 'शुक्ल') : L('kṛṣṇa', 'कृष्ण')}{tithiEnds ? `, ${L('until', 'समाप्ति')} ${tithiEnds}` : ''})</span> · {N(m.panchang.nakshatra)}
+                    <b>{N(m.panchang.vara)}</b> · {N(m.masa)}{m.masa.purnimanta && <span className="dk-en"> ({L('amānta', 'अमांत')}; {hi ? m.masa.purnimanta_hi : m.masa.purnimanta} {L('by pūrṇimānta', 'पूर्णिमांत से')})</span>} · {N(m.panchang.tithi)} <span className="dk-en">({m.panchang.tithi.paksha === 'śukla' ? L('śukla', 'शुक्ल') : L('kṛṣṇa', 'कृष्ण')}{tithiEnds ? `, ${L('until', 'समाप्ति')} ${tithiEnds}` : ''})</span> · {N(m.panchang.nakshatra)}
                     <span className="dk-en"> · {L('sunrise', 'सूर्योदय')} {m.sunrise} · {L('sunset', 'सूर्यास्त')} {m.sunset}</span>
                     {m.festivals && m.festivals.length > 0 && <div className="pm-fests">{m.festivals.map((f) => <span key={f.key} className={`pu-fest ${f.importance}`}><b>{hi ? (f.name_hi || f.name) : f.name}</b></span>)}</div>}
                   </td>

@@ -156,7 +156,7 @@ function ObservanceList({ days, lang, L, go, limit, fromToday = true }) {
   return (
     <div className="dk-table-wrap">
       <table className="dk-table pu-cal">
-        <thead><tr><th>{L('Date', 'तिथि')}</th><th>{L('Observance', 'पर्व / व्रत')}</th><th>{L('Tithi · Nakṣatra', 'तिथि · नक्षत्र')}</th><th>{L('Ceremonies kept on it', 'इस दिन के अनुष्ठान')}</th></tr></thead>
+        <thead><tr><th>{L('Date', 'तिथि')}</th><th>{L('Observance', 'पर्व / व्रत')}</th><th>{L('Tithi · Nakshatr', 'तिथि · नक्षत्र')}</th><th>{L('Ceremonies kept on it', 'इस दिन के अनुष्ठान')}</th></tr></thead>
         <tbody>
           {shown.map((d) => {
             const sugg = [...new Map(d.festivals.flatMap((f) => ritualsFor(f.key)).map((r) => [r.key, r])).values()].slice(0, 3)
@@ -206,7 +206,7 @@ function Home({ lang, L, go }) {
       <div className="pu-ways">
         <section className="dk-card pu-way">
           <h4 className="dk-head"><span>{L('On your own, guided', 'स्वयं, मार्गदर्शन के साथ')}</span></h4>
-          <div className="dk-body"><p>{L('The purpose first, then every step: the mantra as it is chanted, what is happening, and why. Detailed, short, or the mantras alone — read aloud in English or Hindi.', 'पहले उद्देश्य, फिर हर चरण: मंत्र जैसा बोला जाता है, क्या हो रहा है, और क्यों। विस्तार से, संक्षेप में, या केवल मंत्र — हिन्दी या अंग्रेज़ी में पढ़कर सुनाया जाता है।')}</p></div>
+          <div className="dk-body"><p>{L('The purpose first, then every step: the mantra as it is chanted, what is happening, and why. Detailed, short, or the mantras alone — read aloud in English or Hindi.', 'पहले उद्देश्य, फिर हर चरण: मंत्र जैसा बोला जाता है, क्या हो रहा है, और क्यों। विस्तार से, संक्षेप में, या केवल मंत्र — हिंदी या अंग्रेज़ी में पढ़कर सुनाया जाता है।')}</p></div>
         </section>
         <section className="dk-card pu-way">
           <h4 className="dk-head"><span>{L('With the family, wherever they are', 'परिवार के साथ, वे जहाँ भी हों')}</span></h4>
@@ -681,7 +681,7 @@ export default function PoojaApp({ route, go, lang = 'en', setLang }) {
       <main className="pu-main">{body}</main>
       <footer className="pu-foot">
         <p><b>{L('Practice your traditions, wherever your family lives.', 'अपनी परंपराएँ निभाइए — आपका परिवार जहाँ भी रहता हो।')}</b></p>
-        <p>{L('Devashaa Pūjā & Havan — a separate service from the chart reference. Ceremonies are acts of devotion; nothing here is prescribed from a horoscope.', 'देवाशा पूजा एवं हवन — कुंडली-सन्दर्भ से अलग सेवा। अनुष्ठान भक्ति के कार्य हैं; यहाँ कुछ भी कुंडली देखकर नहीं बताया जाता।')}</p>
+        <p>{L('Devashaa Pūjā & Havan — a separate service from the chart reference. Ceremonies are acts of devotion; nothing here is prescribed from a horoscope.', 'देवाशा पूजा एवं हवन — कुंडली-संदर्भ से अलग सेवा। अनुष्ठान भक्ति के कार्य हैं; यहाँ कुछ भी कुंडली देखकर नहीं बताया जाता।')}</p>
       </footer>
     </div>
   )

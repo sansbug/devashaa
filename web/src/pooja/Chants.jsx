@@ -210,7 +210,7 @@ export default function VoiceStudio({ lang, L, me, go, reload }) {
     setErr('')
     try { await api.delVoice(v.id); if (reload) await reload(); await load(); setAs('') } catch (e) { setErr(e.message || String(e)) }
   }
-  const TABS = [['m', L('Mantras and verses', 'मंत्र और छंद')], ['en', L('Explanations — English', 'व्याख्या — अंग्रेज़ी')], ['hi', L('Explanations — Hindi', 'व्याख्या — हिन्दी')]]
+  const TABS = [['m', L('Mantras and verses', 'मंत्र और छंद')], ['en', L('Explanations — English', 'व्याख्या — अंग्रेज़ी')], ['hi', L('Explanations — Hindi', 'व्याख्या — हिंदी')]]
   const sex = (v) => (v === 'f' ? L('female', 'स्त्री') : v === 'm' ? L('male', 'पुरुष') : '')
 
   return (
@@ -219,7 +219,7 @@ export default function VoiceStudio({ lang, L, me, go, reload }) {
       <div className="dk-body">
         <p className="pu-lead">{L(
           'The guided ceremony is voiced by pandits, not by a machine. Each mantra is recorded once; a family keeping the ceremony on its own then hears it chanted, with the pandit’s name. The explanations can be recorded too, in English or Hindi.',
-          'मार्गदर्शित अनुष्ठान पंडित जी की आवाज़ में है, मशीन की नहीं। हर मंत्र एक बार रिकॉर्ड होता है; जो परिवार स्वयं अनुष्ठान करता है, वह उसे पंडित जी के नाम के साथ सुनता है। व्याख्या भी रिकॉर्ड की जा सकती है — हिन्दी या अंग्रेज़ी में।')}</p>
+          'मार्गदर्शित अनुष्ठान पंडित जी की आवाज़ में है, मशीन की नहीं। हर मंत्र एक बार रिकॉर्ड होता है; जो परिवार स्वयं अनुष्ठान करता है, वह उसे पंडित जी के नाम के साथ सुनता है। व्याख्या भी रिकॉर्ड की जा सकती है — हिंदी या अंग्रेज़ी में।')}</p>
 
         {admin && (
           <div className="vs-voices">

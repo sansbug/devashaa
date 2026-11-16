@@ -24,6 +24,7 @@ import References from './References.jsx'
 import Support from './Support.jsx'
 import ComparePage from './ComparePage.jsx'
 import ShareCard from './ShareCard.jsx'
+import Report from './Report.jsx'
 import { SHARE_ID_RE, openShare } from './share.js'
 import { REFS_KEY, refsOn, applyRefs, scrubProse } from './refs.js'
 import Privacy from './Privacy.jsx'
@@ -309,6 +310,7 @@ export default function App() {
   const [profiles, setProfiles] = useState(() => listProfiles())
   const [activeProfile, setActiveProfile] = useState(null)
   const [shareOpen, setShareOpen] = useState(false)
+  const [reportOpen, setReportOpen] = useState(false)   // the full report page (read, print, save as PDF)
   const [sharedIn, setSharedIn] = useState(false)   // this chart arrived by a share link
   // …and it arrived WITHOUT its birth details: the finished chart is all there
   // is. Nothing that is computed from a date, a time or a place can be shown,
@@ -858,8 +860,13 @@ export default function App() {
           )}
         </div>
       )}
+      {reportOpen && chart && (
+        <Report chart={chart} name={name} date={date} time={time} place={place} namer={namer} refs={refs} snap={snap}
+                onClose={() => setReportOpen(false)} />
+      )}
       {shareOpen && chart && place && (
-        <ShareCard chart={chart} name={name} date={date} time={time} place={place} namer={namer} onClose={() => setShareOpen(false)} />
+        <ShareCard chart={chart} name={name} date={date} time={time} place={place} namer={namer} onClose={() => setShareOpen(false)}
+                   onReport={() => { setShareOpen(false); setReportOpen(true) }} />
       )}
 
       {chart && (
@@ -957,6 +964,9 @@ export default function App() {
                   ↗ {t('share.open', 'Share')}
                 </button>
               )}
+              <button type="button" className="rg-open sh-open" onClick={() => setReportOpen(true)}>
+                ⎙ {t('report.open', 'PDF')}
+              </button>
               <ModeSwitch mode={mode} setMode={setMode} />
             </div>
             <div className="chart-figure">

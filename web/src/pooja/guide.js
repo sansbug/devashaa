@@ -54,7 +54,7 @@ export const ABOUT = {
   },
   durga: {
     en: 'Durgā is the Devī as protector — the power that the gods together called forth when no one of them could prevail. Her deeds are told in the Durgā Saptaśatī, seven hundred verses from the Mārkaṇḍeya Purāṇa, which is recited through the nine nights of Navarātri and completed with a havan. The family honours her as mother and as strength; on Aṣṭamī or Navamī many households also honour young girls as her living form.',
-    hi: 'दुर्गा देवी का रक्षक रूप हैं — वह शक्ति जिसे सब देवताओं ने मिलकर प्रकट किया जब उनमें से कोई अकेला विजय न पा सका। उनके चरित्र दुर्गा सप्तशती में कहे गए हैं — मार्कण्डेय पुराण के सात सौ श्लोक — जिसका पाठ नवरात्रि की नौ रातों में होता है और हवन से पूर्ण होता है। परिवार उन्हें माता और शक्ति के रूप में पूजता है; अष्टमी या नवमी पर अनेक घरों में कन्याओं को उनका जीवित स्वरूप मानकर पूजा जाता है।',
+    hi: 'दुर्गा देवी का रक्षक रूप हैं — वह शक्ति जिसे सब देवताओं ने मिलकर प्रकट किया जब उनमें से कोई अकेला विजय न पा सका। उनके चरित्र दुर्गा सप्तशती में कहे गए हैं — मार्कंडेय पुराण के सात सौ श्लोक — जिसका पाठ नवरात्रि की नौ रातों में होता है और हवन से पूर्ण होता है। परिवार उन्हें माता और शक्ति के रूप में पूजता है; अष्टमी या नवमी पर अनेक घरों में कन्याओं को उनका जीवित स्वरूप मानकर पूजा जाता है।',
   },
   sundarkand: {
     en: 'The Sundarakāṇḍa is the fifth book of Tulasīdāsa’s Rāmacaritamānasa. It tells how Hanumān leapt the ocean, found Sītā in Laṅkā, gave her Rāma’s ring and returned with her message — the book of courage, devotion and hope restored. Families gather to recite it together, most often on a Tuesday or Saturday, for strength in a difficult time and in gratitude when one has passed.',
@@ -363,7 +363,7 @@ export const MODES = [
 ]
 export const VOICE_LANGS = [
   { key: 'en', label: 'English', bcp: ['en-IN', 'en-GB', 'en-US'] },
-  { key: 'hi', label: 'हिन्दी', bcp: ['hi-IN'] },
+  { key: 'hi', label: 'हिंदी', bcp: ['hi-IN'] },
 ]
 
 /** What is spoken or shown for a step in a mode and language. */

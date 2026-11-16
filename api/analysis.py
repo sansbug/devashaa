@@ -45,6 +45,7 @@ import karakas as kar
 import bhava_phala as bhp
 import dhana_bhava
 import bhava_effects
+import phaladipika_lagna_rules
 import yogas as yg
 import classical
 
@@ -366,6 +367,12 @@ def analyse(chart_positions, lagna, moon_waxing=None, lagna_d9=None, shadbala=No
         out["bhava_effects"] = bhava_effects.evaluate(chart_positions, lagna, moon_waxing=mw)
     except Exception as e:  # noqa: BLE001
         out["dhana_bhava"] = {"error": f"ch.13 evaluation failed: {e}"}
+
+    # The classical description of the rising sign and (Phaladīpikā 9.13) of the Moon's sign.
+    try:
+        out["character"] = phaladipika_lagna_rules.character(lagna, rasi_positions.get("moon"))
+    except Exception as e:  # noqa: BLE001
+        out["character"] = {"error": f"character failed: {e}"}
 
     # Yogas — which named BPHS yogas the chart forms (chs 35-39 + Vol II ch.75).
     try:

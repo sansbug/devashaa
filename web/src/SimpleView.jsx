@@ -218,3 +218,52 @@ export function HouseExplorer({ story, house, setHouse, onFull }) {
     </section>
   )
 }
+
+/** "Who you are" — what a classical text says of one born with this sign rising, and (by the same text's own
+ *  rule) of the sign the Moon is in. The whole description is shown, flattering and unflattering together, as the
+ *  text's statement about a TYPE; the moon-in-sign readings of the other registered texts follow. References
+ *  (book, verse) show only when the reader has turned them on. */
+export function WhoCard({ chart, namer, refs }) {
+  const { lang } = useLang()
+  const W = (en, hi) => (lang === 'hi' ? hi : en)
+  const a = chart.analysis && !chart.analysis.error ? chart.analysis : null
+  const ch = a && a.character && !a.character.error ? a.character : null
+  if (!ch || !ch.lagna) return null
+  const src = ch.source || {}
+  const attr = (e) => (refs ? `${e.citation} — ${[src.author, src.translator && `tr. ${src.translator}`].filter(Boolean).join(', ')}` : W('A classical text', 'एक शास्त्रीय ग्रंथ'))
+  const sign = (i) => (namer.rasiFull ? namer.rasiFull(i) : namer.rasi(i))
+  // the other registered texts on the Moon in this sign (already in the payload's concordance)
+  const moonRows = ((a.classical && a.classical.readings) || []).filter((r) => r.graha === 'moon' && ch.moon && r.sign === ch.moon.sign).flatMap((r) => r.sources || [])
+  const same = ch.moon && ch.moon.sign === ch.lagna.sign
+  return (
+    <section className="dk-card sv-who">
+      <h4 className="dk-head"><span>{W('Who you are, as the texts describe it', 'आप कैसे हैं — ग्रंथों के शब्दों में')}</span></h4>
+      <div className="dk-body">
+        <div className="sv-who-block">
+          <h5>{W('Your ascendant', 'आपका लग्न')}: {sign(ch.lagna.sign)}</h5>
+          <blockquote>{ch.lagna.gist}</blockquote>
+          <p className="fd-attr"><b>{attr(ch.lagna)}</b><span>{W(' · our rendering of the passage', ' · पाठ का हमारा भावार्थ')}</span></p>
+        </div>
+        {ch.moon && (
+          <div className="sv-who-block">
+            <h5>{W('Your Moon sign', 'आपकी चन्द्र राशि')}: {sign(ch.moon.sign)}</h5>
+            {same
+              ? <p className="sv-note">{W('Your Moon is in your rising sign, so the same description applies twice over.', 'आपका चन्द्र लग्न की ही राशि में है, इसलिए वही वर्णन दोहरा लागू होता है।')}</p>
+              : <blockquote>{ch.moon.gist}</blockquote>}
+            <p className="fd-attr"><b>{attr(ch.moon)}</b><span>{W(' · the same text applies a sign’s description to the Moon’s sign as well', ' · वही ग्रंथ राशि का वर्णन चन्द्र की राशि पर भी लागू करता है')}{refs && ch.moon.basis ? ` (${ch.moon.basis.citation})` : ''}</span></p>
+            {moonRows.map((r, i) => (
+              <div key={i} className="sv-who-more">
+                <blockquote>{r.gist}</blockquote>
+                <p className="fd-attr"><b>{refs ? `${r.citation} — ${[r.source && r.source.author, r.source && r.source.translator && `tr. ${r.source.translator}`].filter(Boolean).join(', ')}` : W('A classical text', 'एक शास्त्रीय ग्रंथ')}</b></p>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="sv-note sv-who-foot">
+          {W('These are old texts describing a type of person by one factor each. They are shown whole, the unflattering with the flattering, and they are not a verdict on you: the rest of the chart changes how much of each applies.',
+            'ये पुराने ग्रंथ हैं जो एक-एक कारक से व्यक्ति के एक प्रकार का वर्णन करते हैं। इन्हें पूरा दिखाया गया है — अच्छा और अप्रिय, दोनों — और ये आप पर निर्णय नहीं हैं: कुंडली के बाकी कारक तय करते हैं कि इनमें से कितना लागू होता है।')}
+        </p>
+      </div>
+    </section>
+  )
+}

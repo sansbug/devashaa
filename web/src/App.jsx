@@ -38,7 +38,7 @@ import NakshatraCard from './NakshatraCard.jsx'
 import ModernNotes from './ModernNotes.jsx'
 import ChartDeck, { HighlightsCard } from './ChartDeck.jsx'
 import FindingsPanel from './Findings.jsx'
-import { LandingHero, RunningCard, ChartSummary, HouseExplorer, useStory, FullCta, ModeSwitch, useSlow } from './SimpleView.jsx'
+import { LandingHero, RunningCard, ChartSummary, WhoCard, HouseExplorer, useStory, FullCta, ModeSwitch, useSlow } from './SimpleView.jsx'
 import NorthDeckChart from './NorthDeckChart.jsx'
 import SouthDeckChart from './SouthDeckChart.jsx'
 import { listProfiles, saveProfile, deleteProfile, replaceAll } from './profiles.js'
@@ -972,6 +972,7 @@ export default function App() {
             </div>
             <div className="deck-side sv-side">
               <ChartSummary story={story} />
+              <WhoCard chart={chart} namer={namer} refs={refs} />
               <HighlightsCard chart={chart} grahas={chart.grahas} namer={namer} />
               {!snap && <RunningCard running={runningDasha} namer={namer}
                                      onMore={() => { setMode('full'); setSection('dasha') }} />}

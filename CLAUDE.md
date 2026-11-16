@@ -186,6 +186,12 @@ its source beside it:
     translation prints "5th lord" where the Sanskrit on the page has the 4th lord).
     "Aspected" = a FULL graha dṛṣṭi; benefic/malefic = natural (ch.3 v.11).
     `test_bhava_effects.py`.
+  - `api/phaladipika_lagna_rules.py` — Phaladīpikā 9.1-13: the description of each sign
+    rising, and (śl.13) the same description for the Moon's sign (`analysis.character`). It
+    feeds the simple view's "Who you are" card (`WhoCard` in SimpleView.jsx), which also
+    lists the registered Moon-in-sign readings. ⚠ confidence `ocr_text`, like the node
+    verses. ⚠ The descriptions are shown WHOLE — these texts are often unflattering
+    ("a doer of wrong in secret"); do not trim them into praise. English only so far.
 - References: Settings › References (off by default; the same `refs` switch as /references).
   Off — a passage in a finding reads "A classical text", with no book, verse or page, no
   tier names and no reference list; on — everything is named. Either way a passage is marked

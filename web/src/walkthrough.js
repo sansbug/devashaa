@@ -64,6 +64,38 @@ const NAK_CLASS = {
 }
 const STRONG = ['exalted', 'moolatrikona', 'own']
 
+/** A planet's standing in its sign, one idea a sentence (the planet topics). P = planet, S = sign. */
+const SIGN_STANDING = {
+  exalted: { en: (P, S) => `${P} is exalted in ${S}. This is its strongest sign.`, hi: (P, S) => `${P} ${S} में उच्च के हैं। यह उनकी सबसे बलवान राशि है।` },
+  moolatrikona: { en: (P, S) => `${P} is in its mūlatrikoṇa part of ${S}. This is a very strong position.`, hi: (P, S) => `${P} ${S} में अपने मूलत्रिकोण में हैं। यह बहुत बलवान स्थिति है।` },
+  own: { en: (P, S) => `${S} is the own sign of ${P}. This is a strong position.`, hi: (P, S) => `${S} ${P} की अपनी राशि है। यह बलवान स्थिति है।` },
+  friend: { en: (P, S) => `${S} is a friend’s sign for ${P}. This is a comfortable position.`, hi: (P, S) => `${S} ${P} के मित्र की राशि है। यह सहज स्थिति है।` },
+  neutral: { en: (P, S) => `${S} is a neutral sign for ${P}.`, hi: (P, S) => `${S} ${P} के लिए सम राशि है।` },
+  enemy: { en: (P, S) => `${S} is an enemy’s sign for ${P}. This is an uncomfortable position.`, hi: (P, S) => `${S} ${P} के शत्रु की राशि है। यह असहज स्थिति है।` },
+  debilitated: { en: (P, S) => `${P} is debilitated in ${S}. This is its weakest sign.`, hi: (P, S) => `${P} ${S} में नीच के हैं। यह उनकी सबसे दुर्बल राशि है।` },
+}
+/** The five Bālādi stages, in the order the text names them (BPHS ch.45 v.3). */
+const STAGE = {
+  bala: { en: 'Bala', hi: 'बाल', nth: { en: 'first', hi: 'पहली' } },
+  kumara: { en: 'Kumara', hi: 'कुमार', nth: { en: 'second', hi: 'दूसरी' } },
+  yuva: { en: 'Yuva', hi: 'युवा', nth: { en: 'third', hi: 'तीसरी' } },
+  vriddha: { en: 'Vriddha', hi: 'वृद्ध', nth: { en: 'fourth', hi: 'चौथी' } },
+  mrita: { en: 'Mrita', hi: 'मृत', nth: { en: 'last', hi: 'अंतिम' } },
+}
+/** The grade of results the text gives each stage (ch.45 v.4), in its own words: "a planet in this stage gives …". */
+const GRADE = {
+  one_fourth: { en: 'one fourth of its results', hi: 'चौथाई फल देता है' },
+  half: { en: 'half of its results', hi: 'आधा फल देता है' },
+  full: { en: 'its full results', hi: 'पूरा फल देता है' },
+  negligible: { en: 'negligible results', hi: 'नगण्य फल देता है' },
+  nil: { en: 'no results', hi: 'कोई फल नहीं देता' },
+}
+/** The five "great person" yogas: a planet in its own or exalted sign, in a kendra (BPHS ch.75 vv.1-2). */
+const MAHA = {
+  mars: { en: 'Ruchaka', hi: 'रुचक' }, mercury: { en: 'Bhadra', hi: 'भद्र' }, jupiter: { en: 'Hamsa', hi: 'हंस' },
+  venus: { en: 'Malavya', hi: 'मालव्य' }, saturn: { en: 'Sasa', hi: 'शश' },
+}
+
 /** A lord-in-house rule that speaks of a death, a lost child or parent, childlessness, many wives or a vice is not
  *  put in front of a reader in a plain summary; the Bhāvas panel carries it, in the text's own words. Both languages. */
 export const CARE = {
@@ -164,6 +196,76 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
         : `Weakest: ${weak.map((x) => `${name(l, x.key)}, debilitated`).join('; ')}.`),
     ].filter(Boolean),
   }), { houses: [1, mo && mo.bhava, su && su.bhava].filter(Boolean), main: 1, grahas: ['moon', 'sun', ...strong.map((x) => x.key)], lines: [] })
+
+  // ── 1b. the nine planets, one topic each ────────────────────────────────────
+  // Written to fixed sentence patterns (the owner's brief, 2026-11-16, after ASD-STE100): one idea a sentence, at
+  // most 25 words, each term used one way, a line left out when the chart gives no value for it. Every slot is
+  // filled from the payload. There is NO "this placement shows <trait>" slot: no registered text gives one for
+  // these lines, so the placement is read the way the house topics read it (what the planet rules is tied to
+  // where it sits). The stage (Bālādi) and its grade are the engine's, from analysis.grahas.
+  const lagnaLord = SIGN_LORD[lagna]
+  const ORDER = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn', 'rahu', 'ketu']
+  const stageOf = (k) => {
+    const s = ((a.grahas && a.grahas[k]) || []).find((x) => x && x.name === 'baladi' && x.available !== false)
+    return s && STAGE[s.value] ? { state: s.value, grade: (s.detail && s.detail.grade) || s.scale, cite: s.citation } : null
+  }
+  const detected = (a.yogas && a.yogas.detected) || null
+  for (const k of [lagnaLord, ...ORDER.filter((x) => x !== lagnaLord)]) {
+    const x = g(k)
+    if (!x || !HOUSE[x.bhava]) continue
+    const h = x.bhava, r = ruled(k), others = r.filter((q) => q !== h)
+    const mates = (chart.grahas || []).filter((y) => y.bhava === h && y.key !== k).map((y) => y.key)
+    const st = stageOf(k)
+    const node = k === 'rahu' || k === 'ketu'   // the nodes rule no sign and carry no sign strength
+    const dg = !node && x.dignity && SIGN_STANDING[x.dignity.state] ? x.dignity.state : null
+    const yoga = MAHA[k] && detected ? { ...MAHA[k], on: detected.some((y) => String(y.name || '').startsWith(MAHA[k].en)), cite: (detected.find((y) => String(y.name || '').startsWith(MAHA[k].en)) || {}).citation } : null
+    const kendra = [1, 4, 7, 10].includes(h), strong = STRONG.includes(dg)
+    const deg = Math.floor(Number(x.degree) || 0)
+    push(`graha_${k}`, (l) => {
+      const P = name(l, k), S = N[l].rasi(x.rasi), hi = l === 'hi'
+      const yogaLine = !yoga ? null
+        : yoga.on
+          ? (hi ? `${P} ${yoga.hi} योग बनाते हैं। वे अपनी या उच्च राशि में हैं, और केंद्र भाव में हैं।` : `${P} forms ${yoga.en} Yoga. It is in its own or exalted sign, in a Kendra house.`)
+          : strong && !kendra
+            ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए केंद्र भाव चाहिए: पहला, चौथा, सातवाँ या दसवाँ।` : `${P} forms no ${yoga.en} Yoga. That yoga needs a Kendra house: the 1st, 4th, 7th or 10th.`)
+            : kendra && !strong && dg
+              ? (hi ? `${P} ${yoga.hi} योग नहीं बनाते। इस योग के लिए ग्रह अपनी या उच्च राशि में चाहिए।` : `${P} forms no ${yoga.en} Yoga. That yoga needs the planet in its own or exalted sign.`)
+              : null
+      return {
+        title: hi ? `${P} · ${deg}° ${S}, ${HI_ORD_N[h]} भाव` : `${named(l, k)} · ${deg}° ${S}, ${EN_ORD(h)} house`,
+        chips: st ? [{ label: hi ? 'अवस्था' : 'Stage', text: hi ? 'राशि में ग्रह के अंश से तय होती है' : 'set by the planet’s degree in its sign' }] : [],
+        lines: [
+          hi ? `${P} ${sign(l, x.rasi)} राशि में, आपके ${HI_ORD[h]} भाव में हैं। ${HI_ORD_N[h]} भाव ${HOUSE[h].of.hi} का भाव है।`
+            : `${named(l, k)} is in ${sign(l, x.rasi)} in your ${EN_ORD(h)} house. The ${EN_ORD(h)} house is the house of ${HOUSE[h].of.en}.`,
+          [
+            r.length
+              ? (hi ? `${P} आपके ${list(r.map((q) => HI_ORD[q]), l)} भाव के स्वामी हैं।` : `${P} rules your ${r.map((q) => `${EN_ORD(q)} house`).join(' and your ')}.`)
+              : (hi ? `${P} किसी राशि के स्वामी नहीं हैं।` : `${P} rules no sign.`),
+            k === lagnaLord && (hi ? `पहला भाव आपका लग्न है, इसलिए ${P} आपके लग्न के स्वामी हैं।` : `The 1st house is your Lagna, so ${P} is the lord of your Lagna.`),
+            r.includes(h) && (hi ? `${P} अपने ही भाव में बैठे हैं।` : `${P} sits in a house that it rules.`),
+            ...others.map((q, i) => (hi
+              ? (i === 0 ? `यह स्थिति ${HOUSE[q].of.hi} को ${HOUSE[h].of.hi} से जोड़ती है।` : `यह ${HOUSE[q].of.hi} को भी ${HOUSE[h].of.hi} से जोड़ती है।`)
+              : (i === 0 ? `This placement ties ${HOUSE[q].of.en} to ${HOUSE[h].of.en}.` : `It also ties ${HOUSE[q].of.en} to ${HOUSE[h].of.en}.`))),
+          ].filter(Boolean).join(' '),
+          dg && SIGN_STANDING[dg][l](P, S),
+          !node && x.retrograde && (hi ? `${P} वक्री हैं।` : `${P} is retrograde.`),
+          st && [
+            hi ? `${P} ${S} के ${deg} अंश पर हैं। यह ${STAGE[st.state].hi} अवस्था है, पाँच अवस्थाओं में ${STAGE[st.state].nth.hi}।`
+              : `${P} is at ${deg} degrees of ${S}. This is the ${STAGE[st.state].en} stage, the ${STAGE[st.state].nth.en} of the five stages.`,
+            GRADE[st.grade] && (hi ? `शास्त्रीय नियम के अनुसार इस अवस्था का ग्रह ${GRADE[st.grade].hi}। बल के और भी माप हैं।`
+              : `By the classical rule, a planet in this stage gives ${GRADE[st.grade].en}. Strength has other measures too.`),
+          ].filter(Boolean).join(' '),
+          mates.length > 0 && (hi ? `${P} इस भाव में ${list(mates.map((m) => name(l, m)), l)} के साथ बैठे हैं।` : `${P} sits with ${list(mates.map((m) => name(l, m)), l)} in this house.`),
+          yogaLine,
+        ].filter(Boolean),
+      }
+    }, {
+      main: h,
+      houses: [...new Set([h, ...r])],
+      grahas: [k, ...mates],
+      lines: others.map((q) => ({ from: q, to: h, kind: 'lord' })),
+    }, [st && st.cite, yoga && yoga.on && yoga.cite].filter(Boolean).join(' · ') || null)
+  }
 
   // ── 2. the twelve houses, one topic each ────────────────────────────────────
   for (const b of bhavas) {

@@ -73,6 +73,29 @@ function checks(label, chart, namer) {
       const E = makeNamer('english'), C = namer
       return want.length ? want.every((k) => line.includes(C.grahaKey(k))) : line === 'No planet looks at this house fully.'
     }))
+  // the planet topics: fixed sentence patterns, every slot from the chart (the owner's brief, 2026-11-16)
+  const ps = steps.filter((s) => s.key.startsWith('graha_'))
+  const lagnaLord = SIGN_LORD[chart.lagna_rasi]
+  ok(`${label}: one topic per planet, the Lagna's lord first, between the basics and the houses`,
+    ps.length === chart.grahas.length && ps[0].key === `graha_${lagnaLord}` && keys.indexOf(ps[0].key) === 1 && keys.indexOf(ps[ps.length - 1].key) < keys.indexOf('house1'), ps.map((s) => s.key).join(' '))
+  const sent = ps.flatMap((s) => s.lines.en.flatMap((ln) => ln.split(/(?<=\.)\s+/)))
+  const long = sent.find((x) => x.split(/\s+/).length > 25)
+  ok(`${label}: a planet sentence has at most 25 words`, !long, long)
+  const joined = sent.find((x) => /[;—–]|\band\b.*\bbut\b|, which\b/.test(x))
+  ok(`${label}: a planet sentence carries one idea — no semicolon, no dash, no trailing clause`, !joined, joined)
+  const trait = sent.find((x) => /\b(usually|shows|tends?|personality|mind|will)\b/i.test(x))
+  ok(`${label}: no planet sentence states a trait or a prediction`, !trait, trait)
+  ok(`${label}: each planet topic states the chart's own sign, house and degree`,
+    ps.every((s) => { const x = g(s.key.slice(6)); return s.focus.main === x.bhava && s.lines.en[0].includes(`in your ${EN_ORD(x.bhava)} house`) && s.title.en.includes(`${Math.floor(x.degree)}°`) && s.lines.en[0].includes(namer.rasi(x.rasi)) }))
+  const sig = (k) => ((chart.analysis.grahas && chart.analysis.grahas[k]) || []).find((x) => x.name === 'baladi')
+  const STAGES = { bala: 'Bala', kumara: 'Kumara', yuva: 'Yuva', vriddha: 'Vriddha', mrita: 'Mrita' }
+  ok(`${label}: the stage named is the engine's, and there is none where the chart carries none`,
+    ps.every((s) => { const v = sig(s.key.slice(6)), ln = s.lines.en.find((x) => /stage/.test(x)); return v ? !!ln && ln.includes(`the ${STAGES[v.value]} stage`) : !ln }))
+  ok(`${label}: a node gets no sign-strength line and no yoga line`,
+    ps.filter((s) => /rahu|ketu/.test(s.key)).every((s) => !s.lines.en.some((x) => /sign (of|for)|exalted in|debilitated in|Yoga/.test(x))))
+  const det = (chart.analysis.yogas && chart.analysis.yogas.detected) || []
+  ok(`${label}: a planet is said to form a yoga only when the engine detected it`,
+    ps.every((s) => s.lines.en.filter((x) => / forms [A-Z]\w+ Yoga/.test(x)).every((x) => det.some((y) => x.includes(String(y.name).split(' ')[0])))))
   ok(`${label}: the timing topic is there exactly when the chart has a daśā`, keys.includes('now') === !!(chart.dasha && chart.dasha.variants))
   ok(`${label}: a topic stays at least eight seconds on screen`, steps.every((s) => readSeconds(s.say.en) >= 8))
   ok(`${label}: the spoken script is one paragraph a topic`, spokenScript(steps, 'en').split('\n\n').length === steps.length && spokenScript(steps, 'hi').split('\n\n').length === steps.length)

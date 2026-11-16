@@ -130,6 +130,14 @@ promises". `ChartWalkthrough.jsx` plays it on its own animated North chart (the
 house outlined solid, the lord's house dashed — never tinted; a line to the lord,
 the aspects), EN/HI, a topic row, an opt-in labelled device voice, "Copy the
 script" (one paragraph a topic, for a narrator or a HeyGen-style presenter).
+- Planet topics (`graha_<key>`, the Lagna's lord first, between the basics and the houses): the
+  owner's brief of 2026-11-16, after ASD-STE100 — fixed sentence patterns, one idea a sentence,
+  at most 25 words, no semicolon or dash, a line left out when the chart has no value for it.
+  Place and house · what it rules and what that ties together · sign standing · retrograde ·
+  degree, Bālādi stage and the text's grade (ch.45 vv.3-4, from `analysis.grahas`) · companions
+  · the great-person yoga (said only when the engine detected it; a near miss names the missing
+  condition). ⚠ There is NO "this placement usually shows <trait>" slot: no registered text
+  supplies one. The nodes get no sign-standing and no yoga line. The test pins all of this.
 - House labels (`HOUSE`) are BPHS ch.11's significations, shortened; longevity
   (8th) and one's own death (12th) are left out of the plain labels on purpose.
 - ⚠ The BPHS ch.24 lord-in-house rule is NEVER in the plain lines: it is behind a

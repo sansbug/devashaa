@@ -551,10 +551,10 @@ def detect_yogas(positions: dict, lagna: int, lagna_d9: int | None = None,
         "strength_resolved": bool(shadbala),
         "note": (
             "A yoga is listed only when its geometric condition is met. Strength-gated "
-            "yogas are resolved against the Ṣaḍbala engine — 'fructifies' when the gating "
-            "graha is strong, 'does not fructify' when the geometry is present but that "
-            "strength is lacking. Effects are the cited śloka, not a fated prediction; "
-            "no per-yoga score."
+            "yogas are resolved against the Ṣaḍbala engine. A yoga 'fructifies' when the "
+            "gating graha is strong. It 'does not fructify' when the geometry is present "
+            "but that strength is lacking. Effects are the cited śloka, not a fated "
+            "prediction. There is no per-yoga score."
         ) if shadbala else (
             "A yoga is listed only when its geometric condition is met. Strength-gated "
             "yogas show 'strength unverified' — the condition holds, but BPHS gates the "

@@ -106,7 +106,7 @@ function DayDetail({ day, t, lang }) {
           <Row label={t('panchang.brahma', 'Brahma-muhūrta')} value={win_(win.brahma_muhurta)} />
         </div>
       </div>
-      <p className="pc-note">{t('panchang.discl', 'Auspiciousness of the day for this chart — a muhūrta guide from classical measures, not a fated verdict. Rāhu-kāla / Yama-gaṇḍa / Gulika are inauspicious; Abhijit / Brahma-muhūrta are auspicious.')}</p>
+      <p className="pc-note">{t('panchang.discl', 'Auspiciousness of the day for this chart. It is a muhūrta guide from classical measures, not a fated verdict. Rāhu-kāla / Yama-gaṇḍa / Gulika are inauspicious. Abhijit / Brahma-muhūrta are auspicious.')}</p>
     </div>
   )
 }
@@ -198,7 +198,7 @@ export default function PanchangHeatmap({ date, time, place }) {
 
   return (
     <section className="table-panel panchang-panel" id="rg-panchang">
-      <h3>{t('panchang.title', 'Pañcāṅga — auspicious days')}</h3>
+      <h3>{t('panchang.title', 'Pañcāṅga: auspicious days')}</h3>
       <div className="pc-head">
         <button className="pc-nav" onClick={() => shift(-1)} aria-label="previous month">‹</button>
         <strong>{t(`month.${ym.m}`, MONTHS[ym.m - 1])} {ym.y}</strong>
@@ -210,7 +210,7 @@ export default function PanchangHeatmap({ date, time, place }) {
         </span>
       </div>
       {data?.birth && (
-        <p className="rc-note">{t('panchang.birthline', 'Scored for your chart — birth Moon in')} {data.birth.moon_nakshatra}.</p>
+        <p className="rc-note">{t('panchang.birthline', 'Scored for your chart, birth Moon in')} {data.birth.moon_nakshatra}.</p>
       )}
       {busy && <p className="rc-note">{t('panchang.loading', 'Computing the month…')}</p>}
       {err && <p className="rc-note pc-err">{err}</p>}

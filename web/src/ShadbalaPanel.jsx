@@ -122,31 +122,31 @@ export default function ShadbalaPanel({ data, namer }) {
         <summary>{t('shadbala.explain.summary', 'What the six strengths mean')}</summary>
         <p className="sb-explain-lead">
           {t('shadbala.explain.lead',
-            'Ṣaḍbala ("six strengths") gauges how much capacity each graha has to deliver its results. Parāśara’s six components (BPHS ch.27), computed here by B. V. Raman’s method, are summed in virūpa (60 virūpa = 1 rūpa) and weighed against a minimum requirement to give each graha a strong / weak verdict.')}
+            'Ṣaḍbala ("six strengths") gauges how much capacity each graha has to deliver its results. Parāśara’s six components (BPHS ch.27) are computed here by B. V. Raman’s method. They are summed in virūpa (60 virūpa = 1 rūpa). The sum is weighed against a minimum requirement to give each graha a strong / weak verdict.')}
         </p>
         <dl className="sb-explain-list">
           <dt>Sthāna <span>({t('shadbala.gloss.positional', 'positional')})</span></dt>
           <dd>{t('shadbala.explain.sthana',
-            'Strength from placement — exaltation and own-sign dignity, standing across the seven divisional charts (saptavargaja), odd/even sign, a kendra, and the decanate (drekkāṇa).')}</dd>
+            'Strength from placement. It counts exaltation and own-sign dignity, and standing across the seven divisional charts (saptavargaja). It also counts odd/even sign, a kendra, and the decanate (drekkāṇa).')}</dd>
           <dt>Dik <span>({t('shadbala.gloss.directional', 'directional')})</span></dt>
           <dd>{t('shadbala.explain.dik',
-            'Strength from direction — Jupiter and Mercury are strong in the east (Ascendant), the Sun and Mars in the south (10th), Saturn in the west (7th), the Moon and Venus in the north (4th).')}</dd>
+            'Strength from direction. Jupiter and Mercury are strong in the east (Ascendant), the Sun and Mars in the south (10th). Saturn is strong in the west (7th), the Moon and Venus in the north (4th).')}</dd>
           <dt>Kāla <span>({t('shadbala.gloss.temporal', 'temporal')})</span></dt>
           <dd>{t('shadbala.explain.kala',
-            'Strength from the time of birth — day vs night, the waxing/waning Moon (pakṣa), the day- and night-thirds, the lords of the year/month/day/hour, the Sun’s northward/southward course (ayana), and planetary war (yuddha).')}</dd>
+            'Strength from the time of birth. It counts day vs night, the waxing/waning Moon (pakṣa) and the day- and night-thirds. It also counts the lords of the year/month/day/hour, the Sun’s northward/southward course (ayana), and planetary war (yuddha).')}</dd>
           <dt>Cheṣṭā <span>({t('shadbala.gloss.motional', 'motional')})</span></dt>
           <dd>{t('shadbala.explain.cheshta',
-            'Strength from motion — chiefly retrogression (vakra); the Sun and Moon draw theirs from ayana and pakṣa instead.')}</dd>
+            'Strength from motion, chiefly retrogression (vakra). The Sun and Moon draw theirs from ayana and pakṣa instead.')}</dd>
           <dt>Naisargika <span>({t('shadbala.gloss.natural', 'natural')})</span></dt>
           <dd>{t('shadbala.explain.naisargika',
-            'A fixed, intrinsic ranking — Sun (strongest) › Moon › Venus › Jupiter › Mercury › Mars › Saturn (weakest).')}</dd>
+            'A fixed, intrinsic ranking: Sun (strongest) › Moon › Venus › Jupiter › Mercury › Mars › Saturn (weakest).')}</dd>
           <dt>Dṛk <span>({t('shadbala.gloss.aspect', 'aspectual')})</span></dt>
           <dd>{t('shadbala.explain.drik',
-            'Strength from aspects received — benefic aspects add, malefic aspects subtract. It is the only component that can be negative.')}</dd>
+            'Strength from aspects received. Benefic aspects add, malefic aspects subtract. It is the only component that can be negative.')}</dd>
         </dl>
         <p className="sb-explain-foot">
           {t('shadbala.explain.nodes',
-            'The result is each graha’s potency — its capacity to deliver. Rāhu and Ketu are assigned no Ṣaḍbala.')}
+            'The result is each graha’s potency, its capacity to deliver. Rāhu and Ketu are assigned no Ṣaḍbala.')}
         </p>
       </details>
 
@@ -239,11 +239,11 @@ export default function ShadbalaPanel({ data, namer }) {
         <div className="sb-conv">
           <h5>{t('shadbala.conv.title', 'Conventions this engine uses — where other software can legitimately differ')}</h5>
           <ul>
-            <li><b>{t('shadbala.conv.hora.k', 'Horā bala')}</b> — {t('shadbala.conv.hora.v', 'the hour-lord is counted in equal 24ths of the day from sunrise (Raman, Art. 68–70). Software that divides day and night into twelve unequal parts each can hand the 60 virūpa to a different graha at the same birth.')}</li>
-            <li><b>{t('shadbala.conv.drik.k', 'Dṛk bala')}</b> — {t('shadbala.conv.drik.v', 'signed per Art. 120: benefic aspects add, malefic aspects subtract. Other conventions net the aspects differently and can return the opposite sign.')}</li>
-            <li><b>{t('shadbala.conv.cheshta.k', 'Cheṣṭā bala')}</b> — {method?.cheshta_note || t('shadbala.conv.cheshta.v', 'modern secular mean longitudes, not the classical tables.')}</li>
-            <li><b>{t('shadbala.conv.ayana.k', 'Ayana bala')}</b> — {method?.ayana_note || t('shadbala.conv.ayana.v', 'declination from tropical longitude with β = 0 and 24° obliquity (Raman).')}</li>
-            <li><b>{t('shadbala.conv.ayanamsa.k', 'Ayanāṁśa')}</b> — {t('shadbala.conv.ayanamsa.v', 'the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller; the planets agree either way.')}</li>
+            <li><b>{t('shadbala.conv.hora.k', 'Horā bala')}</b>: {t('shadbala.conv.hora.v', 'the hour-lord is counted in equal 24ths of the day from sunrise (Raman, Art. 68–70). Software that divides day and night into twelve unequal parts each can hand the 60 virūpa to a different graha at the same birth.')}</li>
+            <li><b>{t('shadbala.conv.drik.k', 'Dṛk bala')}</b>: {t('shadbala.conv.drik.v', 'signed per Art. 120: benefic aspects add, malefic aspects subtract. Other conventions net the aspects differently and can return the opposite sign.')}</li>
+            <li><b>{t('shadbala.conv.cheshta.k', 'Cheṣṭā bala')}</b>: {method?.cheshta_note || t('shadbala.conv.cheshta.v', 'modern secular mean longitudes, not the classical tables.')}</li>
+            <li><b>{t('shadbala.conv.ayana.k', 'Ayana bala')}</b>: {method?.ayana_note || t('shadbala.conv.ayana.v', 'declination from tropical longitude with β = 0 and 24° obliquity (Raman).')}</li>
+            <li><b>{t('shadbala.conv.ayanamsa.k', 'Ayanāṁśa')}</b>: {t('shadbala.conv.ayanamsa.v', 'the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller; the planets agree either way.')}</li>
           </ul>
           <p className="sb-conv-note">{t('shadbala.conv.note', 'Every formula is pinned to Raman’s worked Standard Horoscope (api/test_shadbala.py) and the assembled chart to JPL Horizons and an independent implementation (api/test_reference_chart.py).')}</p>
         </div>

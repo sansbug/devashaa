@@ -48,15 +48,6 @@ export const HOUSE = {
   12: { title: { en: 'Expenses', hi: 'व्यय' }, of: { en: 'expenses', hi: 'व्यय' }, chip: { en: 'expenses', hi: 'व्यय, खर्च' } },
 }
 
-const DIGNITY = {
-  exalted: { en: 'exalted — at its strongest', hi: 'उच्च का — अपनी सबसे बलवान स्थिति में' },
-  moolatrikona: { en: 'in its mūlatrikoṇa sign — very strong', hi: 'मूलत्रिकोण में — बहुत बलवान' },
-  own: { en: 'in its own sign — strong', hi: 'स्वराशि में — बलवान' },
-  friend: { en: 'in a friend’s sign — comfortable', hi: 'मित्र की राशि में — सहज' },
-  neutral: { en: 'in a neutral sign', hi: 'सम राशि में' },
-  enemy: { en: 'in an enemy’s sign — uncomfortable', hi: 'शत्रु की राशि में — असहज' },
-  debilitated: { en: 'debilitated — at its weakest', hi: 'नीच का — अपनी सबसे दुर्बल स्थिति में' },
-}
 /** A nakṣatra's muhūrta class (chart payload `quality`, api/nakshatra_attrs.py), in a word. */
 const NAK_CLASS = {
   Soft: { en: 'soft', hi: 'मृदु' }, Light: { en: 'light, swift', hi: 'क्षिप्र' }, Fixed: { en: 'fixed', hi: 'ध्रुव' },
@@ -196,7 +187,7 @@ export function buildWalkthrough(chart, namer = makeNamer('common')) {
   push('basics', (l) => ({
     title: l === 'hi' ? 'एक मिनट में आपकी कुंडली' : 'Your chart in one minute',
     chips: [
-      { label: l === 'hi' ? 'लग्न' : 'Lagna', text: l === 'hi' ? 'आप — पहला भाव' : 'you — the 1st house' },
+      { label: l === 'hi' ? 'लग्न' : 'Lagna', text: l === 'hi' ? 'आप, पहला भाव' : 'you, the 1st house' },
       { label: name(l, 'moon'), text: l === 'hi' ? 'मन' : 'the mind' },
       { label: name(l, 'sun'), text: l === 'hi' ? 'आत्मा' : 'the soul' },
     ],

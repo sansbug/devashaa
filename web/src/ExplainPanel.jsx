@@ -154,8 +154,8 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
   // cited Phaladīpikā ch.26 gochara judgment + per-house phala (all nine grahas)
   const GochLine = ({ gc }) => {
     if (!gc) return null
-    const txt = gc.status === 'favourable' ? t('explain.gochFav', 'favourable from the Moon — unobstructed')
-      : gc.status === 'obstructed' ? `${t('explain.gochObstructed', 'vedha — obstructed by')} ${(gc.blockers || []).map(nm).join(', ')}`
+    const txt = gc.status === 'favourable' ? t('explain.gochFav', 'favourable from the Moon, unobstructed')
+      : gc.status === 'obstructed' ? `${t('explain.gochObstructed', 'vedha: obstructed by')} ${(gc.blockers || []).map(nm).join(', ')}`
       : gc.status === 'not-favourable' ? t('explain.gochNotFav', 'not among its favourable houses from the Moon') : null
     const p = gc.phala
     return (<>
@@ -197,7 +197,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
     )
   }
 
-  const foot = <p className="xp-foot">{t('explain.foot', 'Classical readings are cited, dated renderings on their own tier — never blended with BPHS. The chart verdict opens a weighted ledger; the life arc is a broad shape, not a record of events.')}</p>
+  const foot = <p className="xp-foot">{t('explain.foot', 'Classical readings are cited, dated renderings on their own tier, never blended with BPHS. The chart verdict opens a weighted ledger. The life arc is a broad shape, not a record of events.')}</p>
 
   // ── per-intent results ──
   const renderResult = () => {
@@ -280,7 +280,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
           <div className="xp-thchips">
             {data.themes.best.map((a) => (<span key={a.key} className="xp-thchip up">▲ {t('matrix.theme.' + a.key, a.name)} <b>{sv(a.v)}</b></span>))}
             {data.themes.strain.map((a) => (<span key={a.key} className="xp-thchip down">▼ {t('matrix.theme.' + a.key, a.name)} <b>{sv(a.v)}</b></span>))}
-            {!data.themes.best.length && !data.themes.strain.length && <span className="xp-aside">{t('explain.quietWindow', 'No life-area stands out — a quiet window.')}</span>}
+            {!data.themes.best.length && !data.themes.strain.length && <span className="xp-aside">{t('explain.quietWindow', 'No life-area stands out. This is a quiet window.')}</span>}
           </div></div>
         {(data.events.length > 0 || data.changes.length > 0) && (
           <div className="xp-block"><h4>{t('explain.inWindow', 'Marked in this window')}</h4>
@@ -308,7 +308,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
       return (<div className="xp-result">
         <div className="xp-head"><span className="xp-q">{t('matrix.theme.' + data.theme, data.themeName)}</span>
           <span className="xp-fam">{past ? t('explain.lookingBack', 'looking back') : t('explain.ahead', 'ahead')}</span></div>
-        {data.ageFloor > 0 && (<p className="xp-aside">{t('explain.ageFloorNote', 'Considered from age')} {data.ageFloor} {t('explain.ageFloorTail', 'on — earlier ages aren’t sensible for this question.')}</p>)}
+        {data.ageFloor > 0 && (<p className="xp-aside">{t('explain.ageFloorNote', 'Considered from age')} {data.ageFloor} {t('explain.ageFloorTail', 'on. Earlier ages aren’t sensible for this question.')}</p>)}
         {data.focus && (<div className="xp-block"><h4>{monLabel(data.focus.from)}{data.focus.to !== data.focus.from ? ` — ${monLabel(data.focus.to)}` : ''}</h4>
           <p className="xp-aside"><b className={'xp-tone-' + (data.focus.tone === 'supportive' ? 'supportive' : data.focus.tone === 'challenging' ? 'straining' : 'neutral')}>{t('explain.focus.' + data.focus.tone, data.focus.tone)}</b> · {sv(data.focus.v)} ({t('explain.agreement', 'agreement')} {Math.round((data.focus.cf || 0) * 100)}%)
             {data.focus.delta != null && <> · {sv(data.focus.delta)} {t('explain.vsLifeMean', 'vs its life average')}</>}
@@ -318,7 +318,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
             {data.windows.map((x, i) => (<li key={i}><span className="xp-ev up">▲</span> {winLabel(x)}{x.peak !== x.from || x.peak !== x.to ? ` · ${t('explain.peak', 'peak')} ${past ? x.peak : monLabel(x.peak)}` : ''}<span className="xp-ev-d">{x.age != null ? ` · ${t('explain.ageWord', 'age')} ${x.age}` : ''} · {nm(x.maha)}{x.antar ? `–${nm(x.antar)}` : ''} {t('matrix.dashaword', 'daśā')} · +{(x.delta ?? x.v).toFixed ? (x.delta ?? x.v).toFixed(2) : x.delta} {t('explain.aboveMean', 'above its life average')}</span>
               {x.bhps && (<div className="xp-wq"><span className="xp-wq-tag">{x.bhps.general ? t('explain.bhpsPeriodTag', 'BPHS · this period') : 'BPHS'}</span> “{x.bhps.text}” <span className="xp-wq-cite">— {x.bhps.cite}</span></div>)}
             </li>))}
-          </ul>) : (<p className="xp-aside">{past ? t('explain.noPastWin', 'No years stood clearly above this axis’s own life average.') : t('explain.noFutWin', 'No standout windows in the 3-year horizon — the marked signals below carry the answer.')}</p>)}</div>
+          </ul>) : (<p className="xp-aside">{past ? t('explain.noPastWin', 'No years stood clearly above this axis’s own life average.') : t('explain.noFutWin', 'No standout windows in the 3-year horizon. The marked signals below carry the answer.')}</p>)}</div>
         {!past && data.changes.length > 0 && (<div className="xp-block"><h4>{t('explain.markedSignals', 'Marked signals')}</h4>
           <ul className="xp-events">{data.changes.map((e, i) => (
             <li key={i}><span className={'xp-ev ' + (e.direction === 'down' ? 'down' : 'up')}>{e.direction === 'down' ? '▼' : e.direction === 'shift' ? '↻' : '▲'}</span> {e.label} · {monLabel((e.date || '').slice(0, 7))}<span className="xp-ev-d"> · {t('matrix.trig.' + e.triggerType, e.triggerType)} · {Math.round((e.cf || 0) * 100)}%</span>
@@ -327,7 +327,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
         {data.indications && data.indications.length > 0 && (<div className="xp-block"><h4>{t('explain.indications', 'Standing yoga indications')} <span className="xp-tier">śloka</span></h4>
           {data.indications.map((ind, i) => (<div key={i} className="xp-wq xp-wq-yoga"><span className="xp-wq-tag">{ind.yoga}</span> “{ind.effect}” <span className="xp-wq-cite">— {ind.citation}</span>
             {ind.windows && ind.windows.length > 0 && (<span className="xp-ev-d"> · {t('explain.likelyIn', 'most likely to fructify in')} {ind.windows.map((w) => `${nm(w.lord)} ${t('matrix.dashaword', 'daśā')} ${w.from}–${w.to}`).join(', ')}</span>)}</div>))}</div>)}
-        <p className="xp-aside">{past ? t('explain.pastNote', 'The chart cannot know what happened — these are the windows where this axis was most activated, read the same way the future is projected.') : t('explain.futNote', 'Percentages are the clocks’ agreement (conviction), not a probability of a real event — an indication, never a promise.')}</p>
+        <p className="xp-aside">{past ? t('explain.pastNote', 'The chart cannot know what happened. These are the windows where this axis was most activated, read the same way the future is projected.') : t('explain.futNote', 'Percentages are the clocks’ agreement (conviction), not a probability of a real event. They are an indication, never a promise.')}</p>
         {foot}
       </div>)
     }
@@ -362,7 +362,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
 
       {err && <p className="rc-err">{err}</p>}
       {data && data.parsed === null && (
-        <div className="xp-none"><p>{t('explain.noparse', 'I couldn’t read that. Try a placement, a yoga, a life-area, or a house — for example:')}</p>
+        <div className="xp-none"><p>{t('explain.noparse', 'I couldn’t read that. Try a placement, a yoga, a life-area, or a house. For example:')}</p>
           <div className="xp-eg">{(data.suggestions || []).map((s) => (<button type="button" key={s} className="xp-chip" onClick={() => ask(s)}>{s}</button>))}</div></div>
       )}
       {renderResult()}

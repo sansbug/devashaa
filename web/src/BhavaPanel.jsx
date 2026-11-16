@@ -64,7 +64,7 @@ function BhavaCard({ b, namer, combo }) {
 
       {b.combination_applies && (
         <p className="bhava-combo">
-          {t('bhava.combo.pre')} {b.lord_also_rules.map((n) => t(ord(n))).join(' &amp; ')} {t('bhava.combo.post')}
+          {t('bhava.combo.pre')} {b.lord_also_rules.map((n) => t(ord(n))).join(' &amp; ')}{/^[.।]/.test(t('bhava.combo.post')) ? '' : ' '}{t('bhava.combo.post')}
         </p>
       )}
 

@@ -250,22 +250,22 @@ def navamsa_analysis(graha_positions: dict, lagna_longitude: float,
         "note": NOTE,
         "vargottama": {
             "citation": "Patel Ch.III (Vargottama Navāṁśa)",
-            "gloss": "A planet — or the lagna — occupying the same sign in the D1 "
-                     "and the D9. Patel reads it as strong, its results amplified; "
-                     "uccha-/nīca-vargottama fall in the planet's exaltation / "
+            "gloss": "A planet, or the lagna, occupying the same sign in the D1 "
+                     "and the D9. Patel reads it as strong, its results amplified. "
+                     "Uccha-/nīca-vargottama fall in the planet's exaltation / "
                      "debilitation sign.",
             "items": vargottama,
         },
         "pushkara": {
             "citation": "Patel Ch.IV (Pushkara Navāṁśa)",
             "gloss": "One of a sign's two auspicious navāṁśas (2 of 9). Patel reads "
-                     "a graha here as supported — tending to higher status.",
+                     "a graha here as supported, tending to higher status.",
             "items": pushkara,
         },
         "khara": {
             "citation": "Patel Ch.V (The 64th Navāṁśa)",
-            "gloss": "The 64th navāṁśa (Khara) — always in the 8th rāśi from the "
-                     "point. A classical sensitive point: Patel keys malefic "
+            "gloss": "The 64th navāṁśa (Khara) is always in the 8th rāśi from the "
+                     "point. It is a classical sensitive point. Patel keys malefic "
                      "transits and its dusthāna-placed lord to hardship for the "
                      "related significations. Reported as a point, not a verdict.",
             "items": khara,
@@ -274,8 +274,8 @@ def navamsa_analysis(graha_positions: dict, lagna_longitude: float,
             "citation": "Patel Ch.VI (Rāśi-tulya Navāṁśa)",
             "gloss": "Each navāṁśa-sign named by the house it holds in the rāśi "
                      "chart. More points in the prosperous houses (Lagna / Sukha / "
-                     "Putra / Bhāgya / Karma / Lābha) → ease; more in the difficult "
-                     "(Ṣaṣṭha / Nidhana / Vyaya) → struggle (Dhruva-Nāḍī via Patel).",
+                     "Putra / Bhāgya / Karma / Lābha) → ease. More in the difficult "
+                     "houses (Ṣaṣṭha / Nidhana / Vyaya) → struggle (Dhruva-Nāḍī via Patel).",
             "items": bhava_items,
             "tally": tally,
         },

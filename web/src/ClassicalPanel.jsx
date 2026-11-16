@@ -30,7 +30,7 @@ function HistoricalBadge({ adaptation, date }) {
   const detail =
     `${t('classical.hist.detailLead', 'Historical material')} (${date}). ` +
     `${t('classical.hist.detailTouches', 'This reading touches:')} ${labels}. ` +
-    `${t('classical.hist.detailNote', 'Shown for completeness, not as a judgement — handled per our adaptation policy:')} ` +
+    `${t('classical.hist.detailNote', 'Shown for completeness, not as a judgement. It is handled per our adaptation policy:')} ` +
     `${adaptation.action}. ${adaptation.note || ''}`
   return (
     <Cite className="src cl-hist" detail={detail}>

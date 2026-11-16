@@ -519,7 +519,7 @@ export default function SkyWheelChart({
                   <path d={ringArc(nr, dist, hoverTransit.r)} className="sw-return-arc"
                         style={col ? { stroke: col } : undefined}>
                     <title>
-                      {`Transit ${namer.grahaKey(hoverTransit.t.key)} — ${Math.round(Math.abs(dist))}° from its natal degree (${namer.rasi(Math.floor(nr / 30))} ${Math.floor(nr % 30)}°)`}
+                      {`Transit ${namer.grahaKey(hoverTransit.t.key)}: ${Math.round(Math.abs(dist))}° from its natal degree (${namer.rasi(Math.floor(nr / 30))} ${Math.floor(nr % 30)}°)`}
                       {onIt ? t('sw.tip.on_it_now') : ''}
                       {'\n' + t('sw.tip.return_geometry')}
                     </title>

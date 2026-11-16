@@ -52,8 +52,8 @@ export default function YogaPanel({ data, namer }) {
       <h3>{t('yoga.title')}</h3>
       <p className="rc-note">
         {dt.length} of {data.catalogued} catalogued BPHS yogas are present. A yoga is
-        listed only when its geometric condition is met; the effect is the cited
-        śloka, not a fated prediction, and there is no per-yoga score.{' '}
+        listed only when its geometric condition is met. The effect is the cited
+        śloka, not a fated prediction. There is no per-yoga score.{' '}
         {data.strength_resolved
           ? t('yoga.note.resolved')
           : t('yoga.note.unresolved')}

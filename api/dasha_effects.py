@@ -80,7 +80,7 @@ FRAME_NOTE = (
 NODE_NOTE = (
     "Rāhu and Ketu own no rāśi and BPHS assigns them no exaltation, "
     "debilitation or natural relationships (ch.3 v.50). Only the two HOUSE "
-    "conditions of ch.47 vv.5-6 are evaluable for them; the four sign "
+    "conditions of ch.47 vv.5-6 are evaluable for them. The four sign "
     "conditions are not."
 )
 

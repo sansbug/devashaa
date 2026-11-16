@@ -277,7 +277,7 @@ def graha_signals(graha, chart_positions, lagna, functional_row=None):
         available=False,
         reason="Cheṣṭā bala requires each graha's Seeghrocha (śīghrocca). "
                "BPHS ch.27 vv.24-25 instructs its use but never tabulates a "
-               "single value — the word appears three times in 1,034 pages, "
+               "single value. The word appears three times in 1,034 pages, "
                "always undefined. There is also no worked Ṣaḍbala example in "
                "either volume to validate against.",
     ))
@@ -288,8 +288,8 @@ def graha_signals(graha, chart_positions, lagna, functional_row=None):
     sigs.append(_signal(
         "ishta_kashta", "BPHS Vol I ch.28 vv.2-6", scale="0-60",
         available=False,
-        reason=("Computable for Sūrya and Chandra — vv.3-4 give their Cheṣṭā "
-                "Kendra directly — but not yet implemented."
+        reason=("Computable for Sūrya and Chandra, since vv.3-4 give their Cheṣṭā "
+                "Kendra directly. It is not yet implemented."
                 if graha in ("sun", "moon") else
                 "Cheṣṭā Raśmi needs the graha's Seeghrocha, which BPHS never "
                 "tabulates. Only Sūrya and Chandra avoid it (vv.3-4)."),

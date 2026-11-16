@@ -64,32 +64,32 @@ export const CHROME = {
     "hi": "अंक"
   },
   "signalstack.foot": {
-    "en": "BPHS states these judgements separately and never says how to combine them. Each row keeps its own scale and its own citation; there is no single score here because the text authorises none.",
-    "hi": "BPHS इन निर्णयों को अलग-अलग बताता है और यह कभी नहीं कहता कि इन्हें आपस में कैसे जोड़ा जाए। प्रत्येक पंक्ति अपना पैमाना और अपना संदर्भ स्वयं रखती है; यहाँ कोई एकल स्कोर नहीं है, क्योंकि पाठ इसकी अनुमति नहीं देता।"
+    "en": "BPHS states these judgements separately and never says how to combine them. Each row keeps its own scale and its own citation. There is no single score here because the text authorises none.",
+    "hi": "BPHS इन निर्णयों को अलग-अलग बताता है और यह कभी नहीं कहता कि इन्हें आपस में कैसे जोड़ा जाए। प्रत्येक पंक्ति अपना पैमाना और अपना संदर्भ स्वयं रखती है। यहाँ कोई एकल स्कोर नहीं है, क्योंकि पाठ इसकी अनुमति नहीं देता।"
   },
   "ref.rasi.title": {
     "en": "The twelve rāśis",
     "hi": "बारह राशियाँ"
   },
   "ref.rasi.intro": {
-    "en": "Reference pages, not sun-signs — and with no date ranges, because BPHS has none. There is not one statement in either volume of the form “one born with the Sun in …”; ch.34, the closest thing to “what your sign means”, is keyed to the lagna throughout. Cast a chart above and it will tell you your lagna, your janma rāśi (Moon) and your Sūrya rāśi — all three, computed.",
-    "hi": "ये संदर्भ पृष्ठ हैं, सूर्य-राशियाँ नहीं — और इनमें कोई तिथि-सीमा नहीं है, क्योंकि BPHS में भी कोई नहीं है। दोनों खंडों में कहीं भी इस रूप का एक भी कथन नहीं है कि “सूर्य के … में जन्म लेने वाला”; अध्याय 34, जो “आपकी राशि का अर्थ क्या है” के सबसे निकट है, आद्यंत लग्न पर आधारित है। ऊपर एक कुंडली बनाइए और वह आपको आपका लग्न, आपकी जन्म राशि (चंद्र) और आपकी सूर्य राशि — तीनों, परिकलित — बता देगी।"
+    "en": "These are reference pages, not sun-signs. They carry no date ranges, because BPHS has none. There is not one statement in either volume of the form “one born with the Sun in …”. Ch.34, the closest thing to “what your sign means”, is keyed to the lagna throughout. Cast a chart above to see your lagna, your janma rāśi (Moon) and your Sūrya rāśi. All three are computed.",
+    "hi": "ये संदर्भ पृष्ठ हैं, सूर्य-राशियाँ नहीं। इनमें कोई तिथि-सीमा नहीं है, क्योंकि BPHS में भी कोई नहीं है। दोनों खंडों में कहीं भी इस रूप का एक भी कथन नहीं है कि “सूर्य के … में जन्म लेने वाला”। अध्याय 34, जो “आपकी राशि का अर्थ क्या है” के सबसे निकट है, आद्यंत लग्न पर आधारित है। ऊपर एक कुंडली बनाइए और अपना लग्न, अपनी जन्म राशि (चंद्र) और अपनी सूर्य राशि देखिए। तीनों परिकलित हैं।"
   },
   "ref.nak.title": {
     "en": "The twenty-seven nakṣatras",
     "hi": "सत्ताईस नक्षत्र"
   },
   "ref.nak.intro": {
-    "en": "The muhūrta-tradition attributes of each nakṣatra — gaṇa, yoni, śakti and the rest — that BPHS itself does not carry. Shown on a traditional tier beside the BPHS deity and Viṁśottarī lord, never blended into them, with every cell citing its source and how sure we are of it. Nāḍī is left an explicit gap: it is in neither source book.",
-    "hi": "प्रत्येक नक्षत्र की मुहूर्त-परंपरा संबंधी विशेषताएँ — गण, योनि, शक्ति आदि — जिन्हें BPHS स्वयं नहीं देता। इन्हें BPHS के देवता और विंशोत्तरी स्वामी के साथ एक पारंपरिक स्तर पर दिखाया गया है, कभी उनमें मिलाया नहीं गया, और प्रत्येक कोष्ठ अपने स्रोत तथा हमारी निश्चितता की मात्रा का उल्लेख करता है। नाड़ी को एक स्पष्ट रिक्ति के रूप में छोड़ा गया है: यह दोनों में से किसी भी स्रोत ग्रंथ में नहीं है।"
+    "en": "These are the muhūrta-tradition attributes of each nakṣatra: gaṇa, yoni, śakti and the rest. BPHS itself does not carry them. They are shown on a traditional tier beside the BPHS deity and Viṁśottarī lord, never blended into them. Every cell cites its source and how sure we are of it. Nāḍī is left an explicit gap: it is in neither source book.",
+    "hi": "ये प्रत्येक नक्षत्र की मुहूर्त-परंपरा संबंधी विशेषताएँ हैं: गण, योनि, शक्ति आदि। BPHS स्वयं इन्हें नहीं देता। इन्हें BPHS के देवता और विंशोत्तरी स्वामी के साथ एक पारंपरिक स्तर पर दिखाया गया है, कभी उनमें मिलाया नहीं गया। प्रत्येक कोष्ठ अपने स्रोत तथा हमारी निश्चितता की मात्रा का उल्लेख करता है। नाड़ी को एक स्पष्ट रिक्ति के रूप में छोड़ा गया है: यह दोनों में से किसी भी स्रोत ग्रंथ में नहीं है।"
   },
   "ref.rao.title": {
-    "en": "Modern method notes — K.N. Rao",
-    "hi": "आधुनिक पद्धति टिप्पणियाँ — K.N. Rao"
+    "en": "Modern method notes: K.N. Rao",
+    "hi": "आधुनिक पद्धति टिप्पणियाँ: K.N. Rao"
   },
   "ref.rao.intro": {
-    "en": "Not nakṣatra-based and not BPHS — one modern author's method pointers (how he assesses the Gajakesari yoga; notes on his Astrology Lessons), kept in their own bucket, attributed and never presented as a verdict on any chart.",
-    "hi": "नक्षत्र-आधारित नहीं और BPHS भी नहीं — एक आधुनिक लेखक के पद्धति-संकेत (वे गजकेसरी योग का आकलन कैसे करते हैं; उनकी Astrology Lessons पर टिप्पणियाँ), जिन्हें उनके अपने अलग खंड में रखा गया है, श्रेय सहित और किसी भी कुंडली पर किसी निर्णय के रूप में कभी प्रस्तुत नहीं किया गया।"
+    "en": "These notes are not nakṣatra-based and not BPHS. They are one modern author's method pointers: how he assesses the Gajakesari yoga, and notes on his Astrology Lessons. They are kept in their own bucket and attributed. They are never presented as a verdict on any chart.",
+    "hi": "ये टिप्पणियाँ नक्षत्र-आधारित नहीं हैं और BPHS भी नहीं हैं। ये एक आधुनिक लेखक के पद्धति-संकेत हैं: वे गजकेसरी योग का आकलन कैसे करते हैं, और उनकी Astrology Lessons पर टिप्पणियाँ। इन्हें उनके अपने अलग खंड में श्रेय सहित रखा गया है। इन्हें किसी भी कुंडली पर निर्णय के रूप में कभी प्रस्तुत नहीं किया गया।"
   },
   "ref.rao.show": {
     "en": "Show",
@@ -108,8 +108,8 @@ export const CHROME = {
     "hi": "लोड हो रहा है…"
   },
   "ref.rao.loadError": {
-    "en": "Could not load — the backend may be waking.",
-    "hi": "लोड नहीं हो सका — बैकएंड जाग रहा होगा।"
+    "en": "Could not load. The backend may be waking.",
+    "hi": "लोड नहीं हो सका। बैकएंड जाग रहा होगा।"
   },
   "dasha.title": {
     "en": "Daśā",
@@ -148,20 +148,20 @@ export const CHROME = {
     "hi": "लाइसेंस प्राप्त"
   },
   "shadbala.title": {
-    "en": "Ṣaḍbala — the six-fold strength",
-    "hi": "षड्बल — छह-गुना बल"
+    "en": "Ṣaḍbala: the six-fold strength",
+    "hi": "षड्बल: छह-गुना बल"
   },
   "shadbala.aria": {
-    "en": "Ṣaḍbala — six-fold strength",
-    "hi": "षड्बल — छह-गुना बल"
+    "en": "Ṣaḍbala: six-fold strength",
+    "hi": "षड्बल: छह-गुना बल"
   },
   "shadbala.bars.aria": {
     "en": "Each graha's six-fold strength, composed, against its minimum requirement",
     "hi": "प्रत्येक ग्रह का छह-गुना बल, संयोजित रूप में, उसकी न्यूनतम आवश्यकता के सापेक्ष"
   },
   "shadbala.note": {
-    "en": "Parāśara's six strengths — positional, directional, temporal, motional, natural and aspectual — after B. V. Raman. Every formula is validated to the virūpa (60 virūpa = 1 rūpa) against Raman's own worked chart. This is a cited numeric method, so — unlike the signal stack — a per-graha total and a strong/weak verdict are shown.",
-    "hi": "पराशर के छह बल — स्थानगत, दिशागत, कालगत, चेष्टागत, नैसर्गिक और दृक् — <strong>बी. वी. रमन</strong> के अनुसार। प्रत्येक सूत्र विरूप तक (60 विरूप = 1 रूप) रमन की स्वयं गणना की गई कुंडली के सापेक्ष सत्यापित है। यह एक उद्धृत संख्यात्मक पद्धति है, इसलिए — सिग्नल स्टैक के विपरीत — प्रत्येक ग्रह का कुल और बलवान/निर्बल निर्णय दिखाया गया है।"
+    "en": "Parāśara's six strengths, after B. V. Raman: positional, directional, temporal, motional, natural and aspectual. Every formula is validated to the virūpa (60 virūpa = 1 rūpa) against Raman's own worked chart. This is a cited numeric method. So, unlike the signal stack, it shows a per-graha total and a strong/weak verdict.",
+    "hi": "पराशर के छह बल, <strong>बी. वी. रमन</strong> के अनुसार: स्थानगत, दिशागत, कालगत, चेष्टागत, नैसर्गिक और दृक्। प्रत्येक सूत्र विरूप तक (60 विरूप = 1 रूप) रमन की स्वयं गणना की गई कुंडली के सापेक्ष सत्यापित है। यह एक उद्धृत संख्यात्मक पद्धति है। इसलिए, सिग्नल स्टैक के विपरीत, यहाँ प्रत्येक ग्रह का कुल और बलवान/निर्बल निर्णय दिखाया गया है।"
   },
   "shadbala.th.graha": {
     "en": "Graha",
@@ -240,12 +240,12 @@ export const CHROME = {
     "hi": "अयन क्रांति"
   },
   "shadbala.foot.tail": {
-    "en": "follow modern astronomy / Raman's β=0 table respectively — stated, not hidden.",
-    "hi": "क्रमशः आधुनिक खगोलशास्त्र / रमन की β=0 सारणी का अनुसरण करते हैं — कहा गया, छिपाया नहीं गया।"
+    "en": "follow modern astronomy / Raman's β=0 table respectively. This is stated, not hidden.",
+    "hi": "क्रमशः आधुनिक खगोलशास्त्र / रमन की β=0 सारणी का अनुसरण करते हैं। यह कहा गया है, छिपाया नहीं गया।"
   },
   "yoga.title": {
-    "en": "Yogas — the combinations your chart forms",
-    "hi": "योग — आपकी कुंडली में बनने वाले संयोग"
+    "en": "Yogas: the combinations your chart forms",
+    "hi": "योग: आपकी कुंडली में बनने वाले संयोग"
   },
   "yoga.family.lunar": {
     "en": "Lunar",
@@ -272,12 +272,12 @@ export const CHROME = {
     "hi": "{rūpa} रूप, न्यूनतम {min} की तुलना में → बलवान/निर्बल"
   },
   "yoga.note.body": {
-    "en": "{n} of {total} catalogued BPHS yogas are present. A yoga is listed only when its geometric condition is met; the effect is the cited śloka, not a fated prediction, and there is no per-yoga score.",
-    "hi": "{total} सूचीबद्ध BPHS योगों में से {n} इस कुंडली में उपस्थित हैं। कोई योग तभी सूचीबद्ध होता है जब उसकी ज्यामितीय शर्त पूरी हो; फल उद्धृत श्लोक है, कोई नियत भविष्यवाणी नहीं, और प्रति-योग कोई अंक नहीं।"
+    "en": "{n} of {total} catalogued BPHS yogas are present. A yoga is listed only when its geometric condition is met. The effect is the cited śloka, not a fated prediction, and there is no per-yoga score.",
+    "hi": "{total} सूचीबद्ध BPHS योगों में से {n} इस कुंडली में उपस्थित हैं। कोई योग तभी सूचीबद्ध होता है जब उसकी ज्यामितीय शर्त पूरी हो। फल उद्धृत श्लोक है, कोई नियत भविष्यवाणी नहीं, और प्रति-योग कोई अंक नहीं।"
   },
   "yoga.note.resolved": {
-    "en": "Strength-gated yogas are resolved against the Ṣaḍbala engine — whether the gating graha is strong enough for the result to fructify.",
-    "hi": "बल-आधारित योगों को षड्बल इंजन के सापेक्ष हल किया गया है — कि क्या नियंत्रक ग्रह इतना बलवान है कि फल फलित हो।"
+    "en": "Strength-gated yogas are resolved against the Ṣaḍbala engine. It tests whether the gating graha is strong enough for the result to fructify.",
+    "hi": "बल-आधारित योगों को षड्बल इंजन के सापेक्ष हल किया गया है। वह जाँचता है कि क्या नियंत्रक ग्रह इतना बलवान है कि फल फलित हो।"
   },
   "yoga.note.unresolved": {
     "en": "Strength-gated yogas carry an unverified flag (Ṣaḍbala was unavailable for this chart).",
@@ -296,12 +296,12 @@ export const CHROME = {
     "hi": "BPHS इस फल को एक ऐसे बल पर आधारित करता है जिसकी गणना यह इंजन नहीं करता"
   },
   "bhava.title": {
-    "en": "Bhāva-phala — the twelve houses",
-    "hi": "भाव-फल — बारह भाव"
+    "en": "Bhāva-phala: the twelve houses",
+    "hi": "भाव-फल: बारह भाव"
   },
   "bhava.note": {
-    "en": "A house-by-house reading assembled from the relationships already in the chart, each line a cited BPHS rule — the lord's placement (ch.24), the house significations (ch.11) and its kāraka (ch.32). No per-house verdict or score: Parāśara states these separately and never fuses them.",
-    "hi": "कुंडली में पहले से मौजूद संबंधों से संकलित भाव-दर-भाव विवेचन, प्रत्येक पंक्ति एक उद्धृत BPHS नियम — स्वामी की स्थिति (ch.24), भाव के कारकत्व (ch.11) और उसका कारक (ch.32)। प्रति-भाव कोई निर्णय या अंक नहीं: पराशर इन्हें अलग-अलग बताते हैं और कभी नहीं मिलाते।"
+    "en": "A house-by-house reading assembled from the relationships already in the chart. Each line is a cited BPHS rule: the lord's placement (ch.24), the house significations (ch.11) and its kāraka (ch.32). There is no per-house verdict or score. Parāśara states these separately and never fuses them.",
+    "hi": "कुंडली में पहले से मौजूद संबंधों से संकलित भाव-दर-भाव विवेचन। प्रत्येक पंक्ति एक उद्धृत BPHS नियम है: स्वामी की स्थिति (ch.24), भाव के कारकत्व (ch.11) और उसका कारक (ch.32)। प्रति-भाव कोई निर्णय या अंक नहीं है। पराशर इन्हें अलग-अलग बताते हैं और कभी नहीं मिलाते।"
   },
   "bhava.ord.1": {
     "en": "1st",
@@ -376,8 +376,8 @@ export const CHROME = {
     "hi": "इसका स्वामी"
   },
   "bhava.combo.post": {
-    "en": "— by ch.24 vv.145–148 both lordships apply (contrary results nullify).",
-    "hi": "भाव का भी स्वामी है — ch.24 vv.145–148 के अनुसार दोनों स्वामित्व लागू होते हैं (विपरीत फल परस्पर निरस्त)।"
+    "en": ". By ch.24 vv.145–148 both lordships apply (contrary results nullify).",
+    "hi": "भाव का भी स्वामी है। ch.24 vv.145–148 के अनुसार दोनों स्वामित्व लागू होते हैं (विपरीत फल परस्पर निरस्त)।"
   },
   "bhava.meta.karaka": {
     "en": "Kāraka",
@@ -392,8 +392,8 @@ export const CHROME = {
     "hi": "दृष्टि देने वाले"
   },
   "bhava.occNote": {
-    "en": "Occupancy carries no cited effect — BPHS Vol I has no graha-in-bhāva rule for the seven grahas. See each graha's signal stack for its state.",
-    "hi": "स्थिति (अधिवास) का कोई उद्धृत फल नहीं है — BPHS खंड I में सात ग्रहों के लिए किसी भाव में ग्रह-स्थिति का कोई नियम नहीं है। प्रत्येक ग्रह की अवस्था के लिए उसका सिग्नल स्टैक देखें।"
+    "en": "Occupancy carries no cited effect. BPHS Vol I has no graha-in-bhāva rule for the seven grahas. See each graha's signal stack for its state.",
+    "hi": "स्थिति (अधिवास) का कोई उद्धृत फल नहीं है। BPHS खंड I में सात ग्रहों के लिए किसी भाव में ग्रह-स्थिति का कोई नियम नहीं है। प्रत्येक ग्रह की अवस्था के लिए उसका सिग्नल स्टैक देखें।"
   },
   "bhava.santhanamNote": {
     "en": "Santhanam's note",
@@ -404,24 +404,24 @@ export const CHROME = {
     "hi": "गति एवं अस्त"
   },
   "motion.rcNote": {
-    "en": "Speed, direction and the separation from the Sun are facts from the ephemeris. The gati names (vakra / manda / …) and the combustion orbs are traditional — not BPHS, whose combustion is a proportional rule across 0–180° from the Sun, not a fixed orb.",
-    "hi": "गति, दिशा और सूर्य से दूरी पंचांग से प्राप्त तथ्य हैं। गति के नाम (वक्र / मंद / …) और अस्त की कक्षाएँ पारंपरिक हैं — BPHS नहीं, जिसमें अस्त सूर्य से 0–180° तक एक आनुपातिक नियम है, कोई निश्चित कक्षा नहीं।"
+    "en": "Speed, direction and the separation from the Sun are facts from the ephemeris. The gati names (vakra / manda / …) and the combustion orbs are traditional, not BPHS. In BPHS, combustion is a proportional rule across 0–180° from the Sun, not a fixed orb.",
+    "hi": "गति, दिशा और सूर्य से दूरी पंचांग से प्राप्त तथ्य हैं। गति के नाम (वक्र / मंद / …) और अस्त की कक्षाएँ पारंपरिक हैं, BPHS की नहीं। BPHS में अस्त सूर्य से 0–180° तक एक आनुपातिक नियम है, कोई निश्चित कक्षा नहीं।"
   },
   "motion.cheshta.cite": {
     "en": "Cheṣṭā bala · in Ṣaḍbala below",
     "hi": "चेष्टाबल · नीचे षड्बल में"
   },
   "motion.cheshta.why": {
-    "en": "BPHS itself gives no Seeghrocha, so the numeric motional strength is not derived here — it is computed in the Ṣaḍbala section below by Raman's method (with modern mean longitudes). What follows is the motion state.",
-    "hi": "BPHS स्वयं कोई शीघ्रोच्च नहीं देता, अतः संख्यात्मक गति-बल यहाँ निकाला नहीं गया — इसे नीचे षड्बल खंड में रमन की विधि से (आधुनिक माध्य देशांतरों सहित) परिकलित किया गया है। आगे केवल गति की अवस्था है।"
+    "en": "BPHS itself gives no Seeghrocha, so the numeric motional strength is not derived here. It is computed in the Ṣaḍbala section below by Raman's method (with modern mean longitudes). What follows is the motion state.",
+    "hi": "BPHS स्वयं कोई शीघ्रोच्च नहीं देता, अतः संख्यात्मक गति-बल यहाँ निकाला नहीं गया। इसे नीचे षड्बल खंड में रमन की विधि से (आधुनिक माध्य देशांतरों सहित) परिकलित किया गया है। आगे केवल गति की अवस्था है।"
   },
   "motion.sub.speed": {
-    "en": "Speed — relative to each graha's mean",
-    "hi": "गति — प्रत्येक ग्रह के औसत के सापेक्ष"
+    "en": "Speed: relative to each graha's mean",
+    "hi": "गति: प्रत्येक ग्रह के औसत के सापेक्ष"
   },
   "motion.sub.combustion": {
-    "en": "Combustion — distance from the Sun",
-    "hi": "अस्त — सूर्य से दूरी"
+    "en": "Combustion: distance from the Sun",
+    "hi": "अस्त: सूर्य से दूरी"
   },
   "motion.dir.retrograde": {
     "en": "retrograde ℞",
@@ -464,8 +464,8 @@ export const CHROME = {
     "hi": "प्रत्येक ग्रह की गति उसके अपने औसत के सापेक्ष, पाँच पारंपरिक गति-पट्टियों में"
   },
   "motion.spectrum.caption": {
-    "en": "Each graha's speed as a fraction of its own mean — a fact; left of the station line it is retrograde, right of “mean” it is swift. The five bands are the traditional gati (not BPHS); a dashed ring marks a combust graha.",
-    "hi": "प्रत्येक ग्रह की गति उसके अपने औसत के अंश के रूप में — एक तथ्य; स्थिर रेखा के बाईं ओर वह वक्री है, “औसत” के दाईं ओर शीघ्र। पाँच पट्टियाँ पारंपरिक गति हैं (BPHS नहीं); बिंदीदार वलय अस्त ग्रह को दर्शाता है।"
+    "en": "Each graha's speed as a fraction of its own mean. This is a fact. Left of the station line it is retrograde, right of “mean” it is swift. The five bands are the traditional gati (not BPHS). A dashed ring marks a combust graha.",
+    "hi": "प्रत्येक ग्रह की गति उसके अपने औसत के अंश के रूप में। यह एक तथ्य है। स्थिर रेखा के बाईं ओर वह वक्री है, “औसत” के दाईं ओर शीघ्र। पाँच पट्टियाँ पारंपरिक गति हैं (BPHS नहीं)। बिंदीदार वलय अस्त ग्रह को दर्शाता है।"
   },
   "motion.spectrum.tooltip": {
     "en": "combustion: {combust/free} · {n}° from the Sun",
@@ -476,16 +476,16 @@ export const CHROME = {
     "hi": "प्रत्येक ग्रह की सूर्य से दूरी उसकी अपनी अस्त-कक्षा के सापेक्ष"
   },
   "motion.strip.tooltip": {
-    "en": "{graha} — {n}° from the Sun · own orb {orb}° → {combust/free}",
-    "hi": "{graha} — सूर्य से {n}° · अपनी कक्षा {orb}° → {अस्त/अनस्त}"
+    "en": "{graha}: {n}° from the Sun · own orb {orb}° → {combust/free}",
+    "hi": "{graha}: सूर्य से {n}° · अपनी कक्षा {orb}° → {अस्त/अनस्त}"
   },
   "motion.strip.uncertainNote": {
-    "en": "(uncertain — the retrograde orb is OCR-damaged)",
-    "hi": "(अनिश्चित — वक्री कक्षा OCR से क्षतिग्रस्त है)"
+    "en": "(uncertain: the retrograde orb is OCR-damaged)",
+    "hi": "(अनिश्चित: वक्री कक्षा OCR से क्षतिग्रस्त है)"
   },
   "motion.strip.caption": {
-    "en": "Distance from the Sun (a fact). The faint bar is each graha's own combustion orb; a graha whose dot sits inside its bar is combust. Orbs are traditional (not BPHS); a retrograde Mercury/Venus orb is uncertain. The Sun (source) and the nodes are not shown.",
-    "hi": "सूर्य से दूरी (एक तथ्य)। धुंधली पट्टी प्रत्येक ग्रह की अपनी अस्त-कक्षा है; जिस ग्रह का बिंदु उसकी पट्टी के भीतर हो वह अस्त है। कक्षाएँ पारंपरिक हैं (BPHS नहीं); वक्री बुध/शुक्र की कक्षा अनिश्चित है। सूर्य (स्रोत) और छाया-ग्रह नहीं दर्शाए गए।"
+    "en": "Distance from the Sun (a fact). The faint bar is each graha's own combustion orb. A graha whose dot sits inside its bar is combust. Orbs are traditional (not BPHS). A retrograde Mercury/Venus orb is uncertain. The Sun (source) and the nodes are not shown.",
+    "hi": "सूर्य से दूरी (एक तथ्य)। धुंधली पट्टी प्रत्येक ग्रह की अपनी अस्त-कक्षा है। जिस ग्रह का बिंदु उसकी पट्टी के भीतर हो वह अस्त है। कक्षाएँ पारंपरिक हैं (BPHS नहीं)। वक्री बुध/शुक्र की कक्षा अनिश्चित है। सूर्य (स्रोत) और छाया-ग्रह नहीं दर्शाए गए।"
   },
   "motion.panel.aria": {
     "en": "Planetary motion and combustion",
@@ -548,12 +548,12 @@ export const CHROME = {
     "hi": "वर्गोत्तम"
   },
   "navamsa.kind.subha": {
-    "en": "śubha — benefic sign",
-    "hi": "शुभ — शुभ राशि"
+    "en": "śubha: benefic sign",
+    "hi": "शुभ: शुभ राशि"
   },
   "navamsa.kind.papa": {
-    "en": "pāpa — malefic sign",
-    "hi": "पाप — पाप राशि"
+    "en": "pāpa: malefic sign",
+    "hi": "पाप: पाप राशि"
   },
   "navamsa.lagna": {
     "en": "Lagna",
@@ -564,8 +564,8 @@ export const CHROME = {
     "hi": "संकेतक पहचान योग्य"
   },
   "navamsa.compute.yes.hint": {
-    "en": "The structural trigger — a D9 sign, a navāṁśa index, a dispositor — is cleanly detectable from the chart.",
-    "hi": "संरचनात्मक संकेतक — एक D9 राशि, एक नवांश सूचकांक, एक स्वामी — कुंडली से स्पष्ट रूप से पहचान योग्य है।"
+    "en": "The structural trigger is cleanly detectable from the chart. It is a D9 sign, a navāṁśa index or a dispositor.",
+    "hi": "संरचनात्मक संकेतक कुंडली से स्पष्ट रूप से पहचान योग्य है। वह एक D9 राशि, एक नवांश सूचकांक या एक स्वामी है।"
   },
   "navamsa.compute.partly.label": {
     "en": "partly detectable",
@@ -588,20 +588,20 @@ export const CHROME = {
     "hi": "भाग II तकनीकें"
   },
   "navamsa.part2.byline": {
-    "en": "Patel's interpretive index — named, not reproduced",
-    "hi": "पटेल की व्याख्यात्मक अनुक्रमणिका — नामित, पुनरुत्पादित नहीं"
+    "en": "Patel's interpretive index: named, not reproduced",
+    "hi": "पटेल की व्याख्यात्मक अनुक्रमणिका: नामित, पुनरुत्पादित नहीं"
   },
   "navamsa.part2.warn": {
-    "en": "An attributed pointer index of C. S. Patel's Part II (Ch.XVI–XX): each technique is named with its classical source and page — none of his result tables are reproduced. Modern tier, not BPHS, and not a verdict on any chart. The badge says only whether the app could detect the structural trigger.",
-    "hi": "C. S. Patel के भाग II (Ch.XVI–XX) की एक श्रेय-सहित संकेतक अनुक्रमणिका: प्रत्येक तकनीक उसके शास्त्रीय स्रोत और पृष्ठ सहित नामित है — उनकी कोई परिणाम-सारणी पुनरुत्पादित नहीं की गई। आधुनिक स्तर, BPHS नहीं, और किसी भी कुंडली पर कोई निर्णय नहीं। बैज केवल यह बताता है कि क्या ऐप संरचनात्मक संकेतक को पहचान सका।"
+    "en": "An attributed pointer index of C. S. Patel's Part II (Ch.XVI–XX). Each technique is named with its classical source and page. None of his result tables are reproduced. Modern tier, not BPHS, and not a verdict on any chart. The badge says only whether the app could detect the structural trigger.",
+    "hi": "C. S. Patel के भाग II (Ch.XVI–XX) की एक श्रेय-सहित संकेतक अनुक्रमणिका। प्रत्येक तकनीक उसके शास्त्रीय स्रोत और पृष्ठ सहित नामित है। उनकी कोई परिणाम-सारणी पुनरुत्पादित नहीं की गई। आधुनिक स्तर, BPHS नहीं, और किसी भी कुंडली पर कोई निर्णय नहीं। बैज केवल यह बताता है कि क्या ऐप संरचनात्मक संकेतक को पहचान सका।"
   },
   "navamsa.group.vargottama": {
     "en": "Vargottama",
     "hi": "वर्गोत्तम"
   },
   "navamsa.vargottama.empty": {
-    "en": "No vargottama here — nothing occupies the same sign in the D1 and the D9.",
-    "hi": "यहाँ कोई वर्गोत्तम नहीं — D1 और D9 में कोई भी एक ही राशि में नहीं है।"
+    "en": "No vargottama here. Nothing occupies the same sign in the D1 and the D9.",
+    "hi": "यहाँ कोई वर्गोत्तम नहीं। D1 और D9 में कोई भी एक ही राशि में नहीं है।"
   },
   "navamsa.group.pushkara": {
     "en": "Pushkara navāṁśa",
@@ -680,12 +680,12 @@ export const CHROME = {
     "hi": "विधि / व्याख्यात्मक"
   },
   "modernnotes.compute.no.hint": {
-    "en": "Method guidance or interpretive — not a structural flag the app computes.",
-    "hi": "विधि-मार्गदर्शन या व्याख्यात्मक — ऐप द्वारा परिकलित कोई संरचनात्मक चिह्न नहीं।"
+    "en": "Method guidance or interpretive. It is not a structural flag the app computes.",
+    "hi": "विधि-मार्गदर्शन या व्याख्यात्मक। यह ऐप द्वारा परिकलित कोई संरचनात्मक चिह्न नहीं है।"
   },
   "modernnotes.chip.tradTitle": {
-    "en": "already in the app's BPHS core — cross-check only",
-    "hi": "ऐप के BPHS कोर में पहले से — केवल क्रॉस-चेक"
+    "en": "already in the app's BPHS core: cross-check only",
+    "hi": "ऐप के BPHS कोर में पहले से: केवल क्रॉस-चेक"
   },
   "drishti.fraction.full": {
     "en": "full",
@@ -752,8 +752,8 @@ export const CHROME = {
     "hi": "{varga} में अनुपलब्ध"
   },
   "drishti.unavailable.reason": {
-    "en": "Ch.26 vv.2-5 and ch.8 vv.1-5 both count from the sign a graha actually stands in. A varga sign is derived — there is no aspect “from {varga} Kanyā” in Parāśara. Switch to D1.",
-    "hi": "Ch.26 vv.2-5 और ch.8 vv.1-5 दोनों उस राशि से गिनते हैं जिसमें ग्रह वास्तव में स्थित है। वर्ग राशि व्युत्पन्न है — पराशर में “{varga} कन्या से” कोई दृष्टि नहीं होती। D1 पर जाएँ।"
+    "en": "Ch.26 vv.2-5 and ch.8 vv.1-5 both count from the sign a graha actually stands in. A varga sign is derived. There is no aspect “from {varga} Kanyā” in Parāśara. Switch to D1.",
+    "hi": "Ch.26 vv.2-5 और ch.8 vv.1-5 दोनों उस राशि से गिनते हैं जिसमें ग्रह वास्तव में स्थित है। वर्ग राशि व्युत्पन्न है। पराशर में “{varga} कन्या से” कोई दृष्टि नहीं होती। D1 पर जाएँ।"
   },
   "drishti.casts.title": {
     "en": "Casts",
@@ -772,8 +772,8 @@ export const CHROME = {
     "hi": "({fraction} लौटाता है)"
   },
   "drishti.casts.specialNote": {
-    "en": "{graha}'s special aspect — full on the {ordinal} and the {ordinal}, where the general rule would give less.",
-    "hi": "{graha} की विशेष दृष्टि — {ordinal} और {ordinal} भाव पर पूर्ण, जहाँ सामान्य नियम कम देता है।"
+    "en": "{graha}'s special aspect is full on the {ordinal} and the {ordinal}, where the general rule would give less.",
+    "hi": "{graha} की विशेष दृष्टि {ordinal} और {ordinal} भाव पर पूर्ण है, जहाँ सामान्य नियम कम देता है।"
   },
   "drishti.received.title": {
     "en": "Received",
@@ -792,8 +792,8 @@ export const CHROME = {
     "hi": "{rāśi} से"
   },
   "drishti.received.asymNote": {
-    "en": "Asymmetric. The 3rd and the 8th are one-way. The 4th and the 10th are mutual but unequal — a graha's 4th is three quarters and what comes back is a quarter. Only the 5th, 9th and 7th return what they send.",
-    "hi": "असममित। तृतीय और अष्टम एकतरफ़ा हैं। चतुर्थ और दशम परस्पर हैं पर असमान — किसी ग्रह का चतुर्थ तीन-चौथाई है और जो वापस आता है वह एक-चौथाई। केवल पंचम, नवम और सप्तम वही लौटाते हैं जो वे भेजते हैं।"
+    "en": "Asymmetric. The 3rd and the 8th are one-way. The 4th and the 10th are mutual but unequal. A graha's 4th is three quarters and what comes back is a quarter. Only the 5th, 9th and 7th return what they send.",
+    "hi": "असममित। तृतीय और अष्टम एकतरफ़ा हैं। चतुर्थ और दशम परस्पर हैं पर असमान। किसी ग्रह का चतुर्थ तीन-चौथाई है और जो वापस आता है वह एक-चौथाई। केवल पंचम, नवम और सप्तम वही लौटाते हैं जो वे भेजते हैं।"
   },
   "drishti.rasi.title": {
     "en": "Rāśi dṛṣṭi",
@@ -804,8 +804,8 @@ export const CHROME = {
     "hi": "सदैव परस्पर"
   },
   "drishti.legend": {
-    "en": "The meter shows the four slabs BPHS gives — a quarter, a half, three quarters, full. Both doctrines here are counted from the sign, not from the degree: the ruler in each cell measures longitude, and no number on it is used here. Ch.26's finer degree-counted layer (vv.6-12, in virūpas) is a different instrument and is not shown on this panel.",
-    "hi": "मीटर BPHS द्वारा दिए गए चार खंड दर्शाता है — एक-चौथाई, आधा, तीन-चौथाई, पूर्ण। यहाँ दोनों सिद्धांत राशि से गिने जाते हैं, अंश से नहीं: प्रत्येक कक्ष में स्थित रेखा देशांतर मापती है, और उस पर अंकित कोई संख्या यहाँ प्रयुक्त नहीं होती। Ch.26 की सूक्ष्मतर अंश-गणित परत (vv.6-12, विरूप में) एक भिन्न उपकरण है और इस पैनल पर नहीं दर्शाई गई।"
+    "en": "The meter shows the four slabs BPHS gives: a quarter, a half, three quarters, full. Both doctrines here are counted from the sign, not from the degree. The ruler in each cell measures longitude, and no number on it is used here. Ch.26's finer degree-counted layer (vv.6-12, in virūpas) is a different instrument and is not shown on this panel.",
+    "hi": "मीटर BPHS द्वारा दिए गए चार खंड दर्शाता है: एक-चौथाई, आधा, तीन-चौथाई, पूर्ण। यहाँ दोनों सिद्धांत राशि से गिने जाते हैं, अंश से नहीं। प्रत्येक कक्ष में स्थित रेखा देशांतर मापती है, और उस पर अंकित कोई संख्या यहाँ प्रयुक्त नहीं होती। Ch.26 की सूक्ष्मतर अंश-गणित परत (vv.6-12, विरूप में) एक भिन्न उपकरण है और इस पैनल पर नहीं दर्शाई गई।"
   },
   "rasi.src.sloka": {
     "en": "śloka",
@@ -856,16 +856,16 @@ export const CHROME = {
     "hi": "पाद"
   },
   "rasi.nakshatra.note": {
-    "en": "Every rāśi holds exactly nine pādas — 2¼ nakṣatras. Computed here from the 27-fold and 12-fold divisions of the same circle.",
-    "hi": "प्रत्येक राशि में ठीक नौ पाद होते हैं — 2¼ नक्षत्र। यहाँ इसी वृत्त के 27 और 12 भागों में विभाजन से इसकी गणना की गई है।"
+    "en": "Every rāśi holds exactly nine pādas, which is 2¼ nakṣatras. Computed here from the 27-fold and 12-fold divisions of the same circle.",
+    "hi": "प्रत्येक राशि में ठीक नौ पाद होते हैं, यानी 2¼ नक्षत्र। यहाँ इसी वृत्त के 27 और 12 भागों में विभाजन से इसकी गणना की गई है।"
   },
   "rasi.drishti.aspectsLabel": {
     "en": "Aspects",
     "hi": "दृष्टि"
   },
   "rasi.drishti.note": {
-    "en": "Sign aspect — not compatibility. BPHS contains no marriage matching by sign: no kūṭa, no guṇa-milan, no gaṇa, yoni or nāḍī. It judges marriage from the 7th bhāva, its lord, Venus and the Upapada.",
-    "hi": "राशि दृष्टि — अनुकूलता नहीं। BPHS में राशि से विवाह-मिलान नहीं है: न कूट, न गुण-मिलन, न गण, योनि या नाड़ी। यह विवाह का विचार 7वें भाव, उसके स्वामी, शुक्र और उपपद से करता है।"
+    "en": "This is sign aspect, not compatibility. BPHS contains no marriage matching by sign: no kūṭa, no guṇa-milan, no gaṇa, yoni or nāḍī. It judges marriage from the 7th bhāva, its lord, Venus and the Upapada.",
+    "hi": "यह राशि दृष्टि है, अनुकूलता नहीं। BPHS में राशि से विवाह-मिलान नहीं है: न कूट, न गुण-मिलन, न गण, योनि या नाड़ी। यह विवाह का विचार 7वें भाव, उसके स्वामी, शुक्र और उपपद से करता है।"
   },
   "rasi.sketch.toggle": {
     "en": "Santhanam's sketch of the {sign} ascendant",
@@ -876,16 +876,16 @@ export const CHROME = {
     "hi": "अनुवादक की टिप्पणी, पराशर नहीं"
   },
   "rasi.sketch.lowConf": {
-    "en": "This passage sits in a collapsed two-column region of the scan and is badly damaged — its section header survives only as a single run-together token. The bracketed readings below are contextual reconstructions, not transcriptions.",
-    "hi": "यह अंश स्कैन के एक ढहे हुए दो-स्तंभीय क्षेत्र में है और बुरी तरह क्षतिग्रस्त है — इसका अनुभाग-शीर्षक केवल एक जुड़े-हुए टोकन के रूप में बचा है। नीचे कोष्ठकों में दिए पाठ प्रासंगिक पुनर्निर्माण हैं, प्रतिलेखन नहीं।"
+    "en": "This passage sits in a collapsed two-column region of the scan and is badly damaged. Its section header survives only as a single run-together token. The bracketed readings below are contextual reconstructions, not transcriptions.",
+    "hi": "यह अंश स्कैन के एक ढहे हुए दो-स्तंभीय क्षेत्र में है और बुरी तरह क्षतिग्रस्त है। इसका अनुभाग-शीर्षक केवल एक जुड़े-हुए टोकन के रूप में बचा है। नीचे कोष्ठकों में दिए पाठ प्रासंगिक पुनर्निर्माण हैं, प्रतिलेखन नहीं।"
   },
   "rasi.sketch.pdfPage": {
     "en": "PDF p.",
     "hi": "PDF पृ."
   },
   "rasi.sketch.ocrNote": {
-    "en": "Square brackets are OCR repairs. An excerpt — the full sketch is in the book.",
-    "hi": "वर्गाकार कोष्ठक OCR सुधार हैं। यह एक अंश है — पूरा रेखाचित्र पुस्तक में है।"
+    "en": "Square brackets are OCR repairs. This is an excerpt. The full sketch is in the book.",
+    "hi": "वर्गाकार कोष्ठक OCR सुधार हैं। यह एक अंश है। पूरा रेखाचित्र पुस्तक में है।"
   },
   "rasi.sketch.hide": {
     "en": "hide",
@@ -992,8 +992,8 @@ export const CHROME = {
     "hi": "मारक"
   },
   "rasi.lagna.noNatureNote": {
-    "en": "BPHS states no nature for {grahas} at this lagna. A māraka verdict is kept strictly apart from a benefic/malefic nature — ch.34's own note forbids mixing them.",
-    "hi": "BPHS इस लग्न पर {grahas} का कोई स्वभाव नहीं बताता। मारक-निर्णय को शुभ/पाप स्वभाव से पूरी तरह अलग रखा गया है — ch.34 की अपनी टिप्पणी उन्हें मिलाने से मना करती है।"
+    "en": "BPHS states no nature for {grahas} at this lagna. A māraka verdict is kept strictly apart from a benefic/malefic nature. Ch.34's own note forbids mixing them.",
+    "hi": "BPHS इस लग्न पर {grahas} का कोई स्वभाव नहीं बताता। मारक-निर्णय को शुभ/पाप स्वभाव से पूरी तरह अलग रखा गया है। ch.34 की अपनी टिप्पणी उन्हें मिलाने से मना करती है।"
   },
   "rasi.section.whereUsed": {
     "en": "Where this rāśi is used",
@@ -1048,8 +1048,8 @@ export const CHROME = {
     "hi": "यह क्यों मायने रखता है?"
   },
   "rasi.absent.why": {
-    "en": "Every rāśi card on the internet that shows you a lucky number, a gemstone or a compatible sign is showing you something invented after 1900. Those attributes are not in Bṛhat Parāśara Horā Śāstra at all — and where BPHS does assign colours, gems, tastes and deities, it assigns them to the grahas, never to a sign. We would rather show you the gap.",
-    "hi": "इंटरनेट पर हर वह राशि-कार्ड जो आपको भाग्यशाली अंक, रत्न या अनुकूल राशि दिखाता है, वह 1900 के बाद गढ़ी गई कोई चीज़ दिखा रहा है। ये विशेषताएँ बृहत् पराशर होरा शास्त्र में हैं ही नहीं — और जहाँ BPHS रंग, रत्न, स्वाद और देवता बताता भी है, वहाँ वह उन्हें ग्रहों को देता है, किसी राशि को कभी नहीं। हम आपको यह अंतर दिखाना अधिक उचित समझते हैं।"
+    "en": "Many rāśi cards on the internet show a lucky number, a gemstone or a compatible sign. Those were invented after 1900. Those attributes are not in Bṛhat Parāśara Horā Śāstra at all. Where BPHS does assign colours, gems, tastes and deities, it assigns them to the grahas, never to a sign. We would rather show you the gap.",
+    "hi": "इंटरनेट पर कई राशि-कार्ड भाग्यशाली अंक, रत्न या अनुकूल राशि दिखाते हैं। ये 1900 के बाद गढ़ी गई चीज़ें हैं। ये विशेषताएँ बृहत् पराशर होरा शास्त्र में हैं ही नहीं। जहाँ BPHS रंग, रत्न, स्वाद और देवता बताता भी है, वहाँ वह उन्हें ग्रहों को देता है, किसी राशि को कभी नहीं। हम आपको यह अंतर दिखाना अधिक उचित समझते हैं।"
   },
   "nakshatra.conf.corroborated.label": {
     "en": "2 sources",
@@ -1072,16 +1072,16 @@ export const CHROME = {
     "hi": "अनिश्चित"
   },
   "nakshatra.conf.uncertain.hint": {
-    "en": "The stored value may itself be wrong — see the note",
-    "hi": "संग्रहीत मान स्वयं ग़लत हो सकता है — टिप्पणी देखें"
+    "en": "The stored value may itself be wrong: see the note",
+    "hi": "संग्रहीत मान स्वयं ग़लत हो सकता है: टिप्पणी देखें"
   },
   "nakshatra.conf.absent.label": {
     "en": "not sourced",
     "hi": "कोई स्रोत नहीं"
   },
   "nakshatra.conf.absent.hint": {
-    "en": "No source states this; a deliberate gap, never guessed",
-    "hi": "कोई स्रोत इसे नहीं बताता; एक जानबूझकर छोड़ा गया अंतर, कभी अनुमानित नहीं"
+    "en": "No source states this. A deliberate gap, never guessed",
+    "hi": "कोई स्रोत इसे नहीं बताता। एक जानबूझकर छोड़ा गया अंतर, कभी अनुमानित नहीं"
   },
   "nakshatra.cell.notSourcedTier": {
     "en": "not sourced on this tier",
@@ -1108,20 +1108,20 @@ export const CHROME = {
     "hi": "व्याख्यात्मक"
   },
   "nakshatra.compute.no.hint": {
-    "en": "Interpretive, or leans on non-Parāśara material — not a structural flag the app computes.",
-    "hi": "व्याख्यात्मक, या पराशर-भिन्न सामग्री पर आधारित — ऐसा संरचनात्मक चिह्न नहीं जिसकी गणना ऐप करता है।"
+    "en": "Interpretive, or leans on non-Parāśara material. It is not a structural flag the app computes.",
+    "hi": "व्याख्यात्मक, या पराशर-भिन्न सामग्री पर आधारित। यह ऐसा संरचनात्मक चिह्न नहीं जिसकी गणना ऐप करता है।"
   },
   "nakshatra.modern.toggle": {
     "en": "Modern techniques",
     "hi": "आधुनिक तकनीकें"
   },
   "nakshatra.modern.byline": {
-    "en": "one modern author-group's index — not Parāśara",
-    "hi": "एक आधुनिक लेखक-समूह की अनुक्रमणिका — पराशर नहीं"
+    "en": "one modern author-group's index: not Parāśara",
+    "hi": "एक आधुनिक लेखक-समूह की अनुक्रमणिका: पराशर नहीं"
   },
   "nakshatra.modern.warn": {
-    "en": "Interpretive techniques from a single modern book {source} — shown as attributed pointers, not BPHS, not the traditional canon, and not a verdict on any chart. The badge says only whether the app could detect the structural trigger; the reading stays the author's.",
-    "hi": "किसी एक आधुनिक पुस्तक {source} से ली गई व्याख्यात्मक तकनीकें — स्रोत-सहित संकेतों के रूप में दी गई हैं, BPHS नहीं, पारंपरिक मानक भी नहीं, और किसी भी कुंडली पर कोई निर्णय नहीं। बैज केवल यह बताता है कि क्या ऐप संरचनात्मक संकेतक का पता लगा सका; व्याख्या लेखक की ही रहती है।"
+    "en": "Interpretive techniques from a single modern book {source}. They are shown as attributed pointers. They are not BPHS, not the traditional canon, and not a verdict on any chart. The badge says only whether the app could detect the structural trigger. The reading stays the author's.",
+    "hi": "किसी एक आधुनिक पुस्तक {source} से ली गई व्याख्यात्मक तकनीकें। ये स्रोत-सहित संकेतों के रूप में दी गई हैं। ये BPHS नहीं हैं, पारंपरिक मानक भी नहीं, और किसी भी कुंडली पर कोई निर्णय नहीं। बैज केवल यह बताता है कि क्या ऐप संरचनात्मक संकेतक का पता लगा सका। व्याख्या लेखक की ही रहती है।"
   },
   "nakshatra.modern.theme": {
     "en": "Theme (author's framing):",
@@ -1148,16 +1148,16 @@ export const CHROME = {
     "hi": "गण"
   },
   "nakshatra.meta.gana.gloss": {
-    "en": "Temperament — Deva / Manuṣya / Rākṣasa",
-    "hi": "स्वभाव — देव / मनुष्य / राक्षस"
+    "en": "Temperament: Deva / Manuṣya / Rākṣasa",
+    "hi": "स्वभाव: देव / मनुष्य / राक्षस"
   },
   "nakshatra.meta.guna.label": {
     "en": "Guṇa",
     "hi": "गुण"
   },
   "nakshatra.meta.guna.gloss": {
-    "en": "Dominant strand — Sattva / Rajas / Tamas",
-    "hi": "प्रमुख गुण — सत्त्व / रजस् / तमस्"
+    "en": "Dominant strand: Sattva / Rajas / Tamas",
+    "hi": "प्रमुख गुण: सत्त्व / रजस् / तमस्"
   },
   "nakshatra.meta.yoni.label": {
     "en": "Yoni (animal)",
@@ -1180,16 +1180,16 @@ export const CHROME = {
     "hi": "पुरुषार्थ"
   },
   "nakshatra.meta.purushartha.gloss": {
-    "en": "Life-aim — Dharma / Artha / Kāma / Mokṣa",
-    "hi": "जीवन-लक्ष्य — धर्म / अर्थ / काम / मोक्ष"
+    "en": "Life-aim: Dharma / Artha / Kāma / Mokṣa",
+    "hi": "जीवन-लक्ष्य: धर्म / अर्थ / काम / मोक्ष"
   },
   "nakshatra.meta.quality.label": {
     "en": "Activity (muhūrta)",
     "hi": "क्रिया (मुहूर्त)"
   },
   "nakshatra.meta.quality.gloss": {
-    "en": "Muhūrta activity-class — Light/Fierce/Fixed/…",
-    "hi": "मुहूर्त क्रिया-वर्ग — लघु/उग्र/स्थिर/…"
+    "en": "Muhūrta activity-class: Light/Fierce/Fixed/…",
+    "hi": "मुहूर्त क्रिया-वर्ग: लघु/उग्र/स्थिर/…"
   },
   "nakshatra.meta.shakti.label": {
     "en": "Śakti",
@@ -1204,8 +1204,8 @@ export const CHROME = {
     "hi": "दोष"
   },
   "nakshatra.meta.dosha.gloss": {
-    "en": "Āyurvedic humour — Vāta / Pitta / Kapha",
-    "hi": "आयुर्वेदिक दोष — वात / पित्त / कफ"
+    "en": "Āyurvedic humour: Vāta / Pitta / Kapha",
+    "hi": "आयुर्वेदिक दोष: वात / पित्त / कफ"
   },
   "nakshatra.meta.nadi.label": {
     "en": "Nāḍī",
@@ -1236,16 +1236,16 @@ export const CHROME = {
     "hi": "{source} {nakshatra} = {traditional} बताता है, जबकि ऐप का BPHS-उद्धृत डेटा {bphs_app} बताता है।"
   },
   "nakshatra.variance.standing": {
-    "en": "The BPHS-tier value is left standing; the traditional variant is recorded, not applied.",
-    "hi": "BPHS-स्तर का मान यथावत रखा गया है; पारंपरिक भिन्नता दर्ज की गई है, लागू नहीं की गई।"
+    "en": "The BPHS-tier value is left standing. The traditional variant is recorded, not applied.",
+    "hi": "BPHS-स्तर का मान यथावत रखा गया है। पारंपरिक भिन्नता दर्ज की गई है, लागू नहीं की गई।"
   },
   "nakshatra.section.attributes": {
     "en": "Attributes on the traditional tier",
     "hi": "पारंपरिक स्तर पर विशेषताएँ"
   },
   "nakshatra.attributes.note": {
-    "en": "These are not BPHS. Bṛhat Parāśara Horā Śāstra assigns no gaṇa, yoni or nāḍī to a nakṣatra — the rāśi cards say as much. They belong to the older Bṛhat-Saṁhitā / muhūrta tradition and ship here on a traditional footing, beside the BPHS deity above, never blended into it. Every cell names its source and how sure we are of it.",
-    "hi": "ये BPHS नहीं हैं। बृहत् पराशर होरा शास्त्र किसी नक्षत्र को कोई गण, योनि या नाड़ी नहीं देता — राशि-कार्ड यही कहते हैं। ये पुरानी बृहत्-संहिता / मुहूर्त परंपरा की हैं और यहाँ पारंपरिक आधार पर प्रस्तुत हैं, ऊपर दिए BPHS देवता के साथ-साथ, कभी उसमें मिलाई नहीं गईं। हर कोष्ठ अपना स्रोत और उस पर हमारी निश्चितता बताता है।"
+    "en": "These are not BPHS. Bṛhat Parāśara Horā Śāstra assigns no gaṇa, yoni or nāḍī to a nakṣatra. The rāśi cards say as much. They belong to the older Bṛhat-Saṁhitā / muhūrta tradition. They ship here on a traditional footing, beside the BPHS deity above, never blended into it. Every cell names its source and how sure we are of it.",
+    "hi": "ये BPHS नहीं हैं। बृहत् पराशर होरा शास्त्र किसी नक्षत्र को कोई गण, योनि या नाड़ी नहीं देता। राशि-कार्ड यही कहते हैं। ये पुरानी बृहत्-संहिता / मुहूर्त परंपरा की हैं। ये यहाँ पारंपरिक आधार पर प्रस्तुत हैं, ऊपर दिए BPHS देवता के साथ-साथ, कभी उसमें मिलाई नहीं गईं। हर कोष्ठ अपना स्रोत और उस पर हमारी निश्चितता बताता है।"
   },
   "rg.aria.title": {
     "en": "How to read this chart",
@@ -1324,28 +1324,28 @@ export const CHROME = {
     "hi": "यही सार"
   },
   "rg.step1.body": {
-    "en": "A reading hangs on the lagna — the sign rising in the east at the moment of birth. Yours is {rasi}. Your Moon sits in {rasi} (the janma rāśi) and your Sun in {rasi}. BPHS keys its rules to the lagna — that is the anchor, not a \"sun sign\".",
-    "hi": "पूरा पठन लग्न पर टिका होता है — जन्म के क्षण पूर्व दिशा में उदित होती राशि। आपका लग्न {rasi} है। आपका चंद्र {rasi} में (जन्म राशि) और सूर्य {rasi} में स्थित है। BPHS अपने नियम लग्न के अनुसार बनाता है — वही आधार है, कोई \"सूर्य राशि\" नहीं।"
+    "en": "A reading hangs on the lagna, the sign rising in the east at the moment of birth. Yours is {rasi}. Your Moon sits in {rasi} (the janma rāśi) and your Sun in {rasi}. BPHS keys its rules to the lagna. That is the anchor, not a \"sun sign\".",
+    "hi": "पूरा पठन लग्न पर टिका होता है, यानी जन्म के क्षण पूर्व दिशा में उदित होती राशि पर। आपका लग्न {rasi} है। आपका चंद्र {rasi} में (जन्म राशि) और सूर्य {rasi} में स्थित है। BPHS अपने नियम लग्न के अनुसार बनाता है। वही आधार है, कोई \"सूर्य राशि\" नहीं।"
   },
   "rg.step2.body": {
-    "en": "Because {rasi} rises, it is your 1st bhāva, and each following sign is the next house. So your 7th house — partnership — is {rasi} (highlighted). Every sign in the chart carries its bhāva number.",
-    "hi": "चूँकि {rasi} उदित हो रही है, वही आपका प्रथम भाव है, और आगे की प्रत्येक राशि अगला भाव बनती है। इसलिए आपका सप्तम भाव — साझेदारी — {rasi} है (चिह्नित)। कुंडली की हर राशि अपना भाव-क्रमांक धारण करती है।"
+    "en": "Because {rasi} rises, it is your 1st bhāva, and each following sign is the next house. So your 7th house, partnership, is {rasi} (highlighted). Every sign in the chart carries its bhāva number.",
+    "hi": "चूँकि {rasi} उदित हो रही है, वही आपका प्रथम भाव है, और आगे की प्रत्येक राशि अगला भाव बनती है। इसलिए आपका सप्तम भाव, यानी साझेदारी, {rasi} है (चिह्नित)। कुंडली की हर राशि अपना भाव-क्रमांक धारण करती है।"
   },
   "rg.step3.body": {
-    "en": "A graha's power turns on the sign it occupies — its own, exalted, a friend's, an enemy's, or fallen. Take {graha}: it is in {rasi}, {dignity}. The signal-stack below names this for every graha, each line cited.",
-    "hi": "किसी ग्रह का बल उस राशि पर निर्भर करता है जिसमें वह स्थित है — स्वराशि, उच्च, मित्र की, शत्रु की, या नीच। {graha} को लें: यह {rasi} में है, {dignity}। नीचे दिया संकेत-समूह हर ग्रह के लिए यह बताता है, प्रत्येक पंक्ति संदर्भ-सहित।"
+    "en": "A graha's power turns on the sign it occupies: its own, exalted, a friend's, an enemy's, or fallen. Take {graha}: it is in {rasi}, {dignity}. The signal-stack below names this for every graha, each line cited.",
+    "hi": "किसी ग्रह का बल उस राशि पर निर्भर करता है जिसमें वह स्थित है: स्वराशि, उच्च, मित्र की, शत्रु की, या नीच। {graha} को लें: यह {rasi} में है, {dignity}। नीचे दिया संकेत-समूह हर ग्रह के लिए यह बताता है, प्रत्येक पंक्ति संदर्भ-सहित।"
   },
   "rg.step4.body": {
-    "en": "The same graha helps one lagna and harms another — a functional benefic or malefic, set by the houses it rules from your ascendant, and sometimes a māraka (a \"killer\" by lordship). The panel reads this for {graha} and the rest — and keeps it strictly apart from a graha's natural nature, as ch.34 insists.",
-    "hi": "वही ग्रह एक लग्न के लिए हितकर और दूसरे के लिए हानिकर होता है — एक कार्यगत शुभ या पाप ग्रह, जो आपके लग्न से उसके स्वामित्व वाले भावों से तय होता है, और कभी-कभी मारक (स्वामित्व के कारण \"घातक\")। यह पटल {graha} तथा शेष ग्रहों के लिए इसे पढ़ता है — और इसे ग्रह के नैसर्गिक स्वभाव से कड़ाई से अलग रखता है, जैसा अध्याय 34 आग्रह करता है।"
+    "en": "The same graha helps one lagna and harms another. It is a functional benefic or malefic, set by the houses it rules from your ascendant. Sometimes it is a māraka (a \"killer\" by lordship). The panel reads this for {graha} and the rest. It keeps this strictly apart from a graha's natural nature, as ch.34 insists.",
+    "hi": "वही ग्रह एक लग्न के लिए हितकर और दूसरे के लिए हानिकर होता है। वह कार्यगत शुभ या पाप ग्रह है, जो आपके लग्न से उसके स्वामित्व वाले भावों से तय होता है। कभी-कभी वह मारक होता है (स्वामित्व के कारण \"घातक\")। यह पटल {graha} तथा शेष ग्रहों के लिए इसे पढ़ता है। वह इसे ग्रह के नैसर्गिक स्वभाव से कड़ाई से अलग रखता है, जैसा अध्याय 34 आग्रह करता है।"
   },
   "rg.step5.body": {
-    "en": "Every graha aspects the 7th sign from itself; Mars also the 4th & 8th, Jupiter the 5th & 9th, Saturn the 3rd & 10th — this is dṛṣṭi. The dṛṣṭi ledger lists who aspects whom, and the Sky wheel (now shown) draws each graha's rays in to the centre.",
-    "hi": "प्रत्येक ग्रह स्वयं से सातवीं राशि को देखता है; मंगल चौथी व आठवीं को भी, गुरु पाँचवीं व नवीं को, शनि तीसरी व दसवीं को — यही दृष्टि है। दृष्टि-सूची बताती है कौन किसे देखता है, और आकाश-चक्र (अभी प्रदर्शित) प्रत्येक ग्रह की किरणें केंद्र की ओर खींचता है।"
+    "en": "Every graha aspects the 7th sign from itself. Mars also aspects the 4th and 8th, Jupiter the 5th and 9th, Saturn the 3rd and 10th. This is dṛṣṭi. The dṛṣṭi ledger lists who aspects whom. The Sky wheel (now shown) draws each graha's rays in to the centre.",
+    "hi": "प्रत्येक ग्रह स्वयं से सातवीं राशि को देखता है। मंगल चौथी व आठवीं को भी देखता है, गुरु पाँचवीं व नवीं को, शनि तीसरी व दसवीं को। यही दृष्टि है। दृष्टि-सूची बताती है कौन किसे देखता है। आकाश-चक्र (अभी प्रदर्शित) प्रत्येक ग्रह की किरणें केंद्र की ओर खींचता है।"
   },
   "rg.step6.body.main": {
-    "en": "The chart shows what; the Viṁśottarī daśā shows when. {branch} BPHS names a daśā favourable or adverse only for specific placements (ch.47), so most periods it stays silent — which the timeline marks honestly rather than inventing a verdict.",
-    "hi": "कुंडली दिखाती है क्या; विंशोत्तरी दशा दिखाती है कब। {branch} BPHS किसी दशा को केवल विशिष्ट स्थितियों के लिए ही अनुकूल या प्रतिकूल कहता है (अध्याय 47), इसलिए अधिकांश अवधियों में वह मौन रहता है — जिसे समयरेखा कोई निर्णय गढ़ने के बजाय ईमानदारी से अंकित करती है।"
+    "en": "The chart shows what. The Viṁśottarī daśā shows when. {branch} BPHS names a daśā favourable or adverse only for specific placements (ch.47). So for most periods it stays silent. The timeline marks that silence and does not invent a verdict.",
+    "hi": "कुंडली दिखाती है क्या। विंशोत्तरी दशा दिखाती है कब। {branch} BPHS किसी दशा को केवल विशिष्ट स्थितियों के लिए ही अनुकूल या प्रतिकूल कहता है (अध्याय 47)। इसलिए अधिकांश अवधियों में वह मौन रहता है। समयरेखा उस मौन को अंकित करती है और कोई निर्णय नहीं गढ़ती।"
   },
   "rg.step6.body.running": {
     "en": "You are running {graha}'s mahādaśā",
@@ -1360,40 +1360,40 @@ export const CHROME = {
     "hi": "आपकी चालू अवधि समयरेखा पर है।"
   },
   "rg.step7.body": {
-    "en": "The rāśi (D1) is the body; the sixteen divisions refine each area — the D9 (navāṁśa), shown now, for marriage and dharma; D10 for career; and so on. The same grahas fall into new signs, and a graha strong in D1 but weak across the vargas is a different story from one strong in both.",
-    "hi": "राशि (D1) शरीर है; सोलह वर्ग प्रत्येक क्षेत्र को अधिक बारीकी से दर्शाते हैं — D9 (नवांश), अभी प्रदर्शित, विवाह और धर्म के लिए; D10 करियर के लिए; इत्यादि। वही ग्रह नई राशियों में पड़ते हैं, और D1 में बलवान पर वर्गों में निर्बल ग्रह की बात उससे भिन्न है जो दोनों में बलवान हो।"
+    "en": "The rāśi (D1) is the body. The sixteen divisions refine each area. The D9 (navāṁśa), shown now, is for marriage and dharma, and the D10 is for career. The same grahas fall into new signs. A graha strong in D1 but weak across the vargas is a different story from one strong in both.",
+    "hi": "राशि (D1) शरीर है। सोलह वर्ग प्रत्येक क्षेत्र को अधिक बारीकी से दर्शाते हैं। D9 (नवांश), अभी प्रदर्शित, विवाह और धर्म के लिए है, और D10 करियर के लिए। वही ग्रह नई राशियों में पड़ते हैं। D1 में बलवान पर वर्गों में निर्बल ग्रह की बात उससे भिन्न है जो दोनों में बलवान हो।"
   },
   "rg.step8.body.main": {
-    "en": "The D9 panel below reads the navāṁśa itself — on a modern tier (C. S. Patel), kept apart from BPHS, which is silent here. A graha in the same sign in D1 and D9 is vargottama — strong, its results amplified. {branch} It also marks the 64th navāṁśa, a classical sensitive point{tally}. Every line names its source and stays a pointer — never a verdict.",
-    "hi": "नीचे दिया D9 पटल स्वयं नवांश को पढ़ता है — एक आधुनिक स्तर पर (सी. एस. पटेल), BPHS से अलग रखा गया, जो यहाँ मौन है। D1 और D9 में एक ही राशि में स्थित ग्रह वर्गोत्तम होता है — बलवान, उसके फल प्रवर्धित। {branch} यह 64वें नवांश को भी अंकित करता है, एक शास्त्रीय संवेदनशील बिंदु{tally}। प्रत्येक पंक्ति अपना स्रोत बताती है और संकेतक ही रहती है — कभी निर्णय नहीं।"
+    "en": "The D9 panel below reads the navāṁśa itself. It is on a modern tier (C. S. Patel), kept apart from BPHS, which is silent here. A graha in the same sign in D1 and D9 is vargottama: strong, its results amplified. {branch} It also marks the 64th navāṁśa, a classical sensitive point{tally}. Every line names its source and stays a pointer, never a verdict.",
+    "hi": "नीचे दिया D9 पटल स्वयं नवांश को पढ़ता है। यह एक आधुनिक स्तर पर है (सी. एस. पटेल), BPHS से अलग रखा गया, जो यहाँ मौन है। D1 और D9 में एक ही राशि में स्थित ग्रह वर्गोत्तम होता है: बलवान, उसके फल प्रवर्धित। {branch} यह 64वें नवांश को भी अंकित करता है, एक शास्त्रीय संवेदनशील बिंदु{tally}। प्रत्येक पंक्ति अपना स्रोत बताती है और संकेतक ही रहती है, कभी निर्णय नहीं।"
   },
   "rg.step8.body.yours": {
     "en": "Yours: {names}.",
     "hi": "आपके: {names}।"
   },
   "rg.step8.body.none": {
-    "en": "Your chart has none — common, and the panel says so plainly.",
-    "hi": "आपकी कुंडली में कोई नहीं — जो सामान्य है, और पटल इसे स्पष्ट रूप से कहता है।"
+    "en": "Your chart has none. That is common, and the panel says so plainly.",
+    "hi": "आपकी कुंडली में कोई नहीं। यह सामान्य है, और पटल इसे स्पष्ट रूप से कहता है।"
   },
   "rg.step8.body.tally": {
     "en": ", and tallies each navāṁśa-sign by house ({n} favourable, {n} difficult)",
     "hi": ", और प्रत्येक नवांश-राशि को भाव के अनुसार गिनता है ({n} अनुकूल, {n} कठिन)"
   },
   "rg.step9.body": {
-    "en": "A reading is you weighing these cited signals together — strength, function, aspect, timing, and their echo across the vargas. This site shows no single \"score\", and where the text is silent it says so. That refusal to guess is the difference between reading a chart and being told a story.",
-    "hi": "पठन यानी आपका इन संदर्भित संकेतों को एक साथ तौलना — बल, कार्य, दृष्टि, समय, और वर्गों में उनकी प्रतिध्वनि। यह साइट कोई एकल \"अंक\" नहीं दिखाती, और जहाँ शास्त्र मौन है वहाँ यह वैसा ही कहती है। अनुमान लगाने से इनकार ही कुंडली पढ़ने और कहानी सुनाए जाने के बीच का अंतर है।"
+    "en": "A reading is you weighing these cited signals together: strength, function, aspect, timing, and their echo across the vargas. This site shows no single \"score\", and where the text is silent it says so. That refusal to guess is the difference between reading a chart and being told a story.",
+    "hi": "पठन यानी आपका इन संदर्भित संकेतों को एक साथ तौलना: बल, कार्य, दृष्टि, समय, और वर्गों में उनकी प्रतिध्वनि। यह साइट कोई एकल \"अंक\" नहीं दिखाती, और जहाँ शास्त्र मौन है वहाँ यह वैसा ही कहती है। अनुमान लगाने से इनकार ही कुंडली पढ़ने और कहानी सुनाए जाने के बीच का अंतर है।"
   },
   "rg.lagna.label": {
     "en": "Lagna",
     "hi": "लग्न"
   },
   "rg.dword.exalted": {
-    "en": "exalted — its strongest",
-    "hi": "उच्च — इसकी सर्वाधिक शक्ति"
+    "en": "exalted: its strongest",
+    "hi": "उच्च: इसकी सर्वाधिक शक्ति"
   },
   "rg.dword.debilitated": {
-    "en": "debilitated — its weakest",
-    "hi": "नीच — इसकी न्यूनतम शक्ति"
+    "en": "debilitated: its weakest",
+    "hi": "नीच: इसकी न्यूनतम शक्ति"
   },
   "rg.dword.moolatrikona": {
     "en": "in its mūlatrikoṇa (very strong)",
@@ -1436,8 +1436,8 @@ export const CHROME = {
     "hi": "कोई वर्णित निर्णय नहीं"
   },
   "dt.legend.prose": {
-    "en": "Bars apply BPHS Vol II ch.47 vv.5-6, which names a daśā favourable if its lord stands in the Ascendant, in exaltation, in its own sign or a friend's, and unfavourable in the 6th, 8th or 12th, in debilitation or an enemy's sign. It is not a heatmap: the verse gives two branches and no scale, no middle band and no rule for when both fire — so \"both stated\" is left unarbitrated and \"no stated verdict\" means the text is silent, which is not the same as neutral. The verdict is read from the lord's natal placement and applies to every band that lord rules. Pratyantar bars repeat the mahā lord's verdict only where that lord is the period lord; ch.61's pratyantar prose is not used.",
-    "hi": "पट्टियाँ BPHS खंड II अध्याय 47 श्लोक 5-6 लागू करती हैं, जो किसी दशा को अनुकूल कहता है यदि उसका स्वामी लग्न में, उच्च में, स्वराशि या मित्र की राशि में हो, और प्रतिकूल यदि वह 6ठे, 8वें या 12वें में, नीच में या शत्रु की राशि में हो। यह ऊष्मा-मानचित्र नहीं है: श्लोक दो शाखाएँ देता है, कोई मापक्रम नहीं, कोई मध्य पट्टी नहीं और यह नियम नहीं कि दोनों एक साथ लागू हों तो क्या — इसलिए \"दोनों वर्णित\" को अनिर्णीत छोड़ा जाता है और \"कोई वर्णित निर्णय नहीं\" का अर्थ है शास्त्र मौन है, जो सम/तटस्थ होने के समान नहीं। निर्णय स्वामी की जन्म-स्थिति से पढ़ा जाता है और उस स्वामी द्वारा शासित हर पट्टी पर लागू होता है। प्रत्यन्तर पट्टियाँ महा-स्वामी का निर्णय केवल वहीं दोहराती हैं जहाँ वही स्वामी अवधि-स्वामी हो; अध्याय 61 का प्रत्यन्तर विवरण उपयोग नहीं किया गया।"
+    "en": "Bars apply BPHS Vol II ch.47 vv.5-6. The verse names a daśā favourable if its lord stands in the Ascendant, in exaltation, in its own sign or in a friend's sign. It names a daśā unfavourable if its lord stands in the 6th, 8th or 12th, in debilitation or in an enemy's sign. It is not a heatmap. The verse gives two branches and no scale, no middle band and no rule for when both fire. So \"both stated\" is left unarbitrated. \"No stated verdict\" means the text is silent, which is not the same as neutral. The verdict is read from the lord's natal placement and applies to every band that lord rules. Pratyantar bars repeat the mahā lord's verdict only where that lord is the period lord. Ch.61's pratyantar prose is not used.",
+    "hi": "पट्टियाँ BPHS खंड II अध्याय 47 श्लोक 5-6 लागू करती हैं। श्लोक किसी दशा को अनुकूल कहता है यदि उसका स्वामी लग्न में, उच्च में, स्वराशि या मित्र की राशि में हो। वह दशा को प्रतिकूल कहता है यदि स्वामी 6ठे, 8वें या 12वें में, नीच में या शत्रु की राशि में हो। यह ऊष्मा-मानचित्र नहीं है। श्लोक दो शाखाएँ देता है, कोई मापक्रम नहीं, कोई मध्य पट्टी नहीं और यह नियम नहीं कि दोनों एक साथ लागू हों तो क्या। इसलिए \"दोनों वर्णित\" को अनिर्णीत छोड़ा जाता है। \"कोई वर्णित निर्णय नहीं\" का अर्थ है शास्त्र मौन है, जो सम/तटस्थ होने के समान नहीं। निर्णय स्वामी की जन्म-स्थिति से पढ़ा जाता है और उस स्वामी द्वारा शासित हर पट्टी पर लागू होता है। प्रत्यन्तर पट्टियाँ महा-स्वामी का निर्णय केवल वहीं दोहराती हैं जहाँ वही स्वामी अवधि-स्वामी हो। अध्याय 61 का प्रत्यन्तर विवरण उपयोग नहीं किया गया।"
   },
   "dt.error.fetch_failed": {
     "en": "Daśā fetch failed",
@@ -1456,12 +1456,12 @@ export const CHROME = {
     "hi": "वर्ष"
   },
   "dt.title.360": {
-    "en": "360-day sāvana year — matches BPHS Ch.46's worked example",
+    "en": "360-day sāvana year: matches BPHS Ch.46's worked example",
     "hi": "360-दिवसीय सावन वर्ष — BPHS अध्याय 46 के हल किए उदाहरण से मेल खाता है"
   },
   "dt.title.365": {
-    "en": "365.25-day Julian year — matches Jagannātha Hora & most modern software",
-    "hi": "365.25-दिवसीय जूलियन वर्ष — जगन्नाथ होरा तथा अधिकांश आधुनिक सॉफ़्टवेयर से मेल खाता है"
+    "en": "365.25-day Julian year: matches Jagannātha Hora & most modern software",
+    "hi": "365.25-दिवसीय जूलियन वर्ष: जगन्नाथ होरा तथा अधिकांश आधुनिक सॉफ़्टवेयर से मेल खाता है"
   },
   "dt.button.365_modern": {
     "en": "365.25 · modern",
@@ -1492,8 +1492,8 @@ export const CHROME = {
     "hi": "अभी"
   },
   "dt.note": {
-    "en": "Dates in birth-place local time ({timezone}). {system} per {citation}; {year_system} year for calendar projection.",
-    "hi": "तिथियाँ जन्म-स्थान के स्थानीय समय में ({timezone})। {system}, {citation} के अनुसार; कैलेंडर प्रक्षेपण हेतु {year_system} वर्ष।"
+    "en": "Dates in birth-place local time ({timezone}). {system} per {citation}. {year_system} year for calendar projection.",
+    "hi": "तिथियाँ जन्म-स्थान के स्थानीय समय में ({timezone})। {system}, {citation} के अनुसार। कैलेंडर प्रक्षेपण हेतु {year_system} वर्ष।"
   },
   "dtl.tip.favourable": {
     "en": "favourable:",
@@ -1528,8 +1528,8 @@ export const CHROME = {
     "hi": "तक"
   },
   "dtl.rail.maha": {
-    "en": "Mahādaśā — the whole life",
-    "hi": "महादशा — सम्पूर्ण जीवन"
+    "en": "Mahādaśā: the whole life",
+    "hi": "महादशा: सम्पूर्ण जीवन"
   },
   "dtl.rail.antar": {
     "en": "Antardaśā",
@@ -1760,7 +1760,7 @@ export const CHROME = {
     "hi": "ग्रह-दृष्टि"
   },
   "pj.asp.sub": {
-    "en": "Rows aspect columns. Tint follows the aspecting graha's benefic or malefic nature; size follows the dṛṣṭi strength.",
+    "en": "Rows aspect columns. Tint follows the aspecting graha's benefic or malefic nature. Size follows the dṛṣṭi strength.",
     "hi": "पंक्तियाँ स्तम्भों पर दृष्टि डालती हैं। रंग दृष्टि डालने वाले ग्रह की शुभ/अशुभ प्रकृति से, आकार दृष्टि-बल से।"
   },
   "pj.asp.benefic": {
@@ -1824,8 +1824,8 @@ export const CHROME = {
     "hi": "मासिक पूर्वानुमान"
   },
   "pj.heat.sub": {
-    "en": "Relative strength across the domains, month by month. Deeper green supports, deeper red presses; a paler cell means the clocks disagree.",
-    "hi": "क्षेत्रों में मास-दर-मास सापेक्ष बल। गहरा हरा सहायक, गहरा लाल दबाव; हल्का रंग यानी घड़ियों में असहमति।"
+    "en": "Relative strength across the domains, month by month. Deeper green supports, deeper red presses. A paler cell means the clocks disagree.",
+    "hi": "क्षेत्रों में मास-दर-मास सापेक्ष बल। गहरा हरा सहायक, गहरा लाल दबाव। हल्का रंग यानी घड़ियों में असहमति।"
   },
   "pj.heat.supportive": {
     "en": "Supportive",
@@ -1848,8 +1848,8 @@ export const CHROME = {
     "hi": "मुख्य ध्यान-अवधियाँ"
   },
   "pj.watch.sub": {
-    "en": "The strongest windows in the projection — indications, not appointments.",
-    "hi": "प्रक्षेपण की सबसे प्रबल अवधियाँ — संकेत, नियत घटनाएँ नहीं।"
+    "en": "The strongest windows in the projection. They are indications, not appointments.",
+    "hi": "प्रक्षेपण की सबसे प्रबल अवधियाँ। ये संकेत हैं, नियत घटनाएँ नहीं।"
   },
   "pj.events.title": {
     "en": "Projected events",
@@ -1888,8 +1888,8 @@ export const CHROME = {
     "hi": "वर्तमान अवधि"
   },
   "pj.la.period.age": {
-    "en": "age {a}–{b}",
-    "hi": "आयु {a}–{b}"
+    "en": "age {a} to {b}",
+    "hi": "आयु {a} से {b}"
   },
   "pj.la.watch": {
     "en": "Near-future watch",
@@ -1924,8 +1924,8 @@ export const CHROME = {
     "hi": "निकट भविष्य · गोचर-बल"
   },
   "pj.la.transit.sub": {
-    "en": "Sarvāṣṭakavarga bindus per sign (0–56). A graha transiting a bindu-rich sign supports; a bindu-poor one presses.",
-    "hi": "प्रति राशि सर्वाष्टकवर्ग बिन्दु (0–56)। बिन्दु-समृद्ध राशि में गोचर सहायक; बिन्दु-न्यून में दबाव।"
+    "en": "Sarvāṣṭakavarga bindus per sign (0–56). A graha transiting a bindu-rich sign supports. A bindu-poor one presses.",
+    "hi": "प्रति राशि सर्वाष्टकवर्ग बिन्दु (0–56)। बिन्दु-समृद्ध राशि में गोचर सहायक। बिन्दु-न्यून में दबाव।"
   },
   "pj.la.more.challenging": {
     "en": "More challenging",
@@ -2000,8 +2000,8 @@ export const CHROME = {
     "hi": "जन्म"
   },
   "shadbala.ledger.summary": {
-    "en": "Show the arithmetic — every component, every graha",
-    "hi": "गणना दिखाएँ — हर घटक, हर ग्रह"
+    "en": "Show the arithmetic: every component, every graha",
+    "hi": "गणना दिखाएँ: हर घटक, हर ग्रह"
   },
   "shadbala.ledger.component": {
     "en": "Component",
@@ -2068,7 +2068,7 @@ export const CHROME = {
     "hi": "युद्ध बल"
   },
   "shadbala.conv.title": {
-    "en": "Conventions this engine uses — where other software can legitimately differ",
+    "en": "Conventions this engine uses: where other software can legitimately differ",
     "hi": "इस इंजन की परिपाटियाँ — जहाँ अन्य सॉफ़्टवेयर वैध रूप से भिन्न हो सकता है"
   },
   "shadbala.conv.hora.k": {
@@ -2108,8 +2108,8 @@ export const CHROME = {
     "hi": "अयनांश"
   },
   "shadbala.conv.ayanamsa.v": {
-    "en": "the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller; the planets agree either way.",
-    "hi": "कुंडली सत्य लाहिरी मान (माध्य + नति) छापती है, जो स्थितियों से ठीक मेल खाता है। माध्य मान छापने वाला सॉफ़्टवेयर लगभग 15″ छोटा अंक दिखाता है; ग्रह दोनों में मेल खाते हैं।"
+    "en": "the chart prints the true Lahiri value (mean + nutation), the one that reconciles with the positions exactly. Software that prints the mean value shows a figure about 15″ smaller. The planets agree either way.",
+    "hi": "कुंडली सत्य लाहिरी मान (माध्य + नति) छापती है, जो स्थितियों से ठीक मेल खाता है। माध्य मान छापने वाला सॉफ़्टवेयर लगभग 15″ छोटा अंक दिखाता है। ग्रह दोनों में मेल खाते हैं।"
   },
   "shadbala.conv.note": {
     "en": "Every formula is pinned to Raman’s worked Standard Horoscope (api/test_shadbala.py) and the assembled chart to JPL Horizons and an independent implementation (api/test_reference_chart.py).",
@@ -2120,12 +2120,12 @@ export const CHROME = {
     "hi": "वर्षफल"
   },
   "vp.title": {
-    "en": "Varṣaphala — the annual chart",
-    "hi": "वर्षफल — वार्षिक कुंडली"
+    "en": "Varṣaphala: the annual chart",
+    "hi": "वर्षफल: वार्षिक कुंडली"
   },
   "vp.sub": {
-    "en": "The Tājika year: the chart cast for the moment the Sun returns to its natal place, the Muntha, and the nine Mudda periods. Calculation only — what is not shown, and why, is listed below.",
-    "hi": "ताजिक वर्ष: सूर्य के जन्म-स्थान पर लौटने के क्षण की कुंडली, मुन्था और नौ मुद्दा दशाएँ। केवल गणना — जो नहीं दिखाया गया और क्यों, नीचे सूचीबद्ध है।"
+    "en": "The Tājika year: the chart cast for the moment the Sun returns to its natal place, the Muntha, and the nine Mudda periods. This is calculation only. What is not shown, and why, is listed below.",
+    "hi": "ताजिक वर्ष: सूर्य के जन्म-स्थान पर लौटने के क्षण की कुंडली, मुन्था और नौ मुद्दा दशाएँ। यह केवल गणना है। जो नहीं दिखाया गया और क्यों, नीचे सूचीबद्ध है।"
   },
   "vp.loading": {
     "en": "Casting the year…",
@@ -2192,12 +2192,12 @@ export const CHROME = {
     "hi": "दिनरात्रीश"
   },
   "vp.adhikari.note": {
-    "en": "The year-lord (varṣeśa) is chosen among these five by the pañcavargīya bala — which needs the text. It is not chosen here.",
-    "hi": "वर्षेश इन पाँच में से पंचवर्गीय बल से चुना जाता है — जिसके लिए मूल ग्रंथ चाहिए। यहाँ नहीं चुना गया।"
+    "en": "The year-lord (varṣeśa) is chosen among these five by the pañcavargīya bala, which needs the text. It is not chosen here.",
+    "hi": "वर्षेश इन पाँच में से पंचवर्गीय बल से चुना जाता है, जिसके लिए मूल ग्रंथ चाहिए। यहाँ नहीं चुना गया।"
   },
   "vp.refused.title": {
-    "en": "Not shown — and why",
-    "hi": "नहीं दिखाया गया — और क्यों"
+    "en": "What is not shown, and why",
+    "hi": "जो नहीं दिखाया गया, और क्यों"
   },
   "vp.refused.short": {
     "en": "not computed",
@@ -2236,8 +2236,8 @@ export const CHROME = {
     "hi": "इस साइट का पाठ (संश्लेषण)"
   },
   "vp.sub2": {
-    "en": "The Tājika year, calculated from the texts on hand: the praveśa, the year chart, Muntha, the office-bearers and year-lord, the five-fold and harṣa strengths, the aspects, the sixteen yogas, the fifty sahams and the Mudda periods. Rules and pages travel with every figure; no prediction sentence ships.",
-    "hi": "ताजिक वर्ष, उपलब्ध ग्रंथों से गणित: प्रवेश, वर्ष-कुंडली, मुन्था, पंचाधिकारी और वर्षेश, पंचवर्गीय व हर्ष बल, दृष्टियाँ, सोलह योग, पचास सहम और मुद्दा दशाएँ। हर अंक के साथ नियम और पृष्ठ; कोई फलादेश-वाक्य नहीं।"
+    "en": "The Tājika year, calculated from the texts on hand. It gives the praveśa, the year chart, Muntha, the office-bearers and the year-lord. It also gives the five-fold and harṣa strengths, the aspects, the sixteen yogas, the fifty sahams and the Mudda periods. Rules and pages travel with every figure. No prediction sentence ships.",
+    "hi": "ताजिक वर्ष, उपलब्ध ग्रंथों से गणित। इसमें प्रवेश, वर्ष-कुंडली, मुन्था, पंचाधिकारी और वर्षेश हैं। साथ में पंचवर्गीय व हर्ष बल, दृष्टियाँ, सोलह योग, पचास सहम और मुद्दा दशाएँ हैं। हर अंक के साथ नियम और पृष्ठ। कोई फलादेश-वाक्य नहीं।"
   },
   "vp.day": {
     "en": "day",
@@ -2292,12 +2292,12 @@ export const CHROME = {
     "hi": "वर्षेश"
   },
   "vp.pv.title": {
-    "en": "Pañcavargīya bala — the five-fold strength",
+    "en": "Pañcavargīya bala: the five-fold strength",
     "hi": "पंचवर्गीय बल"
   },
   "vp.pv.sub": {
-    "en": "Units by the graha’s relation to the lord of its sign, hadda, drekkāṇa and navāṁśa (own 30/15/10/5 · friend ¾ · neutral ½ · enemy ¼), plus the distance from debilitation ÷ 9. Viśva-bala = total ÷ 4.",
-    "hi": "राशि, हद्दा, द्रेष्काण और नवांश के स्वामी से ग्रह के सम्बन्ध पर इकाइयाँ (स्व 30/15/10/5 · मित्र ¾ · सम ½ · शत्रु ¼), साथ में नीच-बिन्दु से दूरी ÷ 9। विश्व-बल = योग ÷ 4।"
+    "en": "Units come from the graha’s relation to the lord of its sign, hadda, drekkāṇa and navāṁśa. Own gives 30/15/10/5, a friend ¾ of that, a neutral ½, an enemy ¼. The distance from debilitation ÷ 9 is added. Viśva-bala = total ÷ 4.",
+    "hi": "इकाइयाँ राशि, हद्दा, द्रेष्काण और नवांश के स्वामी से ग्रह के सम्बन्ध पर मिलती हैं। स्व पर 30/15/10/5, मित्र पर उसका ¾, सम पर ½, शत्रु पर ¼। साथ में नीच-बिन्दु से दूरी ÷ 9 जुड़ती है। विश्व-बल = योग ÷ 4।"
   },
   "vp.pv.cat": {
     "en": "Class",
@@ -2328,12 +2328,12 @@ export const CHROME = {
     "hi": "अल्प"
   },
   "vp.harsha.title": {
-    "en": "Harṣa bala — the four joys",
+    "en": "Harṣa bala: the four joys",
     "hi": "हर्ष बल"
   },
   "vp.harsha.sub": {
-    "en": "Five units each: the graha’s own house of joy; exaltation or own sign; a house of its own sex (female 1-2-3, 7-8-9; male 4-5-6, 10-11-12); male by day, female by night.",
-    "hi": "प्रत्येक पाँच इकाई: ग्रह का हर्ष-स्थान; उच्च या स्वराशि; स्वलिंग का भाव (स्त्री 1-2-3, 7-8-9; पुरुष 4-5-6, 10-11-12); दिन में पुरुष, रात्रि में स्त्री।"
+    "en": "Five units for each of four joys. One: the graha’s own house of joy. Two: exaltation or own sign. Three: a house of its own sex (female 1-2-3 and 7-8-9, male 4-5-6 and 10-11-12). Four: male by day, female by night.",
+    "hi": "चार हर्षों में प्रत्येक के लिए पाँच इकाई। एक: ग्रह का हर्ष-स्थान। दो: उच्च या स्वराशि। तीन: स्वलिंग का भाव (स्त्री 1-2-3 और 7-8-9, पुरुष 4-5-6 और 10-11-12)। चार: दिन में पुरुष, रात्रि में स्त्री।"
   },
   "vp.harsha.sthana": {
     "en": "Joy-house",
@@ -2368,12 +2368,12 @@ export const CHROME = {
     "hi": "निर्बल"
   },
   "vp.drishti.title": {
-    "en": "Tājika dṛṣṭi — aspects",
+    "en": "Tājika dṛṣṭi: aspects",
     "hi": "ताजिक दृष्टि"
   },
   "vp.drishti.sub": {
-    "en": "Row aspects column. 5th/9th ¾ (45) open friends · 3rd ⅔ (40) and 11th ⅙ (10) secret friends · 4th/10th ¼ (15) secret enemies · same sign and 7th full (60) open enemies · 2/6/8/12 none. Values interpolate by the degrees within the sign.",
-    "hi": "पंक्ति स्तम्भ पर दृष्टि डालती है। 5/9 ¾ (45) प्रत्यक्ष मित्र · 3 ⅔ (40) व 11 ⅙ (10) गुप्त मित्र · 4/10 ¼ (15) गुप्त शत्रु · एकराशि व 7 पूर्ण (60) प्रत्यक्ष शत्रु · 2/6/8/12 शून्य। मान राशि के भीतर अंशों से अनुपातित।"
+    "en": "Row aspects column. 5th/9th ¾ (45) open friends · 3rd ⅔ (40) and 11th ⅙ (10) secret friends · 4th/10th ¼ (15) secret enemies. Same sign and 7th full (60) open enemies · 2/6/8/12 none. Values interpolate by the degrees within the sign.",
+    "hi": "पंक्ति स्तम्भ पर दृष्टि डालती है। 5/9 ¾ (45) प्रत्यक्ष मित्र · 3 ⅔ (40) व 11 ⅙ (10) गुप्त मित्र · 4/10 ¼ (15) गुप्त शत्रु। एकराशि व 7 पूर्ण (60) प्रत्यक्ष शत्रु · 2/6/8/12 शून्य। मान राशि के भीतर अंशों से अनुपातित।"
   },
   "vp.drishti.orb": {
     "en": "Orb",
@@ -2440,20 +2440,20 @@ export const CHROME = {
     "hi": "दुर्बल"
   },
   "vp.yogas.none": {
-    "en": "none — the two lords are not in aspect, or no yoga forms",
-    "hi": "कोई नहीं — दोनों स्वामी दृष्टि में नहीं, या कोई योग नहीं बनता"
+    "en": "none: the two lords are not in aspect, or no yoga forms",
+    "hi": "कोई नहीं: दोनों स्वामी दृष्टि में नहीं, या कोई योग नहीं बनता"
   },
   "vp.yogas.allpairs": {
     "en": "Every itthaśāla / īśarāpha between the seven",
     "hi": "सातों ग्रहों के बीच सभी इत्थशाल / ईशराफ"
   },
   "vp.sahams.title": {
-    "en": "Sahams — the fifty sensitive points",
-    "hi": "सहम — पचास संवेदनशील बिन्दु"
+    "en": "Sahams: the fifty sensitive points",
+    "hi": "सहम: पचास संवेदनशील बिन्दु"
   },
   "vp.sahams.sub": {
-    "en": "Each is a − b + c on the year’s longitudes, +30° when c does not lie in the arc from b forward to a; by day or by night as the text states. Strength follows the saham’s lord; timing = (saham − lord) × the rising time of its sign ÷ 300. House cusps are equal houses from the lagna degree (a convention).",
-    "hi": "प्रत्येक वर्ष-भोगांशों पर a − b + c, +30° जब c, b से a तक के चाप में न हो; दिन या रात्रि जैसा ग्रंथ कहे। बल सहमेश से; काल = (सहम − स्वामी) × राशि का उदय-काल ÷ 300। भाव-संधियाँ लग्नांश से समभाव (एक परिपाटी)।"
+    "en": "Each is a − b + c on the year’s longitudes. Add 30° when c does not lie in the arc from b forward to a. The formula is by day or by night as the text states. Strength follows the saham’s lord. Timing = (saham − lord) × the rising time of its sign ÷ 300.",
+    "hi": "प्रत्येक वर्ष-भोगांशों पर a − b + c, +30° जब c, b से a तक के चाप में न हो। दिन या रात्रि जैसा ग्रंथ कहे। बल सहमेश से। काल = (सहम − स्वामी) × राशि का उदय-काल ÷ 300। भाव-संधियाँ लग्नांश से समभाव (एक परिपाटी)।"
   },
   "vp.sahams.formula": {
     "en": "Formula",
@@ -2520,16 +2520,16 @@ export const CHROME = {
     "hi": "लग्न इसके भाव"
   },
   "vp.phala.subref": {
-    "en": "Source: K.S. Charak, A Textbook of Varshaphala (1996) — ch. IX pp. 93–106, pp. 73–75, 106–107; cited gists adapted per the sources policy.",
-    "hi": "स्रोत: के.एस. चरक, A Textbook of Varshaphala (1996) — अध्याय IX पृ. 93–106, पृ. 73–75, 106–107; स्रोत-नीति के अनुसार अनुकूलित सार।"
+    "en": "Source: K.S. Charak, A Textbook of Varshaphala (1996), ch. IX pp. 93–106, pp. 73–75, 106–107. Cited gists adapted per the sources policy.",
+    "hi": "स्रोत: के.एस. चरक, A Textbook of Varshaphala (1996), अध्याय IX पृ. 93–106, पृ. 73–75, 106–107। स्रोत-नीति के अनुसार अनुकूलित सार।"
   },
   "vp.phala.title": {
     "en": "Period readings",
     "hi": "अवधि-फल"
   },
   "vp.phala.sub": {
-    "en": "For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with the stated results for that placement — in this site’s words, never a verdict, never blended with this site’s own reading.",
-    "hi": "हर मुद्दा-अवधि के लिए: वर्ष-कुण्डली में उसके स्वामी का भाव और उसका पञ्चवर्गीय बल, और उस स्थिति के कथित फल — इस साइट के अपने शब्दों में; कभी निर्णय नहीं, इस साइट के अपने पठन से कभी मिश्रित नहीं।"
+    "en": "For each Mudda period: its lord’s house in the year chart and its pañcavargīya band, with the stated results for that placement. The results are in this site’s words. They are never a verdict and never blended with this site’s own reading.",
+    "hi": "हर मुद्दा-अवधि के लिए: वर्ष-कुण्डली में उसके स्वामी का भाव और उसका पञ्चवर्गीय बल, और उस स्थिति के कथित फल। फल इस साइट के अपने शब्दों में हैं। कभी निर्णय नहीं, इस साइट के अपने पठन से कभी मिश्रित नहीं।"
   },
   "vp.phala.lagna": {
     "en": "The year’s lagna",
@@ -2652,8 +2652,8 @@ export const CHROME = {
     "hi": "ग्रह-स्थिति"
   },
   "deck.positions.tip": {
-    "en": "Sidereal (Lahiri) longitudes; houses are whole-sign bhāvas from the lagna. Nakṣatra classes: the muhūrta tradition’s seven (traditional tier).",
-    "hi": "निरयण (लाहिड़ी) भोगांश; भाव लग्न से राशि-भाव हैं। नक्षत्र-वर्ग: मुहूर्त-परंपरा के सात वर्ग (परंपरागत स्तर)।"
+    "en": "Sidereal (Lahiri) longitudes. Houses are whole-sign bhāvas from the lagna. Nakṣatra classes: the muhūrta tradition’s seven (traditional tier).",
+    "hi": "निरयण (लाहिड़ी) भोगांश। भाव लग्न से राशि-भाव हैं। नक्षत्र-वर्ग: मुहूर्त-परंपरा के सात वर्ग (परंपरागत स्तर)।"
   },
   "deck.planet": {
     "en": "Planet",
@@ -2732,8 +2732,8 @@ export const CHROME = {
     "hi": "ग्रह-दृष्टि नहीं डालता:"
   },
   "deck.unavailable": {
-    "en": "Dṛṣṭi is counted from the sign a graha actually stands in — switch to D1.",
-    "hi": "दृष्टि उसी राशि से गिनी जाती है जिसमें ग्रह वास्तव में है — D1 चुनें।"
+    "en": "Dṛṣṭi is counted from the sign a graha actually stands in. Switch to D1.",
+    "hi": "दृष्टि उसी राशि से गिनी जाती है जिसमें ग्रह वास्तव में है। D1 चुनें।"
   },
   "deck.housewise": {
     "en": "Housewise Planets",
@@ -2796,12 +2796,12 @@ export const CHROME = {
     "hi": "इस कुण्डली के लिए विश्लेषण उपलब्ध नहीं है।"
   },
   "deck.banner.southTip": {
-    "en": "Signs are fixed in this frame — Meṣa top row, second from left, clockwise; the lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.",
-    "hi": "इस ढाँचे में राशियाँ स्थिर हैं — मेष ऊपरी पंक्ति में बाएँ से दूसरी, दक्षिणावर्त; लग्न-कोष्ठ चिह्नित है। हर कोष्ठ के नीचे की पट्टी राशि का 0°→30° है।"
+    "en": "Signs are fixed in this frame: Meṣa top row, second from left, clockwise. The lagna cell is marked. The ruler under each cell is the sign’s 0°→30°.",
+    "hi": "इस ढाँचे में राशियाँ स्थिर हैं: मेष ऊपरी पंक्ति में बाएँ से दूसरी, दक्षिणावर्त। लग्न-कोष्ठ चिह्नित है। हर कोष्ठ के नीचे की पट्टी राशि का 0°→30° है।"
   },
   "pj.why.lead": {
-    "en": "Each factor is signed by what it is for this lagna: a functional benefic counts for the domain, a functional malefic against it, scaled by its strength. A house unfolds into the four things that build it.",
-    "hi": "हर कारक का चिह्न इस लग्न के लिए उसकी प्रकृति से तय होता है: कार्यात्मक शुभ ग्रह क्षेत्र के पक्ष में गिना जाता है, कार्यात्मक पाप ग्रह विपक्ष में, उसके बल के अनुपात में। भाव अपने चार घटकों में खुलता है।"
+    "en": "Each factor is signed by what it is for this lagna. A functional benefic counts for the domain, a functional malefic against it, scaled by its strength. A house unfolds into the four things that build it.",
+    "hi": "हर कारक का चिह्न इस लग्न के लिए उसकी प्रकृति से तय होता है। कार्यात्मक शुभ ग्रह क्षेत्र के पक्ष में गिना जाता है, कार्यात्मक पाप ग्रह विपक्ष में, उसके बल के अनुपात में। भाव अपने चार घटकों में खुलता है।"
   },
   "pj.why.benefic": {
     "en": "functional benefic for this lagna",
@@ -2980,8 +2980,8 @@ export const CHROME = {
     "hi": "और…"
   },
   "share.note": {
-    "en": "The birth details are encrypted in this browser before the link is made; the key is in the link itself, after the #, which no server ever receives. Only someone with the whole link can open the chart — we cannot.",
-    "hi": "लिंक बनने से पहले जन्म-विवरण इसी ब्राउज़र में एन्क्रिप्ट होता है; कुंजी लिंक में # के बाद रहती है, जो किसी सर्वर तक कभी नहीं पहुँचती। पूरा लिंक पाने वाला ही कुंडली खोल सकता है — हम नहीं।"
+    "en": "The birth details are encrypted in this browser before the link is made. The key is in the link itself, after the #, which no server ever receives. Only someone with the whole link can open the chart. We cannot.",
+    "hi": "लिंक बनने से पहले जन्म-विवरण इसी ब्राउज़र में एन्क्रिप्ट होता है। कुंजी लिंक में # के बाद रहती है, जो किसी सर्वर तक कभी नहीं पहुँचती। पूरा लिंक पाने वाला ही कुंडली खोल सकता है। हम नहीं खोल सकते।"
   },
   "share.openErr": {
     "en": "This shared chart could not be opened:",
@@ -3020,8 +3020,8 @@ export const CHROME = {
     "hi": "दान शीघ्र खुलेंगे"
   },
   "support.secure": {
-    "en": "Payments are handled by Stripe — we never see or store your card details. Any amount is appreciated; choose yours at checkout.",
-    "hi": "भुगतान Stripe सँभालता है — आपके कार्ड का विवरण हम कभी नहीं देखते या रखते। कोई भी राशि सराहनीय है; चेकआउट पर अपनी राशि चुनें।"
+    "en": "Payments are handled by Stripe. We never see or store your card details. Any amount is appreciated. Choose yours at checkout.",
+    "hi": "भुगतान Stripe सँभालता है। आपके कार्ड का विवरण हम कभी नहीं देखते या रखते। कोई भी राशि सराहनीय है। चेकआउट पर अपनी राशि चुनें।"
   },
   "support.funds": {
     "en": "What your support funds",
@@ -3048,8 +3048,8 @@ export const CHROME = {
     "hi": "विकास"
   },
   "support.f3b": {
-    "en": "New frames, new systems, the verification suite — and the things you ask for.",
-    "hi": "नए ढाँचे, नई पद्धतियाँ, सत्यापन-सूट — और जो आप माँगते हैं।"
+    "en": "New frames, new systems, the verification suite, and the things you ask for.",
+    "hi": "नए ढाँचे, नई पद्धतियाँ, सत्यापन-सूट, और जो आप माँगते हैं।"
   },
   "support.f4": {
     "en": "No ads, no remedies, nothing sold",
@@ -3060,8 +3060,8 @@ export const CHROME = {
     "hi": "दान साइट को स्वतंत्र रखता है: न विज्ञापन, न रत्न, न परामर्श, न कुंडली पर कोई शुल्क।"
   },
   "support.thanks": {
-    "en": "Thank you — every contribution, big or small, genuinely keeps this going.",
-    "hi": "धन्यवाद — छोटा या बड़ा, हर योगदान सचमुच इसे चलाए रखता है।"
+    "en": "Thank you. Every contribution, big or small, genuinely keeps this going.",
+    "hi": "धन्यवाद। छोटा या बड़ा, हर योगदान सचमुच इसे चलाए रखता है।"
   },
   "trust.aria": {
     "en": "What this site stands on",
@@ -3108,20 +3108,20 @@ export const CHROME = {
     "hi": "जन्म-विवरण (तिथि, समय, स्थान) सम्मिलित करें"
   },
   "share.details.on": {
-    "en": "They will see the date, time and place, and get the whole site for this chart — daśā, projection and yearly charts included.",
-    "hi": "वे तिथि, समय और स्थान देखेंगे, और इस कुंडली के लिए पूरी साइट पाएँगे — दशा, प्रक्षेपण और वर्षफल सहित।"
+    "en": "They will see the date, time and place. They get the whole site for this chart, with daśā, projection and yearly charts included.",
+    "hi": "वे तिथि, समय और स्थान देखेंगे। वे इस कुंडली के लिए पूरी साइट पाएँगे, दशा, प्रक्षेपण और वर्षफल सहित।"
   },
   "share.details.off": {
-    "en": "Off: they get the finished chart — positions, strengths, yogas and readings. The date, time and place are not in the link.",
-    "hi": "बंद: उन्हें तैयार कुंडली मिलेगी — स्थितियाँ, बल, योग और फल। तिथि, समय और स्थान लिंक में नहीं हैं।"
+    "en": "Off: they get the finished chart, with positions, strengths, yogas and readings. The date, time and place are not in the link.",
+    "hi": "बंद: उन्हें तैयार कुंडली मिलेगी, स्थितियों, बल, योग और फल के साथ। तिथि, समय और स्थान लिंक में नहीं हैं।"
   },
   "share.note.snap": {
-    "en": "This link carries the chart, not what it was cast from: no date, no time, no place, no dated periods. It is encrypted in this browser, and the key is in the link itself, after the #, which no server receives. One thing to know: a chart is a picture of the sky at a moment, so someone who studies the positions closely could still work out the date.",
-    "hi": "इस लिंक में कुंडली है, वह नहीं जिससे वह बनी: न तिथि, न समय, न स्थान, न दिनांकित दशाएँ। यह इसी ब्राउज़र में एन्क्रिप्ट होती है, और कुंजी लिंक में ही # के बाद है, जो किसी सर्वर तक नहीं जाती। एक बात जान लें: कुंडली किसी क्षण के आकाश का चित्र है, अतः जो ग्रह-स्थितियों को ध्यान से पढ़े वह तिथि फिर भी निकाल सकता है।"
+    "en": "This link carries the chart, not what it was cast from: no date, no time, no place, no dated periods. It is encrypted in this browser. The key is in the link itself, after the #, which no server receives. One thing to know: a chart is a picture of the sky at a moment. So someone who studies the positions closely could still work out the date.",
+    "hi": "इस लिंक में कुंडली है, वह नहीं जिससे वह बनी: न तिथि, न समय, न स्थान, न दिनांकित दशाएँ। यह इसी ब्राउज़र में एन्क्रिप्ट होती है। कुंजी लिंक में ही # के बाद है, जो किसी सर्वर तक नहीं जाती। एक बात जान लें: कुंडली किसी क्षण के आकाश का चित्र है। अतः जो ग्रह-स्थितियों को ध्यान से पढ़े वह तिथि फिर भी निकाल सकता है।"
   },
   "share.shared.snap": {
-    "en": "It was shared without its birth details: the chart, its strengths, yogas and readings are here; the timelines (daśā, projection, yearly charts, transits) are computed from the date, time and place, which were not sent.",
-    "hi": "यह जन्म-विवरण के बिना साझा की गई है: कुंडली, उसके बल, योग और फल यहाँ हैं; समय-रेखाएँ (दशा, प्रक्षेपण, वर्षफल, गोचर) तिथि, समय और स्थान से बनती हैं, जो भेजे नहीं गए।"
+    "en": "It was shared without its birth details: the chart, its strengths, yogas and readings are here. The timelines (daśā, projection, yearly charts, transits) are computed from the date, time and place, which were not sent.",
+    "hi": "यह जन्म-विवरण के बिना साझा की गई है: कुंडली, उसके बल, योग और फल यहाँ हैं। समय-रेखाएँ (दशा, प्रक्षेपण, वर्षफल, गोचर) तिथि, समय और स्थान से बनती हैं, जो भेजे नहीं गए।"
   },
   "share.meta.birth": {
     "en": "Date · time · place of birth",
@@ -3136,8 +3136,8 @@ export const CHROME = {
     "hi": "अभी"
   },
   "cd.caveat": {
-    "en": "Sequence direction is not in the available source. The rule that decides whether the twelve signs run zodiacally forward (\"direct\") or backward (\"reverse\") from the lagna is in the book's Chapter 3, absent from the scanned copy. The per-sign lengths here are validated against the book's worked examples; the order is the direction you choose below. The book's own examples all run direct, so that is the default — but it is your assumption, not a sourced result.",
-    "hi": "अनुक्रम की दिशा उपलब्ध स्रोत में नहीं है। यह नियम कि बारह राशियाँ लग्न से राशिचक्र-क्रम में आगे (\"सीधा\") चलें या पीछे (\"उल्टा\"), पुस्तक के अध्याय 3 में है, जो स्कैन की गई प्रति में अनुपस्थित है। यहाँ प्रति-राशि लंबाइयाँ पुस्तक के हल किए उदाहरणों से सत्यापित हैं; क्रम वह दिशा है जो आप नीचे चुनते हैं। पुस्तक के अपने उदाहरण सभी सीधे चलते हैं, इसलिए वही डिफ़ॉल्ट है — पर यह आपकी मान्यता है, स्रोत-आधारित परिणाम नहीं।"
+    "en": "Sequence direction is not in the available source. One rule decides whether the twelve signs run forward (\"direct\") or backward (\"reverse\") from the lagna. That rule is in the book's Chapter 3, which is absent from the scanned copy. The per-sign lengths here are validated against the book's worked examples. The order is the direction you choose below. The book's own examples all run direct, so that is the default. It is your assumption, not a sourced result.",
+    "hi": "अनुक्रम की दिशा उपलब्ध स्रोत में नहीं है। एक नियम तय करता है कि बारह राशियाँ लग्न से आगे (\"सीधा\") चलें या पीछे (\"उल्टा\")। वह नियम पुस्तक के अध्याय 3 में है, जो स्कैन की गई प्रति में अनुपस्थित है। यहाँ प्रति-राशि लंबाइयाँ पुस्तक के हल किए उदाहरणों से सत्यापित हैं। क्रम वह दिशा है जो आप नीचे चुनते हैं। पुस्तक के अपने उदाहरण सभी सीधे चलते हैं, इसलिए वही डिफ़ॉल्ट है। यह आपकी मान्यता है, स्रोत-आधारित परिणाम नहीं।"
   },
   "cd.label.direction": {
     "en": "Direction",
@@ -3228,8 +3228,8 @@ export const CHROME = {
     "hi": "स्वराशि → पूर्ण 12 वर्ष"
   },
   "cd.note": {
-    "en": "Jaimini Chara Daśā · {citation}. Lengths validated against the source's worked examples; the sequence direction is user-selected, not sourced (book Ch.3). {rejections}",
-    "hi": "जैमिनि चर दशा · {citation}। लंबाइयाँ स्रोत के हल किए उदाहरणों से सत्यापित; अनुक्रम की दिशा उपयोक्ता-चयनित है, स्रोत-आधारित नहीं (पुस्तक अध्याय 3)। {rejections}"
+    "en": "Jaimini Chara Daśā · {citation}. Lengths validated against the source's worked examples. The sequence direction is user-selected, not sourced (book Ch.3). {rejections}",
+    "hi": "जैमिनि चर दशा · {citation}। लंबाइयाँ स्रोत के हल किए उदाहरणों से सत्यापित। अनुक्रम की दिशा उपयोक्ता-चयनित है, स्रोत-आधारित नहीं (पुस्तक अध्याय 3)। {rejections}"
   },
   "sw.toggle.horizon": {
     "en": "Horizon",
@@ -3316,12 +3316,12 @@ export const CHROME = {
     "hi": "नीच"
   },
   "sw.dig.note": {
-    "en": "friend / neutral / enemy — natural (permanent) relations · nodes carry no dignity",
+    "en": "friend / neutral / enemy: natural (permanent) relations · nodes carry no dignity",
     "hi": "मित्र / सम / शत्रु — नैसर्गिक (स्थायी) संबंध · छाया-ग्रह (राहु/केतु) की कोई गरिमा नहीं"
   },
   "sw.aria.title": {
-    "en": "Sky wheel — the sky around the native at birth",
-    "hi": "आकाश-चक्र — जन्म के समय जातक के चारों ओर का आकाश"
+    "en": "Sky wheel: the sky around the native at birth",
+    "hi": "आकाश-चक्र: जन्म के समय जातक के चारों ओर का आकाश"
   },
   "sw.element.fire": {
     "en": "fire",
@@ -3340,12 +3340,12 @@ export const CHROME = {
     "hi": "जल"
   },
   "sw.bhava.title": {
-    "en": "Bhāva {n} — {rasi}",
-    "hi": "भाव {n} — {rasi}"
+    "en": "Bhāva {n}: {rasi}",
+    "hi": "भाव {n}: {rasi}"
   },
   "sw.lagna.title": {
-    "en": "Lagna — {rasi} {deg}°",
-    "hi": "लग्न — {rasi} {deg}°"
+    "en": "Lagna: {rasi} {deg}°",
+    "hi": "लग्न: {rasi} {deg}°"
   },
   "sw.lagna.label": {
     "en": "Lagna {deg}°",
@@ -3400,16 +3400,16 @@ export const CHROME = {
     "hi": "(एक ही राशि)"
   },
   "sw.tip.from_natal_degree": {
-    "en": "Transit {graha} — {n}° from its natal degree ({rasi} {deg}°)",
-    "hi": "गोचर {graha} — अपने जन्म-अंश से {n}° ({rasi} {deg}°)"
+    "en": "Transit {graha}: {n}° from its natal degree ({rasi} {deg}°)",
+    "hi": "गोचर {graha}: अपने जन्म-अंश से {n}° ({rasi} {deg}°)"
   },
   "sw.tip.on_it_now": {
     "en": "— on it now",
     "hi": "— अभी इसी पर"
   },
   "sw.tip.return_geometry": {
-    "en": "Geometry only: a graha back on its own natal degree is the Western \"return\" frame, not a BPHS transit rule — Jyotiṣa reads Śani by its house from the natal Moon.",
-    "hi": "केवल ज्यामिति: अपने ही जन्म-अंश पर लौटा ग्रह पश्चिमी \"रिटर्न\" ढाँचा है, कोई BPHS गोचर नियम नहीं — ज्योतिष शनि को जन्म चंद्र से उसके भाव द्वारा पढ़ता है।"
+    "en": "Geometry only. A graha back on its own natal degree is the Western \"return\" frame, not a BPHS transit rule. Jyotiṣa reads Śani by its house from the natal Moon.",
+    "hi": "केवल ज्यामिति। अपने ही जन्म-अंश पर लौटा ग्रह पश्चिमी \"रिटर्न\" ढाँचा है, कोई BPHS गोचर नियम नहीं। ज्योतिष शनि को जन्म चंद्र से उसके भाव द्वारा पढ़ता है।"
   },
   "sw.tip.transit_prefix": {
     "en": "Transit",
@@ -3484,8 +3484,8 @@ export const CHROME = {
     "hi": "जातक"
   },
   "sw.note.real_sky": {
-    "en": "real-sky view — shows the D1 rāśi",
-    "hi": "वास्तविक-आकाश दृश्य — D1 राशि दर्शाता है"
+    "en": "real-sky view: shows the D1 rāśi",
+    "hi": "वास्तविक-आकाश दृश्य: D1 राशि दर्शाता है"
   },
   "sw.dn.head": {
     "en": "Running daśā · ends",
@@ -3512,7 +3512,7 @@ export const CHROME = {
     "hi": "समाप्ति {date}"
   },
   "sw.dn.note": {
-    "en": "A daśā is a span of time, not a place — the rings mark where its lords sit; this is when each period ends (hover for the time left).",
-    "hi": "दशा समय की अवधि है, स्थान नहीं — वलय दर्शाते हैं कि उसके स्वामी कहाँ बैठे हैं; यह बताता है कि प्रत्येक अवधि कब समाप्त होती है (शेष समय के लिए कर्सर ले जाएँ)।"
+    "en": "A daśā is a span of time, not a place. The rings mark where its lords sit. This is when each period ends (hover for the time left).",
+    "hi": "दशा समय की अवधि है, स्थान नहीं। वलय दर्शाते हैं कि उसके स्वामी कहाँ बैठे हैं। यह बताता है कि प्रत्येक अवधि कब समाप्त होती है (शेष समय के लिए कर्सर ले जाएँ)।"
   }
 }

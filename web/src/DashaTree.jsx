@@ -203,7 +203,7 @@ export default function DashaTree({
       </div>
       <p className="dasha-note">
         Dates in birth-place local time ({tree.timezone}). <span className="src">{tree.system} per{' '}
-        {tree.citation}; </span>{tree.year_system} year for calendar projection.
+        {tree.citation}. </span>{tree.year_system} year for calendar projection.
       </p>
     </div>
   )

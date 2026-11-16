@@ -123,7 +123,7 @@ function dignityPhrase(d) {
   // deep-exaltation point.
   const arc = Math.abs(d.uccha_distance).toFixed(2)
   const side = d.uccha_distance < 0 ? 'short of' : 'past'
-  return ` — ${word}; ${arc}° ${side} its exaltation point (uccha bala ${d.uccha_bala})`
+  return `: ${word}, ${arc}° ${side} its exaltation point (uccha bala ${d.uccha_bala})`
 }
 
 // Rāśi index -> its lord's graha key, for the hover card's lord line.
@@ -211,7 +211,7 @@ export function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer,
             return (
               <div key={g.key} className="bhc-occ">
                 <b>{namer.graha(g)}{g.retrograde ? ' ℞' : ''}</b>
-                {isD1 && g.dignity && DIGNITY_WORD[g.dignity.state] ? ` — ${DIGNITY_WORD[g.dignity.state]}` : ''}
+                {isD1 && g.dignity && DIGNITY_WORD[g.dignity.state] ? `, ${DIGNITY_WORD[g.dignity.state]}` : ''}
                 {r && <div className="bhc-gist">“{r.txt}” <span className="bhc-cite">— {r.cite}</span></div>}
               </div>
             )
@@ -228,10 +228,10 @@ export function BhavaHoverCard({ sign, lagna, grahas, vargaKey, analysis, namer,
         <div className="bhc-sec">
           <div className="bhc-h">{t('chart.drishtiOn', 'Dṛṣṭi on this bhāva')}{!isD1 && <span className="bhc-kind"> · {vargaKey}</span>}</div>
           <div className="bhc-line">{aspects.map(([g, f]) => `${namer.grahaKey(g)} (${frac(f)})`).join(' · ')}</div>
-          {!isD1 && <div className="bhc-cite">{t('chart.vargaDrishtiNote', 'ch.26 sign-count applied within this varga — an engine extension, not stated by the text')}</div>}
+          {!isD1 && <div className="bhc-cite">{t('chart.vargaDrishtiNote', 'ch.26 sign-count applied within this varga. This is an engine extension, not stated by the text')}</div>}
         </div>
       )}
-      {sticky && <div className="bhc-cite">{t('chart.tapClose', 'tap the bhāva again — or anywhere outside — to close')}</div>}
+      {sticky && <div className="bhc-cite">{t('chart.tapClose', 'tap the bhāva again, or anywhere outside, to close')}</div>}
       <div className="bhc-cite bhc-foot">BPHS ch.11 · ch.26 dṛṣṭi · {t('chart.hoverFoot', 'an indication, not fate')}</div>
     </div>
   )

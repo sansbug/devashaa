@@ -91,9 +91,9 @@ _COVERAGE = {
 _HOUSE_NOTE = {
     "en": (
         "The same classical texts on a second axis: each graha in its bhāva (house), "
-        "counted whole-sign from the lagna. Cited, dated, site-authored renderings — not "
-        "fated predictions — adapted per the same §5 policy. Bṛhat Jātaka gives only the "
-        "houses it states plainly (elsewhere it defers to the Sun/Jupiter); Chamatkāra "
+        "counted whole-sign from the lagna. They are cited, dated, site-authored renderings, not "
+        "fated predictions, adapted per the same §5 policy. Bṛhat Jātaka gives only the "
+        "houses it states plainly (elsewhere it defers to the Sun/Jupiter). Chamatkāra "
         "Cintāmaṇi also reads Rāhu and Ketu in the bhāvas."
     ),
     "hi": (

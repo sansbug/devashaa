@@ -34,7 +34,7 @@ PLANET_IN_HOUSE_NOTE = (
 )
 NO_COMPOSITE_NOTE = (
     "No per-house verdict or score. BPHS states the lord-effect, significations "
-    "and kāraka separately and never fuses them; any single summary would be our "
+    "and kāraka separately and never fuses them. Any single summary would be our "
     "arithmetic, not Parāśara's. The only combination it licenses is ch.24 "
     "vv.145-148, applied when a lord rules two houses."
 )

@@ -69,7 +69,7 @@ const VARGA_SIG = {
   D3: 'siblings & courage',
   D4: 'fortune, property & the home',
   D7: 'children & progeny',
-  D9: 'spouse, marriage & dharma — and a graha’s inner strength',
+  D9: 'spouse, marriage & dharma, and a graha’s inner strength',
   D10: 'career, karma & status',
   D12: 'parents & lineage',
   D16: 'vehicles, comforts & pleasures',
@@ -79,10 +79,10 @@ const VARGA_SIG = {
   D30: 'misfortunes, ariṣṭa & character',
   D40: 'auspicious & inauspicious effects (matrilineal)',
   D45: 'conduct & all indications (patrilineal)',
-  D60: 'all matters & past-life karma — the finest, heavily weighted',
+  D60: 'all matters & past-life karma (the finest, heavily weighted)',
 }
 const VARGA_SIG_NOTE = 'BPHS ch.6 gives the sixteen divisions’ calculation and '
-  + 'names; the life-area each is read for is classical / traditional usage, not '
+  + 'names. The life-area each is read for is classical / traditional usage, not '
   + 'a BPHS śloka.'
 
 // Names come from the active name style (see naming.js) — full, never abbreviated.
@@ -142,7 +142,7 @@ function PlaceField({ onPick, place }) {
         placeholder={t('form.place')}
         onChange={(e) => setQ(e.target.value)}
       />
-      {busy && <div className="hint">{slow ? t('form.waking', 'Waking the server — the first search can take up to a minute…') : t('form.searching')}</div>}
+      {busy && <div className="hint">{slow ? t('form.waking', 'Waking the server. The first search can take up to a minute…') : t('form.searching')}</div>}
       {hits.length > 0 && (
         <ul className="hits">
           {hits.map((p, i) => (
@@ -187,7 +187,7 @@ function RulerLegend() {
         <span><Swatch><line x1="1" y1="9" x2="19" y2="9" className="rl-axis" />
           <line x1="1.5" y1="5" x2="1.5" y2="13" className="rl-axis" />
           <line x1="18.5" y1="5" x2="18.5" y2="13" className="rl-axis" />
-        </Swatch> 0°→30° of the rāśi; caps are the sandhi</span>
+        </Swatch> 0°→30° of the rāśi. Caps are the sandhi</span>
         <span><Swatch><line x1="10" y1="9" x2="10" y2="2" className="rl-pin" /></Swatch> graha</span>
         <span><Swatch><line x1="9" y1="12" x2="9" y2="1" className="rl-lagna" />
           <line x1="11" y1="12" x2="11" y2="1" className="rl-lagna" /></Swatch> lagna</span>
@@ -764,7 +764,7 @@ export default function App() {
       </nav>
       {health && health.status !== 'ok' && (
         <header className="hdr-meta">
-          <div className={`health ${health.status}`}>{`● ephemeris ${health.status} — charts refused`}</div>
+          <div className={`health ${health.status}`}>{`● ephemeris ${health.status}: charts refused`}</div>
         </header>
       )}
 
@@ -807,7 +807,7 @@ export default function App() {
 
       {landing && <LandingHero namer={namer} nakNames={NAK_NAMES} />}
 
-      {formHidden && busy && <p className="hint sv-casting">{slowCast ? t('form.wakingCast', 'Waking the server — the first chart can take up to a minute…') : t('form.casting')}</p>}
+      {formHidden && busy && <p className="hint sv-casting">{slowCast ? t('form.wakingCast', 'Waking the server. The first chart can take up to a minute…') : t('form.casting')}</p>}
       {!formHidden && (
       <form onSubmit={submit} className={`birth-form${landing ? ' birth-form--landing' : ''}`}>
         {landing && (
@@ -835,7 +835,7 @@ export default function App() {
         <button type="submit" className="go" disabled={!ready || busy}>
           {busy ? t('form.casting') : landing ? t('sv.form.go', 'Create my birth chart →') : t('form.cast')}
         </button>
-        {busy && slowCast && <div className="hint sv-form-wait">{t('form.wakingCast', 'Waking the server — the first chart can take up to a minute…')}</div>}
+        {busy && slowCast && <div className="hint sv-form-wait">{t('form.wakingCast', 'Waking the server. The first chart can take up to a minute…')}</div>}
       </form>
       )}
 
@@ -987,7 +987,7 @@ export default function App() {
                     }}>
                 <span className="ask-inline-ic" aria-hidden="true">✦</span>
                 <input name="q" type="text"
-                       placeholder={t('sv.ask.place', 'Ask a question — “my career”, “Jupiter”…')}
+                       placeholder={t('sv.ask.place', 'Ask a question: “my career”, “Jupiter”…')}
                        aria-label={t('explain.title', 'Ask your chart')} />
                 <button type="submit">{t('explain.ask', 'Ask')}</button>
               </form>
@@ -1057,7 +1057,7 @@ export default function App() {
                     }}>
                 <span className="ask-inline-ic" aria-hidden="true">✦</span>
                 <input name="q" type="text"
-                       placeholder={t('explain.askPlace', 'Ask this chart — “Jupiter”, “Gajakesari yoga”, “my career”…')}
+                       placeholder={t('explain.askPlace', 'Ask this chart: “Jupiter”, “Gajakesari yoga”, “my career”…')}
                        aria-label={t('explain.title', 'Ask your chart')} />
                 <button type="submit">{t('explain.ask', 'Ask')}</button>
               </form>
@@ -1331,7 +1331,7 @@ export default function App() {
                   <tr>
                     <th>Graha</th>
                     {VARGA_LABELS.map(([k, label]) => (
-                      <th key={k} title={`${label} — read for ${VARGA_SIG[k]} (traditional)`}>{k}</th>
+                      <th key={k} title={`${label}: read for ${VARGA_SIG[k]} (traditional)`}>{k}</th>
                     ))}
                   </tr>
                 </thead>

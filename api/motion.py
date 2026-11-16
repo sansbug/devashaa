@@ -74,9 +74,9 @@ _COMBUST_ORB = {
 _COMBUST_ORB_RETRO = {"mercury": 12.0, "venus": 8.0}
 
 _BPHS_COMBUSTION_NOTE = (
-    "BPHS gives no fixed orb — its combustion is the ch.7 vv.28-29 rule-of-three "
+    "BPHS gives no fixed orb. Its combustion is the ch.7 vv.28-29 rule-of-three "
     "proportion across 0–180° from Sūrya. These fixed orbs come only from a "
-    "Santhanam note in BPHS Vol I (which he scopes to āyurdāya); the orb-based "
+    "Santhanam note in BPHS Vol I (which he scopes to āyurdāya). The orb-based "
     "verdict here is the later traditional convention, not Parāśara."
 )
 _RETRO_ORB_NOTE = (
@@ -87,12 +87,12 @@ _RETRO_ORB_NOTE = (
 CHESHTA_BALA = {
     "available": False,
     "citation": "BPHS Vol I ch.27 vv.24-25",
-    "reason": "Cheṣṭā bala — the numeric strength of a graha's motion — needs each "
+    "reason": "Cheṣṭā bala is the numeric strength of a graha's motion. It needs each "
               "graha's Seeghrocha (śīghrocca). BPHS instructs its use but never "
               "tabulates a value (three occurrences in 1,034 pages, always "
-              "undefined), and there is no worked Ṣaḍbala example to validate "
+              "undefined). There is also no worked Ṣaḍbala example to validate "
               "against. Sūrya and Chandra are the exception (ch.28 vv.3-4). The "
-              "motion STATE below is descriptive; it is not this bala.",
+              "motion STATE below is descriptive. It is not this bala.",
 }
 
 
@@ -142,7 +142,7 @@ def _combustion(key: str, lon: float, sun_lon: float, retro: bool) -> dict:
         return {"applies": False, "reason": "the Sun is the source of combustion"}
     if key in _NODES:
         return {"applies": False,
-                "reason": "Rāhu/Ketu are shadow points — combustion does not apply"}
+                "reason": "Rāhu/Ketu are shadow points. Combustion does not apply"}
     sep = round(_sep_from_sun(lon, sun_lon), 2)
     orb = _COMBUST_ORB[key]
     note = _BPHS_COMBUSTION_NOTE
@@ -176,10 +176,10 @@ def motion_analysis(grahas: list[dict]) -> dict:
         })
     return {
         "tiers": {
-            "fact": "speed, direction, stationary, separation from the Sun — "
+            "fact": "speed, direction, stationary, separation from the Sun: "
                     "astronomical facts from the ephemeris",
             "traditional": "the gati names (vakra/manda/…) and the combustion "
-                           "orbs — the classical scheme, NOT BPHS",
+                           "orbs: the classical scheme, NOT BPHS",
         },
         "cheshta_bala": CHESHTA_BALA,
         "grahas": rows,

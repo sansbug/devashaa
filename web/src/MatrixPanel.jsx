@@ -235,7 +235,7 @@ function DomainDetail({ th, nm, rs, data, t, bandLbl, onClose }) {
       case 'bhava': {
         const hb = houseOf(c.house)
         const sign = W.signOf(c.house)
-        return `${sign != null ? rs(sign) : ''}${hb ? ` · ${t('matrix.lord', 'Lord')} ${nm(hb.lord)}` : ''} — ${t('pj.why.houseBuilt', 'built from its lord, occupants, aspects and kāraka below')}`
+        return `${sign != null ? rs(sign) : ''}${hb ? ` · ${t('matrix.lord', 'Lord')} ${nm(hb.lord)}` : ''}: ${t('pj.why.houseBuilt', 'built from its lord, occupants, aspects and kāraka below')}`
       }
       case 'lord': return W.grahaWhy(c.graha)
       case 'occupants': return W.occupantsWhy(c.grahas)
@@ -649,7 +649,7 @@ function Changes({ changes, nm, t }) {
       {anyCare && (
         <label className="mx-chg-care">
           <input type="checkbox" checked={showCare} onChange={(e) => setShowCare(e.target.checked)} />
-          <span>{t('matrix.showcare', 'Show sensitive relationship & wellbeing signals (♥) — offered as care and attention, never as verdicts about another person or a forecast of loss.')}</span>
+          <span>{t('matrix.showcare', 'Show sensitive relationship & wellbeing signals (♥). They are offered as care and attention, never as verdicts about another person or a forecast of loss.')}</span>
         </label>
       )}
       <p className="mx-prov">{changes.note}</p>
@@ -693,7 +693,7 @@ function Calibration({ date, time, place, t }) {
   return (
     <div className="pj-card mx-cal">
       <h4>{t('matrix.calib', 'Calibration · your events')}</h4>
-      <p className="pj-sub">{t('matrix.calibsub', 'Log real events to backtest the projection against your own life — a personal hit-rate, kept on this device. An honest track record, not proof.')}</p>
+      <p className="pj-sub">{t('matrix.calibsub', 'Log real events to backtest the projection against your own life. This gives a personal hit-rate, kept on this device. An honest track record, not proof.')}</p>
       <div className="mx-cal-form">
         <input type="month" className="mx-cal-in" value={month} onChange={(e) => setMonth(e.target.value)} aria-label={t('matrix.calmonth', 'Month')} />
         <select className="mx-cal-sel" value={theme} onChange={(e) => setTheme(e.target.value)}>
@@ -1039,8 +1039,8 @@ export default function MatrixPanel({ date, time, place, namer }) {
 
   return (
     <section className="table-panel mx-panel" id="rg-matrix">
-      <h3>{t('matrix.title', 'Chart matrix — domain verdicts')}</h3>
-      <p className="rc-note">{t('matrix.sub', 'Each life-domain read as a weighted, cited composite of the natal factor web. A balance from −1 to +1; the band tints a ledger you can open — an indication, not a fated verdict.')}</p>
+      <h3>{t('matrix.title', 'Chart matrix: domain verdicts')}</h3>
+      <p className="rc-note">{t('matrix.sub', 'Each life-domain read as a weighted, cited composite of the natal factor web. The balance runs from −1 to +1. The band tints a ledger you can open. It is an indication, not a fated verdict.')}</p>
       {busy && <p className="rc-note">{t('matrix.loading', 'Computing the matrix…')}</p>}
       {err && <p className="rc-note pc-err">{err}</p>}
 

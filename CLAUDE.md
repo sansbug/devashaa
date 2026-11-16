@@ -165,6 +165,14 @@ out when the chart has no value for it. A passage quoted from a text is the text
 left exactly as registered. `test_walkthrough.mjs`, `test_findings.mjs`,
 `test_lifeareas.mjs` and `test_dashareading.mjs` each split our English lines into sentences
 and fail on a break (`styleBreak`). Hindi follows the same shape but is not machine-checked.
+The full analysis follows it too: `node web/test_style.mjs` checks every English entry of the
+interface table (`i18n.js` + `i18n-chrome.js`; a range of numbers is not a dash; the few
+fragments a panel joins to something else are listed in its `FRAGMENTS`). NOT restyled, on
+purpose: passages and renderings of the texts, citation lines ("… — Parāśara, tr. …"),
+labels such as "Meen (Pisces) — 13°55′", the provenance / scan-audit flags and the
+`adaptation.note` fields of the generated corpora (`*_rules.py`), the Pūjā section (an
+edited explanation orphans its recording) and the static pages (Compare, References,
+Methodology, Privacy, Support).
 Before shipping new wording, print it for a real chart and read it.
 
 ## Chart findings (the simple view's "What would you like to understand?")

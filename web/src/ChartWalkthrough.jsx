@@ -198,13 +198,13 @@ export default function ChartWalkthrough({ chart, namer, onClose }) {
         <button type="button" className="wt-btn" onClick={() => go(i + 1)} disabled={i === steps.length - 1} aria-label={L('Next step', 'अगला चरण')}>▶</button>
         <label className="wt-voice">
           <input type="checkbox" checked={voiceOn} onChange={(e) => setVoiceOn(e.target.checked)} />
-          {L('Read aloud — this device’s machine voice', 'पढ़कर सुनाएँ — इस उपकरण की मशीनी आवाज़')}
+          {L('Read aloud: this device’s machine voice', 'पढ़कर सुनाएँ: इस उपकरण की मशीनी आवाज़')}
         </label>
         <button type="button" className="wt-copy" onClick={copy} title={L('Plain text, one paragraph a step', 'सादा पाठ, हर चरण का एक अनुच्छेद')}>
           {copied ? L('Copied ✓', 'कॉपी हो गया ✓') : L('Copy the script', 'पटकथा कॉपी करें')}
         </button>
       </div>
-      {noVoice && <p className="wt-note">{L('This device has no voice for English — the captions carry it.', 'इस उपकरण में हिन्दी की कोई आवाज़ नहीं है — कैप्शन पढ़ें।')}</p>}
+      {noVoice && <p className="wt-note">{L('This device has no voice for English. The captions carry it.', 'इस उपकरण में हिन्दी की कोई आवाज़ नहीं है। कैप्शन पढ़ें।')}</p>}
     </section>
   )
 }

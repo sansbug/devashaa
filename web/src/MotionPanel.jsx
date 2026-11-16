@@ -126,7 +126,7 @@ function CombustionStrip({ grahas, namer }) {
           return (
             <g key={g.key} className={`cs-row${c.combust ? ' combust' : ''}`}>
               <title>
-                {`${namer.grahaKey(g.key)} — ${c.separation}° from the Sun · own orb ${c.orb}° → ${c.combust ? 'combust' : 'free'}`}
+                {`${namer.grahaKey(g.key)}: ${c.separation}° from the Sun · own orb ${c.orb}° → ${c.combust ? 'combust' : 'free'}`}
                 {c.confidence === 'uncertain' ? '\n' + t('motion.strip.uncertainNote') : ''}
               </title>
               <rect className="cs-orb" x={x(0)} y={y - 7} width={x(c.orb) - x(0)} height="14" />

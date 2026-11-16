@@ -197,7 +197,7 @@ def build(natal, year: int | None, latitude: float, longitude: float, tz_name: s
             "validation": ("prorated: reproduces Charak's Example Chart (Rāhu balance 38.61 d, test_tajika.py); "
                            "unprorated: all nine boundaries of this chart's 2026-27 year match an independent "
                            "implementation to the day (test_varshaphal.py)"),
-            "note": "Rāhu and Ketu periods are shown; the texts give them no separate strength (Charak p.43, 75).",
+            "note": "Rāhu and Ketu periods are shown. The texts give them no separate strength (Charak p.43, 75).",
         },
         "phala": {
             "source": charak.SOURCE, "caveat": charak.CAVEAT,

@@ -57,23 +57,23 @@ const toHex = (b) =>
 export const normaliseUserid = (s) => String(s || '').toLowerCase().trim()
 
 /**
- * Password strength floor.
+ * Password floor.
  *
- * A minimum, not a suggestion. The data behind it is a name plus a birth
- * moment and place, which identifies a real person, and there is no reset if
- * it is guessed. Length does most of the work — an 8-character password is
- * brute-forceable regardless of which symbols it contains.
+ * The owner (2026-11-17): the 12-character minimum was too much for this site, remove it. The floor is now
+ * PASSWORD_MIN characters, and only the two passwords anyone guesses first are refused: one repeated character,
+ * and a bare common word. Digits alone are allowed.
+ *
+ * What a short password costs, so the next reader knows it was weighed: the password is the key that encrypts
+ * the saved charts (a name with a birth moment and place), and there is no reset if it is forgotten.
  */
+export const PASSWORD_MIN = 6
 export function passwordProblem(pw) {
   const s = String(pw || '')
-  if (s.length < 12) return 'Use at least 12 characters — length matters far more than symbols.'
-  if (/^\d+$/.test(s)) return 'Digits alone are guessed almost instantly.'
-  if (/^(.)\1+$/.test(s)) return 'That is a single repeated character.'
-  const weak = ['password', 'qwerty', '123456', 'letmein', 'welcome', 'admin',
-                'iloveyou', 'astrology', 'horoscope', 'devashaa', 'jyotish']
-  const low = s.toLowerCase()
-  if (weak.some((w) => low.includes(w))) return 'That contains a very common word.'
-  if (new Set(s).size < 5) return 'Use a few more distinct characters.'
+  if (s.length < PASSWORD_MIN) return `Use at least ${PASSWORD_MIN} characters.`
+  if (/^(.)\1+$/.test(s)) return 'That is one character repeated. Use a different password.'
+  const weak = ['password', 'qwerty', '123456', '1234567', '12345678', 'letmein', 'welcome', 'iloveyou',
+                'astrology', 'horoscope', 'devashaa', 'jyotish']
+  if (weak.includes(s.toLowerCase())) return 'That is a very common password. Use a different one.'
   return null
 }
 

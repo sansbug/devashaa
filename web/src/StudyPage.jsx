@@ -101,11 +101,18 @@ export default function StudyPage({ onBack, birth }) {
           <b>Sign in with the owner account</b>
           <input placeholder="User id" value={cred.userid} onChange={(e) => setCred({ ...cred, userid: e.target.value })} autoComplete="username" />
           <input placeholder="Password" type="password" value={cred.password} onChange={(e) => setCred({ ...cred, password: e.target.value })} autoComplete="current-password" />
-          <button disabled={busy}>Sign in</button>
+          <button disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+          {err && <p className="stv-err" style={{ flexBasis: '100%' }}>{err}</p>}
+          <p className="stv-muted" style={{ flexBasis: '100%' }}>
+            This is a devashaa account, not a globalmacrolens one. It needs the admin role, which is claimed once
+            on the <a href="/pooja/desk">Pūjā desk</a> with the owner's admin code.
+          </p>
         </form>
       )}
       {!DEV && session && !owner && (
-        <div className="stv-card">Signed in as {session.userid}. {err || 'Checking access…'} <button onClick={signOut}>Sign out</button></div>
+        <div className="stv-card">Signed in as {session.userid}. {err || 'Checking access…'}
+          {err && <> Claim the admin role on the <a href="/pooja/desk">Pūjā desk</a> first.</>}
+          <button onClick={signOut}>Sign out</button></div>
       )}
 
       {owner && (

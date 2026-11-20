@@ -23,6 +23,7 @@ import { WhoCard } from './SimpleView.jsx'
 import DashaReading from './DashaReading.jsx'
 import Conclusions from './Conclusions.jsx'
 import { Passage } from './Findings.jsx'
+import { HouseCards } from './PlanetMatrix.jsx'
 import { buildWalkthrough } from './walkthrough.js'
 import { buildFindings, rankFindings, TAGS } from './findings.js'
 import { buildLifeAreas } from './lifeareas.js'
@@ -145,6 +146,13 @@ export default function Report({ chart, name, date, time, place, namer, refs, sn
           <h3>{W('The twelve houses', 'बारह भाव')}</h3>
           <div className="rp-cols">{houses.map((s) => <Step key={s.key} s={s} />)}</div>
         </section>
+
+        {chart.analysis && chart.analysis.planet_matrix && !chart.analysis.planet_matrix.error && (
+          <section className="rp-sec rp-houses">
+            <h2>{W('Each house, part by part', 'हर भाव, भाग-भाग करके')}</h2>
+            <HouseCards data={chart.analysis.planet_matrix} namer={namer} grahas={chart.grahas} chart={chart} />
+          </section>
+        )}
 
         {dated && hasBirth && (
           <section className="rp-sec"><DashaReading chart={chart} namer={namer} refs={refs} goFull={() => {}} report /></section>

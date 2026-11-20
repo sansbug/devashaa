@@ -12,9 +12,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { API } from './config.js'
 import { signIn, getSession, onSession, signOut } from './pooja/papi.js'
+import { makeNamer } from './naming.js'
+import { HOUSE } from './walkthrough.js'
 
 const DEV = import.meta.env.DEV
-const RASI = ['Mesh', 'Vrishabh', 'Mithun', 'Kark', 'Simha', 'Kanya', 'Tula', 'Vrishchik', 'Dhanu', 'Makar', 'Kumbh', 'Meen']
 const VARGAS = ['D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12', 'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60', 'D1-D60']
 const TIER = { sloka: '#7a4b00', classical: '#174f86', modern: '#5b5b5b', traditional: '#2d6a3e', note: '#6b3fa0' }
 
@@ -29,9 +30,11 @@ async function call(path, body) {
   return j
 }
 
+const NAMER = makeNamer('common')
+const gname = (k) => (k === 'lagna' ? 'Lagn' : NAMER.grahaKey(k))
 const factors = (f = {}) => [
-  f.graha && f.graha[0].toUpperCase() + f.graha.slice(1),
-  f.rashi != null && RASI[f.rashi],
+  f.graha && gname(f.graha),
+  f.rashi != null && NAMER.rasi(f.rashi),
   f.bhaav != null && `Bhaav ${f.bhaav}`,
   f.nakshatra != null && `Nakshatr ${f.nakshatra}`,
   f.degree != null && `${Number(f.degree).toFixed(2)}°`,
@@ -90,7 +93,8 @@ export default function StudyPage({ onBack, birth }) {
   const [sensitive, setSensitive] = useState(false)
   const [gaps, setGaps] = useState(null)
   const [led, setLed] = useState(null)
-  const [tab, setTab] = useState('chart')
+  const [tab, setTab] = useState('start')
+  const [pick, setPick] = useState(null)   // { label, rows: Set } from Start here
   const [axis, setAxis] = useState('')
 
   useEffect(() => onSession(setSession), [])
@@ -116,13 +120,13 @@ export default function StudyPage({ onBack, birth }) {
       const body = { ...f, latitude: Number(f.latitude), longitude: Number(f.longitude), show_sensitive: sensitive }
       if (!body.timezone) delete body.timezone
       const [g, l] = await Promise.all([gaps ? Promise.resolve(gaps) : call('/api/study/gaps'), call('/api/study', body)])
-      setGaps(g); setLed(l)
+      setGaps(g); setLed(l); setPick(null)
     } catch (x) { setErr(x.message) }
     setBusy(false)
   }
 
   const axes = useMemo(() => [...new Set((led?.rows || []).map((r) => r.axis))].sort(), [led])
-  const shown = (led?.rows || []).filter((r) => !axis || r.axis === axis)
+  const shown = (led?.rows || []).filter((r, i) => (!axis || r.axis === axis) && (!pick || pick.rows.has(i)))
 
   return (
     <div className="page stv">
@@ -171,13 +175,44 @@ export default function StudyPage({ onBack, birth }) {
             <>
               <p>{led.counts.rows} cited lines · {led.counts.silences} silences · {led.counts.sensitive_withheld} sensitive passages withheld</p>
               <div className="stv-tabs">
-                {[['chart', 'This chart'], ['silent', 'Where the texts are silent'], ['gaps', 'Gap map'], ['uses', 'What each division is for']].map(([k, l]) => (
+                {[['start', 'Start here'], ['chart', 'This chart'], ['silent', 'Where the texts are silent'], ['gaps', 'Gap map'], ['uses', 'What each division is for']].map(([k, l]) => (
                   <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>
                 ))}
               </div>
 
+              {tab === 'start' && led.houses && (
+                <>
+                  <p className="stv-muted">One row per house. The lines counted are the ones ABOUT that house: its lord's placement
+                    (BPHS ch.24), the house verses (BPHS chs 12-23), planets placed in it (each book separately), and the
+                    D60 / D16 lord rule. The counts sit side by side and are never combined into a verdict. A "described"
+                    line states a result with no favourable or adverse label of its own.</p>
+                  <table><tbody>
+                    <tr><th>House</th><th>Sign</th><th>Its lord</th><th>Planets in it</th><th>Lines</th><th>Books</th><th></th></tr>
+                    {led.houses.map((h) => (
+                      <tr key={h.house}>
+                        <td><b>{h.house}</b> {HOUSE[h.house]?.title?.en}</td>
+                        <td>{h.sign != null ? NAMER.rasi(h.sign) : ''}</td>
+                        <td>{h.lord ? `${gname(h.lord)}, in house ${h.lord_in}` : ''}</td>
+                        <td>{h.occupants.map(gname).join(', ') || <span className="stv-muted">none</span>}</td>
+                        <td>
+                          {h.lines.favourable > 0 && <span className="stv-fav">{h.lines.favourable} favourable</span>}
+                          {h.lines.adverse > 0 && <span className="stv-adv">{h.lines.adverse} adverse</span>}
+                          {h.lines.stated > 0 && <span className="stv-muted">{h.lines.stated} described</span>}
+                          {h.sensitive_withheld > 0 && <div className="stv-muted">{h.sensitive_withheld} sensitive withheld</div>}
+                        </td>
+                        <td className="stv-muted">{h.sources.join(', ')}</td>
+                        <td>{h.rows.length > 0 && (
+                          <button type="button" onClick={() => { setPick({ label: `House ${h.house}: ${HOUSE[h.house]?.title?.en || ''}`, rows: new Set(h.rows) }); setAxis(''); setTab('chart') }}>
+                            Show these lines</button>)}</td>
+                      </tr>
+                    ))}
+                  </tbody></table>
+                </>
+              )}
+
               {tab === 'chart' && (
                 <>
+                  {pick && <p><b>{pick.label}</b> · {pick.rows.size} lines <button type="button" onClick={() => setPick(null)}>Show all lines</button></p>}
                   <select value={axis} onChange={(e) => setAxis(e.target.value)}>
                     <option value="">All relations</option>
                     {axes.map((a) => <option key={a} value={a}>{a} ({led.counts.by_axis[a]})</option>)}
@@ -216,7 +251,7 @@ export default function StudyPage({ onBack, birth }) {
                     <tr key={i}>
                       <td>{s.axis}</td><td>{s.varga}</td>
                       <td>{s.factors?.placements
-                        ? Object.entries(s.factors.placements).filter(([, x]) => x != null).map(([k, x]) => `${k} ${RASI[x]}`).join(', ')
+                        ? Object.entries(s.factors.placements).filter(([, x]) => x != null).map(([k, x]) => `${gname(k)} ${NAMER.rasi(x)}`).join(', ')
                         : factors(s.factors)}</td>
                       <td className="stv-muted">{s.reason}</td>
                     </tr>
@@ -268,6 +303,8 @@ const CSS = `
 .stv-hits{list-style:none;margin:2px 0 0;padding:0;border:1px solid var(--line,#ddd);border-radius:6px;max-height:260px;overflow:auto;background:var(--bg,#fff);position:absolute;z-index:5;left:0;right:0}
 .stv-hits button{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 8px;cursor:pointer;color:inherit}
 .stv-hits button:hover{background:rgba(0,0,0,.06)}
+.stv-fav{color:#2d6a3e;margin-right:8px}.stv-adv{color:#b3261e;margin-right:8px}
+.stv th{text-align:left;font-size:13px;opacity:.8}
 .stv-check{flex-direction:row!important;align-items:center;gap:6px!important}
 .stv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .stv-tabs button.on{font-weight:700;text-decoration:underline}

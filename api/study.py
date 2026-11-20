@@ -580,10 +580,40 @@ def ledger(payload: dict, transit_grahas=None, show_sensitive=False) -> dict:
     for r in rows:
         by_axis[r["axis"]] = by_axis.get(r["axis"], 0) + 1
         by_tier[r["tier"]] = by_tier.get(r["tier"], 0) + 1
+    # Start here: for each house, the lines that are ABOUT that house. Counts by side are
+    # shown side by side and never combined into a verdict.
+    houses = []
+    for h in range(1, 13):
+        sign = (lagna + h - 1) % 12 if lagna is not None else None
+        lord = RASI_LORD[sign] if sign is not None else None
+        idx = []
+        for i, r in enumerate(rows):
+            f = r.get("factors") or {}
+            if r["transit"]:
+                continue
+            if r["axis"] == "bhaav lord x bhaav" and r.get("lord_of") == h:
+                idx.append(i)
+            elif r["axis"] in ("bhaav condition", "bhaav lord x D60 / D16 part") and f.get("bhaav") == h:
+                idx.append(i)
+            elif r["axis"] == "graha x bhaav" and f.get("bhaav") == h:
+                idx.append(i)
+        side = {"favourable": 0, "adverse": 0, "stated": 0}
+        for i in idx:
+            p = rows[i].get("polarity")
+            side[p if p in ("favourable", "adverse") else "stated"] += 1
+        houses.append({
+            "house": h, "sign": sign, "lord": lord,
+            "lord_in": (grahas.get(lord) or {}).get("bhava"),
+            "occupants": [k for k, g in grahas.items() if g.get("bhava") == h],
+            "rows": idx, "lines": side,
+            "sources": sorted({rows[i]["source"] for i in idx if rows[i].get("source")}),
+            "sensitive_withheld": sum(1 for i in idx if rows[i]["sensitive"] and rows[i]["text"] is None),
+        })
+
     uses = {v: {"topic": t, "words": w, "citation": vr.USES_CITATION,
                 **({"adaptation": vr.USES_ADAPTATION[v]} if v in vr.USES_ADAPTATION else {})}
             for v, (t, w) in vr.USES.items()}
-    return {"rows": rows, "silences": silences, "uses": uses,
+    return {"rows": rows, "silences": silences, "uses": uses, "houses": houses,
             "counts": {"rows": len(rows), "silences": len(silences),
                        "by_axis": by_axis, "by_tier": by_tier,
                        "sensitive_withheld": sum(1 for r in rows if r["sensitive"] and r["text"] is None)},

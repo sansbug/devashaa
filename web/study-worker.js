@@ -35,7 +35,7 @@ export async function handleStudy(request, env, authorise) {
 
   if (!env.STUDY_KEY) return reply({ error: 'The study API key is not configured on the Worker.' }, 503)
   const base = env.STUDY_API || 'https://devashaa-api.onrender.com'
-  const init = { method: request.method, headers: { 'X-Study-Key': env.STUDY_KEY } }
+  const init = { method: request.method, headers: { 'X-Study-Key': String(env.STUDY_KEY).trim() } }
   if (request.method === 'POST') {
     init.headers['Content-Type'] = 'application/json'
     init.body = await request.text()

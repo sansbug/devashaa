@@ -716,9 +716,9 @@ def _study_allowed() -> bool:
     signed-in admin and forwards with X-Study-Key = STUDY_KEY. With no STUDY_KEY set,
     only a caller on this machine (local development) is answered."""
     import hmac
-    key = os.environ.get("STUDY_KEY", "")
+    key = os.environ.get("STUDY_KEY", "").strip()
     if key:
-        return hmac.compare_digest(request.headers.get("X-Study-Key", ""), key)
+        return hmac.compare_digest(request.headers.get("X-Study-Key", "").strip(), key)
     # No key: never on a host. Render (which sets RENDER) proxies every request from
     # 127.0.0.1, so the address alone cannot tell a local developer from the public.
     if os.environ.get("RENDER") or os.environ.get("STUDY_REQUIRE_KEY"):
@@ -726,12 +726,21 @@ def _study_allowed() -> bool:
     return request.remote_addr in ("127.0.0.1", "::1")
 
 
+def _study_refusal():
+    """Say why only to a caller that sent a key (the Worker); everyone else gets a 404."""
+    if not request.headers.get("X-Study-Key"):
+        return jsonify({"error": "not found"}), 404
+    if not os.environ.get("STUDY_KEY", "").strip():
+        return jsonify({"error": "STUDY_KEY is not set on Render (or Render has not redeployed since it was added)."}), 503
+    return jsonify({"error": "The STUDY_KEY on Render does not match the one on Cloudflare."}), 403
+
+
 @app.get("/api/study/gaps")
 def study_gaps_route():
     """The gap map: each relation axis, the registered sources covering it, and what
     is silent. Counts are read from the corpora (study.py)."""
     if not _study_allowed():
-        return jsonify({"error": "not found"}), 404
+        return _study_refusal()
     return jsonify(study_mod.gap_map())
 
 
@@ -741,7 +750,7 @@ def study_route():
     optional transit moment (`transit_date` YYYY-MM-DD, `transit_time` HH:MM, in the
     natal zone). Sensitive passages are withheld unless `show_sensitive` is true."""
     if not _study_allowed():
-        return jsonify({"error": "not found"}), 404
+        return _study_refusal()
     body = request.get_json(silent=True) or {}
     resp = chart()
     if isinstance(resp, tuple):

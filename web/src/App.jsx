@@ -53,6 +53,7 @@ import './App.css'
 // Pūjā & Havan is its own section with its own bundle — nothing of it loads with a chart.
 const PoojaApp = lazy(() => import('./pooja/PoojaApp.jsx'))
 const ChartWalkthrough = lazy(() => import('./ChartWalkthrough.jsx'))
+const StudyPage = lazy(() => import('./StudyPage.jsx'))
 
 const VARGA_LABELS = [
   ['D1', 'Raashi'], ['D2', 'Horā'], ['D3', 'Drekkāṇa'], ['D4', 'Chaturthāṁśa'],
@@ -729,6 +730,9 @@ export default function App() {
 
   if (route === '/pooja' || route.startsWith('/pooja/') || route.startsWith('/pooja?')) {
     return <Suspense fallback={<div className="page"><p className="sub">…</p></div>}><PoojaApp route={route} go={go} lang={lang} setLang={changeLang} /></Suspense>
+  }
+  if (route === '/study') {
+    return <Suspense fallback={<div className="page"><p className="sub">…</p></div>}><StudyPage onBack={() => go('/')} birth={{ date, time, place }} /></Suspense>
   }
   if (route === '/privacy') return <Privacy onBack={() => go('/')} />
   if (route === '/references') return <References lang={lang} onBack={() => go('/')} />

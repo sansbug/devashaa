@@ -23,6 +23,7 @@
  */
 
 import { handlePooja, forgetPandit, PoojaRoom } from './pooja-worker.js'
+import { handleStudy } from './study-worker.js'
 
 // The live-room Durable Object class must be exported from the entry module.
 export { PoojaRoom }
@@ -106,6 +107,8 @@ export default {
 
     // Devashaa Pūjā is its own service on this Worker — see pooja-worker.js.
     if (path.startsWith('/api/pooja')) return handlePooja(request, env, ctx, authorise)
+    // The owner's study view — admin only, forwarded to the Python API (study-worker.js).
+    if (path === '/api/study' || path.startsWith('/api/study/')) return handleStudy(request, env, authorise)
 
     if (!path.startsWith('/api/account') && !path.startsWith('/api/share')) return env.ASSETS.fetch(request)
     if (request.method === 'OPTIONS') {

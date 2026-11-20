@@ -47,6 +47,7 @@ import panchang_score
 import festivals as festivals_mod
 import rao_pointers
 import shadbala_context
+import study as study_mod
 from rasis import all_rasis, rasi
 from geocode import search, timezone_at, database_status
 
@@ -64,6 +65,8 @@ def _plain_prose(resp):
     returns them as written. The reference fields themselves are never
     touched either way."""
     if request.headers.get("X-Refs") == "1" or resp.mimetype != "application/json":
+        return resp
+    if request.path.startswith("/api/study"):   # the owner's study view: always with references
         return resp
     try:
         raw = resp.get_data(as_text=True)
@@ -705,6 +708,56 @@ def matrix_explain_endpoint():
                                      geo={"latitude": lat, "longitude": lon, "timezone": tz_name})
     except Exception as e:  # noqa: BLE001
         return jsonify({"error": f"Explain failed: {e}"}), 500
+    return jsonify(out)
+
+
+def _study_allowed() -> bool:
+    """The study view is the owner's. The Worker (web/study-worker.js) checks the
+    signed-in admin and forwards with X-Study-Key = STUDY_KEY. With no STUDY_KEY set,
+    only a caller on this machine (local development) is answered."""
+    import hmac
+    key = os.environ.get("STUDY_KEY", "")
+    if key:
+        return hmac.compare_digest(request.headers.get("X-Study-Key", ""), key)
+    return request.remote_addr in ("127.0.0.1", "::1")
+
+
+@app.get("/api/study/gaps")
+def study_gaps_route():
+    """The gap map: each relation axis, the registered sources covering it, and what
+    is silent. Counts are read from the corpora (study.py)."""
+    if not _study_allowed():
+        return jsonify({"error": "not found"}), 404
+    return jsonify(study_mod.gap_map())
+
+
+@app.post("/api/study")
+def study_route():
+    """The per-chart study ledger: every cited relation that fires, D1-D60, plus an
+    optional transit moment (`transit_date` YYYY-MM-DD, `transit_time` HH:MM, in the
+    natal zone). Sensitive passages are withheld unless `show_sensitive` is true."""
+    if not _study_allowed():
+        return jsonify({"error": "not found"}), 404
+    body = request.get_json(silent=True) or {}
+    resp = chart()
+    if isinstance(resp, tuple):
+        return resp
+    payload = resp.get_json()
+    transit = None
+    if body.get("transit_date"):
+        try:
+            tdt = datetime.strptime(
+                f"{body['transit_date']} {body.get('transit_time') or '12:00'}", "%Y-%m-%d %H:%M")
+            if not EPHE_YEAR_MIN <= tdt.year <= EPHE_YEAR_MAX:
+                raise ValueError("transit year outside the ephemeris range")
+            tc = compute_chart(local_dt=tdt, latitude=float(body["latitude"]),
+                               longitude=float(body["longitude"]),
+                               tz_name=payload.get("timezone") or "UTC")
+            transit = [{"key": g.key, "rasi": g.rasi, "longitude": g.longitude} for g in tc.grahas]
+        except ValueError as e:
+            return jsonify({"error": f"transit: {e}"}), 400
+    out = study_mod.ledger(payload, transit, show_sensitive=bool(body.get("show_sensitive")))
+    out["transit_date"] = body.get("transit_date")
     return jsonify(out)
 
 

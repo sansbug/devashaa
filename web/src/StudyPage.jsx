@@ -37,6 +37,41 @@ const factors = (f = {}) => [
   f.degree != null && `${Number(f.degree).toFixed(2)}°`,
 ].filter(Boolean).join(' · ')
 
+/** Type a town, pick it: fills latitude, longitude and time zone (the site's own place list). */
+function PlacePick({ onPick, initial }) {
+  const [q, setQ] = useState(initial || '')
+  const [hits, setHits] = useState([])
+  const [busy, setBusy] = useState(false)
+  const [picked, setPicked] = useState(initial || '')
+  useEffect(() => {
+    if (!q.trim() || q === picked) { setHits([]); return }
+    const id = setTimeout(async () => {
+      setBusy(true)
+      try {
+        const r = await fetch(`${API}/api/places?q=${encodeURIComponent(q)}`)
+        setHits(((await r.json()).places) || [])
+      } catch { setHits([]) }
+      setBusy(false)
+    }, 200)
+    return () => clearTimeout(id)
+  }, [q, picked])
+  return (
+    <label className="stv-place">Birth place
+      <input value={q} placeholder="Type a town or city" autoComplete="off" onChange={(e) => setQ(e.target.value)} />
+      {busy && <span className="stv-muted">Searching… (the first search can take up to a minute)</span>}
+      {hits.length > 0 && (
+        <ul className="stv-hits">
+          {hits.slice(0, 8).map((p, i) => (
+            <li key={i}><button type="button" onClick={() => { onPick(p); setPicked(p.name); setQ(p.name); setHits([]) }}>
+              <b>{p.name}</b> <span className="stv-muted">{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)} · {p.timezone}</span>
+            </button></li>
+          ))}
+        </ul>
+      )}
+    </label>
+  )
+}
+
 function Tier({ t }) {
   return <span className="stv-tier" style={{ background: TIER[t] || '#444' }}>{t}</span>
 }
@@ -120,6 +155,8 @@ export default function StudyPage({ onBack, birth }) {
           <form className="stv-card stv-form" onSubmit={build}>
             <label>Date <input type="date" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} required /></label>
             <label>Time <input type="time" value={f.time} onChange={(e) => setF({ ...f, time: e.target.value })} required /></label>
+            <PlacePick initial={birth?.place?.name}
+              onPick={(p) => setF((x) => ({ ...x, latitude: p.latitude, longitude: p.longitude, timezone: p.timezone }))} />
             <label>Latitude <input value={f.latitude} onChange={(e) => setF({ ...f, latitude: e.target.value })} required /></label>
             <label>Longitude <input value={f.longitude} onChange={(e) => setF({ ...f, longitude: e.target.value })} required /></label>
             <label>Time zone <input placeholder="e.g. Asia/Kolkata" value={f.timezone} onChange={(e) => setF({ ...f, timezone: e.target.value })} /></label>
@@ -226,6 +263,11 @@ const CSS = `
 .stv-muted{opacity:.7;font-size:13px}
 .stv-card{border:1px solid var(--line,#ddd);border-radius:8px;padding:12px;margin:12px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .stv-form label{display:flex;flex-direction:column;font-size:13px;gap:2px}
+.stv-place{position:relative;flex:1 1 260px}
+.stv-place input{width:100%}
+.stv-hits{list-style:none;margin:2px 0 0;padding:0;border:1px solid var(--line,#ddd);border-radius:6px;max-height:260px;overflow:auto;background:var(--bg,#fff);position:absolute;z-index:5;left:0;right:0}
+.stv-hits button{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 8px;cursor:pointer;color:inherit}
+.stv-hits button:hover{background:rgba(0,0,0,.06)}
 .stv-check{flex-direction:row!important;align-items:center;gap:6px!important}
 .stv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .stv-tabs button.on{font-weight:700;text-decoration:underline}

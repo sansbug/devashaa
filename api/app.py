@@ -719,6 +719,10 @@ def _study_allowed() -> bool:
     key = os.environ.get("STUDY_KEY", "")
     if key:
         return hmac.compare_digest(request.headers.get("X-Study-Key", ""), key)
+    # No key: never on a host. Render (which sets RENDER) proxies every request from
+    # 127.0.0.1, so the address alone cannot tell a local developer from the public.
+    if os.environ.get("RENDER") or os.environ.get("STUDY_REQUIRE_KEY"):
+        return False
     return request.remote_addr in ("127.0.0.1", "::1")
 
 

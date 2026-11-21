@@ -115,7 +115,14 @@ CAND = {
     "jp_vargas": "Jataka Parijata (Subramanya Sastri): its varga chapter. Locus to verify.",
     "bphs_av_transit": "BPHS Vol II, the Ashtakavarga chapters: results of transits through signs "
                        "by bindus (kakshya). Locus to verify.",
-    "hora_sara": "Hora Sara (Santhanam): nakshatra and degree results. Locus to verify.",
+    "bphs_ch29": "BPHS I ch.29 (Santhanam, from PDF p.292, located 2026-11-21): the Arudha padas of the "
+                 "houses and planets, and results from the Arudha Lagna.",
+    "bphs_ch30": "BPHS I ch.30 (from PDF p.302): Upapada, the Arudha of the 12th. Its spouse and child verses "
+                 "fall under the site's sensitive rules (CLAUDE.md rule 2).",
+    "bphs_ch31": "BPHS I ch.31 (PDF pp.310-316): Argala (planetary intervention), its obstruction and effects.",
+    "bphs_ch33": "BPHS I ch.33 (from about PDF p.318): results from the Karakamsa. The engine computes the "
+                 "Karakamsa itself (karakas.py, ch.33 v.1) but registers none of its results.",
+    "hora_sara":"Hora Sara (Santhanam): nakshatra and degree results. Locus to verify.",
 }
 
 
@@ -244,6 +251,17 @@ def gap_map() -> dict:
     rows.append(_row(
         "strength across vargas", ["graha", "varga"], 9,
         [_src("bphs", "sloka", 7, note="Vimshopaka bala, ch.7 vv.17-27 (Rahu/Ketu excluded).")]))
+
+    # Jaimini-style points that BPHS itself teaches (chs 29-33). Found missing when the
+    # Science of Light syllabus was mapped against this table (docs/sol-topic-map.md).
+    rows.append(_row("Arudha pada x bhaav / graha", ["bhaav", "rashi"], None, [],
+                     note="No Arudha is computed and no result from it is registered.",
+                     candidates=["bphs_ch29", "bphs_ch30"]))
+    rows.append(_row("Argala on a bhaav", ["bhaav", "graha"], None, [],
+                     note="Not computed, no result registered.", candidates=["bphs_ch31"]))
+    rows.append(_row("Karakamsa results", ["graha", "varga"], None, [],
+                     note="The Karakamsa is computed (karakas.py); none of its results is registered.",
+                     candidates=["bphs_ch33"]))
 
     # Transits
     rows.append(_row(

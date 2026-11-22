@@ -20,8 +20,8 @@ Status: **have** = registered and cited · **part** = some of it · **gap** = no
 | 8 | Bhāveśa (house lords) | ch.24 | all 144 lord-in-house cells | have |
 | 9 | Strengths and status | ch.7 Viṁśopaka; ch.27 Ṣaḍbala; ch.45 avasthās; ch.34 functional natures | all four | have |
 | 10 | Pañcāṅga, Pañcāṅga doṣa | muhūrta tradition (not BPHS) | `panchang.py`, `muhurta.py` (traditional tier) | have |
-| 11 | **Ārūḍha** | **ch.29** (padas of houses and planets; PDF from p.292); **ch.30** Upapada (from p.302) | not computed, nothing registered | **gap** |
-| 12 | **Argalā** | **ch.31** (PDF pp.310–316) | not computed, nothing registered | **gap** |
+| 11 | **Ārūḍha** | **ch.29** (padas of houses and planets; PDF from p.292); **ch.30** Upapada (from p.302) | DONE 2026-11-21: 12 bhava padas + 18 result verses (`arudha_argala.py`); Upapada left out | have (part) |
+| 12 | **Argalā** | **ch.31** (PDF pp.310–316) | DONE 2026-11-21: Argala on every house, the AL and its 7th; vv.2-9 and v.10 shown side by side; effects vv.11-18 | have |
 | 13 | Sambandha and yogas | ch.3 relationships; chs 35–41 yogas | 88 yogas catalogued | part: nīca-bhaṅga, sign exchange, Pravrajyā (BJ ch.15) missing (see the web pilot) |
 | 14 | Nakṣatra | ch.6 deities; Vol II ch.46 lords | facts; Moon in 20/27 nakshatras (Bṛhat Jātaka ch.16) | part |
 | 15 | Daśā (timing) | Vol II chs 46–60 | Viṁśottarī + others, ch.47 verdicts, chs 52–60 antardaśā | have (Chara Daśā: lengths only) |
@@ -52,3 +52,17 @@ check twice, and add tests.
 
 None of the paid lessons, recordings or book text. If the book is bought, it can be cited by page
 on the `modern` tier (like Patel on D9). It never replaces the BPHS verse it explains.
+
+## Done 2026-11-21: Ārūḍha and Argalā (`api/arudha_argala.py`)
+
+- The 12 bhava padas with the verse's exceptions (ch.29 vv.4-5). **Santhanam's printed Ārūḍha chart
+  skips the 7th-house exception in houses 9 and 10**, and his note 2 gives a third answer. The verse is
+  followed, and the plain count is shown beside it. The tests pin both his worked chart and this difference.
+- 18 result verses from the Ārūḍha Lagna (ch.29 vv.8-36, ch.30 v.39), each returned whole with the
+  clause that fired. Left out: v.24 (a sexual verdict on the body), v.29 (the frame for counting from
+  the Kārakāṁśa is not stated) and the clauses that need a planet's strength.
+- Argalā (ch.31): formation and obstruction by vv.2-9 (by number of planets; strength is not
+  evaluated) and by v.10 (quarters of the sign), both shown and never merged; Vipareeta; grades. For
+  the effects of vv.11-17 the planet must also aspect the house, as the translation states.
+- Read from the page images, then re-read at zoom. The re-read caught one logic error (v.16 means
+  a conjunct benefic and malefic *aspecting* the 12th), which is fixed and pinned by a test.

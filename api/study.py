@@ -45,11 +45,22 @@ import nakshatra_techniques
 import charak_annual_rules
 import varga_rules as vr
 import bj_varga_rules as bjv
+import arudha_argala as aa
 
 GRAHAS7 = ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn")
 GRAHAS9 = GRAHAS7 + ("rahu", "ketu")
 VARGAS = ("D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12", "D16", "D20",
           "D24", "D27", "D30", "D40", "D45", "D60")
+SIGN_COMMON = ["Mesh", "Vrishabh", "Mithun", "Kark", "Simha", "Kanya",
+               "Tula", "Vrishchik", "Dhanu", "Makar", "Kumbh", "Meen"]
+_GNAME = {"sun": "Surya", "moon": "Chandra", "mars": "Mangal", "mercury": "Budh", "jupiter": "Guru",
+          "venus": "Shukr", "saturn": "Shani", "rahu": "Rahu", "ketu": "Ketu"}
+
+
+def gname_plain(k):
+    return _GNAME.get(k, k)
+
+
 RASI_LORD = ["mars", "venus", "mercury", "moon", "sun", "mercury",
              "venus", "mars", "jupiter", "saturn", "saturn", "jupiter"]
 
@@ -254,11 +265,19 @@ def gap_map() -> dict:
 
     # Jaimini-style points that BPHS itself teaches (chs 29-33). Found missing when the
     # Science of Light syllabus was mapped against this table (docs/sol-topic-map.md).
-    rows.append(_row("Arudha pada x bhaav / graha", ["bhaav", "rashi"], None, [],
-                     note="No Arudha is computed and no result from it is registered.",
-                     candidates=["bphs_ch29", "bphs_ch30"]))
-    rows.append(_row("Argala on a bhaav", ["bhaav", "graha"], None, [],
-                     note="Not computed, no result registered.", candidates=["bphs_ch31"]))
+    rows.append(_row("Arudha pada x bhaav / graha", ["bhaav", "rashi"], None,
+                     [_src("bphs", "sloka", 12, note="The 12 bhava padas, ch.29 vv.1-5 (the verse's exceptions applied)."),
+                      _src("bphs", "sloka", sum(1 for k in aa.V if k.startswith("29.") or k == "30.39"),
+                           note="Result verses from the Arudha Lagna, ch.29 vv.8-36 and ch.30 v.39.")],
+                     note="Graha padas of Mars to Saturn, v.24, v.29 and the strength clauses are not evaluated "
+                          "(arudha_argala.py lists why). Upapada (ch.30) is left out.",
+                     candidates=["bphs_ch30"]))
+    rows.append(_row("Argala on a bhaav", ["bhaav", "graha"], None,
+                     [_src("bphs", "sloka", 2, note="Formation and obstruction, ch.31 vv.2-9 and the quarter rule v.10, "
+                                                   "both shown, never merged."),
+                      _src("bphs", "sloka", 2, note="Effects, ch.31 vv.11-18.")],
+                     note="Strength is not evaluated: where obstructors are as many as the Argala planets, "
+                          "the result is left undecided."))
     rows.append(_row("Karakamsa results", ["graha", "varga"], None, [],
                      note="The Karakamsa is computed (karakas.py); none of its results is registered.",
                      candidates=["bphs_ch33"]))
@@ -533,6 +552,44 @@ def ledger(payload: dict, transit_grahas=None, show_sensitive=False) -> dict:
                                extra={"why": f"The lord of house {h} is in a D16 sign ruled by {d16_lord}, a natural benefic here.",
                                       "basis": vr.D16_NOTE_CITATION + "; natures BPHS I ch.3 v.11"}, **S))
 
+    # BPHS chs 29-31: Arudha padas, their verses, and Argala
+    try:
+        aad = aa.evaluate({k: {"rasi": g["rasi"], "longitude": g["longitude"]} for k, g in grahas.items()},
+                          lagna, natures=natures or None)
+    except Exception:  # noqa: BLE001 — a failure here must not cost the rest of the study
+        aad = None
+    if aad:
+        for h, p in aad["padas"].items():
+            txt = (f"{p['name']} (pada of house {h}) is in {SIGN_COMMON[p['sign']]}, "
+                   f"house {p['house_from_lagna']} from the Lagn.")
+            if p["exception_applied"]:
+                txt += (f" The verse's exception (vv.4-5) moved it from {SIGN_COMMON[p['plain_count']]}.")
+            rows.append(_r("Arudha pada (fact)", source="bphs", tier="sloka", citation=aad["padas_citation"],
+                           text=txt, confidence=aa.CONFIDENCE, rashi=p["sign"], bhaav=h,
+                           extra={"fact": True, "pada_of": h}, **S))
+        for h, a in aad["argala"]["houses"].items():
+            for p in a["places"]:
+                status = {"unobstructed": "unobstructed", "prevails_by_number": "prevails by number (v.4)",
+                          "obstructed_unless_stronger": "obstructed unless the Argala planet is stronger (not evaluated)"}[p["status_vv2_9"]]
+                txt = (f"From the {p['from']}: {', '.join(gname_plain(g) for g in p['argala'])} ({p['kind']}, {p['grade_v7']}). "
+                       + (f"Obstructors in the {p['obstructed_from']}: {', '.join(gname_plain(g) for g in p['obstructors'])}. " if p["obstructors"] else "")
+                       + f"By vv.2-9: {status}."
+                       + (f" By v.10 (quarters): countered." if p["countered_v10"] else (" By v.10 (quarters): not countered." if p["obstructors"] else "")))
+                rows.append(_r("Argala on a bhaav", source="bphs", tier="sloka", citation=a["citation"], text=txt,
+                               confidence=aa.CONFIDENCE, bhaav=h, extra={"fact": True, "argala": p}, **S))
+            if a["vipareeta"]:
+                rows.append(_r("Argala on a bhaav", source="bphs", tier="sloka", citation="BPHS I ch.31 v.4 (p.312)",
+                               text=f"Vipareeta Argala: three or more malefics in the 3rd ({', '.join(a['vipareeta'])}).",
+                               polarity="favourable", confidence=aa.CONFIDENCE, bhaav=h, **S))
+        for m in aad["matches"]:
+            for c in m["clauses"]:
+                rows.append(_r("Arudha / Argala verse", source="bphs", tier="sloka", citation=m["citation"],
+                               text=m["text"], polarity=c.get("polarity"), confidence=aa.CONFIDENCE,
+                               bhaav=m.get("house"),
+                               extra={"why": c.get("why"), **({"gloss": m["gloss"]} if m.get("gloss") else {}),
+                                      **({"note": m["note"]} if m.get("note") else {}),
+                                      **({"via": m["via"]} if m.get("via") else {})}, **S))
+
     # Brihat Jataka: the Moon in its nakshatra (ch.16), drekkana forms (ch.27)
     mn = (grahas.get("moon") or {}).get("nakshatra") or {}
     if mn.get("index"):
@@ -611,7 +668,8 @@ def ledger(payload: dict, transit_grahas=None, show_sensitive=False) -> dict:
                 continue
             if r["axis"] == "bhaav lord x bhaav" and r.get("lord_of") == h:
                 idx.append(i)
-            elif r["axis"] in ("bhaav condition", "bhaav lord x D60 / D16 part") and f.get("bhaav") == h:
+            elif r["axis"] in ("bhaav condition", "bhaav lord x D60 / D16 part", "Argala on a bhaav",
+                               "Arudha / Argala verse") and f.get("bhaav") == h:
                 idx.append(i)
             elif r["axis"] == "graha x bhaav" and f.get("bhaav") == h:
                 idx.append(i)

@@ -10,7 +10,7 @@
 import { useLang } from './LangContext.jsx'
 import { refsOn } from './refs.js'
 import { HOUSE, STAGE, GRADE } from './walkthrough.js'
-import { BAND, LAYERS_LEAD, aspectBand, houseLayers, EFFECT, effectLine, CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
+import { SUTTON, BAND, LAYERS_LEAD, aspectBand, houseLayers, EFFECT, effectLine, CARRIES, EN_ORD, FRACTION, NATURE, OURS, RELATION, RELATION_ORDER, SIGN_STATE, WHY, houseLine, lordState, nakshatraLord, notes, parts, partsLine } from './planetmatrix.js'
 
 const SEVEN = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']
 
@@ -105,7 +105,7 @@ export default function PlanetMatrix({ data, namer, grahas, chart }) {
       </div>
 
       <h4 className="pm-h">{W('2. The Nakshatr lord behind each planet', '2. हर ग्रह के पीछे नक्षत्र स्वामी')}</h4>
-      <p className="pm-key">{W('A later teaching says a Nakshatr takes its strength from its own lord. This table shows the state of that lord.', 'एक बाद की शिक्षा कहती है कि नक्षत्र अपना बल अपने स्वामी से लेता है। यह तालिका उस स्वामी की स्थिति दिखाती है।')}</p>
+      <p className="pm-key">{W('A modern author, Komilla Sutton, reads each planet through the lord of its Nakshatr: a friend means the planet is at ease there, an enemy means conflict. The effect on strength is this site’s own step. This table shows the state of that lord.', 'आधुनिक लेखिका कोमिला सटन हर ग्रह को उसके नक्षत्र के स्वामी के साथ पढ़ती हैं: मित्र हो तो ग्रह वहाँ सहज है, शत्रु हो तो उलझन। बल पर असर इस साइट का अपना कदम है। यह तालिका उस स्वामी की स्थिति दिखाती है।')}{refs ? <small> ({SUTTON.label[L]}: {SUTTON.cite})</small> : null}</p>
       <div className="pm-wrap">
         <table className="pm-table">
           <thead>

@@ -14,6 +14,7 @@ import { Bubble } from './DashaGlyphs.jsx'
 import { buildDashaReading } from './dashareading.js'
 import { SENSITIVE } from './findings.js'
 import { API } from './config.js'
+import { SUTTON, nakshatraTie, tieLine } from './planetmatrix.js'
 
 const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
 
@@ -102,6 +103,10 @@ export default function DashaReading({ chart, namer, refs, goFull, report = fals
       </div>
       <p>{r.brings[L]}</p>
       <p className="dsr-verdict">{r.verdict.line[L]}</p>
+      {nakshatraTie(r.lord, chart) && (
+        <p className="dsr-nak">{tieLine(r.lord, nakshatraTie(r.lord, chart), (k) => namer.grahaKey(k), (x) => namer.nakshatra(x), L)}
+          {' '}<small>({SUTTON.label[L]}{refs ? `: ${SUTTON.cite}` : ''})</small></p>
+      )}
       <SubResults cell={cells[r.role]} L={L} refs={refs} />
     </div>
   )

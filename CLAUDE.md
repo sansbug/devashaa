@@ -332,6 +332,15 @@ each house, friends and enemies in this chart, what each planet carries.
   **later than the registered classical texts**, which use the Nakshatr lord for the Dasha only. The
   page says so, and the lord **never moves a planet between the benefic and malefic columns** (a
   test pins it). Do not let it decide a verdict without a registered source.
+- **Registered modern source** (owner, 2026-11-21: "Nakshatr lord, cited"): Komilla Sutton, *The
+  Essentials of Vedic Astrology* (the owner's PDF, `Downloads\…Komilla-Sutton-Essentials-of-Vedic-
+  Astrology.pdf`), PDF pp.123, 153, 155, 157. `SUTTON` in `planetmatrix.js`, tier `modern`, pointers
+  only (her gist in our words, never her prose). What she says: a planet's friend / enemy / neutral
+  relation to its Nakshatr lord shows ease or conflict, used most for the Dasha lord. What she does
+  NOT say: the strength effect (`lordEffect`) — that stays the owner's, and the page says "ours, not
+  hers". `nakshatraTie` + `tieLine` put one cited line under each running and next Dasha row
+  (`DashaReading.jsx`, so it also prints in the report). Not taken from her: Rahu/Ketu aspects on the
+  5th/7th/9th, Kal Sarpa Yog, her percentage strength scale (none has a classical source).
 - **Effect on the planet** (owner's rule, same day: Guru in Meen but in Revati, lord Budh its enemy,
   "reduces the strength of Guru"). `lordEffect`: the planet's **fixed** friendship towards the lord
   decides. Friend or own Nakshatr = Supports, enemy = Reduces, neutral = No change, a node on either

@@ -3580,6 +3580,8 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .dsr-row-head small { font-size: .74rem; color: var(--dim); }
 .dsr-row p { margin: 0 0 .2rem; }
 .dsr-verdict { color: var(--dim); font-size: .8rem; }
+.dsr-nak { font-size: .8rem; margin: .25rem 0 0; }
+.dsr-nak small { color: var(--dim); }
 
 /* the text's result lists for a sub-period */
 .dsr-sub { margin-top: .45rem; padding-top: .45rem; border-top: 1px dashed var(--line); }

@@ -102,19 +102,21 @@ export function notes(n, L, conjunct = []) {
     'मित्रता दोनों दिशाओं में हमेशा एक जैसी नहीं होती। एक ग्रह दूसरे को शत्रु मान सकता है जबकि दूसरा उसे सम मानता है।',
   ]
   en.push('Each planet sits in a Nakshatr, and each Nakshatr has a lord.',
-    'A later teaching says a Nakshatr takes its strength from its own lord, not from the lord of the Raashi.',
+    'A modern author, Komilla Sutton, reads each planet through the lord of its Nakshatr. Whether the planet counts that lord a friend, an enemy or neutral shows whether it is at ease in that Nakshatr or in conflict there. She uses this most for the planet whose Dasha is running.',
     'So the matrix shows where that lord sits, how strong it is by sign, and its nature.',
     'It also shows how the planet and the lord stand towards each other in this chart.',
-    'By this teaching, a lord that the planet counts a friend by nature supports the planet. A lord that it counts an enemy by nature reduces its strength.',
+    'This site takes one more step, which is ours and not hers.',
+    'A lord that the planet counts a friend by nature supports it. A lord it counts an enemy by nature reduces its strength.',
     'This uses the fixed friendship only, not the place in the chart. A planet in its own Nakshatr is supported.',
     'The classical texts on this site do not state this teaching. So the lord does not change the benefic and malefic columns.',
     `No friendship is given for ${n('rahu')} and ${n('ketu')}. So no mark shows when one of them is the planet or the lord.`,
     `No strength by sign is given for ${n('rahu')} and ${n('ketu')} either.`)
   hi.push('हर ग्रह एक नक्षत्र में बैठा है, और हर नक्षत्र का एक स्वामी है।',
-    'एक बाद की शिक्षा कहती है कि नक्षत्र अपना बल अपने स्वामी से लेता है, राशि के स्वामी से नहीं।',
+    'आधुनिक लेखिका कोमिला सटन हर ग्रह को उसके नक्षत्र के स्वामी के साथ पढ़ती हैं। ग्रह उस स्वामी को मित्र, शत्रु या सम मानता है, इससे पता चलता है कि वह उस नक्षत्र में सहज है या उलझन में। वे इसे सबसे अधिक उस ग्रह के लिए देखती हैं जिसकी दशा चल रही है।',
     'इसलिए तालिका दिखाती है कि वह स्वामी कहाँ बैठा है, राशि से कितना बलवान है, और उसका स्वभाव क्या है।',
     'यह भी दिखता है कि इस कुंडली में ग्रह और वह स्वामी एक-दूसरे के प्रति कैसे हैं।',
-    'इस शिक्षा के अनुसार, जिस स्वामी को ग्रह स्वभाव से मित्र मानता है, वह ग्रह को बल देता है। जिसे वह स्वभाव से शत्रु मानता है, वह उसका बल घटाता है।',
+    'यह साइट एक कदम आगे जाती है। यह कदम हमारा है, उनका नहीं।',
+    'जिस स्वामी को ग्रह स्वभाव से मित्र मानता है, वह उसे बल देता है। जिसे वह शत्रु मानता है, वह उसका बल घटाता है।',
     'इसमें केवल स्थिर मित्रता ली जाती है, कुंडली में स्थान नहीं। अपने ही नक्षत्र में बैठे ग्रह को बल मिलता है।',
     'इस साइट के शास्त्रीय ग्रंथ यह शिक्षा नहीं बताते। इसलिए यह स्वामी शुभ और पाप प्रभाव के स्तंभ नहीं बदलता।',
     `${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है। इसलिए जब ग्रह या स्वामी इनमें से एक हो, तब कोई चिह्न नहीं दिखता।`,
@@ -294,4 +296,52 @@ export function houseLine(h, n, L) {
     return [o.length ? `${list(o)} (in it)` : '', a.length ? `${list(a)} (aspect)` : ''].filter(Boolean).join(', ')
   }
   return { benefic: part(h.benefic), malefic: part(h.malefic) }
+}
+
+/**
+ * The registered modern source for reading a planet through its Nakshatr lord (owner, 2026-11-21: "Nakshatr lord,
+ * cited"). Tier `modern`: named and paged, never blended with the classical texts, and never the source of the
+ * strength rule above (lordEffect), which is the owner's. POINTERS ONLY: the gist is in our own words.
+ *   PDF p.123 — the reading of a Nakshatr starts from its ruling planet, where it sits and what it rules.
+ *   PDF p.153 — the planet whose Dasha runs at birth: see how it stands towards its Nakshatr's lord.
+ *   PDF p.155 — the Dasha lord and its Nakshatr's lord as friend, enemy or neutral: at ease or in conflict.
+ *   PDF p.157 — the same applied to each Dasha lord (Mars in a Saturn Nakshatr as her example).
+ * She names friend, enemy or neutral without saying which friendship; the site uses the fixed one, as lordEffect.
+ */
+export const SUTTON = {
+  cite: 'Komilla Sutton, The Essentials of Vedic Astrology, PDF pp.123, 153, 155, 157',
+  label: { en: 'A modern author’s reading, not a classical text', hi: 'आधुनिक लेखिका की व्याख्या, शास्त्रीय ग्रंथ नहीं' },
+}
+
+/**
+ * How a planet stands towards the lord of its own Nakshatr, by FIXED friendship.
+ * Returns { lord, nak, rel } with rel 'own' | 'friend' | 'enemy' | 'neutral' | null (a node on either side), or
+ * null when the chart has no Nakshatr for the planet.
+ */
+export function nakshatraTie(graha, chart) {
+  const g = ((chart && chart.grahas) || []).find((x) => x.key === graha)
+  if (!g || !g.nakshatra) return null
+  const lord = nakshatraLord(g.nakshatra.index)
+  if (!lord) return null
+  const pm = chart.analysis && chart.analysis.planet_matrix
+  const me = pm && Array.isArray(pm.planets) ? pm.planets.find((x) => x.graha === graha) : null
+  let rel = null
+  if (lord === graha) rel = graha === 'rahu' || graha === 'ketu' ? null : 'own'
+  else if (me && (me.friends || []).includes(lord)) rel = 'friend'
+  else if (me && (me.enemies || []).includes(lord)) rel = 'enemy'
+  else if (me && (me.neutrals || []).includes(lord)) rel = 'neutral'
+  return { lord, nak: g.nakshatra, rel }
+}
+
+/** One plain sentence for a Dasha row. `n` names a planet, `nakName` names a Nakshatr. */
+export function tieLine(graha, t, n, nakName, L) {
+  if (!t) return ''
+  const P = n(graha), Ld = n(t.lord), K = nakName(t.nak)
+  const hi = L === 'hi'
+  const head = hi ? `${P} ${K} नक्षत्र में है, जिसका स्वामी ${Ld} है।` : `${P} is in ${K}, whose lord is ${Ld}.`
+  if (t.rel === 'own') return head + (hi ? ` यह ${P} का अपना नक्षत्र है, इसलिए यहाँ कोई टकराव नहीं।` : ` It is ${P}’s own Nakshatr, so there is no conflict here.`)
+  if (t.rel === 'friend') return head + (hi ? ` ${P} स्वभाव से ${Ld} को मित्र मानता है। इस तरह पढ़ें तो यह दशा अपने नक्षत्र के साथ सहज रहती है।` : ` ${P} counts ${Ld} a friend by nature. Read this way, the period sits at ease with its Nakshatr.`)
+  if (t.rel === 'enemy') return head + (hi ? ` ${P} स्वभाव से ${Ld} को शत्रु मानता है। इस तरह पढ़ें तो इस दशा में भीतर गहरी उलझन रहती है।` : ` ${P} counts ${Ld} an enemy by nature. Read this way, there is a conflict at a deep level in this period.`)
+  if (t.rel === 'neutral') return head + (hi ? ` ${P} स्वभाव से ${Ld} को सम मानता है: न सहज, न टकराव।` : ` ${P} counts ${Ld} neutral by nature: neither at ease nor in conflict.`)
+  return head + (hi ? ` ${n('rahu')} और ${n('ketu')} की कोई मित्रता नहीं दी गई है, इसलिए यह नहीं पढ़ा जाता।` : ` No friendship is given for ${n('rahu')} and ${n('ketu')}, so this is not read.`)
 }

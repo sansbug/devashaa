@@ -40,7 +40,7 @@ def names(res):
 
 print("Every detector name is in the catalogue, and 3 are deliberately catalogue-only:")
 check("all detectors valid", all(n in yoga_rules.YOGAS for n in yogas.DETECTORS))
-check("85 detectors, 88 catalogued", len(yogas.DETECTORS) == 85 and len(yoga_rules.YOGAS) == 88)
+check("93 detectors, 96 catalogued", len(yogas.DETECTORS) == 93 and len(yoga_rules.YOGAS) == 96)
 
 print("\nPañca-Mahāpuruṣa — Saturn exalted (Libra) in a kendra → Śaśa:")
 # lagna Libra(6): Saturn exalted in Libra sits in house 1.

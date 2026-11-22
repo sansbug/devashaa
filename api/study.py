@@ -181,8 +181,14 @@ def gap_map() -> dict:
 
     rows.append(_row(
         "yoga", ["graha", "bhaav", "rashi", "lord"], None,
-        [_src("bphs+", "sloka", len(yoga_rules.YOGAS),
-              note="Catalogue; each yoga carries its own citation and tier.")]))
+        [_src("bphs", "sloka", sum(1 for m in yoga_rules.YOGAS.values() if m.get("tier") == "sloka"),
+              note="Catalogue; each yoga carries its own citation and tier."),
+         _src("phaladipika", "classical",
+              sum(1 for m in yoga_rules.YOGAS.values() if m.get("source") == "phaladipika"),
+              note="Adh.6 v.57 Harsha/Sarala/Vimala; Adh.7 vv.26-29 nicabhanga (v.30 not read)."),
+         _src("brihat_jataka", "classical",
+              sum(1 for m in yoga_rules.YOGAS.values() if m.get("source") == "brihat_jataka"),
+              note="ch.15 st.1-2 Pravrajya (st.3-4 not registered).")]))
 
     # Nakshatra axes
     rows.append(_row(
@@ -428,7 +434,7 @@ def ledger(payload: dict, transit_grahas=None, show_sensitive=False) -> dict:
 
     # yogas
     for y in (a.get("yogas") or {}).get("detected") or []:
-        rows.append(_r("yoga", source="bphs" if y.get("tier") == "sloka" else y.get("tier"),
+        rows.append(_r("yoga", source=y.get("source") or ("bphs" if y.get("tier") == "sloka" else y.get("tier")),
                        tier=y.get("tier"), citation=y.get("citation"), text=y.get("effect"),
                        extra={"yoga": y.get("name"), "computability": y.get("computability")}, **S))
 

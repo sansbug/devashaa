@@ -268,6 +268,95 @@ def _kendra_trikona_conj(c):              # (L4|L10) conjunct (L5|L9)
     return False
 
 
+# --- hand-registered 2026-11-22 (yoga_rules_extra.py) -------------------------
+DUSTHANA = frozenset({6, 8, 12})
+
+
+def _v57(c, h):
+    """Phaladīpikā Adh.6 v.57 for house h: its lord in the 6th/8th/12th, OR the house joined
+    or (fully) aspected by malefics. Both clauses are reported; the verse joins them with 'or'."""
+    lord = c.lord_of[h]
+    sign = (c.lagna + h - 1) % 12
+    by_lord = c.house.get(lord) in DUSTHANA
+    joined = sorted(g for g in c.g7 if g in c.malefics and c.house[g] == h)
+    aspecting = sorted(g for g in c.g7 if g in c.malefics and c.house[g] != h
+                       and _aspects_full(c, g, sign))
+    if not (by_lord or joined or aspecting):
+        return False
+    return {"lord": lord, "lord_in_house": c.house.get(lord),
+            "clause_lord_in_6_8_12": by_lord, "clause_malefic": bool(joined or aspecting),
+            "malefics_in_house": joined, "malefics_aspecting": aspecting}
+
+
+def _nb_lords(c, p):
+    """For debilitated planet p: the lord of its debilitation sign; the lord of its exaltation
+    sign (Sastri's text); the planet exalted in the debilitation sign (Sastri's note, 'some')."""
+    import dignity
+    s = c.rasi[p]
+    ex_there = next((g for g in GRAHAS7 if dignity.EXALTATION[g][0] == s), None)
+    return RASI_LORD[s], RASI_LORD[dignity.EXALTATION[p][0]], ex_there
+
+
+def _kendra_lagna_or_moon(c, g):
+    """g in a kendra from the Lagn, or from the Moon. When g IS the Moon, 'from the Moon' is
+    trivially the 1st, so only the Lagn counts (never let a planet qualify against itself)."""
+    if c.house.get(g) in KENDRA:
+        return "lagna"
+    if g != "moon" and _house(c.rasi[g], c.rasi["moon"]) in KENDRA:
+        return "moon"
+    return None
+
+
+_NB_READINGS = (("lord of the debilitation sign", 0, "text and note"),
+                ("lord of the exaltation sign", 1, "text"),
+                ("planet exalted in that sign", 2, "note"))
+
+
+def _nb_kendra(c):                         # Phaladīpikā Adh.7 vv.26 & 29
+    hits = []
+    for p in (g for g in c.g7 if c.state.get(g) == "debilitated"):
+        lords = _nb_lords(c, p)
+        for role, i, reading in _NB_READINGS:
+            g = lords[i]
+            if g and g in c.rasi and (frm := _kendra_lagna_or_moon(c, g)):
+                hits.append({"planet": p, "by": g, "role": role, "from": frm, "reading": reading})
+    return {"hits": hits} if hits else False
+
+
+def _nb_mutual(c):                         # Phaladīpikā Adh.7 v.27
+    hits = []
+    for p in (g for g in c.g7 if c.state.get(g) == "debilitated"):
+        dl, el, ex = _nb_lords(c, p)
+        for other, reading in ((el, "text"), (ex, "note")):
+            if other and other != dl and _house(c.rasi[other], c.rasi[dl]) in KENDRA:
+                hits.append({"planet": p, "lords": [dl, other], "reading": reading})
+    return {"hits": hits} if hits else False
+
+
+def _nb_aspect(c):                         # Phaladīpikā Adh.7 v.28
+    hits = []
+    for p in (g for g in c.g7 if c.state.get(g) == "debilitated"):
+        dl = _nb_lords(c, p)[0]
+        if _aspects_full(c, dl, c.rasi[p]):
+            hits.append({"planet": p, "by": dl, "outside_6_8_12": c.house[p] not in DUSTHANA})
+    return {"hits": hits} if hits else False
+
+
+PRAVRAJYA_ORDER = {"mars": "Sakya", "mercury": "Ajivika", "jupiter": "Bhikshu", "moon": "Vriddha",
+                   "venus": "Charaka", "saturn": "Nirgrantha", "sun": "Vanyasana"}
+
+
+def _pravrajya(c):                         # Bṛhat Jātaka ch.15 st.1-2: 4+ of the seven in one sign
+    by_sign = {}
+    for g in c.g7:
+        by_sign.setdefault(c.rasi[g], []).append(g)
+    for s, gs in by_sign.items():
+        if len(gs) >= 4:
+            return {"sign": s, "house": _house(s, c.lagna), "planets": gs,
+                    "combust": [g for g in gs if c.combust.get(g)]}
+    return False
+
+
 DETECTORS = {
     # Nābhasa — Āśraya
     "Rajju": lambda c: _modality(c, 0),
@@ -410,6 +499,17 @@ DETECTORS = {
         c.state.get(g) == "exalted" for g in ("jupiter", "venus", "mercury")) and _benefics_in_kendra(c),
     "All benefics in kendras, malefics in 3/6/11": lambda c: all(c.house[g] in KENDRA for g in c.g7 if g in c.benefics)
         and all(c.house[g] in {3, 6, 11} for g in c.g7 if g in c.malefics),
+
+    # Hand-registered 2026-11-22 (yoga_rules_extra.py)
+    "Lakshmi Yoga": lambda c: c.house.get(c.lord_of[9]) in KENDRA
+        and c.state.get(c.lord_of[9]) in OWN_OR_EXALTED,
+    "Harsha Yoga": lambda c: _v57(c, 6),
+    "Sarala Yoga": lambda c: _v57(c, 8),
+    "Vimala Yoga": lambda c: _v57(c, 12),
+    "Nicabhanga: a lord in a kendra": _nb_kendra,
+    "Nicabhanga: the two lords in mutual kendras": _nb_mutual,
+    "Nicabhanga: aspected by its sign's lord": _nb_aspect,
+    "Pravrajya Yoga": _pravrajya,
 }
 
 # Deliberately NO detector (catalogued in yoga_rules, not asserted): the Moon's
@@ -455,6 +555,8 @@ def _gate_grahas(name, c):
         return [c.lord_of[9]]                          # the 9th lord
     if name == "Strong Vargottama Moon aspected by 4+ planets":
         return ["moon"]
+    if name == "Lakshmi Yoga":
+        return [c.lord_of[1]]                          # "the ascendant lord endowed with strength"
     if name == "Sankha Yoga":
         gates = []
         if _house(c.rasi[c.lord_of[5]], c.rasi[c.lord_of[6]]) in KENDRA:
@@ -470,6 +572,7 @@ _GATE_ROLE = {
     "Bheri Yoga": "9th lord",
     "Sankha Yoga": "ascendant / 9th lord",
     "Strong Vargottama Moon aspected by 4+ planets": "the Moon",
+    "Lakshmi Yoga": "ascendant lord",
 }
 
 
@@ -493,6 +596,23 @@ def _resolve_strength(name, c, sb):
             "fructifies": True,
             "basis": "the office follows the participants' strength order"
                      + (f"; strongest is {ranked[0]['graha']}" if ranked else ""),
+        }
+    if name == "Pravrajya Yoga":
+        hit = _pravrajya(c) or {}
+        ranked = sorted((_strength_detail(g, sb) for g in hit.get("planets", [])),
+                        key=lambda e: -e["rupa"])
+        strong = [e for e in ranked if e["strong"]]
+        top = ranked[0]["graha"] if ranked else None
+        combust = top in hit.get("combust", [])
+        return {
+            "resolved": True, "role": "the planets in that sign (stanza 1: 'powerful')",
+            "grahas": ranked, "met": len(strong) >= 4, "fructifies": len(strong) >= 4,
+            "strongest": top, "order": PRAVRAJYA_ORDER.get(top),
+            "strongest_combust": combust,
+            "basis": (f"{len(strong)} of {len(ranked)} planets in the sign are strong (stanza 1 needs four)"
+                      + (f"; the strongest is {top}" if top else "")
+                      + ("; it is combust, so stanza 2 applies: honouring renunciates, not renouncing"
+                         if combust else "")),
         }
     gates = dict.fromkeys(_gate_grahas(name, c))
     if not gates:

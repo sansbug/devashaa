@@ -273,3 +273,8 @@ YOGAS = {
         "effect": "the native, though may be of mean descent will ascend, the throne.",
         "computability": "clean", "strength_note": "", "tier": "sloka"},
 }
+
+# Hand-registered from page images (2026-11-22), kept apart from the generated block above.
+from yoga_rules_extra import EXTRA as _EXTRA  # noqa: E402
+
+YOGAS.update(_EXTRA)

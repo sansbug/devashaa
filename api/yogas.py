@@ -206,8 +206,15 @@ def _sankhya(c, n):
 
 
 # --- Pañca-Mahāpuruṣa -------------------------------------------------------
+# "Own sign or exaltation sign": a planet in the mula-trikona part of a sign is still in its own
+# sign (for the Moon, its exaltation sign), but dignity.dignity_of labels it "moolatrikona".
+# Leaving that label out missed e.g. Hamsa for Jupiter at 2 deg Sagittarius (BPHS II ch.75 vv.1-2:
+# "in their own sign or in their sign of exaltation"). Found by the web comparison, 2026-11-21.
+OWN_OR_EXALTED = ("own", "exalted", "moolatrikona")
+
+
 def _maha(c, planet):
-    return c.state.get(planet) in ("own", "exalted") and c.house.get(planet) in KENDRA
+    return c.state.get(planet) in OWN_OR_EXALTED and c.house.get(planet) in KENDRA
 
 
 # --- misc helpers for ch.36 / raja -----------------------------------------
@@ -330,7 +337,7 @@ DETECTORS = {
     "Amala Yoga": _amala,
     "Parvata Yoga": lambda c: _benefics_in_kendra(c) and not _mal_in(c, 7) and not _mal_in(c, 8),
     "Kahala Yoga": lambda c: (_house(c.rasi[c.lord_of[4]], c.rasi["jupiter"]) in KENDRA)
-        or (c.state.get(c.lord_of[4]) in ("own", "exalted") and _conjunct(c, c.lord_of[4], c.lord_of[10])),
+        or (c.state.get(c.lord_of[4]) in OWN_OR_EXALTED and _conjunct(c, c.lord_of[4], c.lord_of[10])),
     "Chamara Yoga": lambda c: (c.state.get(c.lord_of[1]) == "exalted" and c.house.get(c.lord_of[1]) in KENDRA
         and _aspects_any(c, "jupiter", c.rasi[c.lord_of[1]]))
         or any(sum(1 for g in c.g7 if g in c.benefics and c.house[g] == h) >= 2 for h in (1, 9, 10, 7)),
@@ -345,7 +352,7 @@ DETECTORS = {
         and any(g in c.malefics and c.house[g] == 5 for g in c.g7),
     "Koorma Yoga": lambda c: all(any(g in c.benefics and c.house[g] == h
         and c.state.get(g) in ("own", "exalted", "friend") for g in c.g7) for h in (5, 6, 7))
-        and all(any(g in c.malefics and c.house[g] == h and c.state.get(g) in ("own", "exalted")
+        and all(any(g in c.malefics and c.house[g] == h and c.state.get(g) in OWN_OR_EXALTED
         for g in c.g7) for h in (3, 11, 1)),
     "Khadga Yoga": lambda c: _parivartana(c, 2, 9) and c.house.get(c.lord_of[1]) in (KENDRA | TRIKONA),
     "Kusuma Yoga": lambda c: c.lagna % 3 == 1 and c.house.get("venus") in KENDRA
@@ -371,12 +378,12 @@ DETECTORS = {
         g in ("moon", "jupiter", "venus", "mercury") and c.house.get(g) == 2 and c.state.get(g) == "exalted" for g in c.g7),
     "Dusthana debilitation + exalted lagna-lord aspecting lagna": lambda c: all(
         any(c.house[g] == h and c.state.get(g) == "debilitated" for g in c.g7) for h in (6, 8, 3))
-        and c.state.get(c.lord_of[1]) in ("exalted", "own") and _aspects_full(c, c.lord_of[1], c.lagna),
+        and c.state.get(c.lord_of[1]) in OWN_OR_EXALTED and _aspects_full(c, c.lord_of[1], c.lagna),
     "Weak 6/8/12 lords + exalted-or-own lagna-lord aspecting lagna": lambda c: all(
         c.state.get(c.lord_of[h]) in ("debilitated", "enemy") or c.combust.get(c.lord_of[h], False) for h in (6, 8, 12))
-        and c.state.get(c.lord_of[1]) in ("own", "exalted") and _aspects_full(c, c.lord_of[1], c.lagna),
+        and c.state.get(c.lord_of[1]) in OWN_OR_EXALTED and _aspects_full(c, c.lord_of[1], c.lagna),
     "10th-lord (own/exalted) aspecting lagna; benefics in kendras": lambda c: (
-        c.state.get(c.lord_of[10]) in ("own", "exalted") and _aspects_full(c, c.lord_of[10], c.lagna))
+        c.state.get(c.lord_of[10]) in OWN_OR_EXALTED and _aspects_full(c, c.lord_of[10], c.lagna))
         or all(g in c.benefics and c.house[g] in KENDRA for g in c.g7 if g in c.benefics),
     "5th-lord – 9th-lord association (minister yoga)": lambda c: _conjunct(c, c.lord_of[5], c.lord_of[9])
         or (_aspects_full(c, c.lord_of[5], c.rasi[c.lord_of[9]]) and _aspects_full(c, c.lord_of[9], c.rasi[c.lord_of[5]])),
@@ -388,7 +395,7 @@ DETECTORS = {
     "5th-lord in kendra with 9th-lord or lagna-lord": lambda c: c.house.get(c.lord_of[5]) in (1, 4, 10)
         and (_conjunct(c, c.lord_of[5], c.lord_of[9]) or _conjunct(c, c.lord_of[5], c.lord_of[1])),
     "Jupiter in own 9th with Venus or 5th-lord": lambda c: c.house.get("jupiter") == 9
-        and c.state.get("jupiter") in ("own", "exalted")
+        and c.state.get("jupiter") in OWN_OR_EXALTED
         and (_conjunct(c, "jupiter", "venus") or _conjunct(c, "jupiter", c.lord_of[5])),
     "Moon–Venus mutual 3rd/11th or mutual aspect": lambda c: _from_moon(c, "venus") in (3, 11)
         or (_aspects_full(c, "moon", c.rasi["venus"]) and _aspects_full(c, "venus", c.rasi["moon"])),
@@ -441,7 +448,7 @@ def _gate_grahas(name, c):
         # Only the primary clause (4th lord / Jupiter mutual kendra) gates on the
         # ascendant lord. The alternative clause (4th lord own/exalted & conjunct
         # the 10th lord) is fully computable from D1 — no Ṣaḍbala gate.
-        clause2 = (c.state.get(c.lord_of[4]) in ("own", "exalted")
+        clause2 = (c.state.get(c.lord_of[4]) in OWN_OR_EXALTED
                    and _conjunct(c, c.lord_of[4], c.lord_of[10]))
         return [] if clause2 else [c.lord_of[1]]       # ascendant lord (primary clause)
     if name == "Bheri Yoga":

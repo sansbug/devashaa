@@ -26,7 +26,7 @@ Status: **have** = registered and cited · **part** = some of it · **gap** = no
 | 14 | Nakṣatra | ch.6 deities; Vol II ch.46 lords | facts; Moon in 20/27 nakshatras (Bṛhat Jātaka ch.16) | part |
 | 15 | Daśā (timing) | Vol II chs 46–60 | Viṁśottarī + others, ch.47 verdicts, chs 52–60 antardaśā | have (Chara Daśā: lengths only) |
 | 16 | Divisional charts (2 lessons) | chs 6–7 | as row 6 | part |
-| 17 | **Kārakāṁśa** (inside the kāraka lessons) | **ch.33** | Kārakāṁśa computed (ch.33 v.1), no results registered | **gap** |
+| 17 | **Kārakāṁśa** (inside the kāraka lessons) | **ch.33** | DONE 2026-11-21: sign verse + 14 verse groups on houses from the Kārakāṁśa, each in both frames (`karakamsa_results.py`) | have (part) |
 | 18 | Remedies | various | excluded site-wide (classical-sources-policy §8) | out |
 | 19 | Interpretation, practicum | — | the study view (`/study`) | have |
 | 20 | Research project (10 charts) | — | `study_backtest.py` (hit rates vs controls) | have (no data yet) |
@@ -66,3 +66,16 @@ on the `modern` tier (like Patel on D9). It never replaces the BPHS verse it exp
   the effects of vv.11-17 the planet must also aspect the house, as the translation states.
 - Read from the page images, then re-read at zoom. The re-read caught one logic error (v.16 means
   a conjunct benefic and malefic *aspecting* the 12th), which is fixed and pinned by a test.
+
+## Done 2026-11-21: Kārakāṁśa results (`api/karakamsa_results.py`)
+
+- The Ātmakāraka's navāṁśa sign (vv.2-8) and 14 verse groups on planets in the Kārakāṁśa and in
+  the 3rd, 4th, 5th, 6th, 9th, 10th, 11th and 12th from it, each returned whole with the clause that fired.
+- **The frame is not stated.** Neither the verses nor Santhanam's notes say whether to read the other
+  planets in the navāṁśa or in the rāśi chart. Every rule is evaluated in **both**, each labelled,
+  and neither is chosen.
+- Left out, with the reason recorded in the module: v.12 and vv.30-31 (the text does not say which
+  "divisions"); vv.23-24 (Gulika is not computed); vv.25-29 (§5: a slavery and gender verdict);
+  vv.47-48 (a wife's character, widowhood); v.49 (lifespan); vv.77-92 (they restate vv.36-45);
+  vv.94-99 (unclear scope, dasha timing); and the strength, "Full Moon" and shadvarga clauses.
+- Read from the page images and re-read at zoom. Six printer's slips repaired and listed.

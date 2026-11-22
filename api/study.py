@@ -46,6 +46,9 @@ import charak_annual_rules
 import varga_rules as vr
 import bj_varga_rules as bjv
 import arudha_argala as aa
+import karakamsa_results as kres
+import karakas
+import vargas
 
 GRAHAS7 = ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn")
 GRAHAS9 = GRAHAS7 + ("rahu", "ketu")
@@ -278,9 +281,12 @@ def gap_map() -> dict:
                       _src("bphs", "sloka", 2, note="Effects, ch.31 vv.11-18.")],
                      note="Strength is not evaluated: where obstructors are as many as the Argala planets, "
                           "the result is left undecided."))
-    rows.append(_row("Karakamsa results", ["graha", "varga"], None, [],
-                     note="The Karakamsa is computed (karakas.py); none of its results is registered.",
-                     candidates=["bphs_ch33"]))
+    rows.append(_row("Karakamsa results", ["graha", "varga"], None,
+                     [_src("bphs", "sloka", len(kres.V), note="BPHS I ch.33: the sign verse and 14 verse groups on "
+                                                              "houses from the Karakamsa, each in BOTH frames "
+                                                              "(navamsa and rasi chart), neither chosen.")],
+                     note="Left out: vv.12, 23-31, 47-49, 77-99 and the strength / Full Moon / shadvarga "
+                          "clauses (karakamsa_results.py lists why)."))
 
     # Transits
     rows.append(_row(
@@ -589,6 +595,27 @@ def ledger(payload: dict, transit_grahas=None, show_sensitive=False) -> dict:
                                extra={"why": c.get("why"), **({"gloss": m["gloss"]} if m.get("gloss") else {}),
                                       **({"note": m["note"]} if m.get("note") else {}),
                                       **({"via": m["via"]} if m.get("via") else {})}, **S))
+
+    # BPHS ch.33: the effects of the Karakamsa, in both frames
+    try:
+        kk_info = karakas.karakamsa({k: g["longitude"] for k, g in grahas.items()},
+                                    navamsa_of=vargas.d9_navamsa)
+        kout = kres.evaluate(kk_info, {k: g["rasi"] for k, g in grahas.items()},
+                             {k: (g.get("vargas") or {}).get("D9") for k, g in grahas.items()},
+                             natures, (payload.get("lagna_vargas") or {}).get("D9"))
+    except Exception:  # noqa: BLE001
+        kout = None
+    if kout and kout.get("available"):
+        for m in kout["matches"]:
+            for c in m["clauses"]:
+                rows.append(_r("Karakamsa verse", varga="D9", source="bphs", tier="sloka", citation=m["citation"],
+                               text=m["text"], polarity=c.get("polarity"), confidence=kres.CONFIDENCE,
+                               graha=kout["atmakaraka"], rashi=kout["karakamsa"],
+                               extra={"why": c.get("why"), "frame": m["frame"],
+                                      **({"gloss": m["gloss"]} if m.get("gloss") else {}),
+                                      **({"note": m["note"]} if m.get("note") else {})}, **S))
+    elif kout:
+        silences.append(_silence("Karakamsa results", "D9", kout["reason"], {}))
 
     # Brihat Jataka: the Moon in its nakshatra (ch.16), drekkana forms (ch.27)
     mn = (grahas.get("moon") or {}).get("nakshatra") or {}

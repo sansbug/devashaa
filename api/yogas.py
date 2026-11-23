@@ -357,6 +357,14 @@ def _pravrajya(c):                         # Bṛhat Jātaka ch.15 st.1-2: 4+ of
     return False
 
 
+def _conj(c, a, b):                         # Bṛhat Jātaka ch.14: two planets in one sign
+    if c.rasi[a] != c.rasi[b]:
+        return False
+    sep = abs(c.lon[a] - c.lon[b]) % 360
+    return {"sign": c.rasi[a], "house": _house(c.rasi[a], c.lagna), "planets": [a, b],
+            "separation_deg": round(min(sep, 360 - sep), 2)}
+
+
 DETECTORS = {
     # Nābhasa — Āśraya
     "Rajju": lambda c: _modality(c, 0),
@@ -519,6 +527,8 @@ DETECTORS = {
     "Nicabhanga: the two lords in mutual kendras": _nb_mutual,
     "Nicabhanga: aspected by its sign's lord": _nb_aspect,
     "Pravrajya Yoga": _pravrajya,
+    "Budh-Aditya Yoga": lambda c: _conj(c, "sun", "mercury"),
+    "Chandra-Mangal Yoga": lambda c: _conj(c, "moon", "mars"),
 }
 
 # Deliberately NO detector (catalogued in yoga_rules, not asserted): the Moon's

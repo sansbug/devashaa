@@ -16,6 +16,12 @@ Each verse was read on the printed page. Nothing is blended across texts:
   * Brhat Jataka (Varahamihira; B. Suryanarain Row tr., 1919) ch.15 stanzas 1-2 —
     Pravrajya (renunciation) yoga, tier "classical". Row's Notes are not used.
     Stanzas 3-4 (the Janma-rasi lord / Saturn routes) are not registered yet.
+    ch.14 stanzas 1-2 (read on the page images, printed pp.179-180, 2026-11-23): the
+    Sun with Mercury and the Moon with Mars in one sign. The stanzas give results but
+    no yoga NAME. The names Budh-Aditya and Chandra-Mangal are B.V. Raman's (Three
+    Hundred Important Combinations, 1947, nos. 24 and 6): a pointer only, kept in
+    `name_source`. His extra conditions (Mercury more than 10 degrees from the Sun;
+    the Moon and Mars in mutual aspect) are his own and are NOT applied.
 """
 
 PD = "Phaladīpikā (V. Subrahmanya Sastri tr., 2nd ed. 1950)"
@@ -166,4 +172,38 @@ EXTRA = {
         "tier": "classical"},
 }
 
+_RAMAN = "B.V. Raman, Three Hundred Important Combinations (1947)"
+
+# Brhat Jataka ch.14 (Dwigrahayogadhyaya): results of two planets in one sign. The text
+# names no yoga; the popular names are Raman's (name_source). Effects are the stanza's
+# result in our words.
+CONJ = {
+    "Budh-Aditya Yoga": {
+        "family": "conjunction", "source": "brihat_jataka",
+        "citation": f"{BJ}, ch.14 stanza 1 (printed p.179)",
+        "effect": "Brihat Jataka: with the Sun and Mercury in one sign the person is skilful, "
+                  "intelligent, renowned and happy.",
+        "condition": "The Sun and Mercury in the same sign.",
+        "computability": "clean", "tier": "classical", "confidence": "page_image",
+        "name_source": f"{_RAMAN}, no. 24. The stanza itself gives no name.",
+        "strength_note": "The stanza asks only that the two share a sign. Raman (modern) adds "
+                         "that Mercury should be more than 10 degrees from the Sun; that is his "
+                         "condition, not the text's, and is not applied. The distance is "
+                         "reported in the detail."},
+    "Chandra-Mangal Yoga": {
+        "family": "conjunction", "source": "brihat_jataka",
+        "citation": f"{BJ}, ch.14 stanza 2 (printed p.180)",
+        "effect": "Brihat Jataka gives dealing in counterfeits and in saleable goods, and harm "
+                  "done to the mother: the text's dated view, not a prediction.",
+        "condition": "The Moon and Mars in the same sign.",
+        "computability": "clean", "tier": "classical", "confidence": "page_image",
+        "adaptation": "The stanza's list of what is sold (women, wives or, in Row's Notes, "
+                      "wines, and pots) is not reproduced (section 5: gender).",
+        "name_source": f"{_RAMAN}, no. 6. The stanza itself gives no name.",
+        "strength_note": "The stanza asks only that the two share a sign. Raman (modern) would "
+                         "also count the Moon and Mars in mutual aspect; that is his reading, "
+                         "not the text's, and is not applied."},
+}
+
 EXTRA.update(V57_ADVERSE)
+EXTRA.update(CONJ)

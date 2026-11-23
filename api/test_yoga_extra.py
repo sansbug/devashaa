@@ -119,3 +119,18 @@ def test_v57_adverse_effects_that_speak_of_loss_are_held():
     for name in ("Ava Yoga", "Nisswa Yoga", "Kuhu Yoga", "Pamara Yoga", "Dushkriti Yoga"):
         assert study.is_sensitive(yoga_rules.YOGAS[name]["effect"]), name
     assert not study.is_sensitive(yoga_rules.YOGAS["Vimala Yoga"]["effect"])
+
+
+def test_conjunction_yogas_need_one_sign_and_keep_the_name_apart():
+    # BASE: Sun Taurus 15, Mercury Taurus 20 -> Budh-Aditya, 5 degrees apart (Raman's 10 not applied)
+    d = _det(BASE, ARI)["Budh-Aditya Yoga"]["detail"]
+    assert d["planets"] == ["sun", "mercury"] and d["separation_deg"] == 5.0 and d["house"] == 2
+    assert "Budh-Aditya Yoga" not in _det({**BASE, "mercury": _at(GEM, 2)}, ARI)
+    assert "Chandra-Mangal Yoga" not in _det(BASE, ARI)
+    assert _det({**BASE, "mars": _at(GEM, 3)}, ARI)["Chandra-Mangal Yoga"]["detail"]["house"] == 3
+    # Moon in Taurus, Mars in Scorpio: mutual aspect only (Raman's extension) -> no yoga
+    assert "Chandra-Mangal Yoga" not in _det({**BASE, "moon": _at(TAU), "mars": _at(SCO)}, ARI)
+    for n in ("Budh-Aditya Yoga", "Chandra-Mangal Yoga"):
+        m = yoga_rules.YOGAS[n]
+        assert m["source"] == "brihat_jataka" and m["tier"] == "classical"
+        assert "Raman" in m["name_source"] and "Raman" not in m["citation"]

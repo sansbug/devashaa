@@ -20,6 +20,7 @@ const FAMILY = {
   nabhasa: 'Nābhasa', mahapurusha: 'Mahāpuruṣa', lunar: 'yoga.family.lunar',
   solar: 'yoga.family.solar', other: 'ch.36', raja: 'Rāja',
   dusthana: 'Phaladīpikā 6.57', nicabhanga: 'Nīcabhaṅga', pravrajya: 'Pravrajyā',
+  conjunction: 'Bṛhat Jātaka 14',
 }
 // Non-BPHS yogas name their book on the chip (BPHS is the panel's default).
 const BOOK = { phaladipika: 'Phaladīpikā', brihat_jataka: 'Bṛhat Jātaka' }
@@ -70,7 +71,7 @@ function Effect({ text }) {
 }
 
 export default function YogaPanel({ data, namer }) {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   if (!data || data.error || !data.detected) return null
   const dt = data.detected
   return (
@@ -104,6 +105,13 @@ export default function YogaPanel({ data, namer }) {
               <Effect text={y.effect} />
               {y.strength && <Strength s={y.strength} namer={namer} />}
               <span className="src">{shortCite(y.citation, y.source)}</span>
+              {y.name_source && (
+                <span className="src" title={y.name_source}>
+                  {lang === 'hi'
+                    ? 'यह नाम बी.वी. रमन (1947) का है। ग्रंथ इसे कोई नाम नहीं देता।'
+                    : 'The name is B.V. Raman’s (1947). The text gives it no name.'}
+                </span>
+              )}
             </div>
           ))}
         </div>

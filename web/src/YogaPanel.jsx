@@ -8,17 +8,26 @@
  * to the honest "strength unverified" flag. Each card shows the cited śloka
  * effect, never asserted as fate.
  */
+import { useState } from 'react'
 import { useLang } from './LangContext.jsx'
 import { yogaName } from './naming.js'
+import { SENSITIVE } from './findings.js'
+
+// A passage that speaks of a death, a lifespan or a bereavement is shown only on request, whole.
+const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
 
 const FAMILY = {
   nabhasa: 'Nābhasa', mahapurusha: 'Mahāpuruṣa', lunar: 'yoga.family.lunar',
   solar: 'yoga.family.solar', other: 'ch.36', raja: 'Rāja',
+  dusthana: 'Phaladīpikā 6.57', nicabhanga: 'Nīcabhaṅga', pravrajya: 'Pravrajyā',
 }
+// Non-BPHS yogas name their book on the chip (BPHS is the panel's default).
+const BOOK = { phaladipika: 'Phaladīpikā', brihat_jataka: 'Bṛhat Jātaka' }
 // Long provenance string → the chapter/verse tail for the chip.
-const shortCite = (c) => {
-  const m = (c || '').match(/Ch\.\s?\d+.*/i) || (c || '').match(/ch\.\s?\d+.*/i)
-  return m ? m[0].replace(/\s*\(printed[^)]*\)/g, '').trim() : c
+const shortCite = (c, source) => {
+  const m = (c || '').match(/(Ch|Adh)\.\s?\d+.*/i)
+  const tail = m ? m[0].replace(/\s*\(printed[^)]*\)/g, '').trim() : c
+  return BOOK[source] ? `${BOOK[source]}, ${tail}` : tail
 }
 // Drop a leading verse-number label ("20-22. ") the extraction sometimes keeps.
 const effectText = (t) => (t || '').replace(/^\d+\s*[-–]?\s*\d*\.\s*/, '')
@@ -44,6 +53,22 @@ function Strength({ s, namer }) {
   )
 }
 
+function Effect({ text }) {
+  const { lang } = useLang()
+  const [asked, setAsked] = useState(false)
+  const W = (en, hi) => (lang === 'hi' ? hi : en)
+  if (sensitive(text) && !asked) {
+    return (
+      <p className="yoga-effect fd-held">
+        {W('The text’s effect for this Yog speaks of a death, a lifespan or a bereavement, so it is not shown unasked.',
+           'इस योग का ग्रंथोक्त फल मृत्यु, आयु या वियोग की बात करता है, इसलिए बिना पूछे नहीं दिखाया जाता।')}
+        {' '}<button type="button" className="sv-link" onClick={() => setAsked(true)}>{W('Show the whole passage', 'पूरा अंश दिखाएँ')}</button>
+      </p>
+    )
+  }
+  return <p className="yoga-effect">{effectText(text)}</p>
+}
+
 export default function YogaPanel({ data, namer }) {
   const { t } = useLang()
   if (!data || data.error || !data.detected) return null
@@ -52,7 +77,7 @@ export default function YogaPanel({ data, namer }) {
     <section className="table-panel yoga-panel" id="rg-yoga">
       <h3>{t('yoga.title')}</h3>
       <p className="rc-note">
-        {dt.length} of {data.catalogued} catalogued BPHS Yogs are present. A Yog is
+        {dt.length} of {data.catalogued} catalogued Yogs are present (BPHS, with a few from Phaladīpikā and Bṛhat Jātaka, each cited). A Yog is
         listed only when its geometric condition is met. The effect is the cited
         śloka, not a fated prediction. There is no per-Yog score.{' '}
         {data.strength_resolved
@@ -76,9 +101,9 @@ export default function YogaPanel({ data, namer }) {
                   </span>
                 )}
               </div>
-              <p className="yoga-effect">{effectText(y.effect)}</p>
+              <Effect text={y.effect} />
               {y.strength && <Strength s={y.strength} namer={namer} />}
-              <span className="src">{shortCite(y.citation)}</span>
+              <span className="src">{shortCite(y.citation, y.source)}</span>
             </div>
           ))}
         </div>

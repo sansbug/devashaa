@@ -66,6 +66,11 @@ const DHANA_NOT = {
 }
 const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
 const BPHS = { text: 'Bṛhat Parāśara Horā Śāstra', author: 'Parāśara', translator: 'R. Santhanam', tier: 'sloka' }
+// Yogas registered from books other than BPHS (api/yoga_rules_extra.py); their effects are our gists.
+const YOGA_BOOK = {
+  phaladipika: { text: 'Phaladīpikā', author: 'Mantreśvara', translator: 'V. Subrahmanya Sastri', tier: 'classical' },
+  brihat_jataka: { text: 'Bṛhat Jātaka', author: 'Varāhamihira', translator: 'B. Suryanarain Row', tier: 'classical' },
+}
 const withBook = (c) => (c && !/BPHS|Parāśara/.test(c) ? `BPHS ${c}` : c)
 
 const DIG = {
@@ -454,7 +459,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       measured: both(() => (y.strength_note ? [y.strength_note] : [])),
       check: [{ go: 'bhava', label: both((l) => (l === 'hi' ? 'इसे बनाने वाले ग्रह और पूरा योग-पाठ' : 'The planets that form it, and the full Yog reading')) }],
       texts: y.effect ? [passage({
-        says: y.effect, source: { ...BPHS, tier: y.tier || 'sloka' }, cite: y.citation, kind: 'translation',
+        says: y.effect, source: YOGA_BOOK[y.source] || { ...BPHS, tier: y.tier || 'sloka' }, cite: y.citation,
+        kind: y.source && y.source !== 'bphs' ? 'rendering' : 'translation',
         applies: both((l) => (l === 'hi' ? `इस कुंडली में ${y.name} की शर्तें पूरी होती हैं।` : `This chart meets the conditions the text gives for ${yogaName(y.name)}.`)),
       })] : [],
       inference: null, cite: y.citation || null,

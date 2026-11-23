@@ -101,3 +101,21 @@ def test_pravrajya_four_in_one_sign_and_strongest_names_the_order():
     sb["saturn"]["strong"] = False                       # only three strong: does not fructify
     assert _det(lons, ARI, shadbala=sb)["Pravrajya Yoga"]["strength"]["fructifies"] is False
     assert "Pravrajya Yoga" not in _det(BASE, ARI)
+
+
+def test_v57_names_one_yoga_per_house_in_the_verse_order():
+    order = {1: "Ava Yoga", 2: "Nisswa Yoga", 3: "Mriti Yoga", 4: "Kuhu Yoga", 5: "Pamara Yoga",
+             6: "Harsha Yoga", 7: "Dushkriti Yoga", 8: "Sarala Yoga", 9: "Nirbhagya Yoga",
+             10: "Duryoga", 11: "Daridra Yoga", 12: "Vimala Yoga"}
+    for h, name in order.items():
+        assert yoga_rules.YOGAS[name]["source"] == "phaladipika", name
+        # 1st lord (Mars, lagna Aries) into Scorpio = the 8th: Ava by the lord clause
+    d = _det({**BASE, "mars": _at(SCO)}, ARI)["Ava Yoga"]["detail"]
+    assert d["clause_lord_in_6_8_12"] is True and d["lord"] == "mars"
+
+
+def test_v57_adverse_effects_that_speak_of_loss_are_held():
+    import study
+    for name in ("Ava Yoga", "Nisswa Yoga", "Kuhu Yoga", "Pamara Yoga", "Dushkriti Yoga"):
+        assert study.is_sensitive(yoga_rules.YOGAS[name]["effect"]), name
+    assert not study.is_sensitive(yoga_rules.YOGAS["Vimala Yoga"]["effect"])

@@ -11,6 +11,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { API } from './config.js'
 import { useLang } from './LangContext.jsx'
+import { SENSITIVE } from './findings.js'
+
+// A yoga effect that speaks of a death, a lifespan or a bereavement is shown only on request, whole.
+const sensitive = (s) => SENSITIVE.en.test(String(s || '')) || SENSITIVE.hi.test(String(s || ''))
+function HeldEffect({ text, quoted }) {
+  const [asked, setAsked] = useState(false)
+  if (sensitive(text) && !asked) {
+    return (<span className="fd-held">The text’s effect here speaks of a death, a lifespan or a bereavement, so it is not shown unasked.{' '}
+      <button type="button" className="sv-link" onClick={() => setAsked(true)}>Show the whole passage</button></span>)
+  }
+  return quoted ? <>“{text}”</> : text
+}
 
 const EXAMPLES = ['Jupiter in the 2nd house', 'Gajakesari yoga', 'How is September 2026 looking?', 'Chance of marriage next year', 'When did my career rise?']
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -222,8 +234,8 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
         <div className="xp-head"><span className="xp-q">{y.name}</span>
           <span className={'xp-inchart ' + (y.present ? 'yes' : 'no')}>{y.present ? t('explain.present', 'present in your chart') : t('explain.notpresent', 'not in your chart')}</span>
           {y.family && <span className="xp-fam">{y.family}</span>}</div>
-        <div className="xp-block"><h4>{t('explain.whatItMeans', 'What it means')} <span className="xp-tier">śloka</span></h4>
-          <p className="xp-effect">{y.effect}</p>
+        <div className="xp-block"><h4>{t('explain.whatItMeans', 'What it means')} <span className="xp-tier">{y.tier === 'classical' ? 'classical' : 'śloka'}</span></h4>
+          <p className="xp-effect"><HeldEffect text={y.effect} /></p>
           {y.citation && <p className="xp-cite-line">{y.citation}</p>}
           {y.present && y.strength && y.strength.role && (<p className="xp-aside">{t('explain.formedBy', 'formed by')} {(y.strength.grahas || []).map((g) => nm(g.graha)).join(', ')}{y.strength.fructifies != null ? ` · ${y.strength.fructifies ? t('explain.fructifies', 'fructifies') : t('explain.weakStrength', 'strength not confirmed')}` : ''}.</p>)}
           {y.present && y.grahas && y.grahas.length > 0 && (!y.strength || !y.strength.role) && (<p className="xp-aside">{t('explain.formedBy', 'formed by')} {y.grahas.map(nm).join(', ')}.</p>)}
@@ -325,7 +337,7 @@ export default function ExplainPanel({ date, time, place, namer, initialQuery })
               {e.bhps && (<div className="xp-wq"><span className="xp-wq-tag">{e.bhps.general ? t('explain.bhpsPeriodTag', 'BPHS · this period') : 'BPHS'}</span> “{e.bhps.text}” <span className="xp-wq-cite">— {e.bhps.cite}</span></div>)}
             </li>))}</ul></div>)}
         {data.indications && data.indications.length > 0 && (<div className="xp-block"><h4>{t('explain.indications', 'Standing yoga indications')} <span className="xp-tier">śloka</span></h4>
-          {data.indications.map((ind, i) => (<div key={i} className="xp-wq xp-wq-yoga"><span className="xp-wq-tag">{ind.yoga}</span> “{ind.effect}” <span className="xp-wq-cite">— {ind.citation}</span>
+          {data.indications.map((ind, i) => (<div key={i} className="xp-wq xp-wq-yoga"><span className="xp-wq-tag">{ind.yoga}</span> <HeldEffect text={ind.effect} quoted /> <span className="xp-wq-cite">— {ind.citation}</span>
             {ind.windows && ind.windows.length > 0 && (<span className="xp-ev-d"> · {t('explain.likelyIn', 'most likely to fructify in')} {ind.windows.map((w) => `${nm(w.lord)} ${t('matrix.dashaword', 'daśā')} ${w.from}–${w.to}`).join(', ')}</span>)}</div>))}</div>)}
         <p className="xp-aside">{past ? t('explain.pastNote', 'The chart cannot know what happened. These are the windows where this axis was most activated, read the same way the future is projected.') : t('explain.futNote', 'Percentages are the clocks’ agreement (conviction), not a probability of a real event. They are an indication, never a promise.')}</p>
         {foot}

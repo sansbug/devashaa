@@ -11,8 +11,8 @@ Each verse was read on the printed page. Nothing is blended across texts:
     "authority" and "sons" as "children" (section 5).
     NOT read: Adh.7 v.30 (its English is missing from the scan's text layer and the page
     images are JBIG2, which this toolchain cannot decode). The other nine yogas of
-    Adh.6 v.57 (Ava, Nisswa, Mriti, Kuhu, Pamara, Dushkriti, Nirbhagya, Duryoga, Daridra)
-    sit in the same verse and are not registered yet.
+    Adh.6 v.57 (Ava ... Daridra, vv.58-62/64/66-68) are V57_ADVERSE below, read from the
+    text layer only (2026-11-22, second pass).
   * Brhat Jataka (Varahamihira; B. Suryanarain Row tr., 1919) ch.15 stanzas 1-2 —
     Pravrajya (renunciation) yoga, tier "classical". Row's Notes are not used.
     Stanzas 3-4 (the Janma-rasi lord / Saturn routes) are not registered yet.
@@ -30,6 +30,60 @@ _V57 = ("Adh.6 v.57 states the condition for each house in one sentence: its lor
 _NB_NOTE = ("Sastri's note to Adh.7 v.26: some read 'the lord of the exaltation sign' as the "
             "planet that is EXALTED in the debilitation sign. devashaa evaluates both readings, "
             "labels which one holds, and chooses neither. Kendra = whole-sign 1st/4th/7th/10th.")
+
+_TEXT_LAYER = ("Effect read from the 1950 scan's text layer (OCR); the page image is a JBIG2 layer "
+               "this toolchain cannot decode, so it is not page-image checked. ")
+
+
+def _v57_entry(house, name, verse, effect, adapt=""):
+    return {"family": "dusthana", "source": "phaladipika",
+            "citation": f"{PD}, Adh.6 v.57 (condition), v.{verse} (effect)",
+            "effect": effect,
+            "condition": f"{house} lord in the 6th, 8th or 12th; or the {house} joined or aspected by malefics.",
+            "computability": "clean", "strength_note": _V57, "tier": "classical",
+            "confidence": "text_layer", "adaptation": _TEXT_LAYER + adapt}
+
+
+# The other nine yogas of Adh.6 v.57 (the verse names twelve, one per house). Mostly adverse;
+# effects that speak of a lifespan or a loss trip the SENSITIVE pattern and are held on the site.
+V57_ADVERSE = {
+    "Ava Yoga": _v57_entry("1st", "Ava", 58,
+        "Phaladipika gives an insignificant standing, deep poverty and a short-lived life, humiliation, "
+        "bad company and conduct, a bodily defect and an unsteady position: the text's dated view, "
+        "not a prediction."),
+    "Nisswa Yoga": _v57_entry("2nd", "Nisswa", 59,
+        "Phaladipika gives speech without kindness, a childless marriage, bad associates, poor teeth "
+        "and eyes, little intelligence or learning, no children and no power, and wealth taken by "
+        "opponents: the text's dated view, not a prediction.",
+        "'A barren wife' rendered as 'a childless marriage' (gender)."),
+    "Mriti Yoga": _v57_entry("3rd", "Mriti", 60,
+        "Phaladipika gives defeat by opponents, no siblings, little strength or wealth, fatigue from "
+        "improper acts and an excitable temperament.",
+        "One OCR word ('bhame', likely 'shame' or 'fame') is left out rather than guessed. "
+        "'Brothers' rendered as 'siblings'."),
+    "Kuhu Yoga": _v57_entry("4th", "Kuhu", 61,
+        "Phaladipika gives one bereft of mother, vehicles, friends, comforts, ornaments and relations, "
+        "and without a settled home, having lost the one first had.",
+        "The verse's last clause (attachment to 'a low female') is omitted (section 5: caste/gender)."),
+    "Pamara Yoga": _v57_entry("5th", "Pamara", 62,
+        "Phaladipika gives a meagre living and poor judgement, untruthfulness and deceit, losing children "
+        "or having none, bad company, irreligion and greed for food."),
+    "Dushkriti Yoga": _v57_entry("7th", "Dushkriti", 64,
+        "Phaladipika gives losing a spouse and being drawn into adultery, wandering unnoticed, venereal "
+        "disease (the text's dated view, not a medical claim), trouble from the state, and contempt from "
+        "relations with the distress that follows.",
+        "'Lose his wife' rendered as 'losing a spouse'; 'others' wives' as 'adultery' (gender)."),
+    "Nirbhagya Yoga": _v57_entry("9th", "Nirbhagya", 66,
+        "Phaladipika gives the loss of inherited property (land, house), disregard for the good and for "
+        "elders, irreligion, worn clothes, want and great hardship."),
+    "Duryoga": _v57_entry("10th", "Duryoga", 67,
+        "Phaladipika gives effort that bears no fruit, little regard from the public, betrayal of others, "
+        "selfishness, and a life mostly away from home and abroad."),
+    "Daridra Yoga": _v57_entry("11th", "Daridra", 68,
+        "Phaladipika gives debts, harshness, poverty, ear trouble, poor ties with siblings, entanglement "
+        "in wrongful acts, coarse speech and service to others: the text's dated view, not a prediction.",
+        "'Brotherhood' rendered as 'ties with siblings'."),
+}
 
 EXTRA = {
     "Lakshmi Yoga": {
@@ -111,3 +165,5 @@ EXTRA = {
                          "('defeat', stanza 1) is not evaluated. Rahu and Ketu are not counted.",
         "tier": "classical"},
 }
+
+EXTRA.update(V57_ADVERSE)

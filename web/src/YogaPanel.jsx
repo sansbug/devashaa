@@ -113,11 +113,7 @@ export default function YogaPanel({ data, namer }) {
                 </span>
               )}
               {y.name_source && (
-                <span className="src" title={y.name_source}>
-                  {lang === 'hi'
-                    ? 'यह नाम बी.वी. रमन (1947) का है। ग्रंथ इसे कोई नाम नहीं देता।'
-                    : 'The name is B.V. Raman’s (1947). The text gives it no name.'}
-                </span>
+                <span className="src">{y.name_source}</span>
               )}
             </div>
           ))}

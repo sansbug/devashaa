@@ -134,3 +134,26 @@ def test_conjunction_yogas_need_one_sign_and_keep_the_name_apart():
         m = yoga_rules.YOGAS[n]
         assert m["source"] == "brihat_jataka" and m["tier"] == "classical"
         assert "Raman" in m["name_source"] and "Raman" not in m["citation"]
+
+
+def test_dharma_karmadhipati_reports_the_kind_of_relationship():
+    # Lagna Aries: 9th Sagittarius (Jupiter), 10th Capricorn (Saturn)
+    base = {**BASE, "jupiter": _at(SAG), "saturn": _at(SAG, 25)}
+    d = _det(base, ARI)["Dharma-Karmadhipati Yoga"]["detail"]
+    assert d["tenth_lord"] == "saturn" and d["ninth_lord"] == "jupiter"
+    assert d["kinds"] == ["conjunction"] and d["a_stronger_kind"] is True
+    # exchange: Jupiter in Capricorn, Saturn in Sagittarius
+    d = _det({**BASE, "jupiter": _at(CAP), "saturn": _at(SAG)}, ARI)["Dharma-Karmadhipati Yoga"]["detail"]
+    assert "exchange" in d["kinds"]
+    # Saturn in Leo, Jupiter in Sagittarius: 5th from each other -> mutual trines only (lesser)
+    d = _det({**BASE, "jupiter": _at(SAG), "saturn": _at(LEO)}, ARI)["Dharma-Karmadhipati Yoga"]["detail"]
+    assert d["kinds"] == ["mutual trines"] and d["a_stronger_kind"] is False
+    # Saturn in Gemini, Jupiter in Sagittarius: 7th -> mutual aspect + mutual angles
+    d = _det({**BASE, "jupiter": _at(SAG), "saturn": _at(GEM)}, ARI)["Dharma-Karmadhipati Yoga"]["detail"]
+    assert d["kinds"] == ["mutual aspect", "mutual angles"]
+    # Saturn in Taurus (2nd from Sagittarius... 6th): no relation
+    assert "Dharma-Karmadhipati Yoga" not in _det({**BASE, "jupiter": _at(SAG), "saturn": _at(TAU, 1)}, ARI)
+    # Lagna Taurus: Saturn rules both the 9th and the 10th -> no pair, no yoga
+    assert "Dharma-Karmadhipati Yoga" not in _det(BASE, TAU)
+    m = yoga_rules.YOGAS["Dharma-Karmadhipati Yoga"]
+    assert m["tier"] == "sloka" and "Ch.41, v.28" in m["citation"] and "Popular" in m["name_source"]

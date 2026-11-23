@@ -4,6 +4,10 @@
 Each verse was read on the printed page. Nothing is blended across texts:
   * BPHS (Santhanam tr.) Vol I ch.36 vv.27-28 — Lakshmi Yoga. tier "sloka", effect quoted
     like the rest of yoga_rules.YOGAS.
+  * BPHS (Santhanam) Vol I ch.41 v.28 (printed pp.409-410, page images, 2026-11-23): an
+    angle lord related to a trine lord. Registered for its 9th-lord / 10th-lord case only,
+    under the popular name Dharma-Karmadhipati (no registered text gives that name). The
+    verse does not say what a 'relationship' is; the five kinds are Santhanam's Notes.
   * Phaladipika (Mantresvara; V. Subrahmanya Sastri tr., 2nd ed. 1950) — tier "classical".
     Adh.6 v.57 + vv.63/65/69: Harsha, Sarala, Vimala (what web sites call "Viparita Raja
     Yoga"). Adh.7 vv.26-29: nicabhanga raja yogas. Effects are site-authored GISTS of the
@@ -205,5 +209,27 @@ CONJ = {
                          "not the text's, and is not applied."},
 }
 
+DHARMA_KARMA = {
+    "Dharma-Karmadhipati Yoga": {
+        "family": "raja", "source": "bphs",
+        "citation": "BPHS (Santhanam) Vol I, Ch.41, v.28 (printed pp.409-410)",
+        "effect": "The angles are known as Vishnusthaana (i.e. houses of Lord Vishnu) while the "
+                  "trines are called Lakshmi sthaanas (i.e. houses of Lakshmi). If the lord of an "
+                  "angle establishes relationship with a trinal lord, a Rajayoga will obtain.",
+        "condition": "The 10th lord (an angle) related to the 9th lord (a trine): exchange, "
+                     "mutual aspect, conjunction, or mutual angular or trinal placement.",
+        "computability": "clean", "tier": "sloka", "confidence": "page_image",
+        "name_source": "Popular name. No registered text gives it. BPHS ch.41 v.28 states the "
+                       "rule for any angle lord and any trine lord; this entry is its "
+                       "9th-lord and 10th-lord case.",
+        "strength_note": "The verse says only 'relationship'. The five kinds are Santhanam's "
+                         "Notes to v.28, which call exchange, mutual aspect and conjunction more "
+                         "powerful and the other two lesser; devashaa reports which kinds hold "
+                         "and does not weigh them. When one planet rules both the 9th and the "
+                         "10th there is no pair to relate, and no yoga is reported. vv.29-34 "
+                         "(the pair's divisional dignities) are not evaluated."},
+}
+
 EXTRA.update(V57_ADVERSE)
+EXTRA.update(DHARMA_KARMA)
 EXTRA.update(CONJ)

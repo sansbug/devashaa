@@ -365,6 +365,31 @@ def _conj(c, a, b):                         # Bṛhat Jātaka ch.14: two planets
             "separation_deg": round(min(sep, 360 - sep), 2)}
 
 
+_DK_STRONG = ("exchange", "mutual aspect", "conjunction")
+
+
+def _dharma_karma(c):                       # BPHS ch.41 v.28, the 10th lord with the 9th lord
+    a, b = c.lord_of[10], c.lord_of[9]
+    if a == b or a not in c.rasi or b not in c.rasi:
+        return False
+    kinds = []
+    if _parivartana(c, 9, 10):
+        kinds.append("exchange")
+    if _aspects_full(c, a, c.rasi[b]) and _aspects_full(c, b, c.rasi[a]):
+        kinds.append("mutual aspect")
+    if _conjunct(c, a, b):
+        kinds.append("conjunction")
+    d = _house(c.rasi[b], c.rasi[a])
+    if d in (4, 7, 10):
+        kinds.append("mutual angles")
+    if d in (5, 9):
+        kinds.append("mutual trines")
+    if not kinds:
+        return False
+    return {"tenth_lord": a, "ninth_lord": b, "kinds": kinds,
+            "a_stronger_kind": any(k in kinds for k in _DK_STRONG)}
+
+
 DETECTORS = {
     # Nābhasa — Āśraya
     "Rajju": lambda c: _modality(c, 0),
@@ -529,6 +554,7 @@ DETECTORS = {
     "Pravrajya Yoga": _pravrajya,
     "Budh-Aditya Yoga": lambda c: _conj(c, "sun", "mercury"),
     "Chandra-Mangal Yoga": lambda c: _conj(c, "moon", "mars"),
+    "Dharma-Karmadhipati Yoga": _dharma_karma,
 }
 
 # Deliberately NO detector (catalogued in yoga_rules, not asserted): the Moon's

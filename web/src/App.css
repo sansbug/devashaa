@@ -819,6 +819,7 @@ section.meta, .chart-panel, .table-panel {
 .yoga-head { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
 .yoga-name { font-weight: var(--strong-weight, 700); }
 .yoga-fam { font-size: .68rem; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 0 .32rem; }
+.yoga-name-note { display: block; font-size: .72rem; color: var(--dim); font-style: italic; margin-top: .2rem; }
 .yoga-sg { font-size: .68rem; color: var(--dasha-adv); border: 1px solid var(--dasha-adv); border-radius: 4px; padding: 0 .32rem; opacity: .9; }
 .yoga-effect { margin: .35rem 0 .25rem; font-size: .88rem; line-height: 1.45; }
 .yoga-none { color: var(--dim); font-style: italic; }

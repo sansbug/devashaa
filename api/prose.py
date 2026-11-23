@@ -122,7 +122,7 @@ def _soften(s: str) -> str:
     return s
 
 EXCLUDE_KEYS = {
-    "citation", "citations", "cite", "source", "source_id", "sources_note", "rule", "validation",
+    "citation", "citations", "cite", "source", "source_id", "sources_note", "name_source", "rule", "validation",
     "verification", "tier", "provenance", "translator", "adaptation", "confidence", "edition",
     "key", "id", "lord", "graha", "sign", "house",
 }

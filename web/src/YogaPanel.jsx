@@ -106,6 +106,13 @@ export default function YogaPanel({ data, namer }) {
               {y.strength && <Strength s={y.strength} namer={namer} />}
               <span className="src">{shortCite(y.citation, y.source)}</span>
               {y.name_source && (
+                <span className="yoga-name-note">
+                  {lang === 'hi'
+                    ? 'यह नाम बाद का है। ग्रंथ इस योग को कोई नाम नहीं देता।'
+                    : 'This name is later than the text. The text gives it no name.'}
+                </span>
+              )}
+              {y.name_source && (
                 <span className="src" title={y.name_source}>
                   {lang === 'hi'
                     ? 'यह नाम बी.वी. रमन (1947) का है। ग्रंथ इसे कोई नाम नहीं देता।'

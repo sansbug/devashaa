@@ -24,6 +24,7 @@ import DashaReading from './DashaReading.jsx'
 import Conclusions from './Conclusions.jsx'
 import { Passage } from './Findings.jsx'
 import { HouseCards } from './PlanetMatrix.jsx'
+import AreaSummary from './AreaSummary.jsx'
 import { buildWalkthrough } from './walkthrough.js'
 import { buildFindings, rankFindings, TAGS } from './findings.js'
 import { buildLifeAreas } from './lifeareas.js'
@@ -135,6 +136,8 @@ export default function Report({ chart, name, date, time, place, namer, refs, sn
 
         {/* the conclusions first: what the chart means, before how it is worked out */}
         <section className="rp-sec"><Conclusions chart={shown} namer={namer} date={snap ? null : date} time={snap ? null : time} place={snap ? null : place} open /></section>
+
+        <section className="rp-sec"><AreaSummary chart={shown} namer={namer} refs={refs} report /></section>
 
         <section className="rp-sec"><WhoCard chart={chart} namer={namer} refs={refs} /></section>
 

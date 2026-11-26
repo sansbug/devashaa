@@ -3582,6 +3582,16 @@ a.topbar-signin { text-decoration: none; display: inline-block; }
 .dsr-row p { margin: 0 0 .2rem; }
 .dsr-verdict { color: var(--dim); font-size: .8rem; }
 .dsr-nak { font-size: .8rem; margin: .25rem 0 0; }
+/* Summary, area by area (AreaSummary.jsx) */
+.as-area + .as-area { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line, #e8e8e8); }
+.as-area h5 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+.as-now { margin-left: 8px; font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 9px; background: #e6f4ec; color: #1f7a4f; }
+.as-p { margin: 4px 0; line-height: 1.55; font-size: 14px; }
+.as-kind { display: inline-block; margin-right: 6px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); }
+.as-text { padding-left: 10px; border-left: 3px solid #c9962b; }
+.as-ours { padding-left: 10px; border-left: 3px solid var(--line, #bbb); font-style: italic; }
+.as-cite { color: var(--dim); font-style: normal; }
+@media print { .as-area { break-inside: avoid; } }
 .dsr-nak small { color: var(--dim); }
 
 /* the text's result lists for a sub-period */

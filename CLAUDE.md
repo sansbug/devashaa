@@ -254,6 +254,15 @@ its source beside it:
   Off — a passage carries NO attribution line at all (the owner asked for the "A classical
   text" label to go), no tier names and no reference list; on — everything is named. Either
   way a passage sits under a "What the classical texts say" heading, never as ours.
+- Summary, area by area (`web/src/areasummary.js` + `AreaSummary.jsx`, `node web/test_areasummary.mjs`;
+  owner 2026-11-26, after comparing another site's summary of their chart). Simple view, right after
+  "What this means for you", and in the report. Career · marriage · children · wealth · home · you,
+  as plain paragraphs, each LABELLED: from your chart / what the classical text says (the BPHS ch.24
+  lord-in-house verse, quoted whole; others counted and pointed to below; a SENSITIVE one never
+  quoted) / when / our reading. ⚠ The other site's summary read smoothly because it named BPHS for
+  things BPHS does not say (7th lord in 5th = love marriage: 24.77 says no such thing), gave ages
+  and money advice, and softened hard verses into "delay". Never copy those moves to make this read
+  better. Built from buildLifeAreas + buildFindings only: no new doctrine here.
 - Daśā reading (`web/src/dashareading.js` + `DashaReading.jsx`, `node web/test_dashareading.mjs`):
   the simple view's "Your periods (daśā): now, next, and what it means" — how to read a
   daśā · the running main and sub-period · the next sub-period and the next main period (each:

@@ -24,7 +24,7 @@
     // the Worker never runs and every sync call returns the HTML page with a
     // 200. It behaves correctly under `wrangler dev` and fails only once
     // deployed, so it has to be caught against the real thing.
-    "run_worker_first": ["/api/account/*", "/api/account", "/api/share/*", "/api/share", "/api/pooja/*", "/api/pooja", "/api/study/*", "/api/study"]
+    "run_worker_first": ["/api/account/*", "/api/account", "/api/share/*", "/api/share", "/api/pooja/*", "/api/pooja", "/api/study/*", "/api/study", "/vedela/*", "/vedela"]
   },
   // Accounts and encrypted profile blobs. D1 rather than KV because a unique
   // userid needs a real PRIMARY KEY: KV has no atomic check-and-set, so two
@@ -33,6 +33,8 @@
   // Devashaa Pūjā: one Durable Object per live room (it relays the WebRTC
   // handshake; media is peer to peer), and an R2 bucket for the recordings
   // the pandit's browser uploads so the family can watch later.
+  // Where Vedela's server is (see vedela-worker.js). /vedela/* is passed through to it.
+  "vars": { "VEDELA_ORIGIN": "https://veda-ecostatix.fly.dev" },
   "durable_objects": { "bindings": [{ "name": "ROOMS", "class_name": "PoojaRoom" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PoojaRoom"] }],
   "r2_buckets": [{ "binding": "REC", "bucket_name": "devashaa-recordings" }],

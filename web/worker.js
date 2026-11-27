@@ -24,6 +24,7 @@
 
 import { handlePooja, forgetPandit, PoojaRoom } from './pooja-worker.js'
 import { handleStudy } from './study-worker.js'
+import { handleVedela } from './vedela-worker.js'
 
 // The live-room Durable Object class must be exported from the entry module.
 export { PoojaRoom }
@@ -109,6 +110,9 @@ export default {
     if (path.startsWith('/api/pooja')) return handlePooja(request, env, ctx, authorise)
     // The owner's study view — admin only, forwarded to the Python API (study-worker.js).
     if (path === '/api/study' || path.startsWith('/api/study/')) return handleStudy(request, env, authorise)
+
+    // Vedela (Kitchen, Shop, the owner's Wellness) is its own server, shown here as a tab (vedela-worker.js).
+    if (path === '/vedela' || path.startsWith('/vedela/')) return handleVedela(request, env)
 
     if (!path.startsWith('/api/account') && !path.startsWith('/api/share')) return env.ASSETS.fetch(request)
     if (request.method === 'OPTIONS') {

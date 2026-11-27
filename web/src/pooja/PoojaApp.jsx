@@ -662,6 +662,7 @@ export default function PoojaApp({ route, go, lang = 'en', setLang }) {
         <nav className="site-tabs" aria-label={L('Sections of the site', 'साइट के अनुभाग')}>
           <a href="/" onClick={(e) => { e.preventDefault(); go('/') }}>{L('Jyotiṣa charts', 'ज्योतिष कुंडली')}</a>
           <a className="on" href="/pooja" aria-current="page" onClick={(e) => { e.preventDefault(); go('/pooja') }}>{L('Pūjā & Havan', 'पूजा एवं हवन')}</a>
+          <a href="/vedela/">Vedela</a>
         </nav>
         <div className="appearance">
           {setLang && (

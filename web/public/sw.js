@@ -21,8 +21,11 @@
  *     for an old /assets/x-HASH.js comes back as HTML. Such an answer is never
  *     cached under the file's address, and a cached copy that is HTML is not
  *     served for a script or a style. v3 exists to purge any that v2 had kept.
+ *   - VEDELA (/vedela/*) IS NEVER TOUCHED. It is another server's pages, shown here as a tab:
+ *     its answers differ by who is signed in, and its page saved under '/' would replace this
+ *     site's own home page offline. v4 purges anything an earlier version kept from it.
  */
-const VERSION = 'devashaa-v3';
+const VERSION = 'devashaa-v4';
 const SHELL = ['/', '/favicon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
@@ -51,6 +54,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return; // API + any 3rd-party: leave alone
   if (url.pathname.startsWith('/api/')) return;    // our own API: always the network, never a cache
+  if (url.pathname === '/vedela' || url.pathname.startsWith('/vedela/')) return; // Vedela: see the note above
   // the dev server's modules (/src, /@vite, /node_modules) change on every edit: never cache them either
   if (/^\/(?:src|@[a-z]+|node_modules)\//.test(url.pathname)) return;
 

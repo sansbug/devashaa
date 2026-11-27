@@ -3099,6 +3099,10 @@ export const CHROME = {
     "en": "Pūjā & Havan",
     "hi": "पूजा एवं हवन"
   },
+  "site.vedela": {
+    "en": "Vedela",
+    "hi": "Vedela"
+  },
   "share.hidden": {
     "en": "birth details not included",
     "hi": "जन्म-विवरण सम्मिलित नहीं"

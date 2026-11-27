@@ -753,6 +753,8 @@ export default function App() {
         <nav className="site-tabs" aria-label={t('site.sections', 'Sections of the site')}>
           <a className="on" href="/" aria-current="page">{t('site.jyotisha', 'Jyotiṣa charts')}</a>
           <a href="/pooja" onClick={(e) => { e.preventDefault(); go('/pooja') }}>{t('site.pooja', 'Pūjā & Havan')}</a>
+          {/* Vedela is another server's pages under /vedela/ (web/vedela-worker.js): a real link, not a route. */}
+          <a href="/vedela/">{t('site.vedela', 'Vedela')}</a>
         </nav>
         <Appearance
           theme={theme} setTheme={setTheme}

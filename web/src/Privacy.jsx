@@ -60,20 +60,38 @@ export default function Privacy({ onBack }) {
         <ul className="privacy-list">
           <li><strong>Your saved charts</strong> — the name you typed, birth
             date, time and place.</li>
+          <li><strong>How often you open each saved chart</strong>, so the ones
+            you use most come first. A count per chart, nothing more.</li>
           <li><strong>Your user id</strong>, if you made an account, so you do
             not have to retype it. Never your password.</li>
           <li><strong>Your theme</strong> and <strong>name style</strong>.</li>
           <li><strong>Your display choices</strong> — language, the simple or
             full view, whether references are shown, how a table is ordered,
-            and which one-time hints you have already seen. None of these
-            holds anything about you or a chart.</li>
+            which one-time hints you have already seen, and a few markers that
+            a setting was upgraded once. None of these holds anything about you
+            or a chart.</li>
+          <li><strong>Calibration events</strong>, only if you log any on the
+            projection page: a month, a life area and whether it went well or
+            badly. They are filed under that chart's birth date, time and place,
+            so they carry the same details as a saved chart.</li>
+          <li>On <strong>Pūjā &amp; Havan</strong>: the place you chose for the
+            timings, and the guide's settings (mode, language, voice).</li>
         </ul>
         <p>
-          Nothing here is sent anywhere on its own. Two of them travel when you
-          act: re-opening a saved chart sends its birth details to the
+          Nothing here is sent anywhere on its own. Some travel when you act:
+          re-opening a saved chart sends its birth details to the
           calculation server exactly as casting a new one does, and your user id
           goes to the accounts server when you sign in, which is what it is for.
-          Your password never does.
+          Your password never does. Calibration events go to the calculation
+          server only when you press the button that checks them, and, like a
+          chart, are not kept there. The Pūjā place goes with each request for
+          that day's timings.
+        </p>
+        <p>
+          The site also keeps <strong>a copy of its own pages and files</strong>{' '}
+          in your browser's cache, so it opens without a connection and can be
+          installed as an app. That copy never includes a chart, an account or a
+          shared link: those requests always go to the network.
         </p>
         <p>
           Signing in also <strong>copies the charts in your account into this

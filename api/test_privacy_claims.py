@@ -76,7 +76,8 @@ def code_only(src, sql=False):
 REQUEST_PATH = ["app.py", "vedic.py", "vargas.py", "geocode.py", "dignity.py",
                 "analysis.py", "dasha_effects.py", "antardasa.py", "drishti.py",
                 "functional.py", "vimsopaka.py", "avastha.py", "karakas.py",
-                "relationships.py", "dashas.py", "vimshottari.py", "rasis.py"]
+                "relationships.py", "dashas.py", "vimshottari.py", "rasis.py",
+                "matrix.py"]   # the calibration check (/api/matrix/backtest)
 
 print('"Nothing from that request is written to disk or to any database":')
 for mod in REQUEST_PATH:
@@ -125,16 +126,20 @@ check("...and Flask debug is not enabled in the image", "FLASK_DEBUG" not in doc
 
 print('\n"No cookies, no analytics, no trackers, no third-party scripts":')
 html = read(WEB, "index.html")
-offsite = re.findall(r'(?:src|href)="(https?://[^"]+)"', html)
+# The site's own address (the canonical link, the share-card image) is not another
+# origin; anything else in a src or href is.
+offsite = [u for u in re.findall(r'(?:src|href)="(https?://[^"]+)"', html)
+           if not re.match(r"https://(www\.)?devashaa\.com(/|$)", u)]
 check("index.html loads nothing from another origin", not offsite, str(offsite))
 pkg = read(WEB, "package.json")
 deps = re.search(r'"dependencies"\s*:\s*\{([^}]*)\}', pkg)
 names = re.findall(r'"([^"]+)"\s*:', deps.group(1)) if deps else []
 check("the app has exactly two runtime dependencies: react, react-dom",
       sorted(names) == ["react", "react-dom"], str(names))
-src_all = "".join(code_only(read(WEB, "src", f))
-                  for f in os.listdir(os.path.join(WEB, "src"))
-                  if f.endswith((".js", ".jsx")))
+# every module under src/, sub-folders too (pooja/ keeps its own keys)
+src_all = "".join(code_only(read(d, f))
+                  for d, _, fs in os.walk(os.path.join(WEB, "src"))
+                  for f in fs if f.endswith((".js", ".jsx")))
 check("nothing anywhere writes a cookie", "document.cookie" not in src_all)
 # Match CALLS and IMPORTS, not bare words. The privacy page's own sentence is
 # "no analytics, no trackers" — a substring test flags the page for promising
@@ -150,19 +155,38 @@ TRACKERS = r"""(?xi)
 hits = re.findall(TRACKERS, src_all)
 check("no analytics or tracker call anywhere in the client", not hits, str(hits[:3]))
 
-print("\nThe four browser storage keys the page enumerates, and no more:")
-keys = set(re.findall(r"localStorage\.(?:set|get|remove)Item\(\s*['\"`]([^'\"`]+)", src_all))
-# Two are held in constants rather than literals; resolve those the same way a
-# reader of the page would have to.
-consts = dict(re.findall(r"const\s+(REMEMBER|KEY)\s*=\s*'([^']+)'", src_all))
-keys |= set(consts.values())
-EXPECTED = {"theme", "nameStyle", "devashaa.acct", "devashaa.profiles"}
-check("localStorage keys are exactly the documented four",
-      keys == EXPECTED, f"found {sorted(keys)}")
+print("\nThe browser storage keys the page enumerates, and no more:")
+CALL = r"localStorage\.(?:set|get|remove)Item\(\s*"
+keys = set(re.findall(CALL + r"['\"`]([^'\"`$]+)", src_all))   # a literal, or a template's fixed head
+# a key held in a constant: resolve the constant, as a reader of the page would have to
+consts = dict(re.findall(r"const\s+(\w+)\s*=\s*['\"`]([^'\"`$]+)", src_all))
+for name in re.findall(CALL + r"([A-Za-z_]\w*)\s*[,)]", src_all):
+    keys.add(consts.get(name, "?" + name))
+# Each key, against the line on /privacy (web/src/Privacy.jsx) that names it.
+EXPECTED = {
+    "devashaa.profiles",                     # your saved charts
+    "profileViews",                          # how often each saved chart is opened
+    "devashaa.acct",                         # your user id
+    "theme", "nameStyle",                    # your theme and name style
+    "lang", "viewMode", "refs", "deck.positions.order",   # display choices
+    "rg-nudge-seen", "nv-nudge-seen",        # one-time hints already seen
+    "themeDefault_v2", "themeDefault_v3", "nameStyleHiMigrated_v1",  # one-time upgrade markers
+    "dvz-cal-",                              # calibration events, keyed by the chart's birth details
+    "pooja.place", "pooja.guide",            # Puja & Havan: the place chosen, the guide's settings
+}
+check("localStorage keys are exactly the ones the page lists",
+      keys == EXPECTED, f"not listed: {sorted(keys - EXPECTED)}  gone: {sorted(EXPECTED - keys)}")
 check("no sessionStorage", "sessionStorage" not in src_all)
 check("no IndexedDB", "indexedDB" not in src_all)
-check("no service worker (which could cache chart responses offline)",
-      "serviceWorker" not in src_all)
+# The service worker is there (offline start, installing the app). The promise is
+# that it can never keep a chart, account or share answer, so pin that:
+sw = code_only(read(WEB, "public", "sw.js"))
+check("the service worker touches GET requests only",
+      "request.method !== 'GET') return" in sw)
+check("...never another origin (the chart API is on another origin)",
+      "url.origin !== self.location.origin) return" in sw)
+check("...and never this site's own /api/ (accounts, shares)",
+      "url.pathname.startsWith('/api/')) return" in sw)
 
 print("\nThe account server never receives a key or a password:")
 acct = read(WEB, "src", "account.js")

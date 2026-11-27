@@ -42,7 +42,7 @@ const KENDRA = [1, 4, 7, 10]
 /** Passages the findings do not put in front of a reader: a death or a lifespan, a bereavement, a partner's
  *  fidelity. (Narrower than the walkthrough's CARE: wealth, family, character and standing ARE shown, attributed.) */
 export const SENSITIVE = {
-  en: /\b(destr(oy|oyed|uction)\w* (at once )?(of |both )?(the )?(coborn|co-born|preborn|afterborn|later born|wife|children|mother|father)|(preborn|afterborn|coborn|co-born|wife|children) will be destroyed|no offspring|no children|quit the world|death|die[sd]?|dying|dead|kill\w*|short-lived|short life|longevity|life-?span|widow\w*|bereave\w*|bereft of (his |her |a |the )?(child\w*|sons?|daughters?|wife|husband|spouse|father|mother|parents?|progeny|issue)|childless|issueless|adulter\w*|unchaste|los(e|es|ing|s) (of )?(his |her |a |the |one's )?(child\w*|sons?|daughters?|wife|husband|spouse|father|mother|parents?|brothers?|sisters?)|other(s'|'s)? (wives|women|men)|another('s)? (wife|woman))\b/i,
+  en: /\b(destr(oy|oyed|uction)\w* (at once )?(of |both )?(the )?(coborn|co-born|preborn|afterborn|later born|wife|children|mother|father)|(preborn|afterborn|coborn|co-born|wife|children) will be destroyed|no offspring|no children|quit the world|death|die[sd]?|dying|dead|kill\w*|short-lived|short life|longevity|life-?span|widow\w*|bereave\w*|bereft of (his |her |a |the )?(child\w*|sons?|daughters?|wife|husband|spouse|father|mother|parents?|progeny|issue)|childless|issueless|adulter\w*|unchaste|los(e|es|ing|s) (of )?(his |her |a |the |one's )?(first |eldest |elder |younger |only )?(child\w*|sons?|daughters?|wife|husband|spouse|father|mother|parents?|brothers?|sisters?)|other(s'|'s)? (wives|women|men)|another('s)? (wife|woman))\b/i,
   hi: /मृत्यु|मरण|अल्पायु|आयु क्षीण|विधवा|विधुर|निःसंतान|संतानहीन|व्यभिचार|परस्त्री|परपुरुष|(पुत्र|संतान|पत्नी|पति|पिता|माता)[^।]{0,12}(नाश|हानि|वियोग)/,
 }
 /** Why a ch.13 clause applies to this chart — our words for the verse's own condition (api/dhana_bhava.py). */
@@ -135,7 +135,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
     ...((cls.readings || []).filter((r) => r.graha === k && r.sign === s).flatMap((r) => (r.sources || []).map((src) => ({ src, on: 'sign' })))),
   ]
   /** One passage, as the finding carries it. `says` is null when the passage is SENSITIVE. */
-  const passage = ({ says, source, cite, kind, applies }) => ({
+  const passage = ({ says, source, cite, kind, applies, house }) => ({
+    ...(house ? { house } : {}),
     says: says && !sensitive(says) ? says : null, held: !!says && sensitive(says),
     // the whole passage, for a reader who asks to see it: shown entire or not at all, never with a clause cut out
     full: says || null,
@@ -357,6 +358,8 @@ export function buildFindings(chart, namer = makeNamer('common')) {
       if (!src || !src.gist) continue
       texts.push(passage({
         says: src.gist, source: src.source || null, cite: src.citation, kind: 'rendering',
+        // the house the reading is about, so a life area can gather it (lifeareas.js); a sign reading has none
+        house: on === 'house' ? h : null,
         applies: both((l) => (on === 'house'
           ? (l === 'hi' ? `${nm(l, k)} आपके ${HI_ORD[h]} भाव में हैं।` : `${nm(l, k)} is in your ${EN_ORD(h)} house.`)
           : (l === 'hi' ? `${nm(l, k)} ${sign(l, x.rasi)} राशि में हैं।` : `${nm(l, k)} is in ${sign(l, x.rasi)}.`))),

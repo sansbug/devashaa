@@ -68,7 +68,7 @@ if (!chart) {
   ok('no note gives medical, legal or investment instructions', !notes.some((s) => /\b(doctor|medic\w*|treatment|diagnos\w*|lawyer|invest\w*|buy|sell|stocks?|loan)\b/i.test(s)))
   ok('no note speaks of a death or a lifespan', !notes.some((s) => /\b(death|die|dead|lifespan|longevity|short-lived)\b/i.test(s)))
   ok('every passage in an area is tied to one of its houses', areas.every((a) => a.passages.every((t) => a.houses.includes(t.house) && t.cite)))
-  ok('a passage appears once per area', areas.every((a) => new Set(a.passages.map((t) => t.cite)).size === a.passages.length))
+  ok('a passage appears once per area (one citation may carry several planets’ readings)', areas.every((a) => new Set(a.passages.map((t) => `${t.cite}|${t.full || ''}`)).size === a.passages.length))
   ok('an area is either in focus now, has a next window, or says it has none', areas.every((a) => a.timing.now || a.timing.next || a.timing.none || true))
   const withNext = areas.filter((a) => a.timing.next)
   ok('a "next" window is never offered for an area already in focus', areas.every((a) => !(a.timing.now && a.timing.next)))

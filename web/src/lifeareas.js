@@ -106,8 +106,10 @@ export function buildLifeAreas(chart, built, namer = makeNamer('common'), now = 
     const seen = new Set(), passages = []
     for (const f of built.findings) {
       for (const t of (f.texts || [])) {
-        if (!A.houses.includes(t.house) || seen.has(t.cite)) continue
-        seen.add(t.cite); passages.push(t)
+        // keyed on the words too: one citation ("Phaladīpikā, Adhyāya 8") covers several planets' readings
+        const id = `${t.cite}|${t.full || ''}`
+        if (!A.houses.includes(t.house) || seen.has(id)) continue
+        seen.add(id); passages.push(t)
       }
     }
 

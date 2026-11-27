@@ -17,10 +17,17 @@ English/Hindi. Read `DEPLOY.md` for the hosting split and `docs/` for doctrine.
    See `docs/classical-sources-policy.md` §5 for the adaptation rules
    (gender-neutralise, gloss archaic "rāja" as authority, keep disease/poverty
    as the text's own dated view, drop caste verdicts).
-2. **Indication, not fate.** Windows and directions, never fated events or
-   dates. Two sensitive readings — a partner's fidelity, loss of a loved one —
-   ship only as opt-in ♥ *care-signals*, never as verdicts. **Lifespan is never
-   dated**, for the native or anyone else, past or future.
+2. **Say what the kundli says; sell nothing, frighten no one.** Owner, 2026-11-26
+   (supersedes the old "never a dated event"): "dated event is fine. all i dont
+   want is selling a remedy or fear. but stating what kundli analysis can say, we
+   should. we should not hide something from kundli just because its in our
+   rules." So: a text's dated event or age window, and the Daśā dates, MAY be shown
+   (cited); chart-based guidance ("be careful with speculation": Rahu weak in a
+   house of money) is allowed when it states its basis in the chart. Still out: any
+   remedy, gem, ritual or charity, and anything sold. Two sensitive readings — a
+   partner's fidelity, loss of a loved one — ship only as opt-in ♥ *care-signals*,
+   never as verdicts. **Lifespan is never dated**, for the native or anyone else,
+   past or future (no-fear; ask the owner before changing that).
 
 **Never self-translate Sanskrit.** Extract from a published translation (or, for
 Phaladīpikā, Ojha's Hindi *artha*) and label whose words they are.
@@ -259,10 +266,17 @@ its source beside it:
   "What this means for you", and in the report. Career · marriage · children · wealth · home · you,
   as plain paragraphs, each LABELLED: from your chart / what the classical text says (the BPHS ch.24
   lord-in-house verse, quoted whole; others counted and pointed to below; a SENSITIVE one never
-  quoted) / when / our reading. ⚠ The other site's summary read smoothly because it named BPHS for
-  things BPHS does not say (7th lord in 5th = love marriage: 24.77 says no such thing), gave ages
-  and money advice, and softened hard verses into "delay". Never copy those moves to make this read
-  better. Built from buildLifeAreas + buildFindings only: no new doctrine here.
+  quoted) / a classical text, in our words (Sārāvalī 30, Phaladīpikā 8, Bṛhat Jātaka 20,
+  Chamatkāra on each planet SITTING in the area's houses — the concordance passages now carry
+  `house`) / a note on sources / when / our reading (always ends "Basis: n for, m against the
+  lord"; GUIDE gives one plain step per area when the lean is against or mixed; Rahu in the 2nd,
+  5th or 11th with more against than for → "careful with speculation", per the owner's rule 2).
+  ⚠ Research 2026-11-26: most of the other site's claims ARE classical (Saturn/Sun in the 5th on
+  children: Sārāvalī 30.78/30.6, Phaladīpikā 8, BJ 20.2; Venus in the 6th: Sārāvalī 30.67), but
+  "7th lord in 5th = love marriage" is modern teaching, not BPHS (24.77 says no such thing; not in
+  Sārāvalī, Phaladīpikā, Jātaka Pārijāta, Horā Sāra or Raman's 300). The marriage area's source
+  note says so whenever the 5th and 7th lords are linked; never state the rule as a text's.
+  Built from buildLifeAreas + buildFindings only: no new doctrine here.
 - Daśā reading (`web/src/dashareading.js` + `DashaReading.jsx`, `node web/test_dashareading.mjs`):
   the simple view's "Your periods (daśā): now, next, and what it means" — how to read a
   daśā · the running main and sub-period · the next sub-period and the next main period (each:
@@ -286,7 +300,8 @@ its source beside it:
   the area runs or next begins · PRACTICAL NOTES. ⚠ The notes are OURS, the owner's choice
   for "what you can do" (2026-11-16) over the texts' remedies: attention, planning and
   timing only — never a ritual, gem or charity (the site still says "No remedies"), never
-  medical / legal / financial instructions, never what will happen. No health area; the
+  medical / legal instructions. (Chart-based money guidance with its basis is allowed since
+  2026-11-26, rule 2; the summary carries it, these notes do not yet.) No health area; the
   8th house is in no area. The test pins all of this.
 - Not yet registered: ch.13 vv.8+; verse numbers for the seven grahas in Phaladīpikā ch.8
   (still cited to the chapter); Phaladīpikā's daśā chapters (19–21). A web page's machine translation is not a source:

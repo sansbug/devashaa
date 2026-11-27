@@ -16,8 +16,10 @@ WHAT IS NOT REGISTERED, and why (so an absence is not "fixed" later):
   * ch.19 (8th house) — it is the longevity chapter; the site never dates or
     grades a lifespan (CLAUDE.md rule 2).
   * Every verse that fixes an event to an age ("in his 32nd year", "at the age
-    of 56 …") — chs 15.10-14, 16.18-23, 17.13-22, 20.5/10-28, 22.4/5/8. The site
-    gives windows and directions, never dated events.
+    of 56 …") — chs 15.10-14, 16.18-23, 17.13-22, 20.5/10-28, 22.4/5/8. They were
+    left out under the old "never a dated event" rule. The owner lifted that rule
+    on 2026-11-26 (CLAUDE.md rule 2), so they MAY now be registered, read from the
+    page images like the rest. A verse dating a death or a lifespan stays out.
   * Verses on a spouse's character or fidelity, on illegitimate birth, on sexual
     conduct, on the number of wives (ch.18 vv.3-21 mostly, ch.16 vv.14-15).
   * Verses whose condition needs something this module cannot test honestly:

@@ -10,6 +10,8 @@
  *           quoted whole (a SENSITIVE verse is never quoted here; the summary says it is held and where it is);
  *   rendered  the other classical texts (Sārāvalī 30, Phaladīpikā 8, Bṛhat Jātaka 20, Chamatkāra) on each planet
  *           sitting in the area's houses, as the site renders them (classical tier; not quoted, the words are ours);
+ *   dated   a BPHS verse naming an age for a good event (chs 15, 16, 20, 22; api/bhava_effects.py) whose condition
+ *           this chart meets: quoted whole, the clause met, and the age as this native's calendar months (agewindow.js);
  *   note    a source note: the modern 5th–7th "love marriage" rule, which other readings attribute to BPHS. BPHS
  *           (24.77) does not say it and no classical text we hold does, so it is named as modern and not stated;
  *   timing  when the area's planets run their periods, with dates (the same dates as "Your life, area by area");
@@ -21,6 +23,7 @@
 import { makeNamer } from './naming.js'
 import { HOUSE } from './walkthrough.js'
 import { buildLifeAreas } from './lifeareas.js'
+import { ageSentence } from './agewindow.js'
 
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 const EN_ORD = (n) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`
@@ -36,12 +39,16 @@ const plain = (s, l) => {
   return x
 }
 
+/** Where a dated verse is told: by the house its chapter is about (the 9th, fortunes, goes with wealth). */
+const DATED_AREA = { 4: 'home', 5: 'children', 9: 'wealth', 11: 'wealth' }
+
 /** The order of the summary: the areas a reader asks about first. */
 export const ORDER = ['career', 'marriage', 'children', 'wealth', 'home', 'self']
 export const KIND = {
   chart: { en: 'From your chart', hi: 'आपकी कुंडली से' },
   text: { en: 'What the classical text says', hi: 'शास्त्र क्या कहता है' },
   timing: { en: 'When', hi: 'कब' },
+  dated: { en: 'An age in the text', hi: 'ग्रंथ में दी गई आयु' },
   rendered: { en: 'A classical text, in our words', hi: 'शास्त्र, हमारे शब्दों में' },
   note: { en: 'A note on sources', hi: 'स्रोतों पर एक बात' },
   ours: { en: 'Our reading, not a text’s', hi: 'हमारी व्याख्या, किसी ग्रंथ की नहीं' },
@@ -99,6 +106,19 @@ export function buildAreaSummary(chart, built, namer = makeNamer('common'), now 
     const rendered = A.passages.filter((t) => t.kind === 'rendering' && t.says)
     for (const t of rendered) paras.push({ kind: 'rendered', en: named(t.says), hi: named(t.says), cite: t.cite, source: t.source })
 
+    // ── dated: a BPHS verse that names an age for a good event, and this chart meets its condition (owner,
+    //    2026-11-26: "dated event is fine"). Quoted whole, with the clause met and the age in this native's dates.
+    //    The 9th house (fortunes) is read with wealth here. A verse dating a death or a disease is not registered.
+    const bhe = chart.analysis && chart.analysis.bhava_effects
+    const datedHere = ((bhe && !bhe.error && bhe.matches) || []).filter((m) => m.dated && DATED_AREA[m.house] === A.key)
+    const fillG = (l, s) => String(s || '').replace(/\{g:([a-z]+)\}/g, (_, k) => nm(l, k))
+    for (const m of datedHere) {
+      paras.push({ kind: 'dated', cite: m.citation, source: { translator: 'R. Santhanam' }, ...both((l) => [
+        `“${m.text}”`,
+        ...m.clauses.filter((c) => c.age).map((c) => `${l === 'hi' ? 'आपकी कुंडली यह शर्त पूरी करती है।' : 'Your chart meets this.'} ${fillG(l, c.why[l] || c.why.en)} ${ageSentence(c.age, chart, l, now)}`),
+      ].join(' ')) })
+    }
+
     // ── note: the modern 5th–7th "love marriage" rule, which readers meet everywhere attributed to BPHS ──
     if (A.key === 'marriage') {
       const l5 = lordOf(5), l7 = lordOf(7), g5 = g(l5), g7 = g(l7)
@@ -110,7 +130,7 @@ export function buildAreaSummary(chart, built, namer = makeNamer('common'), now 
       }
     }
 
-    const rest = A.passages.filter((t) => !(lordVerses.includes(t) && t.says) && !(rendered.includes(t)))
+    const rest = A.passages.filter((t) => !(lordVerses.includes(t) && t.says) && !(rendered.includes(t)) && !datedHere.some((m) => m.citation === t.cite))
     const held = rest.filter((t) => t.held).length
     if (rest.length) {
       paras.push({ kind: 'text', ...both((l) => (l === 'hi'

@@ -24,13 +24,20 @@ def got(res):
 
 
 print("The registry:")
-check("54 verses are registered", len(B.VERSES) == 54, str(len(B.VERSES)))
+check("63 verses are registered (54 + the 9 dated ones of 2026-11-27)", len(B.VERSES) == 63, str(len(B.VERSES)))
 check("every verse has its text, a locus with a printed page, and a house",
       all(v["text"] and re.search(r"BPHS I ch\.\d+ vv?\.[\d-]+ \(pp?\.[\d-]+\)", v["citation"]) and 1 <= v["house"] <= 12 for v in B.VERSES))
 check("ch.19 (longevity) is not registered", not any(v["chapter"] == 19 for v in B.VERSES))
-check("no registered verse fixes an event to an age",
-      not any(re.search(r"\b(\d+(st|nd|rd|th) year|age of \d+|at \d+ and \d+)\b", v["text"]) for v in B.VERSES),
-      next((v["citation"] for v in B.VERSES if re.search(r"\b(\d+(st|nd|rd|th) year|age of \d+)\b", v["text"])), ""))
+# owner 2026-11-26: a dated GOOD event may be shown; a dated death, lifespan, disease or danger may not (no fear)
+DATED = {"15.10-14", "16.18", "16.19", "16.20", "20.10", "20.27-28", "22.4", "22.5", "22.8"}
+AGE_RE = r"\b(\d+(st|nd|rd|th) year|age of \d+|at \d+ and \d+)\b"
+check("the verses that name an age are exactly the registered dated ones",
+      {f"{v['chapter']}.{v['verse']}" for v in B.VERSES if re.search(AGE_RE, v["text"])} == DATED,
+      str({f"{v['chapter']}.{v['verse']}" for v in B.VERSES if re.search(AGE_RE, v["text"])} ^ DATED))
+check("no dated verse speaks of a death, a lifespan, a disease or a danger",
+      not any(re.search(r"\b(death|die|lose|loss|fatal|life|disease|danger|fear|fever|leprosy)\b", v["text"], re.I)
+              for v in B.VERSES if f"{v['chapter']}.{v['verse']}" in DATED))
+check("ch.17's dated verses (diseases, unfortunate years) stay out", not any(v["chapter"] == 17 and v["verse"] != "2" for v in B.VERSES))
 check("every note is given in both languages", all(len(v["notes"]["en"]) == len(v["notes"]["hi"]) for v in B.VERSES))
 
 print("\nThe owner's configuration (Aquarius ascendant):")
@@ -68,6 +75,33 @@ check("ch.21 v.6: the 10th lord in the 8th with Rāhu", "21.6" in got(r))
 r = B.evaluate(pos(**{**base, "sun": (CANCER, 5), "moon": (SAG, 9), "saturn": (SAG, 12), "mars": (AQU, 3)}), ARIES, moon_waxing=True)
 check("ch.15 v.8: the four-planet yoga", "15.8" in got(r))
 check("…and it does not fire on the base chart", "15.8" not in got(B.evaluate(pos(**base), ARIES, moon_waxing=True)))
+
+print("\nDated verses (each fires on its own condition, carries its age, and not on the base chart):")
+base_got = got(B.evaluate(pos(**base), ARIES, moon_waxing=True))
+
+
+def dated(key, lagna, age, **moves):
+    r = B.evaluate(pos(**{**base, **moves}), lagna, moon_waxing=True)
+    m = next((m for m in r["matches"] if f"{m['chapter']}.{m['verse']}" == key), None)
+    ok = m and m["dated"] and any(c.get("age") == age for c in m["clauses"]) and not r["errors"]
+    check(f"ch.{key} fires with age {age['kind']} {age['n']}", bool(ok), str(m and m["clauses"]) + str(r["errors"]))
+
+
+for key in DATED:
+    check(f"ch.{key} does not fire on the base chart", key not in base_got)
+# Aries ascendant unless named. Lords: 1 Mars, 2 Venus, 4 Moon, 5 Sun, 9 Jupiter, 11 Saturn.
+dated("22.8", ARIES, B.Y(33), saturn=(ARIES, 10), mars=(AQU, 10))
+dated("22.4", ARIES, B.Y(36), saturn=(GEMINI, 10), jupiter=(AQU, 10))
+dated("22.5", ARIES, B.Y(40), saturn=(CANCER, 10), jupiter=(CANCER, 12))
+dated("20.10", ARIES, B.AFTER(32), jupiter=(TAURUS, 10), venus=(SAG, 10))
+dated("20.27-28", GEMINI, B.AFTER(20), jupiter=(AQU, 10), saturn=(GEMINI, 10))   # Gemini: 9th lord Saturn
+dated("16.18", ARIES, B.Y(32, 33), jupiter=(LEO, 10), sun=(PISCES, 2), venus=(PISCES, 20))
+dated("16.19", ARIES, B.AGE(30, 36), sun=(CANCER, 3), jupiter=(CANCER, 12))
+dated("16.20", ARIES, B.AGE(40), jupiter=(SAG, 10), venus=(LEO, 10), mars=(LEO, 20))
+dated("15.10-14", ARIES, B.Y(12), moon=(AQU, 10), saturn=(CANCER, 10))                    # 4th–11th exchange
+dated("15.10-14", ARIES, B.Y(32), sun=(CANCER, 5), moon=(TAURUS, 3), venus=(TAURUS, 20))   # Sun 4th, 4th lord exalted with Venus
+dated("15.10-14", TAURUS, B.Y(12), venus=(ARIES, 10), sun=(PISCES, 10))                    # benefic lagna lord, 4th lord in 11th, Venus 12th
+check("a verse that is not dated says so", all(not m["dated"] for m in B.evaluate(pos(**base), ARIES, moon_waxing=True)["matches"]))
 
 print("\nALL PASS" if not fails else f"\nFAILURES: {fails}")
 raise SystemExit(1 if fails else 0)

@@ -34,7 +34,7 @@ export default function AreaSummary({ chart, namer, refs, report = false }) {
               <p key={i} className={'as-p as-' + p.kind}>
                 <span className="as-kind">{KIND[p.kind][L]}</span>
                 {p[L]}
-                {(p.kind === 'text' || p.kind === 'rendered') && p.cite && refs ? <small className="as-cite"> {p.cite}{p.source && p.source.translator ? (p.kind === 'text' ? `, tr. ${p.source.translator}` : `; ${p.source.translator}`) : ''}</small> : null}
+                {(p.kind === 'text' || p.kind === 'rendered' || p.kind === 'dated') && p.cite && refs ? <small className="as-cite"> {p.cite}{p.source && p.source.translator ? (p.kind !== 'rendered' ? `, tr. ${p.source.translator}` : `; ${p.source.translator}`) : ''}</small> : null}
               </p>
             ))}
           </div>

@@ -27,7 +27,9 @@ English/Hindi. Read `DEPLOY.md` for the hosting split and `docs/` for doctrine.
    remedy, gem, ritual or charity, and anything sold. Two sensitive readings — a
    partner's fidelity, loss of a loved one — ship only as opt-in ♥ *care-signals*,
    never as verdicts. **Lifespan is never dated**, for the native or anyone else,
-   past or future (no-fear; ask the owner before changing that).
+   past or future (no-fear; ask the owner before changing that). Dated verses that
+   are DEATHS, diseases or dangers stay unregistered for the same reason (BPHS
+   16.21-23, 20.5, 20.13-25, ch.17 vv.13-28; see bhava_effects.py's docstring).
 
 **Never self-translate Sanskrit.** Extract from a published translation (or, for
 Phaladīpikā, Ojha's Hindi *artha*) and label whose words they are.
@@ -268,7 +270,10 @@ its source beside it:
   lord-in-house verse, quoted whole; others counted and pointed to below; a SENSITIVE one never
   quoted) / a classical text, in our words (Sārāvalī 30, Phaladīpikā 8, Bṛhat Jātaka 20,
   Chamatkāra on each planet SITTING in the area's houses — the concordance passages now carry
-  `house`) / a note on sources / when / our reading (always ends "Basis: n for, m against the
+  `house`) / an age in the text (the DATED BPHS verses this chart meets — 15.10-14, 16.18-20,
+  20.10, 20.27-28, 22.4/5/8, registered 2026-11-27 from the page images; each clause carries
+  `age`, and `web/src/agewindow.js` turns "32nd year" / "age of 30" / "after the 20th year" into
+  the native's calendar months; the 9th house goes with wealth) / a note on sources / when / our reading (always ends "Basis: n for, m against the
   lord"; GUIDE gives one plain step per area when the lean is against or mixed; Rahu in the 2nd,
   5th or 11th with more against than for → "careful with speculation", per the owner's rule 2).
   ⚠ Research 2026-11-26: most of the other site's claims ARE classical (Saturn/Sun in the 5th on

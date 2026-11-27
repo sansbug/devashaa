@@ -7,7 +7,8 @@ Tier: sloka. The English is R. Santhanam's translation, read from the PAGE IMAGE
 (Ranjan Publications; printed page numbers in each citation; PDF page = printed
 page - 1) on 2026-11-15. The scan's OCR layer was not used. Printer's slips
 repaired: 15.8 "huffaloes" → "buffaloes"; 20.6 "is an angle" → "is [in] an angle";
-22.5 n/a. The Sanskrit on the same pages is not re-translated here.
+22.5 "conjujct" → "conjunct"; 15.10-14 "conveyanees" → "conveyances" (twice), "significatoı"
+→ "significator"; 20.10 "Aquisition" kept as printed. The Sanskrit on the same pages is not re-translated here.
 
 Each verse is returned WHOLE with the clause(s) this chart meets — a verse's
 favourable and unfavourable halves travel together.
@@ -15,11 +16,14 @@ favourable and unfavourable halves travel together.
 WHAT IS NOT REGISTERED, and why (so an absence is not "fixed" later):
   * ch.19 (8th house) — it is the longevity chapter; the site never dates or
     grades a lifespan (CLAUDE.md rule 2).
-  * Every verse that fixes an event to an age ("in his 32nd year", "at the age
-    of 56 …") — chs 15.10-14, 16.18-23, 17.13-22, 20.5/10-28, 22.4/5/8. They were
-    left out under the old "never a dated event" rule. The owner lifted that rule
-    on 2026-11-26 (CLAUDE.md rule 2), so they MAY now be registered, read from the
-    page images like the rest. A verse dating a death or a lifespan stays out.
+  * DATED VERSES. The owner lifted the old "never a dated event" rule on
+    2026-11-26 (CLAUDE.md rule 2), so the verses that date a GOOD event are
+    registered (read from the page images 2026-11-27): 15.10-14 (conveyances),
+    16.18-20 (a child), 20.10 and 20.27-28 (fortunes), 22.4/5/8 (gains). Each
+    clause carries `age`. Still OUT, under "no fear": the verses that date a
+    death or a lifespan — 16.21-23 (loss of a child), 20.5 (the father's span),
+    20.13-25 (the father's death) — and ch.17 vv.13-28, which date diseases and
+    "unfortunate years" (fire, water, enemies, dogs).
   * Verses on a spouse's character or fidelity, on illegitimate birth, on sexual
     conduct, on the number of wives (ch.18 vv.3-21 mostly, ch.16 vv.14-15).
   * Verses whose condition needs something this module cannot test honestly:
@@ -167,8 +171,26 @@ def _join(parts):
     return {"en": en + ".", "hi": hi + "।"}
 
 
-def C(polarity, grahas, *parts):
-    return {"polarity": polarity, "grahas": sorted(set(grahas)), "why": _join(parts)}
+def C(polarity, grahas, *parts, age=None):
+    """`age` (dated verses only): {"kind": "year"|"age"|"after", "n": [..]} — the verse's own words:
+    "in his 32nd year" → year (the year that ends on that birthday); "at the age of 30" → age (the year
+    after that birthday); "after the 20th year" → after (from that birthday on)."""
+    out = {"polarity": polarity, "grahas": sorted(set(grahas)), "why": _join(parts)}
+    if age:
+        out["age"] = age
+    return out
+
+
+def Y(*n):
+    return {"kind": "year", "n": list(n)}
+
+
+def AGE(*n):
+    return {"kind": "age", "n": list(n)}
+
+
+def AFTER(n):
+    return {"kind": "after", "n": [n]}
 
 
 FAV, ADV = "favourable", "adverse"
@@ -181,6 +203,12 @@ N_COMBUST = ("“Combustion” is not evaluated: the text gives no orb for it.",
 N_NAVAMSA = ("The navāṁśa / divisional conditions of this verse are not evaluated here.",
              "इस श्लोक की नवांश / वर्ग संबंधी शर्तें यहाँ नहीं जाँची गईं।")
 N_FULL = ("Only full aspects are counted.", "केवल पूर्ण दृष्टि गिनी गई है।")
+N_DEEP = ("“Deep exaltation” is not evaluated: it needs the exact degree, which the verse does not allow for.",
+          "“परमोच्च” नहीं जाँचा गया: उसके लिए ठीक अंश चाहिए।")
+N_DATED = ("The verse names an age. The site shows it as the text's statement, with the calendar dates of that year of your life; it is not a promise.",
+           "श्लोक एक आयु बताता है। साइट इसे ग्रंथ के कथन के रूप में, आपके जीवन के उस वर्ष की तारीखों के साथ दिखाती है; यह कोई वादा नहीं है।")
+N_15_GENERAL = ("The verse's closing line (a benefic or a malefic related to the 4th) states no age and is not evaluated here.",
+                "श्लोक की अंतिम पंक्ति (चौथे भाव से जुड़ा शुभ या पाप ग्रह) कोई आयु नहीं बताती और यहाँ नहीं जाँची गई।")
 
 
 # ── the verses ─────────────────────────────────────────────────────────────────
@@ -647,6 +675,79 @@ def v23_14(c):
     return []
 
 
+# ── dated verses (age windows; see the module docstring) ──────────────────────
+def v15_10_14(c):
+    l1, l4, l10, l11 = c.lord(1), c.lord(4), c.lord(10), c.lord(11); out = []
+    if c.nature.get(l1) == "benefic" and c.house["venus"] == 12 and (c.fallen(l4) or c.house[l4] == 11):
+        out.append(C(FAV, [l1, l4, "venus"], (f"your ascendant lord {_g(l1)} is a natural benefic", f"आपके लग्नेश {_g(l1)} नैसर्गिक शुभ ग्रह हैं"),
+                     w_state(l4, "in fall", "नीच के") if c.fallen(l4) else w_lord_in(4, l4, 11), w_in(["venus"], 12), age=Y(12)))
+    if c.house["sun"] == 4 and c.exalted(l4) and "venus" in c.with_(l4):
+        out.append(C(FAV, ["sun", l4, "venus"], w_in(["sun"], 4), w_state(l4, "exalted", "उच्च के"), w_with(l4, ["venus"]), age=Y(32)))
+    if l4 != l11 and c.house[l4] == 11 and c.house[l11] == 4:
+        out.append(C(FAV, [l4, l11], w_lord_in(4, l4, 11), w_lord_in(11, l11, 4), age=Y(12)))
+    return out
+
+
+def v16_18(c):
+    l = c.lord(5)
+    if c.house["jupiter"] == 5 and l != "venus" and "venus" in c.with_(l):
+        return [C(FAV, ["jupiter", l, "venus"], w_in(["jupiter"], 5), w_with(l, ["venus"]), age=Y(32, 33))]
+    return []
+
+
+def v16_19(c):
+    l = c.lord(5)
+    if l != "jupiter" and c.house[l] in KENDRA and "jupiter" in c.with_(l):
+        return [C(FAV, [l, "jupiter"], w_lord_in(5, l, c.house[l]), w_with(l, ["jupiter"]),
+                  (f"your {_ord(c.house[l])} house is an angle", "वह भाव केंद्र है"), age=AGE(30, 36))]
+    return []
+
+
+def v16_20(c):
+    l1 = c.lord(1)
+    ven_from_jup = (c.rasi["venus"] - c.rasi["jupiter"]) % 12 + 1
+    if c.house["jupiter"] == 9 and ven_from_jup == 9 and l1 != "venus" and "venus" in c.with_(l1):
+        return [C(FAV, ["jupiter", "venus", l1], w_in(["jupiter"], 9),
+                  (f"{_g('venus')} is in the 9th from {_g('jupiter')}", f"{_g('venus')} {_g('jupiter')} से नौवें स्थान में हैं"),
+                  w_with("venus", [l1]), age=AGE(40))]
+    return []
+
+
+def v20_10(c):
+    l9, l2 = c.lord(9), c.lord(2)
+    if l9 != l2 and c.house[l9] == 2 and c.house[l2] == 9:
+        return [C(FAV, [l9, l2], w_lord_in(9, l9, 2), w_lord_in(2, l2, 9), age=AFTER(32))]
+    return []
+
+
+def v20_27_28(c):
+    l9 = c.lord(9)
+    if c.house["jupiter"] == 9 and c.house[l9] in KENDRA:
+        return [C(FAV, ["jupiter", l9], w_in(["jupiter"], 9), w_lord_in(9, l9, c.house[l9]), age=AFTER(20))]
+    return []
+
+
+def v22_4(c):
+    l = c.lord(11); b = c.ben(c.occ(11))
+    if c.house[l] == 3 and b:
+        return [C(FAV, [l, *b], w_lord_in(11, l, 3), w_in(b, 11), age=Y(36))]
+    return []
+
+
+def v22_5(c):
+    l = c.lord(11); b = c.ben(c.with_(l))
+    if b and c.kt(l):
+        return [C(FAV, [l, *b], w_with(l, b), w_lord_in(11, l, c.house[l]), age=Y(40))]
+    return []
+
+
+def v22_8(c):
+    l11, l1 = c.lord(11), c.lord(1)
+    if l11 != l1 and c.house[l11] == 1 and c.house[l1] == 11:
+        return [C(FAV, [l11, l1], w_lord_in(11, l11, 1), w_lord_in(1, l1, 11), age=Y(33))]
+    return []
+
+
 def _V(ch, verse, pages, house, fn, text, *notes):
     return {"chapter": ch, "verse": verse, "house": house, "fn": fn, "text": text,
             "citation": f"BPHS I ch.{ch} v{'v' if '-' in verse else ''}.{verse} ({'pp' if '-' in pages else 'p'}.{pages})",
@@ -669,15 +770,21 @@ VERSES = [
     _V(15, "7", "143", 4, v15_7, "The native's mother will be happy if the 4th lord is in an angle while Venus is also in an angle as Mercury is exalted."),
     _V(15, "8", "143", 4, v15_8, "The Sun in the 4th, Moon and Saturn in the 9th and Mars in the 11th—this yoga will confer cows and buffaloes on the native."),
     _V(15, "9", "143", 4, v15_9, "Should the 4th house be a movable one while its lord and Mars are together in the 6th or the 8th house, the native will be dumb."),
+    _V(15, "10-14", "144", 4, v15_10_14, "If the ascendant lord is a benefic while the 4th lord is in fall or in the 11th and the significator (Venus) is in the 12th, the native will obtain conveyances in his 12th year. Should the Sun be in the 4th house, as the 4th lord is exalted and be with Venus, one will acquire conveyances in his 32nd year. It will be in the 42nd year that one will be endowed with conveyances if the 4th lord joins the 10th lord in his (4th lord's) exaltation Navamsa. An exchange between the 11th and the 4th lords will confer conveyances in the 12th year. A benefic related to the 4th house (and to its lord) will bring with him auspicious effects while a malefic will produce only malefic effects (in respect of conveyances).", N_NAVAMSA, N_15_GENERAL, N_DATED),
     _V(16, "1-3", "145", 5, v16_1_3, "O Brahmin, now I tell you the effects related to the 5th house. If the lords of the ascendant and the 5th are in their own signs or in an angle or in a trine, one will enjoy thorough happiness through his children. Should the 5th lord be in the 6th, 8th or 12th, there will be no offspring. Should the lord of the 5th be combust or be with malefics and be weak, there will be no children; even if per chance issues are obtained they will only quit the world soon.", N_COMBUST, N_STRENGTH),
     _V(16, "8", "146", 5, v16_8, "If the 5th lord is in the 6th, 8th or the 12th or be in an inimical sign or be in fall or in the 5th itself, the native will beget issues with difficulty."),
     _V(16, "16", "149", 5, v16_16, "If the 5th lord is exalted or be in the 2nd, 5th or 9th from the ascendant or be conjunct or aspected by Jupiter, obtainment of children will be there.", N_FULL),
+    _V(16, "18", "149", 5, v16_18, "If the 5th is occupied by Jupiter while its lord is with Venus, one will obtain an offspring in his 32nd/33rd year.", N_DATED),
+    _V(16, "19", "149", 5, v16_19, "Should the 5th lord be in an angle along with Jupiter, the Karaka, one will beget a child at the age of 30 or 36.", N_DATED),
+    _V(16, "20", "149", 5, v16_20, "If Jupiter is in the 9th from the ascendant while Venus is in the 9th from Jupiter along with the ascendant lord, one will beget a child at the age of 40.", N_DATED),
     _V(17, "2", "152", 6, v17_2, "Should the 6th lord be in the 6th itself or in the ascendant/8th, there will be ulcers or bruises on the body. The sign becoming the 6th house will lead to the knowledge of the concerned limb."),
     _V(18, "1", "160", 7, v18_1, "O excellent of the Brahmins, listen to me detailing the effects of the 7th house. If the 7th lord is in his own sign or in exaltation, one will derive full happiness through his wife (and marriage)."),
     _V(18, "2", "160", 7, v18_2, "Should the 7th lord be in the 6th, 8th or the 12th, the wife will be sickly. This, however, does not apply to own house or exaltation placement as above."),
     _V(20, "4", "173", 9, v20_4, "If the 9th lord is debilitated while the 2nd/4th from the 9th is occupied by Mars, the native's father is poor."),
     _V(20, "6", "174", 9, v20_6, "If the 9th lord is [in] an angle in aspect to Jupiter, the native's father will be a king endowed with conveyances or be equal to a king.", N_FULL),
     _V(20, "7", "174", 9, v20_7, "Should the lord of the 9th be in the 10th while the 10th lord being aspected by a benefic the native's father will be very rich and famous.", N_FULL),
+    _V(20, "10", "175", 9, v20_10, "Aquisition of fortunes, conveyances and fame will follow the 32nd year of age if the 9th lord is in the 2nd while the 2nd lord is in the 9th.", N_DATED),
+    _V(20, "27-28", "177", 9, v20_27_28, "Abundant fortunes will be acquired after the 20th year if the 9th has Jupiter in it as its lord is in an angle from the ascendant. Should Mercury be in his deep exaltation as the 9th lord is in the 9th itself, abundant fortunes will be earned after the 36th year.", N_DEEP, N_DATED),
     _V(20, "29", "177", 9, v20_29, "Should the ascendant lord be in the 9th as the 9th lord is in the ascendant, and Jupiter is in the 7th, there will be gains of wealth and conveyances."),
     _V(20, "30", "177", 9, v20_30, "If Rahu is in the 9th from the 9th (i.e. 5th from the ascendant), as his dispositor is in the 8th from the ascendant and the 9th lord is in fall, the native will be devoid of fortunes."),
     _V(20, "31", "178", 9, v20_31, "Should Saturn be in the 9th along with the Moon as the ascendant lord is in fall, the native will acquire food by begging."),
@@ -697,8 +804,11 @@ VERSES = [
     _V(21, "19-21", "183", 10, v21_19_21, "One will be endowed with fame if the Moon is in the 10th while the 10th lord is in a trine from the 10th and the ascendant lord is in ascendant's angle. Similar effects will come to pass if the 11th lord is in the 10th while the 10th lord is strong and be in aspect to Jupiter. Fame will come to the native if the 10th lord is in the 9th as the ascendant lord is in the 10th and the Moon is in the 5th from the ascendant.", N_STRENGTH),
     _V(22, "2", "184", 11, v22_2, "Should the 11th lord be in the 11th itself or be in an angle or in a trine from the ascendant, there will be many gains. Similarly if the 11th lord is exalted, though in combustion, there will be many gains."),
     _V(22, "3", "184", 11, v22_3, "If the 11th lord is in the 2nd while the 2nd lord is in angle (from the ascendant) along with Jupiter, the gains will be great."),
+    _V(22, "4", "184", 11, v22_4, "If the 11th lord is in the 3rd while the 11th is occupied by a benefic, the native will gain 2000 Nishkas in his 36th year.", N_DATED),
+    _V(22, "5", "185", 11, v22_5, "If the 11th lord is conjunct a benefic in an angle or in a trine (from the ascendant), the native will acquire 500 Nishkas in his 40th year.", N_DATED),
     _V(22, "6", "185", 11, v22_6, "The native will own 6000 Nishkas if the 11th is occupied by Jupiter while the 2nd and 9th are respectively taken over by the Moon and Venus by position."),
     _V(22, "7", "185", 11, v22_7, "Should Jupiter, Mercury and the Moon be in the 11th from the 11th (i.e. 9th from the ascendant) the native will be endowed with wealth, grains, fortunes, diamonds, ornaments etc."),
+    _V(22, "8", "185", 11, v22_8, "One will gain 1000 Nishkas in his 33rd year if the 11th lord is in the ascendant and the ascendant lord is in the 11th.", N_DATED),
     _V(22, "9", "185", 11, v22_9, "If the 11th lord is in the 2nd as the 2nd lord is in the 11th, one will amass abundant fortunes after marriage."),
     _V(22, "10", "185", 11, v22_10, "If the 11th lord is in the 3rd as the 3rd lord is in the 11th, one will gain wealth through co-born and be endowed with excellent ornaments."),
     _V(22, "11", "185", 11, v22_11, "There will be no gains in spite of numerous efforts if the 11th lord is in fall, in combustion or be in the 6th/8th/12th with a malefic.", N_COMBUST),
@@ -724,5 +834,6 @@ def evaluate(positions: dict, lagna: int, moon_waxing=None) -> dict:
             continue
         if clauses:
             matches.append({"chapter": v["chapter"], "verse": v["verse"], "house": v["house"],
-                            "citation": v["citation"], "text": v["text"], "clauses": clauses, "notes": v["notes"]})
+                            "citation": v["citation"], "text": v["text"], "clauses": clauses, "notes": v["notes"],
+                            "dated": any(cl.get("age") for cl in clauses)})
     return {"source": SOURCE, "registered": len(VERSES), "matches": matches, "errors": errors}

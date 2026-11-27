@@ -30,6 +30,7 @@
  */
 import { makeNamer, yogaName } from './naming.js'
 import { HOUSE } from './walkthrough.js'
+import { ageSentence } from './agewindow.js'
 
 const SIGN_LORD = ['mars', 'venus', 'mercury', 'moon', 'sun', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'saturn', 'jupiter']
 const EN_ORD = (n) => `${n}${n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th'}`
@@ -311,8 +312,10 @@ export function buildFindings(chart, namer = makeNamer('common')) {
     for (const m of bheFor(k)) {
       const t = passage({
         says: m.text, source: BPHS, cite: m.citation, kind: 'translation',
-        applies: both((l) => m.clauses.map((c) => fill(l, c.why[l] || c.why.en)).join(' ')),
+        // a dated verse (owner 2026-11-26: "dated event is fine"): each clause's age as this native's calendar months
+        applies: both((l) => m.clauses.map((c) => [fill(l, c.why[l] || c.why.en), ageSentence(c.age, chart, l)].filter(Boolean).join(' ')).join(' ')),
       })
+      if (m.dated) t.dated = m.clauses.filter((c) => c.age)
       const fav = m.clauses.some((c) => c.polarity === 'favourable'), adv = m.clauses.some((c) => c.polarity === 'adverse')
       t.qualifier = both((l) => [
         fav && adv ? (l === 'hi' ? 'यह कुंडली इस श्लोक की अनुकूल और प्रतिकूल, दोनों शर्तें पूरी करती है।' : 'This chart meets both a favourable and an adverse condition of this verse.')
